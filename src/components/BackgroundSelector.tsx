@@ -1,14 +1,16 @@
 import { backgroundTextures, BackgroundStyle, BackgroundTexture } from '@/types/businessCard';
 import { cn } from '@/lib/utils';
-import { Upload, Image as ImageIcon } from 'lucide-react';
+import { Upload, Image as ImageIcon, RectangleHorizontal, RectangleVertical } from 'lucide-react';
 import { useRef } from 'react';
 
 interface BackgroundSelectorProps {
   value: BackgroundStyle;
   onChange: (background: BackgroundStyle) => void;
+  orientation: 'landscape' | 'portrait';
+  onOrientationChange: (orientation: 'landscape' | 'portrait') => void;
 }
 
-export const BackgroundSelector = ({ value, onChange }: BackgroundSelectorProps) => {
+export const BackgroundSelector = ({ value, onChange, orientation, onOrientationChange }: BackgroundSelectorProps) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleTextureSelect = (texture: BackgroundTexture) => {
@@ -27,19 +29,50 @@ export const BackgroundSelector = ({ value, onChange }: BackgroundSelectorProps)
   };
 
   return (
-    <div className="space-y-4">
-      <div className="text-center mb-6">
-        <h3 className="text-lg font-medium text-foreground mb-1">Choose Your Background</h3>
-        <p className="text-sm text-muted-foreground">Select a premium metal finish or upload your own photo</p>
+    <div className="space-y-6">
+      {/* Orientation Toggle */}
+      <div className="space-y-2">
+        <h3 className="text-sm font-medium text-foreground">Card Orientation</h3>
+        <div className="flex gap-2">
+          <button
+            onClick={() => onOrientationChange('landscape')}
+            className={cn(
+              'flex-1 flex items-center justify-center gap-2 p-3 rounded-lg border-2 transition-all',
+              orientation === 'landscape'
+                ? 'border-primary bg-accent'
+                : 'border-border hover:border-primary/40'
+            )}
+          >
+            <RectangleHorizontal className="w-5 h-5" />
+            <span className="text-sm font-medium">Landscape</span>
+          </button>
+          <button
+            onClick={() => onOrientationChange('portrait')}
+            className={cn(
+              'flex-1 flex items-center justify-center gap-2 p-3 rounded-lg border-2 transition-all',
+              orientation === 'portrait'
+                ? 'border-primary bg-accent'
+                : 'border-border hover:border-primary/40'
+            )}
+          >
+            <RectangleVertical className="w-5 h-5" />
+            <span className="text-sm font-medium">Portrait</span>
+          </button>
+        </div>
       </div>
 
-      <div className="grid grid-cols-4 gap-3">
+      <div className="space-y-2">
+        <h3 className="text-sm font-medium text-foreground">Background Finish</h3>
+        <p className="text-xs text-muted-foreground">Select a premium metal finish or upload your own photo</p>
+      </div>
+
+      <div className="grid grid-cols-3 gap-3">
         {backgroundTextures.map((texture) => (
           <button
             key={texture.value}
             onClick={() => handleTextureSelect(texture.value)}
             className={cn(
-              'aspect-[3/4] rounded-xl border-2 transition-all overflow-hidden relative group',
+              'aspect-[4/3] rounded-xl border-2 transition-all overflow-hidden relative group',
               value.texture === texture.value
                 ? 'border-primary ring-2 ring-primary/20 scale-105'
                 : 'border-border hover:border-primary/40'
@@ -68,7 +101,7 @@ export const BackgroundSelector = ({ value, onChange }: BackgroundSelectorProps)
                 }}
               />
             )}
-            <span className="absolute bottom-1 left-1 right-1 text-[9px] font-medium text-center bg-black/40 text-white rounded px-1 py-0.5 backdrop-blur-sm">
+            <span className="absolute bottom-1 left-1 right-1 text-[9px] font-medium text-center bg-black/50 text-white rounded px-1 py-0.5 backdrop-blur-sm">
               {texture.name}
             </span>
           </button>
@@ -78,7 +111,7 @@ export const BackgroundSelector = ({ value, onChange }: BackgroundSelectorProps)
         <button
           onClick={() => fileInputRef.current?.click()}
           className={cn(
-            'aspect-[3/4] rounded-xl border-2 border-dashed transition-all overflow-hidden relative flex flex-col items-center justify-center gap-2',
+            'aspect-[4/3] rounded-xl border-2 border-dashed transition-all overflow-hidden relative flex flex-col items-center justify-center gap-2',
             value.texture === 'custom-photo'
               ? 'border-primary ring-2 ring-primary/20'
               : 'border-border hover:border-primary/40'

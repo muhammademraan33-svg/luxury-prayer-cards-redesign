@@ -1,166 +1,156 @@
-import { frameStyles, FrameStyleType, colorPresets } from '@/types/businessCard';
+import { frameStyles, FrameStyleType, BackgroundStyle, backgroundTextures } from '@/types/businessCard';
 import { cn } from '@/lib/utils';
 
 interface FrameStyleSelectorProps {
   frameStyle: FrameStyleType;
   frameColor: string;
+  background: BackgroundStyle;
   onFrameStyleChange: (style: FrameStyleType) => void;
   onFrameColorChange: (color: string) => void;
-  suggestedColors?: string[];
+  suggestedColors: string[];
 }
 
 export const FrameStyleSelector = ({ 
   frameStyle, 
   frameColor, 
+  background,
   onFrameStyleChange, 
   onFrameColorChange,
-  suggestedColors = []
+  suggestedColors 
 }: FrameStyleSelectorProps) => {
   
-  const getFramePreviewStyle = (type: FrameStyleType): React.CSSProperties => {
-    const base: React.CSSProperties = {
-      width: '100%',
-      height: '100%',
-      borderRadius: '3px',
-      backgroundColor: '#fefefe',
-      position: 'relative',
-    };
+  const getBackgroundStyle = (): React.CSSProperties => {
+    if (background.texture === 'custom-photo' && background.customImage) {
+      return {
+        backgroundImage: `url(${background.customImage})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+      };
+    }
+    const texture = backgroundTextures.find(t => t.value === background.texture);
+    return texture ? { background: texture.preview } : { backgroundColor: '#fefefe' };
+  };
 
-    switch (type) {
+  const getFramePreviewStyle = (style: FrameStyleType, color: string): React.CSSProperties => {
+    switch (style) {
       case 'solid':
-        return { ...base, border: `2px solid ${frameColor}` };
+        return { border: `3px solid ${color}` };
       case 'double':
-        return { ...base, border: `3px double ${frameColor}` };
+        return { border: `4px double ${color}` };
       case 'gradient':
         return {
-          ...base,
-          border: '2px solid transparent',
-          backgroundImage: `linear-gradient(#fefefe, #fefefe), linear-gradient(135deg, ${frameColor}, #f5d77a)`,
+          border: '3px solid transparent',
+          backgroundImage: `linear-gradient(#fff, #fff), linear-gradient(135deg, ${color}, #f5d77a)`,
           backgroundOrigin: 'border-box',
           backgroundClip: 'padding-box, border-box',
         };
       case 'ornate':
-        return { 
-          ...base, 
-          border: `2px solid ${frameColor}`,
-          boxShadow: `inset 0 0 0 2px #fefefe, inset 0 0 0 4px ${frameColor}`,
+        return {
+          border: `2px solid ${color}`,
+          boxShadow: `inset 0 0 0 3px transparent, inset 0 0 0 5px ${color}`,
         };
       case 'dashed':
-        return { ...base, border: `2px dashed ${frameColor}` };
+        return { border: `3px dashed ${color}` };
       case 'dotted':
-        return { ...base, border: `2px dotted ${frameColor}` };
+        return { border: `3px dotted ${color}` };
       case 'inset':
-        return { 
-          ...base, 
-          border: `1px solid ${frameColor}`,
-          boxShadow: `inset 0 0 0 3px #fefefe, inset 0 0 0 5px ${frameColor}`,
+        return {
+          border: `2px solid ${color}`,
+          boxShadow: `inset 0 0 0 6px transparent, inset 0 0 0 8px ${color}`,
         };
       case 'shadow':
-        return { 
-          ...base, 
-          border: `2px solid ${frameColor}`,
-          boxShadow: `3px 3px 0 rgba(0,0,0,0.2)`,
+        return {
+          border: `2px solid ${color}`,
+          boxShadow: `3px 3px 0 rgba(0,0,0,0.3)`,
         };
       case 'corner':
-        return base;
+        return {};
       default:
-        return base;
+        return {};
     }
   };
 
-  const renderCornerPreview = () => (
-    <div className="w-full h-full relative bg-[#fefefe] rounded">
-      <div className="absolute top-0 left-0 w-2 h-0.5" style={{ backgroundColor: frameColor }} />
-      <div className="absolute top-0 left-0 w-0.5 h-2" style={{ backgroundColor: frameColor }} />
-      <div className="absolute top-0 right-0 w-2 h-0.5" style={{ backgroundColor: frameColor }} />
-      <div className="absolute top-0 right-0 w-0.5 h-2" style={{ backgroundColor: frameColor }} />
-      <div className="absolute bottom-0 left-0 w-2 h-0.5" style={{ backgroundColor: frameColor }} />
-      <div className="absolute bottom-0 left-0 w-0.5 h-2" style={{ backgroundColor: frameColor }} />
-      <div className="absolute bottom-0 right-0 w-2 h-0.5" style={{ backgroundColor: frameColor }} />
-      <div className="absolute bottom-0 right-0 w-0.5 h-2" style={{ backgroundColor: frameColor }} />
-    </div>
+  const renderCornerPreview = (color: string) => (
+    <>
+      <div className="absolute top-1.5 left-1.5 w-3 h-0.5" style={{ backgroundColor: color }} />
+      <div className="absolute top-1.5 left-1.5 w-0.5 h-3" style={{ backgroundColor: color }} />
+      <div className="absolute top-1.5 right-1.5 w-3 h-0.5" style={{ backgroundColor: color }} />
+      <div className="absolute top-1.5 right-1.5 w-0.5 h-3" style={{ backgroundColor: color }} />
+      <div className="absolute bottom-1.5 left-1.5 w-3 h-0.5" style={{ backgroundColor: color }} />
+      <div className="absolute bottom-1.5 left-1.5 w-0.5 h-3" style={{ backgroundColor: color }} />
+      <div className="absolute bottom-1.5 right-1.5 w-3 h-0.5" style={{ backgroundColor: color }} />
+      <div className="absolute bottom-1.5 right-1.5 w-0.5 h-3" style={{ backgroundColor: color }} />
+    </>
   );
-
-  // Combine suggested colors first, then other presets
-  const allColors = [...new Set([...suggestedColors, ...colorPresets])];
 
   return (
     <div className="space-y-6">
-      <div className="text-center mb-6">
-        <h3 className="text-lg font-medium text-foreground mb-1">Select Frame Style</h3>
-        <p className="text-sm text-muted-foreground">Add an elegant border to your card</p>
+      <div className="space-y-2">
+        <h3 className="text-sm font-medium text-foreground">Frame Style</h3>
+        <p className="text-xs text-muted-foreground">Choose how the frame masks your background</p>
       </div>
 
-      {/* Frame Styles */}
-      <div className="grid grid-cols-5 gap-2">
-        {frameStyles.map((frame) => (
-          <button
-            key={frame.value}
-            onClick={() => onFrameStyleChange(frame.value)}
-            className={cn(
-              'aspect-[3/2] rounded-lg border-2 transition-all p-2',
-              frameStyle === frame.value
-                ? 'border-primary bg-accent scale-105'
-                : 'border-border hover:border-primary/40'
-            )}
-            title={frame.name}
-          >
-            {frame.value === 'corner' 
-              ? renderCornerPreview()
-              : <div style={getFramePreviewStyle(frame.value)} />
-            }
-          </button>
-        ))}
-      </div>
-      
-      <div className="flex flex-wrap justify-center gap-1 text-[10px] text-muted-foreground">
-        {frameStyles.map((frame) => (
-          <span key={frame.value} className="w-[18%] text-center">{frame.name}</span>
-        ))}
-      </div>
-
-      {/* Frame Color */}
-      <div className="space-y-3">
-        <h4 className="text-sm font-medium text-foreground text-center">Frame Color</h4>
-        
-        {suggestedColors.length > 0 && (
-          <div className="mb-3">
-            <p className="text-xs text-muted-foreground mb-2 text-center">Suggested for this celebration</p>
-            <div className="flex justify-center gap-2">
-              {suggestedColors.map((color) => (
-                <button
-                  key={color}
-                  onClick={() => onFrameColorChange(color)}
-                  className={cn(
-                    'w-10 h-10 rounded-lg border-2 transition-all shadow-sm',
-                    frameColor === color
-                      ? 'border-primary ring-2 ring-primary/20 scale-110'
-                      : 'border-border hover:scale-105'
-                  )}
-                  style={{ backgroundColor: color }}
-                  title={color}
-                />
-              ))}
-            </div>
-          </div>
-        )}
-
-        <div className="flex flex-wrap justify-center gap-1.5">
-          {allColors.slice(0, 20).map((color) => (
+      {/* Frame Color Selection */}
+      <div className="space-y-2">
+        <h4 className="text-xs font-medium text-muted-foreground">Frame Color</h4>
+        <div className="flex flex-wrap gap-2">
+          {suggestedColors.map((color) => (
             <button
               key={color}
               onClick={() => onFrameColorChange(color)}
               className={cn(
-                'w-7 h-7 rounded-md border transition-all',
+                'w-8 h-8 rounded-lg border-2 transition-all',
                 frameColor === color
-                  ? 'border-primary ring-2 ring-primary/20 scale-110'
-                  : 'border-border/50 hover:scale-105'
+                  ? 'border-foreground scale-110 ring-2 ring-primary/20'
+                  : 'border-border hover:scale-105'
               )}
               style={{ backgroundColor: color }}
-              title={color}
             />
           ))}
+          <input
+            type="color"
+            value={frameColor}
+            onChange={(e) => onFrameColorChange(e.target.value)}
+            className="w-8 h-8 rounded-lg cursor-pointer border-2 border-border"
+          />
         </div>
+      </div>
+
+      {/* Frame Style Grid - Mini card previews with background */}
+      <div className="grid grid-cols-3 gap-3">
+        {frameStyles.map((style) => (
+          <button
+            key={style.value}
+            onClick={() => onFrameStyleChange(style.value)}
+            className={cn(
+              'p-1 rounded-lg border-2 transition-all',
+              frameStyle === style.value
+                ? 'border-primary ring-2 ring-primary/20'
+                : 'border-border hover:border-primary/40'
+            )}
+          >
+            {/* Mini card preview showing background + frame */}
+            <div 
+              className="aspect-[4/3] rounded-md relative overflow-hidden"
+              style={{
+                ...getBackgroundStyle(),
+                ...getFramePreviewStyle(style.value, frameColor),
+              }}
+            >
+              {style.value === 'corner' && renderCornerPreview(frameColor)}
+              {/* Metallic shine */}
+              <div 
+                className="absolute inset-0 pointer-events-none"
+                style={{
+                  background: 'linear-gradient(135deg, rgba(255,255,255,0.15) 0%, transparent 50%, rgba(0,0,0,0.05) 100%)',
+                }}
+              />
+            </div>
+            <span className="text-[10px] text-muted-foreground block text-center mt-1">
+              {style.name}
+            </span>
+          </button>
+        ))}
       </div>
     </div>
   );
