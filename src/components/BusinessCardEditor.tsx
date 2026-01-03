@@ -5,7 +5,7 @@ import { LineEditor } from './LineEditor';
 import { ColorPicker } from './ColorPicker';
 import { FrameSelector } from './FrameSelector';
 import { ImageUploader } from './ImageUploader';
-import { BorderRadiusSlider } from './BorderRadiusSlider';
+import { OrientationToggle } from './OrientationToggle';
 import { CategorySelector } from './CategorySelector';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -51,8 +51,8 @@ export const BusinessCardEditor = () => {
       logoScale: prev.logoScale,
       logoX: prev.logoX,
       logoY: prev.logoY,
-      borderRadius: prev.borderRadius,
       frameStyle: prev.frameStyle,
+      orientation: prev.orientation,
     }));
     toast.success(`Switched to ${category} template`);
   };
@@ -189,17 +189,17 @@ export const BusinessCardEditor = () => {
 
             <Separator />
 
-            <ColorPicker
-              label="Background Color"
-              value={cardData.backgroundColor}
-              onChange={(color) => updateField('backgroundColor', color)}
+            <OrientationToggle
+              value={cardData.orientation}
+              onChange={(o) => updateField('orientation', o)}
             />
 
             <Separator />
 
-            <BorderRadiusSlider
-              value={cardData.borderRadius}
-              onChange={(radius) => updateField('borderRadius', radius)}
+            <ColorPicker
+              label="Background Color"
+              value={cardData.backgroundColor}
+              onChange={(color) => updateField('backgroundColor', color)}
             />
 
             <Separator />

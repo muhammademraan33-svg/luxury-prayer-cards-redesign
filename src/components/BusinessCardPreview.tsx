@@ -42,7 +42,6 @@ export const BusinessCardPreview = forwardRef<HTMLDivElement, BusinessCardPrevie
         className={`metal-card w-[400px] h-[260px] p-8 relative overflow-hidden flex flex-col justify-center items-center text-center ${isOrnate ? 'ornate-frame' : ''}`}
         style={{
           backgroundColor: data.backgroundColor,
-          borderRadius: `${data.borderRadius}px`,
           fontFamily: data.fontFamily,
           ...getFrameStyles(),
         }}
