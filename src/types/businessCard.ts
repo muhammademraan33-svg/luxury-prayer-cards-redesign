@@ -19,6 +19,7 @@ export interface BusinessCardData {
   logoScale: number;
   logoX: number;
   logoY: number;
+  logoOpacity: number; // 0-1 for background lightness
   backgroundColor: string;
   textColor: string;
   accentColor: string;
@@ -138,6 +139,7 @@ export const defaultCardData: BusinessCardData = {
   logoScale: 1,
   logoX: 200,
   logoY: 130,
+  logoOpacity: 1,
   frameStyle: 'ornate',
   frameColor: '#b8860b',
   category: 'wedding',

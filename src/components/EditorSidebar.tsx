@@ -6,8 +6,9 @@ import { OrientationToggle } from './OrientationToggle';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
+import { Slider } from '@/components/ui/slider';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { Download, RotateCcw, ArrowLeft, ChevronDown, Palette, Frame, Image, Layout } from 'lucide-react';
+import { Download, RotateCcw, ArrowLeft, ChevronDown, Palette, Frame, Image, Layout, ZoomIn, Sun } from 'lucide-react';
 import { toast } from 'sonner';
 import { useState } from 'react';
 import eternityLogo from '@/assets/eternity-cards-logo.png';
@@ -124,16 +125,58 @@ export const EditorSidebar = ({ cardData, onUpdateField, onBack, onDownload }: E
                 <div className="w-8 h-8 rounded-md bg-primary/10 flex items-center justify-center">
                   <Image className="w-4 h-4 text-primary" />
                 </div>
-                <span className="font-medium">Logo / Image</span>
+                <span className="font-medium">Background Photo</span>
               </div>
               <ChevronDown className={`w-4 h-4 text-muted-foreground transition-transform ${openSections.image ? 'rotate-180' : ''}`} />
             </CollapsibleTrigger>
             <CollapsibleContent className="px-3 pb-3">
-              <div className="pt-3">
+              <div className="pt-3 space-y-5">
                 <ImageUploader
                   value={cardData.logo}
                   onChange={(logo) => onUpdateField('logo', logo)}
                 />
+                
+                {cardData.logo && (
+                  <>
+                    {/* Scale slider */}
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between">
+                        <label className="text-sm font-medium flex items-center gap-2">
+                          <ZoomIn className="w-4 h-4" />
+                          Photo Size
+                        </label>
+                        <span className="text-xs text-muted-foreground">{Math.round(cardData.logoScale * 100)}%</span>
+                      </div>
+                      <Slider
+                        value={[cardData.logoScale]}
+                        onValueChange={([value]) => onUpdateField('logoScale', value)}
+                        min={0.5}
+                        max={2}
+                        step={0.05}
+                        className="w-full"
+                      />
+                    </div>
+                    
+                    {/* Opacity/brightness slider */}
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between">
+                        <label className="text-sm font-medium flex items-center gap-2">
+                          <Sun className="w-4 h-4" />
+                          Photo Brightness
+                        </label>
+                        <span className="text-xs text-muted-foreground">{Math.round(cardData.logoOpacity * 100)}%</span>
+                      </div>
+                      <Slider
+                        value={[cardData.logoOpacity]}
+                        onValueChange={([value]) => onUpdateField('logoOpacity', value)}
+                        min={0.2}
+                        max={1}
+                        step={0.05}
+                        className="w-full"
+                      />
+                    </div>
+                  </>
+                )}
               </div>
             </CollapsibleContent>
           </Collapsible>
