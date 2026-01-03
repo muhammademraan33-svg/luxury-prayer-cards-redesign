@@ -6,10 +6,10 @@ import {
   ZoomIn, 
   ZoomOut,
   FlipHorizontal,
-  ChevronLeft
 } from 'lucide-react';
 import { BusinessCardData } from '@/types/businessCard';
 import { cn } from '@/lib/utils';
+import logo from '@/assets/eternity-cards-logo.png';
 
 interface EditorHeaderProps {
   cardData: BusinessCardData;
@@ -19,7 +19,6 @@ interface EditorHeaderProps {
   onZoomIn: () => void;
   onZoomOut: () => void;
   onDownload: () => void;
-  onBack: () => void;
   canUndo?: boolean;
   canRedo?: boolean;
   onUndo?: () => void;
@@ -34,7 +33,6 @@ export const EditorHeader = ({
   onZoomIn,
   onZoomOut,
   onDownload,
-  onBack,
   canUndo = false,
   canRedo = false,
   onUndo,
@@ -42,13 +40,11 @@ export const EditorHeader = ({
 }: EditorHeaderProps) => {
   return (
     <header className="h-14 border-b border-border bg-card flex items-center justify-between px-4 shrink-0">
-      {/* Left section */}
+      {/* Left section - Logo */}
       <div className="flex items-center gap-3">
-        <Button variant="ghost" size="icon" onClick={onBack}>
-          <ChevronLeft className="w-5 h-5" />
-        </Button>
-        <div className="h-6 w-px bg-border" />
-        <div className="flex items-center gap-1">
+        <img src={logo} alt="Eternity Cards" className="h-8" />
+        <div className="h-6 w-px bg-border hidden sm:block" />
+        <div className="hidden sm:flex items-center gap-1">
           <Button 
             variant="ghost" 
             size="icon" 
@@ -106,7 +102,7 @@ export const EditorHeader = ({
 
       {/* Right section */}
       <div className="flex items-center gap-2">
-        <div className="flex items-center gap-1 bg-muted rounded-lg p-1">
+        <div className="hidden sm:flex items-center gap-1 bg-muted rounded-lg p-1">
           <Button 
             variant="ghost" 
             size="icon" 
@@ -128,8 +124,8 @@ export const EditorHeader = ({
           </Button>
         </div>
         <Button onClick={onDownload} size="sm">
-          <Download className="w-4 h-4 mr-2" />
-          Download
+          <Download className="w-4 h-4 sm:mr-2" />
+          <span className="hidden sm:inline">Download</span>
         </Button>
       </div>
     </header>
