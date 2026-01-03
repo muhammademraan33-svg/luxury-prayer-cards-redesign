@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { CelebrationSelector } from './CelebrationSelector';
-import { CanvasEditor } from './editor/CanvasEditor';
+import { CardEditor } from './editor/CardEditor';
 import { CardCategory, BusinessCardData, createDefaultCardData } from '@/types/businessCard';
 
 export const BusinessCardEditor = () => {
@@ -22,7 +22,7 @@ export const BusinessCardEditor = () => {
   }
 
   return (
-    <CanvasEditor
+    <CardEditor
       cardData={cardData}
       onUpdate={setCardData}
       onBack={handleBack}
