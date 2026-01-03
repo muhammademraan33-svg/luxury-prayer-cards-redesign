@@ -8,7 +8,7 @@ export interface TextElementStyle {
   scaleY: number;
 }
 
-export interface BusinessCardData {
+export interface CardSideData {
   name: string;
   title: string;
   subtitle: string;
@@ -19,22 +19,27 @@ export interface BusinessCardData {
   logoScale: number;
   logoX: number;
   logoY: number;
-  logoOpacity: number; // 0-1 for background lightness
+  logoOpacity: number;
   backgroundColor: string;
-  textColor: string;
-  accentColor: string;
-  fontFamily: string;
   frameStyle: 'none' | 'solid' | 'double' | 'gradient' | 'ornate' | 'dashed' | 'dotted' | 'inset' | 'shadow' | 'corner';
   frameColor: string;
-  category: CardCategory;
-  orientation: 'landscape' | 'portrait';
-  // Per-element styles
   nameStyle: TextElementStyle;
   titleStyle: TextElementStyle;
   subtitleStyle: TextElementStyle;
   line1Style: TextElementStyle;
   line2Style: TextElementStyle;
   line3Style: TextElementStyle;
+}
+
+export interface BusinessCardData {
+  front: CardSideData;
+  back: CardSideData;
+  textColor: string;
+  accentColor: string;
+  fontFamily: string;
+  category: CardCategory;
+  orientation: 'landscape' | 'portrait';
+  activeSide: 'front' | 'back';
 }
 
 export type CardCategory = 'wedding' | 'baby' | 'prayer' | 'memorial' | 'graduation' | 'anniversary';
@@ -49,82 +54,7 @@ export const defaultTextStyle = (fontSize: number, color: string, y: number): Te
   scaleY: 1,
 });
 
-export const categoryDefaults: Record<CardCategory, Partial<BusinessCardData>> = {
-  wedding: {
-    name: 'Sarah & Michael',
-    title: 'Request the pleasure of your company',
-    subtitle: 'at their wedding celebration',
-    line1: 'Saturday, June 15th, 2025',
-    line2: 'The Grand Estate • 5:00 PM',
-    line3: 'Dinner & Dancing to follow',
-    backgroundColor: '#fefefe',
-    textColor: '#2c2c2c',
-    accentColor: '#b8860b',
-    fontFamily: 'Playfair Display',
-  },
-  baby: {
-    name: 'Introducing',
-    title: 'Emma Rose Johnson',
-    subtitle: 'Born March 12, 2025',
-    line1: '7 lbs 8 oz • 20 inches',
-    line2: 'Proud Parents: James & Anna',
-    line3: '♥',
-    backgroundColor: '#fdf6f0',
-    textColor: '#5c4033',
-    accentColor: '#e8b4b8',
-    fontFamily: 'Cormorant Garamond',
-  },
-  prayer: {
-    name: 'In Loving Memory',
-    title: 'Robert James Wilson',
-    subtitle: '1945 - 2024',
-    line1: '"Forever in our hearts"',
-    line2: "Those we love don't go away,",
-    line3: 'they walk beside us every day.',
-    backgroundColor: '#f5f5f5',
-    textColor: '#333333',
-    accentColor: '#708090',
-    fontFamily: 'Cormorant Garamond',
-  },
-  memorial: {
-    name: 'Celebration of Life',
-    title: 'Margaret Anne Thompson',
-    subtitle: '1938 - 2024',
-    line1: 'A beautiful soul, forever remembered',
-    line2: 'Service: March 20, 2025',
-    line3: "St. Mary's Chapel",
-    backgroundColor: '#faf8f5',
-    textColor: '#3d3d3d',
-    accentColor: '#8b7355',
-    fontFamily: 'Cormorant Garamond',
-  },
-  graduation: {
-    name: 'Class of 2025',
-    title: 'Alexandra Chen',
-    subtitle: 'Bachelor of Science, Magna Cum Laude',
-    line1: 'University of California',
-    line2: 'Commencement: May 18, 2025',
-    line3: 'The future belongs to those who believe',
-    backgroundColor: '#1a1a2e',
-    textColor: '#ffffff',
-    accentColor: '#c9a227',
-    fontFamily: 'Montserrat',
-  },
-  anniversary: {
-    name: '25 Years',
-    title: 'David & Elizabeth',
-    subtitle: 'Silver Anniversary Celebration',
-    line1: 'Join us as we celebrate',
-    line2: 'August 22, 2025 • 6:00 PM',
-    line3: 'The Riverside Ballroom',
-    backgroundColor: '#f8f8f8',
-    textColor: '#2c2c2c',
-    accentColor: '#c0c0c0',
-    fontFamily: 'Playfair Display',
-  },
-};
-
-export const createDefaultStyles = (textColor: string, accentColor: string): Pick<BusinessCardData, 'nameStyle' | 'titleStyle' | 'subtitleStyle' | 'line1Style' | 'line2Style' | 'line3Style'> => ({
+export const createDefaultStyles = (textColor: string, accentColor: string): Pick<CardSideData, 'nameStyle' | 'titleStyle' | 'subtitleStyle' | 'line1Style' | 'line2Style' | 'line3Style'> => ({
   nameStyle: defaultTextStyle(12, accentColor, 80),
   titleStyle: defaultTextStyle(22, textColor, 110),
   subtitleStyle: defaultTextStyle(14, textColor, 140),
@@ -133,19 +63,211 @@ export const createDefaultStyles = (textColor: string, accentColor: string): Pic
   line3Style: defaultTextStyle(10, accentColor, 220),
 });
 
-export const defaultCardData: BusinessCardData = {
-  ...categoryDefaults.wedding,
+export const createDefaultSide = (
+  textColor: string,
+  accentColor: string,
+  backgroundColor: string,
+  frameColor: string,
+  content: {
+    name: string;
+    title: string;
+    subtitle: string;
+    line1: string;
+    line2: string;
+    line3: string;
+  }
+): CardSideData => ({
+  ...content,
   logo: null,
   logoScale: 1,
   logoX: 200,
   logoY: 130,
   logoOpacity: 1,
+  backgroundColor,
   frameStyle: 'ornate',
-  frameColor: '#b8860b',
-  category: 'wedding',
-  orientation: 'landscape',
-  ...createDefaultStyles('#2c2c2c', '#b8860b'),
-} as BusinessCardData;
+  frameColor,
+  ...createDefaultStyles(textColor, accentColor),
+});
+
+export const categoryDefaults: Record<CardCategory, { front: Partial<CardSideData>; back: Partial<CardSideData>; textColor: string; accentColor: string; backgroundColor: string; fontFamily: string }> = {
+  wedding: {
+    front: {
+      name: 'Sarah & Michael',
+      title: 'Request the pleasure of your company',
+      subtitle: 'at their wedding celebration',
+      line1: 'Saturday, June 15th, 2025',
+      line2: 'The Grand Estate • 5:00 PM',
+      line3: 'Dinner & Dancing to follow',
+    },
+    back: {
+      name: 'RSVP',
+      title: 'Please respond by May 1st',
+      subtitle: 'rsvp@sarahandmichael.com',
+      line1: 'Dinner Options:',
+      line2: '☐ Beef  ☐ Chicken  ☐ Vegetarian',
+      line3: 'We can\'t wait to celebrate with you!',
+    },
+    backgroundColor: '#fefefe',
+    textColor: '#2c2c2c',
+    accentColor: '#b8860b',
+    fontFamily: 'Playfair Display',
+  },
+  baby: {
+    front: {
+      name: 'Introducing',
+      title: 'Emma Rose Johnson',
+      subtitle: 'Born March 12, 2025',
+      line1: '7 lbs 8 oz • 20 inches',
+      line2: 'Proud Parents: James & Anna',
+      line3: '♥',
+    },
+    back: {
+      name: 'Welcome Baby',
+      title: 'She has arrived!',
+      subtitle: '',
+      line1: 'Special thanks to all our',
+      line2: 'family and friends for',
+      line3: 'your love and support',
+    },
+    backgroundColor: '#fdf6f0',
+    textColor: '#5c4033',
+    accentColor: '#e8b4b8',
+    fontFamily: 'Cormorant Garamond',
+  },
+  prayer: {
+    front: {
+      name: 'In Loving Memory',
+      title: 'Robert James Wilson',
+      subtitle: '1945 - 2024',
+      line1: '"Forever in our hearts"',
+      line2: "Those we love don't go away,",
+      line3: 'they walk beside us every day.',
+    },
+    back: {
+      name: '🕊️',
+      title: 'The Lord is my shepherd',
+      subtitle: 'I shall not want',
+      line1: 'He maketh me to lie down',
+      line2: 'in green pastures',
+      line3: 'Psalm 23',
+    },
+    backgroundColor: '#f5f5f5',
+    textColor: '#333333',
+    accentColor: '#708090',
+    fontFamily: 'Cormorant Garamond',
+  },
+  memorial: {
+    front: {
+      name: 'Celebration of Life',
+      title: 'Margaret Anne Thompson',
+      subtitle: '1938 - 2024',
+      line1: 'A beautiful soul, forever remembered',
+      line2: 'Service: March 20, 2025',
+      line3: "St. Mary's Chapel",
+    },
+    back: {
+      name: '🕯️',
+      title: 'In Memory',
+      subtitle: 'A life well lived',
+      line1: 'Your love lives on',
+      line2: 'in the hearts of all',
+      line3: 'who knew you',
+    },
+    backgroundColor: '#faf8f5',
+    textColor: '#3d3d3d',
+    accentColor: '#8b7355',
+    fontFamily: 'Cormorant Garamond',
+  },
+  graduation: {
+    front: {
+      name: 'Class of 2025',
+      title: 'Alexandra Chen',
+      subtitle: 'Bachelor of Science, Magna Cum Laude',
+      line1: 'University of California',
+      line2: 'Commencement: May 18, 2025',
+      line3: 'The future belongs to those who believe',
+    },
+    back: {
+      name: '🎓',
+      title: 'Thank You',
+      subtitle: 'For your support & encouragement',
+      line1: 'The journey continues...',
+      line2: 'Next stop: Graduate School',
+      line3: 'Dream big!',
+    },
+    backgroundColor: '#1a1a2e',
+    textColor: '#ffffff',
+    accentColor: '#c9a227',
+    fontFamily: 'Montserrat',
+  },
+  anniversary: {
+    front: {
+      name: '25 Years',
+      title: 'David & Elizabeth',
+      subtitle: 'Silver Anniversary Celebration',
+      line1: 'Join us as we celebrate',
+      line2: 'August 22, 2025 • 6:00 PM',
+      line3: 'The Riverside Ballroom',
+    },
+    back: {
+      name: '💝',
+      title: 'A Love Story',
+      subtitle: '25 years and counting',
+      line1: 'Through every joy and challenge',
+      line2: 'Our love has only grown stronger',
+      line3: 'Here\'s to many more!',
+    },
+    backgroundColor: '#f8f8f8',
+    textColor: '#2c2c2c',
+    accentColor: '#c0c0c0',
+    fontFamily: 'Playfair Display',
+  },
+};
+
+export const createDefaultCardData = (category: CardCategory): BusinessCardData => {
+  const defaults = categoryDefaults[category];
+  const frontSide = createDefaultSide(
+    defaults.textColor,
+    defaults.accentColor,
+    defaults.backgroundColor,
+    defaults.accentColor,
+    {
+      name: defaults.front.name || '',
+      title: defaults.front.title || '',
+      subtitle: defaults.front.subtitle || '',
+      line1: defaults.front.line1 || '',
+      line2: defaults.front.line2 || '',
+      line3: defaults.front.line3 || '',
+    }
+  );
+  const backSide = createDefaultSide(
+    defaults.textColor,
+    defaults.accentColor,
+    defaults.backgroundColor,
+    defaults.accentColor,
+    {
+      name: defaults.back.name || '',
+      title: defaults.back.title || '',
+      subtitle: defaults.back.subtitle || '',
+      line1: defaults.back.line1 || '',
+      line2: defaults.back.line2 || '',
+      line3: defaults.back.line3 || '',
+    }
+  );
+
+  return {
+    front: frontSide,
+    back: backSide,
+    textColor: defaults.textColor,
+    accentColor: defaults.accentColor,
+    fontFamily: defaults.fontFamily,
+    category,
+    orientation: 'landscape',
+    activeSide: 'front',
+  };
+};
+
+export const defaultCardData: BusinessCardData = createDefaultCardData('wedding');
 
 export const fontOptions = [
   { name: 'Playfair Display', value: 'Playfair Display', className: 'font-display', style: 'Elegant Serif' },

@@ -1,8 +1,10 @@
 import { useState, useCallback } from 'react';
-import { BusinessCardData, categoryDefaults, createDefaultStyles } from '@/types/businessCard';
+import { BusinessCardData, CardSideData, categoryDefaults, createDefaultCardData } from '@/types/businessCard';
 import { InteractiveCardCanvas } from './InteractiveCardCanvas';
 import { EditorSidebar } from './EditorSidebar';
 import { Template } from './TemplateCard';
+import { Button } from '@/components/ui/button';
+import { RotateCw } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface CardEditorViewProps {
@@ -11,26 +13,33 @@ interface CardEditorViewProps {
 }
 
 export const CardEditorView = ({ template, onBack }: CardEditorViewProps) => {
-  const defaults = categoryDefaults[template.category];
+  const baseData = createDefaultCardData(template.category);
+  
+  // Apply template styling to front side
   const initialData: BusinessCardData = {
-    ...defaults,
-    ...createDefaultStyles(template.textColor, template.accentColor),
-    category: template.category,
-    backgroundColor: template.backgroundColor,
+    ...baseData,
+    front: {
+      ...baseData.front,
+      backgroundColor: template.backgroundColor,
+      frameStyle: template.frameStyle,
+      frameColor: template.frameColor,
+      logo: template.backgroundImage,
+    },
+    back: {
+      ...baseData.back,
+      backgroundColor: template.backgroundColor,
+      frameStyle: template.frameStyle,
+      frameColor: template.frameColor,
+    },
     textColor: template.textColor,
     accentColor: template.accentColor,
     fontFamily: template.fontFamily,
-    frameStyle: template.frameStyle,
-    frameColor: template.frameColor,
-    logo: template.backgroundImage,
-    logoScale: 1,
-    logoX: 200,
-    logoY: 130,
-    logoOpacity: 1,
-    orientation: 'landscape',
-  } as BusinessCardData;
+  };
 
   const [cardData, setCardData] = useState<BusinessCardData>(initialData);
+
+  const activeSide = cardData.activeSide;
+  const currentSideData = cardData[activeSide];
 
   const updateField = useCallback(
     <K extends keyof BusinessCardData>(field: K, value: BusinessCardData[K]) => {
@@ -39,16 +48,29 @@ export const CardEditorView = ({ template, onBack }: CardEditorViewProps) => {
     []
   );
 
-  const updateMultiple = useCallback((updates: Partial<BusinessCardData>) => {
-    setCardData((prev) => ({ ...prev, ...updates }));
+  const updateSideData = useCallback((updates: Partial<CardSideData>) => {
+    setCardData((prev) => ({
+      ...prev,
+      [prev.activeSide]: {
+        ...prev[prev.activeSide],
+        ...updates,
+      },
+    }));
   }, []);
+
+  const toggleSide = () => {
+    setCardData((prev) => ({
+      ...prev,
+      activeSide: prev.activeSide === 'front' ? 'back' : 'front',
+    }));
+  };
 
   const handleExport = (canvas: HTMLCanvasElement) => {
     const link = document.createElement('a');
-    link.download = `${cardData.category}-card-${Date.now()}.png`;
+    link.download = `${cardData.category}-card-${activeSide}-${Date.now()}.png`;
     link.href = canvas.toDataURL('image/png');
     link.click();
-    toast.success('Card downloaded!');
+    toast.success(`${activeSide === 'front' ? 'Front' : 'Back'} of card downloaded!`);
   };
 
   const handleDownload = () => {
@@ -64,23 +86,56 @@ export const CardEditorView = ({ template, onBack }: CardEditorViewProps) => {
     <div className="min-h-screen flex flex-col lg:flex-row">
       <EditorSidebar
         cardData={cardData}
+        sideData={currentSideData}
         onUpdateField={updateField}
+        onUpdateSide={updateSideData}
         onBack={onBack}
         onDownload={handleDownload}
       />
 
       {/* Main Canvas Area */}
       <main className="flex-1 canvas-area flex flex-col items-center justify-center p-8 min-h-[500px] lg:min-h-screen">
+        {/* Side Toggle */}
+        <div className="mb-6 flex items-center gap-4">
+          <div className="flex bg-card border border-border rounded-lg overflow-hidden">
+            <button
+              onClick={() => updateField('activeSide', 'front')}
+              className={`px-6 py-2 text-sm font-medium transition-colors ${
+                activeSide === 'front'
+                  ? 'bg-primary text-primary-foreground'
+                  : 'hover:bg-accent'
+              }`}
+            >
+              Front
+            </button>
+            <button
+              onClick={() => updateField('activeSide', 'back')}
+              className={`px-6 py-2 text-sm font-medium transition-colors ${
+                activeSide === 'back'
+                  ? 'bg-primary text-primary-foreground'
+                  : 'hover:bg-accent'
+              }`}
+            >
+              Back
+            </button>
+          </div>
+          <Button variant="outline" size="icon" onClick={toggleSide} title="Flip Card">
+            <RotateCw className="w-4 h-4" />
+          </Button>
+        </div>
+
         <div className="animate-scale-in">
           <InteractiveCardCanvas
-            data={cardData}
-            onUpdate={updateMultiple}
+            sideData={currentSideData}
+            orientation={cardData.orientation}
+            onUpdate={updateSideData}
             onExport={handleExport}
           />
         </div>
+        
         <div className="mt-6 bg-card/80 backdrop-blur-sm rounded-full px-6 py-3 shadow-sm border border-border">
           <p className="text-sm text-muted-foreground text-center">
-            <span className="font-medium text-foreground">Tip:</span> Click text to select • Double-click to edit • Drag to move
+            <span className="font-medium text-foreground">Editing:</span> {activeSide === 'front' ? 'Front' : 'Back'} of card • Click text to select • Double-click to edit
           </p>
         </div>
       </main>

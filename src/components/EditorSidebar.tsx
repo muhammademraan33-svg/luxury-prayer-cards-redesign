@@ -1,4 +1,4 @@
-import { BusinessCardData, CardCategory, categoryDefaults, createDefaultStyles } from '@/types/businessCard';
+import { BusinessCardData, CardSideData, CardCategory, categoryDefaults, createDefaultCardData } from '@/types/businessCard';
 import { ColorPicker } from './ColorPicker';
 import { FrameSelector } from './FrameSelector';
 import { ImageUploader } from './ImageUploader';
@@ -15,12 +15,14 @@ import eternityLogo from '@/assets/eternity-cards-logo.png';
 
 interface EditorSidebarProps {
   cardData: BusinessCardData;
+  sideData: CardSideData;
   onUpdateField: <K extends keyof BusinessCardData>(field: K, value: BusinessCardData[K]) => void;
+  onUpdateSide: (updates: Partial<CardSideData>) => void;
   onBack: () => void;
   onDownload: () => void;
 }
 
-export const EditorSidebar = ({ cardData, onUpdateField, onBack, onDownload }: EditorSidebarProps) => {
+export const EditorSidebar = ({ cardData, sideData, onUpdateField, onUpdateSide, onBack, onDownload }: EditorSidebarProps) => {
   const [openSections, setOpenSections] = useState({
     colors: true,
     frame: false,
@@ -29,9 +31,7 @@ export const EditorSidebar = ({ cardData, onUpdateField, onBack, onDownload }: E
   });
 
   const handleReset = () => {
-    const defaults = categoryDefaults[cardData.category];
-    const textColor = defaults.textColor || '#2c2c2c';
-    const accentColor = defaults.accentColor || '#b8860b';
+    const defaults = createDefaultCardData(cardData.category);
     toast.success('Card reset to defaults');
   };
 
@@ -56,7 +56,9 @@ export const EditorSidebar = ({ cardData, onUpdateField, onBack, onDownload }: E
           <img src={eternityLogo} alt="Eternity Cards" className="h-10 w-10 rounded-lg object-contain" />
           <div>
             <h1 className="font-semibold">Card Editor</h1>
-            <p className="text-xs text-muted-foreground capitalize">{cardData.category} Card</p>
+            <p className="text-xs text-muted-foreground capitalize">
+              {cardData.category} Card • {cardData.activeSide === 'front' ? 'Front' : 'Back'}
+            </p>
           </div>
         </div>
       </div>
@@ -78,8 +80,8 @@ export const EditorSidebar = ({ cardData, onUpdateField, onBack, onDownload }: E
               <div className="pt-3 space-y-4">
                 <ColorPicker
                   label="Background"
-                  value={cardData.backgroundColor}
-                  onChange={(color) => onUpdateField('backgroundColor', color)}
+                  value={sideData.backgroundColor}
+                  onChange={(color) => onUpdateSide({ backgroundColor: color })}
                 />
               </div>
             </CollapsibleContent>
@@ -101,15 +103,15 @@ export const EditorSidebar = ({ cardData, onUpdateField, onBack, onDownload }: E
             <CollapsibleContent className="px-3 pb-3">
               <div className="pt-3 space-y-4">
                 <FrameSelector
-                  value={cardData.frameStyle}
-                  frameColor={cardData.frameColor}
-                  onChange={(frame) => onUpdateField('frameStyle', frame)}
+                  value={sideData.frameStyle}
+                  frameColor={sideData.frameColor}
+                  onChange={(frame) => onUpdateSide({ frameStyle: frame })}
                 />
-                {cardData.frameStyle !== 'none' && (
+                {sideData.frameStyle !== 'none' && (
                   <ColorPicker
                     label="Frame Color"
-                    value={cardData.frameColor}
-                    onChange={(color) => onUpdateField('frameColor', color)}
+                    value={sideData.frameColor}
+                    onChange={(color) => onUpdateSide({ frameColor: color })}
                   />
                 )}
               </div>
@@ -132,11 +134,11 @@ export const EditorSidebar = ({ cardData, onUpdateField, onBack, onDownload }: E
             <CollapsibleContent className="px-3 pb-3">
               <div className="pt-3 space-y-5">
                 <ImageUploader
-                  value={cardData.logo}
-                  onChange={(logo) => onUpdateField('logo', logo)}
+                  value={sideData.logo}
+                  onChange={(logo) => onUpdateSide({ logo })}
                 />
                 
-                {cardData.logo && (
+                {sideData.logo && (
                   <>
                     {/* Scale slider */}
                     <div className="space-y-2">
@@ -145,11 +147,11 @@ export const EditorSidebar = ({ cardData, onUpdateField, onBack, onDownload }: E
                           <ZoomIn className="w-4 h-4" />
                           Photo Size
                         </label>
-                        <span className="text-xs text-muted-foreground">{Math.round(cardData.logoScale * 100)}%</span>
+                        <span className="text-xs text-muted-foreground">{Math.round(sideData.logoScale * 100)}%</span>
                       </div>
                       <Slider
-                        value={[cardData.logoScale]}
-                        onValueChange={([value]) => onUpdateField('logoScale', value)}
+                        value={[sideData.logoScale]}
+                        onValueChange={([value]) => onUpdateSide({ logoScale: value })}
                         min={0.5}
                         max={2}
                         step={0.05}
@@ -164,11 +166,11 @@ export const EditorSidebar = ({ cardData, onUpdateField, onBack, onDownload }: E
                           <Sun className="w-4 h-4" />
                           Photo Brightness
                         </label>
-                        <span className="text-xs text-muted-foreground">{Math.round(cardData.logoOpacity * 100)}%</span>
+                        <span className="text-xs text-muted-foreground">{Math.round(sideData.logoOpacity * 100)}%</span>
                       </div>
                       <Slider
-                        value={[cardData.logoOpacity]}
-                        onValueChange={([value]) => onUpdateField('logoOpacity', value)}
+                        value={[sideData.logoOpacity]}
+                        onValueChange={([value]) => onUpdateSide({ logoOpacity: value })}
                         min={0.2}
                         max={1}
                         step={0.05}
@@ -213,7 +215,7 @@ export const EditorSidebar = ({ cardData, onUpdateField, onBack, onDownload }: E
           className="w-full bg-gradient-to-r from-primary to-primary/90"
         >
           <Download className="w-4 h-4 mr-2" />
-          Download Card
+          Download {cardData.activeSide === 'front' ? 'Front' : 'Back'}
         </Button>
         <Button
           variant="outline"

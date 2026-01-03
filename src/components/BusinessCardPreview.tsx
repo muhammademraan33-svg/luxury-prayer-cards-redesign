@@ -1,12 +1,15 @@
 import { forwardRef } from 'react';
-import { BusinessCardData } from '@/types/businessCard';
+import { CardSideData } from '@/types/businessCard';
 
 interface BusinessCardPreviewProps {
-  data: BusinessCardData;
+  data: CardSideData;
+  textColor: string;
+  accentColor: string;
+  fontFamily: string;
 }
 
 export const BusinessCardPreview = forwardRef<HTMLDivElement, BusinessCardPreviewProps>(
-  ({ data }, ref) => {
+  ({ data, textColor, accentColor, fontFamily }, ref) => {
     const getFrameStyles = () => {
       switch (data.frameStyle) {
         case 'solid':
@@ -20,7 +23,7 @@ export const BusinessCardPreview = forwardRef<HTMLDivElement, BusinessCardPrevie
         case 'gradient':
           return {
             border: '3px solid transparent',
-            backgroundImage: `linear-gradient(${data.backgroundColor}, ${data.backgroundColor}), linear-gradient(135deg, ${data.frameColor}, ${data.accentColor})`,
+            backgroundImage: `linear-gradient(${data.backgroundColor}, ${data.backgroundColor}), linear-gradient(135deg, ${data.frameColor}, ${accentColor})`,
             backgroundOrigin: 'border-box',
             backgroundClip: 'padding-box, border-box',
           };
@@ -42,7 +45,7 @@ export const BusinessCardPreview = forwardRef<HTMLDivElement, BusinessCardPrevie
         className={`metal-card w-[400px] h-[260px] p-8 relative overflow-hidden flex flex-col justify-center items-center text-center ${isOrnate ? 'ornate-frame' : ''}`}
         style={{
           backgroundColor: data.backgroundColor,
-          fontFamily: data.fontFamily,
+          fontFamily: fontFamily,
           ...getFrameStyles(),
         }}
       >
@@ -59,14 +62,14 @@ export const BusinessCardPreview = forwardRef<HTMLDivElement, BusinessCardPrevie
         <div className="space-y-2">
           <p
             className="text-sm uppercase tracking-[0.2em] font-medium"
-            style={{ color: data.accentColor }}
+            style={{ color: accentColor }}
           >
             {data.name}
           </p>
           
           <h2
             className="text-2xl font-semibold leading-tight"
-            style={{ color: data.textColor }}
+            style={{ color: textColor }}
           >
             {data.title}
           </h2>
@@ -74,7 +77,7 @@ export const BusinessCardPreview = forwardRef<HTMLDivElement, BusinessCardPrevie
           {data.subtitle && (
             <p
               className="text-base italic"
-              style={{ color: data.textColor, opacity: 0.85 }}
+              style={{ color: textColor, opacity: 0.85 }}
             >
               {data.subtitle}
             </p>
@@ -86,7 +89,7 @@ export const BusinessCardPreview = forwardRef<HTMLDivElement, BusinessCardPrevie
           {data.line1 && (
             <p
               className="text-sm"
-              style={{ color: data.textColor, opacity: 0.9 }}
+              style={{ color: textColor, opacity: 0.9 }}
             >
               {data.line1}
             </p>
@@ -94,7 +97,7 @@ export const BusinessCardPreview = forwardRef<HTMLDivElement, BusinessCardPrevie
           {data.line2 && (
             <p
               className="text-sm"
-              style={{ color: data.textColor, opacity: 0.75 }}
+              style={{ color: textColor, opacity: 0.75 }}
             >
               {data.line2}
             </p>
@@ -102,7 +105,7 @@ export const BusinessCardPreview = forwardRef<HTMLDivElement, BusinessCardPrevie
           {data.line3 && (
             <p
               className="text-xs mt-2"
-              style={{ color: data.accentColor }}
+              style={{ color: accentColor }}
             >
               {data.line3}
             </p>
@@ -113,7 +116,7 @@ export const BusinessCardPreview = forwardRef<HTMLDivElement, BusinessCardPrevie
         <div
           className="absolute top-0 left-0 w-full h-full pointer-events-none opacity-[0.03]"
           style={{
-            background: `radial-gradient(circle at 30% 20%, ${data.accentColor} 0%, transparent 50%)`,
+            background: `radial-gradient(circle at 30% 20%, ${accentColor} 0%, transparent 50%)`,
           }}
         />
       </div>

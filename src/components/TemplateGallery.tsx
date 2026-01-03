@@ -3,7 +3,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { CardCategory, categoryInfo, BusinessCardData, categoryDefaults, createDefaultStyles } from '@/types/businessCard';
+import { CardCategory, categoryInfo, CardSideData } from '@/types/businessCard';
 import { LayoutGrid } from 'lucide-react';
 
 interface Template {
@@ -12,7 +12,7 @@ interface Template {
   category: CardCategory;
   thumbnail: string;
   backgroundColor: string;
-  frameStyle: BusinessCardData['frameStyle'];
+  frameStyle: CardSideData['frameStyle'];
   frameColor: string;
   textColor: string;
   accentColor: string;
