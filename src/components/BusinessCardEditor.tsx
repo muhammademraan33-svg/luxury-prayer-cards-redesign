@@ -6,6 +6,7 @@ import { FrameSelector } from './FrameSelector';
 import { ImageUploader } from './ImageUploader';
 import { OrientationToggle } from './OrientationToggle';
 import { CategorySelector } from './CategorySelector';
+import { TemplateGallery, Template } from './TemplateGallery';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
@@ -44,6 +45,28 @@ export const BusinessCardEditor = () => {
       orientation: prev.orientation,
     }));
     toast.success(`Switched to ${category} template`);
+  };
+
+  const handleTemplateSelect = (template: Template) => {
+    const defaults = categoryDefaults[template.category];
+    setCardData((prev) => ({
+      ...prev,
+      ...defaults,
+      ...createDefaultStyles(template.textColor, template.accentColor),
+      category: template.category,
+      backgroundColor: template.backgroundColor,
+      textColor: template.textColor,
+      accentColor: template.accentColor,
+      fontFamily: template.fontFamily,
+      frameStyle: template.frameStyle,
+      frameColor: template.frameColor,
+      logo: prev.logo,
+      logoScale: prev.logoScale,
+      logoX: prev.logoX,
+      logoY: prev.logoY,
+      orientation: prev.orientation,
+    }));
+    toast.success(`Applied "${template.name}" template`);
   };
 
   const handleReset = () => {
@@ -96,6 +119,13 @@ export const BusinessCardEditor = () => {
 
         <ScrollArea className="h-[calc(100vh-120px)] lg:h-[calc(100vh-120px)]">
           <div className="p-5 space-y-4">
+            <TemplateGallery
+              currentCategory={cardData.category}
+              onSelectTemplate={handleTemplateSelect}
+            />
+
+            <Separator />
+
             <CategorySelector
               value={cardData.category}
               onChange={handleCategoryChange}
