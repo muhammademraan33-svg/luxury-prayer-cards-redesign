@@ -13,6 +13,7 @@ import { BackgroundSelector } from './BackgroundSelector';
 import { FrameStyleSelector } from './FrameStyleSelector';
 import { FontSetSelector, FontSet } from './FontSetSelector';
 import { CardPreview } from './CardPreview';
+import { InteractiveCardPreview } from './InteractiveCardPreview';
 import { TextEditor } from './TextEditor';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, ArrowRight, Check, Download, RotateCcw } from 'lucide-react';
@@ -264,10 +265,19 @@ export const CardDesigner = ({ cardData, onUpdate, onBack }: CardDesignerProps) 
             </div>
           ) : (
             <div className="space-y-4">
-              <CardPreview
-                sideData={sideData}
-                orientation={cardData.orientation}
-              />
+              {currentStep.endsWith('text') ? (
+                <InteractiveCardPreview
+                  sideData={sideData}
+                  orientation={cardData.orientation}
+                  onTextUpdate={handleTextUpdate}
+                  editable={true}
+                />
+              ) : (
+                <CardPreview
+                  sideData={sideData}
+                  orientation={cardData.orientation}
+                />
+              )}
               <p className="text-center text-xs text-muted-foreground">
                 {currentSide === 'front' ? 'Front' : 'Back'} Preview
               </p>
