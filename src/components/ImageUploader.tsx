@@ -31,7 +31,6 @@ export const ImageUploader = ({ value, onChange }: ImageUploaderProps) => {
 
   return (
     <div className="space-y-2">
-      <Label className="text-sm font-medium">Logo / Image</Label>
       <input
         ref={inputRef}
         type="file"
