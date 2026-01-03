@@ -62,12 +62,15 @@ const Dashboard = () => {
   const [cardSide, setCardSide] = useState<CardSide>('front');
   const [frontBgImage, setFrontBgImage] = useState<string | null>(null);
   const [backBgImage, setBackBgImage] = useState<string | null>(null);
+  const [deceasedPhoto, setDeceasedPhoto] = useState<string | null>(null);
+  const [uploadingPhoto, setUploadingPhoto] = useState(false);
   const [uploadingFront, setUploadingFront] = useState(false);
   const [uploadingBack, setUploadingBack] = useState(false);
   const [backText, setBackText] = useState('The Lord is my shepherd; I shall not want.');
 
   const frontInputRef = useRef<HTMLInputElement>(null);
   const backInputRef = useRef<HTMLInputElement>(null);
+  const photoInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
@@ -135,11 +138,11 @@ const Dashboard = () => {
     return baseTotal * shippingMultiplier;
   };
 
-  const handleImageUpload = async (file: File, side: 'front' | 'back') => {
+  const handleImageUpload = async (file: File, type: 'front' | 'back' | 'photo') => {
     if (!file) return;
     
-    const setUploading = side === 'front' ? setUploadingFront : setUploadingBack;
-    const setImage = side === 'front' ? setFrontBgImage : setBackBgImage;
+    const setUploading = type === 'front' ? setUploadingFront : type === 'back' ? setUploadingBack : setUploadingPhoto;
+    const setImage = type === 'front' ? setFrontBgImage : type === 'back' ? setBackBgImage : setDeceasedPhoto;
     
     setUploading(true);
     
@@ -148,7 +151,7 @@ const Dashboard = () => {
       if (!user) throw new Error('Not authenticated');
 
       const fileExt = file.name.split('.').pop();
-      const fileName = `${user.id}/${Date.now()}-${side}.${fileExt}`;
+      const fileName = `${user.id}/${Date.now()}-${type}.${fileExt}`;
 
       const { error: uploadError } = await supabase.storage
         .from('card-backgrounds')
@@ -161,7 +164,8 @@ const Dashboard = () => {
         .getPublicUrl(fileName);
 
       setImage(publicUrl);
-      toast.success(`${side === 'front' ? 'Front' : 'Back'} background uploaded!`);
+      const labels = { front: 'Front background', back: 'Back background', photo: 'Photo' };
+      toast.success(`${labels[type]} uploaded!`);
     } catch (error) {
       console.error('Upload error:', error);
       toast.error('Failed to upload image');
@@ -223,6 +227,7 @@ const Dashboard = () => {
     setCardSide('front');
     setFrontBgImage(null);
     setBackBgImage(null);
+    setDeceasedPhoto(null);
     setBackText('The Lord is my shepherd; I shall not want.');
   };
 
@@ -357,7 +362,7 @@ const Dashboard = () => {
                         <div className="flex flex-col items-center gap-4">
                           {/* Card Preview */}
                           <div 
-                            className={`${cardClass} rounded-2xl bg-gradient-to-br ${currentFinish.gradient} shadow-2xl p-5 relative overflow-hidden`}
+                            className={`${cardClass} rounded-2xl bg-gradient-to-br ${currentFinish.gradient} shadow-2xl p-4 relative overflow-hidden`}
                             style={frontBgImage ? { backgroundImage: `url(${frontBgImage})`, backgroundSize: 'cover', backgroundPosition: 'center' } : {}}
                           >
                             {!frontBgImage && (
@@ -367,29 +372,48 @@ const Dashboard = () => {
                               <div className="absolute inset-0 bg-black/30"></div>
                             )}
                             <div className="relative z-10 h-full flex flex-col justify-between">
-                              <div>
-                                <p className={`text-xs uppercase tracking-widest mb-1 ${frontBgImage || metalFinish === 'black' ? 'text-slate-200' : 'text-slate-700'}`}>
-                                  In Loving Memory
-                                </p>
-                                <p className={`text-lg font-serif ${frontBgImage || metalFinish === 'black' ? 'text-white' : 'text-slate-800'}`}>
-                                  {deceasedName || 'Name Here'}
-                                </p>
-                                <p className={`text-sm ${frontBgImage || metalFinish === 'black' ? 'text-slate-300' : 'text-slate-600'}`}>
-                                  {birthDate && deathDate ? `${birthDate} – ${deathDate}` : '1945 – 2025'}
-                                </p>
+                              {/* Top section with photo and info */}
+                              <div className={`flex ${orientation === 'portrait' ? 'flex-col items-center text-center' : 'items-start gap-3'}`}>
+                                {/* Deceased Photo */}
+                                <div className={`${orientation === 'portrait' ? 'w-20 h-24 mb-2' : 'w-16 h-20'} rounded-lg overflow-hidden bg-slate-600/50 flex-shrink-0 flex items-center justify-center border-2 border-white/30`}>
+                                  {deceasedPhoto ? (
+                                    <img src={deceasedPhoto} alt="Deceased" className="w-full h-full object-cover" />
+                                  ) : (
+                                    <ImageIcon className={`${orientation === 'portrait' ? 'h-8 w-8' : 'h-6 w-6'} text-slate-400`} />
+                                  )}
+                                </div>
+                                <div className={orientation === 'portrait' ? '' : 'flex-1'}>
+                                  <p className={`text-[10px] uppercase tracking-widest mb-0.5 ${frontBgImage || metalFinish === 'black' ? 'text-slate-200' : 'text-slate-700'}`}>
+                                    In Loving Memory
+                                  </p>
+                                  <p className={`${orientation === 'portrait' ? 'text-base' : 'text-sm'} font-serif leading-tight ${frontBgImage || metalFinish === 'black' ? 'text-white' : 'text-slate-800'}`}>
+                                    {deceasedName || 'Name Here'}
+                                  </p>
+                                  <p className={`text-xs ${frontBgImage || metalFinish === 'black' ? 'text-slate-300' : 'text-slate-600'}`}>
+                                    {birthDate && deathDate ? `${birthDate} – ${deathDate}` : '1945 – 2025'}
+                                  </p>
+                                </div>
                               </div>
+                              {/* Bottom section */}
                               <div className="flex items-end justify-between">
-                                <p className={`text-xs italic max-w-[55%] ${frontBgImage || metalFinish === 'black' ? 'text-slate-300' : 'text-slate-600'}`}>
+                                <p className={`text-[10px] italic max-w-[55%] leading-tight ${frontBgImage || metalFinish === 'black' ? 'text-slate-300' : 'text-slate-600'}`}>
                                   "{epitaph}"
                                 </p>
-                                <div className="w-14 h-14 bg-white rounded-lg flex items-center justify-center shadow-md">
-                                  <QrCode className="h-10 w-10 text-slate-800" />
+                                <div className="w-12 h-12 bg-white rounded-lg flex items-center justify-center shadow-md flex-shrink-0">
+                                  <QrCode className="h-8 w-8 text-slate-800" />
                                 </div>
                               </div>
                             </div>
                           </div>
 
-                          {/* Upload Front Background */}
+                          {/* Upload inputs */}
+                          <input
+                            ref={photoInputRef}
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                            onChange={(e) => e.target.files?.[0] && handleImageUpload(e.target.files[0], 'photo')}
+                          />
                           <input
                             ref={frontInputRef}
                             type="file"
@@ -397,7 +421,33 @@ const Dashboard = () => {
                             className="hidden"
                             onChange={(e) => e.target.files?.[0] && handleImageUpload(e.target.files[0], 'front')}
                           />
-                          <div className="flex gap-2">
+                          
+                          {/* Photo Upload */}
+                          <div className="flex gap-2 flex-wrap justify-center">
+                            <Button
+                              type="button"
+                              variant="outline"
+                              onClick={() => photoInputRef.current?.click()}
+                              disabled={uploadingPhoto}
+                              className="border-amber-600/50 text-amber-300 hover:bg-amber-600/20"
+                            >
+                              {uploadingPhoto ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <ImageIcon className="h-4 w-4 mr-2" />}
+                              {deceasedPhoto ? 'Change Photo' : 'Upload Photo'}
+                            </Button>
+                            {deceasedPhoto && (
+                              <Button
+                                type="button"
+                                variant="outline"
+                                onClick={() => setDeceasedPhoto(null)}
+                                className="border-slate-600 text-slate-300 hover:bg-slate-700"
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            )}
+                          </div>
+
+                          {/* Background Upload */}
+                          <div className="flex gap-2 flex-wrap justify-center">
                             <Button
                               type="button"
                               variant="outline"
