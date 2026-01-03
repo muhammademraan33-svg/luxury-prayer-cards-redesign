@@ -1,3 +1,13 @@
+export interface TextElementStyle {
+  fontFamily: string;
+  fontSize: number;
+  color: string;
+  x: number;
+  y: number;
+  scaleX: number;
+  scaleY: number;
+}
+
 export interface BusinessCardData {
   name: string;
   title: string;
@@ -6,6 +16,9 @@ export interface BusinessCardData {
   line2: string;
   line3: string;
   logo: string | null;
+  logoScale: number;
+  logoX: number;
+  logoY: number;
   backgroundColor: string;
   textColor: string;
   accentColor: string;
@@ -14,9 +27,26 @@ export interface BusinessCardData {
   frameStyle: 'none' | 'solid' | 'double' | 'gradient' | 'ornate';
   frameColor: string;
   category: CardCategory;
+  // Per-element styles
+  nameStyle: TextElementStyle;
+  titleStyle: TextElementStyle;
+  subtitleStyle: TextElementStyle;
+  line1Style: TextElementStyle;
+  line2Style: TextElementStyle;
+  line3Style: TextElementStyle;
 }
 
 export type CardCategory = 'wedding' | 'baby' | 'prayer' | 'memorial' | 'graduation' | 'anniversary';
+
+export const defaultTextStyle = (fontSize: number, color: string, y: number): TextElementStyle => ({
+  fontFamily: 'Playfair Display',
+  fontSize,
+  color,
+  x: 200,
+  y,
+  scaleX: 1,
+  scaleY: 1,
+});
 
 export const categoryDefaults: Record<CardCategory, Partial<BusinessCardData>> = {
   wedding: {
@@ -48,7 +78,7 @@ export const categoryDefaults: Record<CardCategory, Partial<BusinessCardData>> =
     title: 'Robert James Wilson',
     subtitle: '1945 - 2024',
     line1: '"Forever in our hearts"',
-    line2: 'Those we love don\'t go away,',
+    line2: "Those we love don't go away,",
     line3: 'they walk beside us every day.',
     backgroundColor: '#f5f5f5',
     textColor: '#333333',
@@ -61,7 +91,7 @@ export const categoryDefaults: Record<CardCategory, Partial<BusinessCardData>> =
     subtitle: '1938 - 2024',
     line1: 'A beautiful soul, forever remembered',
     line2: 'Service: March 20, 2025',
-    line3: 'St. Mary\'s Chapel',
+    line3: "St. Mary's Chapel",
     backgroundColor: '#faf8f5',
     textColor: '#3d3d3d',
     accentColor: '#8b7355',
@@ -93,21 +123,39 @@ export const categoryDefaults: Record<CardCategory, Partial<BusinessCardData>> =
   },
 };
 
+export const createDefaultStyles = (textColor: string, accentColor: string): Pick<BusinessCardData, 'nameStyle' | 'titleStyle' | 'subtitleStyle' | 'line1Style' | 'line2Style' | 'line3Style'> => ({
+  nameStyle: defaultTextStyle(12, accentColor, 80),
+  titleStyle: defaultTextStyle(22, textColor, 110),
+  subtitleStyle: defaultTextStyle(14, textColor, 140),
+  line1Style: defaultTextStyle(12, textColor, 175),
+  line2Style: defaultTextStyle(12, textColor, 195),
+  line3Style: defaultTextStyle(10, accentColor, 220),
+});
+
 export const defaultCardData: BusinessCardData = {
   ...categoryDefaults.wedding,
   logo: null,
+  logoScale: 1,
+  logoX: 200,
+  logoY: 45,
   borderRadius: 12,
   frameStyle: 'ornate',
   frameColor: '#b8860b',
   category: 'wedding',
+  ...createDefaultStyles('#2c2c2c', '#b8860b'),
 } as BusinessCardData;
 
 export const fontOptions = [
-  { name: 'Playfair Display', value: 'Playfair Display', className: 'font-display' },
-  { name: 'Cormorant Garamond', value: 'Cormorant Garamond', className: 'font-cormorant' },
-  { name: 'Montserrat', value: 'Montserrat', className: 'font-montserrat' },
-  { name: 'Great Vibes', value: 'Great Vibes', className: 'font-script' },
-  { name: 'Poppins', value: 'Poppins', className: 'font-poppins' },
+  { name: 'Playfair Display', value: 'Playfair Display', className: 'font-display', style: 'Elegant Serif' },
+  { name: 'Cormorant Garamond', value: 'Cormorant Garamond', className: 'font-cormorant', style: 'Classic Serif' },
+  { name: 'Montserrat', value: 'Montserrat', className: 'font-montserrat', style: 'Modern Sans' },
+  { name: 'Great Vibes', value: 'Great Vibes', className: 'font-script', style: 'Script/Cursive' },
+  { name: 'Poppins', value: 'Poppins', className: 'font-poppins', style: 'Clean Sans' },
+  { name: 'Dancing Script', value: 'Dancing Script', className: 'font-dancing', style: 'Flowing Script' },
+  { name: 'Tangerine', value: 'Tangerine', className: 'font-tangerine', style: 'Formal Script' },
+  { name: 'Alex Brush', value: 'Alex Brush', className: 'font-alexbrush', style: 'Brush Script' },
+  { name: 'Allura', value: 'Allura', className: 'font-allura', style: 'Wedding Script' },
+  { name: 'Sacramento', value: 'Sacramento', className: 'font-sacramento', style: 'Casual Script' },
 ];
 
 export const colorPresets = [
