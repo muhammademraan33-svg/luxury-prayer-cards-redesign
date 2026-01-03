@@ -4,15 +4,17 @@ import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import {
   Trash2,
   Lock,
   Unlock,
   Copy,
-  AlignLeft,
-  AlignCenter,
-  AlignRight,
-  Bold,
-  Italic,
 } from 'lucide-react';
 import { TextElement, fontOptions, colorPresets } from '@/types/businessCard';
 import { CardElement } from '@/types/cardElements';
@@ -104,23 +106,25 @@ export const PropertiesPanel = ({
             {/* Font */}
             <div className="space-y-2">
               <Label>Font</Label>
-              <div className="grid grid-cols-1 gap-1.5 max-h-36 overflow-y-auto">
-                {fontOptions.map((font) => (
-                  <button
-                    key={font.value}
-                    onClick={() => onTextStyleUpdate(selectedText.id, { fontFamily: font.value })}
-                    className={cn(
-                      'px-3 py-2 rounded-md border text-left transition-all text-sm',
-                      selectedText.style.fontFamily === font.value
-                        ? 'border-primary bg-primary/10'
-                        : 'border-border hover:border-primary/50'
-                    )}
-                    style={{ fontFamily: font.value }}
-                  >
-                    {font.name}
-                  </button>
-                ))}
-              </div>
+              <Select
+                value={selectedText.style.fontFamily}
+                onValueChange={(value) => onTextStyleUpdate(selectedText.id, { fontFamily: value })}
+              >
+                <SelectTrigger className="w-full" style={{ fontFamily: selectedText.style.fontFamily }}>
+                  <SelectValue placeholder="Select font" />
+                </SelectTrigger>
+                <SelectContent>
+                  {fontOptions.map((font) => (
+                    <SelectItem 
+                      key={font.value} 
+                      value={font.value}
+                      style={{ fontFamily: font.value }}
+                    >
+                      {font.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
 
             {/* Font Size */}
