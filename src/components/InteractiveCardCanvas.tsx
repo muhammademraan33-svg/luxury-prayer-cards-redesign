@@ -248,14 +248,12 @@ export const InteractiveCardCanvas = ({ data, onUpdate, onExport }: InteractiveC
 
   const updateToolbarPosition = (obj: FabricObject) => {
     if (!containerRef.current) return;
-    const rect = containerRef.current.getBoundingClientRect();
     const objCenter = obj.getCenterPoint();
-    const objTop = obj.top || 0;
-    const objHeight = (obj.height || 0) * (obj.scaleY || 1);
+    const objBottom = (obj.top || 0) + ((obj.height || 0) * (obj.scaleY || 1)) / 2;
     
     setToolbarPosition({
       x: objCenter.x,
-      y: Math.max(50, objTop - 10),
+      y: objBottom + 15, // Position below the text
     });
   };
 

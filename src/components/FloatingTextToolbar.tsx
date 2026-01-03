@@ -36,12 +36,14 @@ export const FloatingTextToolbar = ({
 
   return (
     <div
-      className="absolute z-50 bg-card border border-border rounded-lg shadow-xl p-1.5 flex items-center gap-1 animate-in fade-in-0 zoom-in-95"
+      className="absolute z-50 bg-card/95 backdrop-blur-sm border border-border rounded-xl shadow-2xl p-1.5 flex items-center gap-1 animate-in fade-in-0 zoom-in-95"
       style={{
         left: position.x,
         top: position.y,
         transform: 'translateX(-50%)',
+        pointerEvents: 'auto',
       }}
+      onClick={(e) => e.stopPropagation()}
     >
       {/* Font Selector */}
       <Popover>
