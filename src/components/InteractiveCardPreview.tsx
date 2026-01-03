@@ -20,7 +20,14 @@ export const InteractiveCardPreview = ({
   
   const [editingId, setEditingId] = useState<string | null>(null);
   const [draggingId, setDraggingId] = useState<string | null>(null);
-  const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
+
+  // Pointer/touch handling (mobile-friendly)
+  const [activeTextId, setActiveTextId] = useState<string | null>(null);
+  const [activePointerId, setActivePointerId] = useState<number | null>(null);
+  const [pointerStart, setPointerStart] = useState<{ x: number; y: number } | null>(null);
+  const [textStart, setTextStart] = useState<{ x: number; y: number } | null>(null);
+  const [hasMoved, setHasMoved] = useState(false);
+
   const cardRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -40,17 +47,17 @@ export const InteractiveCardPreview = ({
       };
     }
 
-    const texture = backgroundTextures.find(t => t.value === sideData.background.texture);
+    const texture = backgroundTextures.find((t) => t.value === sideData.background.texture);
     if (texture) {
       const base: React.CSSProperties = { background: texture.preview };
-      
+
       if (sideData.background.texture.startsWith('brushed')) {
         return {
           ...base,
           backgroundImage: `${texture.preview}, repeating-linear-gradient(90deg, transparent, transparent 1px, rgba(255,255,255,0.03) 1px, rgba(255,255,255,0.03) 2px)`,
         };
       }
-      
+
       return base;
     }
 
@@ -59,7 +66,7 @@ export const InteractiveCardPreview = ({
 
   const getFrameStyle = (): React.CSSProperties => {
     const color = sideData.frameColor;
-    
+
     switch (sideData.frameStyle) {
       case 'solid':
         return { border: `3px solid ${color}` };
@@ -99,7 +106,7 @@ export const InteractiveCardPreview = ({
   const renderCornerFrame = () => {
     if (sideData.frameStyle !== 'corner') return null;
     const color = sideData.frameColor;
-    
+
     return (
       <>
         <div className="absolute top-3 left-3 w-6 h-0.5" style={{ backgroundColor: color }} />
@@ -114,18 +121,19 @@ export const InteractiveCardPreview = ({
     );
   };
 
-  const handleTextClick = (e: React.MouseEvent, textId: string) => {
-    if (!editable) return;
-    e.stopPropagation();
-    setEditingId(textId);
-  };
-
   const handleTextChange = (textId: string, newContent: string) => {
     if (!onTextUpdate) return;
-    const updatedTexts = sideData.texts.map(t => 
-      t.id === textId ? { ...t, content: newContent } : t
-    );
+    const updatedTexts = sideData.texts.map((t) => (t.id === textId ? { ...t, content: newContent } : t));
     onTextUpdate(updatedTexts);
+  };
+
+  const stopPointerInteraction = () => {
+    setActivePointerId(null);
+    setActiveTextId(null);
+    setPointerStart(null);
+    setTextStart(null);
+    setHasMoved(false);
+    setDraggingId(null);
   };
 
   const handleInputBlur = () => {
@@ -136,42 +144,6 @@ export const InteractiveCardPreview = ({
     if (e.key === 'Enter' || e.key === 'Escape') {
       setEditingId(null);
     }
-  };
-
-  const handleMouseDown = (e: React.MouseEvent, textId: string) => {
-    if (!editable || editingId === textId) return;
-    e.preventDefault();
-    
-    const cardRect = cardRef.current?.getBoundingClientRect();
-    if (!cardRect) return;
-    
-    const text = sideData.texts.find(t => t.id === textId);
-    if (!text) return;
-    
-    setDraggingId(textId);
-    setDragOffset({
-      x: e.clientX - cardRect.left - (text.style.x || width / 2),
-      y: e.clientY - cardRect.top - (text.style.y || height / 2)
-    });
-  };
-
-  const handleMouseMove = (e: React.MouseEvent) => {
-    if (!draggingId || !cardRef.current || !onTextUpdate) return;
-    
-    const cardRect = cardRef.current.getBoundingClientRect();
-    const x = Math.max(20, Math.min(width - 20, e.clientX - cardRect.left - dragOffset.x));
-    const y = Math.max(20, Math.min(height - 20, e.clientY - cardRect.top - dragOffset.y));
-    
-    const updatedTexts = sideData.texts.map(t => 
-      t.id === draggingId 
-        ? { ...t, style: { ...t.style, x, y } } 
-        : t
-    );
-    onTextUpdate(updatedTexts);
-  };
-
-  const handleMouseUp = () => {
-    setDraggingId(null);
   };
 
   // Calculate text positions - stack vertically in center by default
@@ -186,10 +158,68 @@ export const InteractiveCardPreview = ({
     return { x: width / 2, y: startY + index * spacing };
   };
 
+  const handleTextPointerDown = (e: React.PointerEvent, textId: string, index: number) => {
+    if (!editable) return;
+    // If an input is open, tapping elsewhere should close it.
+    if (editingId && editingId !== textId) setEditingId(null);
+
+    const pos = getTextPosition(sideData.texts.find((t) => t.id === textId)!, index);
+
+    setActiveTextId(textId);
+    setActivePointerId(e.pointerId);
+    setPointerStart({ x: e.clientX, y: e.clientY });
+    setTextStart({ x: pos.x, y: pos.y });
+    setHasMoved(false);
+
+    // Keep receiving events even if pointer leaves the element while dragging.
+    (e.currentTarget as HTMLElement).setPointerCapture?.(e.pointerId);
+  };
+
+  const handleCardPointerMove = (e: React.PointerEvent) => {
+    if (!activeTextId || !onTextUpdate) return;
+    if (activePointerId !== null && e.pointerId !== activePointerId) return;
+    if (!pointerStart || !textStart) return;
+
+    const dx = e.clientX - pointerStart.x;
+    const dy = e.clientY - pointerStart.y;
+    const threshold = 3;
+
+    const moved = Math.abs(dx) + Math.abs(dy) > threshold;
+    if (!hasMoved && moved) {
+      setHasMoved(true);
+      setDraggingId(activeTextId);
+    }
+
+    if (!moved) return;
+
+    const x = Math.max(20, Math.min(width - 20, textStart.x + dx));
+    const y = Math.max(20, Math.min(height - 20, textStart.y + dy));
+
+    const updatedTexts = sideData.texts.map((t) =>
+      t.id === activeTextId ? { ...t, style: { ...t.style, x, y } } : t
+    );
+    onTextUpdate(updatedTexts);
+  };
+
+  const handleCardPointerUp = (e: React.PointerEvent) => {
+    if (!activeTextId) return;
+    if (activePointerId !== null && e.pointerId !== activePointerId) return;
+
+    const didMove = hasMoved;
+    const tappedTextId = activeTextId;
+
+    stopPointerInteraction();
+
+    // Tap (no drag) => enter edit mode (mobile-friendly)
+    if (editable && !didMove) {
+      setEditingId(tappedTextId);
+    }
+  };
+
   return (
     <div
       ref={cardRef}
-      className="metal-card relative overflow-hidden rounded-sm select-none"
+      className={`metal-card relative overflow-hidden rounded-sm ${editingId ? '' : 'select-none'}`}
       style={{
         width,
         height,
@@ -197,22 +227,25 @@ export const InteractiveCardPreview = ({
         ...getFrameStyle(),
         cursor: draggingId ? 'grabbing' : 'default',
       }}
-      onMouseMove={handleMouseMove}
-      onMouseUp={handleMouseUp}
-      onMouseLeave={handleMouseUp}
+      onPointerMove={handleCardPointerMove}
+      onPointerUp={handleCardPointerUp}
+      onPointerCancel={stopPointerInteraction}
+      onPointerLeave={stopPointerInteraction}
     >
       {renderCornerFrame()}
-      
+
       {/* Text Content - Positioned absolutely */}
       {sideData.texts.map((textEl, index) => {
         const isEditing = editingId === textEl.id;
         const isDragging = draggingId === textEl.id;
         const pos = getTextPosition(textEl, index);
-        
+
         return (
           <div
             key={textEl.id}
-            className={`absolute transition-shadow ${editable && !isEditing ? 'cursor-grab hover:ring-2 hover:ring-primary/50 rounded' : ''} ${isDragging ? 'cursor-grabbing ring-2 ring-primary' : ''}`}
+            className={`absolute transition-shadow ${
+              editable && !isEditing ? 'cursor-grab hover:ring-2 hover:ring-primary/50 rounded' : ''
+            } ${isDragging ? 'cursor-grabbing ring-2 ring-primary' : ''}`}
             style={{
               left: pos.x,
               top: pos.y,
@@ -221,9 +254,9 @@ export const InteractiveCardPreview = ({
               fontSize: textEl.style.fontSize,
               color: textEl.style.color,
               whiteSpace: 'nowrap',
+              touchAction: editable && !isEditing ? 'none' : 'auto',
             }}
-            onClick={(e) => handleTextClick(e, textEl.id)}
-            onMouseDown={(e) => handleMouseDown(e, textEl.id)}
+            onPointerDown={(e) => handleTextPointerDown(e, textEl.id, index)}
           >
             {isEditing ? (
               <Input
@@ -232,16 +265,15 @@ export const InteractiveCardPreview = ({
                 onChange={(e) => handleTextChange(textEl.id, e.target.value)}
                 onBlur={handleInputBlur}
                 onKeyDown={handleInputKeyDown}
-                className="bg-white/90 text-black min-w-[100px] text-center p-1 h-auto"
+                onPointerDown={(e) => e.stopPropagation()}
+                className="bg-background/90 text-foreground min-w-[100px] text-center p-1 h-auto"
                 style={{
                   fontFamily: textEl.style.fontFamily,
                   fontSize: textEl.style.fontSize,
                 }}
               />
             ) : (
-              <span className={editable ? 'pointer-events-none' : ''}>
-                {textEl.content || 'Click to edit'}
-              </span>
+              <span>{textEl.content || 'Tap to edit'}</span>
             )}
           </div>
         );
@@ -262,21 +294,23 @@ export const InteractiveCardPreview = ({
             maxHeight: '40%',
             objectFit: 'contain',
           }}
+          loading="lazy"
         />
       )}
 
       {/* Subtle metallic shine effect */}
-      <div 
+      <div
         className="absolute inset-0 pointer-events-none"
         style={{
-          background: 'linear-gradient(135deg, rgba(255,255,255,0.1) 0%, transparent 50%, rgba(0,0,0,0.05) 100%)',
+          background:
+            'linear-gradient(135deg, rgba(255,255,255,0.1) 0%, transparent 50%, rgba(0,0,0,0.05) 100%)',
         }}
       />
-      
+
       {/* Edit hint */}
       {editable && !editingId && !draggingId && (
         <div className="absolute bottom-2 left-1/2 -translate-x-1/2 text-[10px] text-muted-foreground/70 bg-background/80 px-2 py-0.5 rounded">
-          Click text to edit • Drag to move
+          Tap text to edit • Drag to move
         </div>
       )}
     </div>

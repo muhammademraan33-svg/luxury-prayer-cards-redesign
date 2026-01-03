@@ -265,17 +265,17 @@ export const CardDesigner = ({ cardData, onUpdate, onBack }: CardDesignerProps) 
             </div>
           ) : (
             <div className="space-y-4">
-              {currentStep.endsWith('text') ? (
+              {currentStep === 'review' ? (
+                <CardPreview
+                  sideData={sideData}
+                  orientation={cardData.orientation}
+                />
+              ) : (
                 <InteractiveCardPreview
                   sideData={sideData}
                   orientation={cardData.orientation}
                   onTextUpdate={handleTextUpdate}
                   editable={true}
-                />
-              ) : (
-                <CardPreview
-                  sideData={sideData}
-                  orientation={cardData.orientation}
                 />
               )}
               <p className="text-center text-xs text-muted-foreground">
