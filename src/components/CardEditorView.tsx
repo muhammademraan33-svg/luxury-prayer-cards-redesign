@@ -22,7 +22,7 @@ export const CardEditorView = ({ template, onBack }: CardEditorViewProps) => {
     fontFamily: template.fontFamily,
     frameStyle: template.frameStyle,
     frameColor: template.frameColor,
-    logo: null,
+    logo: template.backgroundImage, // Use the template's background image
     logoScale: 1,
     logoX: 200,
     logoY: 130,
