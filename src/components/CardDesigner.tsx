@@ -62,6 +62,10 @@ export const CardDesigner = ({ cardData, onUpdate, onBack }: CardDesignerProps) 
     });
   }, [cardData, onUpdate]);
 
+  const handleOrientationChange = (orientation: 'landscape' | 'portrait') => {
+    onUpdate({ ...cardData, orientation });
+  };
+
   const handleBackgroundChange = (background: BackgroundStyle) => {
     updateSide(currentSide, { background });
   };
@@ -105,6 +109,8 @@ export const CardDesigner = ({ cardData, onUpdate, onBack }: CardDesignerProps) 
           <BackgroundSelector
             value={sideData.background}
             onChange={handleBackgroundChange}
+            orientation={cardData.orientation}
+            onOrientationChange={handleOrientationChange}
           />
         );
       case 'front-frame':
@@ -113,6 +119,7 @@ export const CardDesigner = ({ cardData, onUpdate, onBack }: CardDesignerProps) 
           <FrameStyleSelector
             frameStyle={sideData.frameStyle}
             frameColor={sideData.frameColor}
+            background={sideData.background}
             onFrameStyleChange={handleFrameStyleChange}
             onFrameColorChange={handleFrameColorChange}
             suggestedColors={info.suggestedFrameColors}
