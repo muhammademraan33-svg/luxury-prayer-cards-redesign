@@ -31,6 +31,7 @@ interface PropertiesPanelProps {
   onElementUpdate: (id: string, updates: Partial<CardElement>) => void;
   onElementDelete: (id: string) => void;
   onDuplicate: () => void;
+  isMobile?: boolean;
 }
 
 export const PropertiesPanel = ({
@@ -44,16 +45,28 @@ export const PropertiesPanel = ({
   onElementUpdate,
   onElementDelete,
   onDuplicate,
+  isMobile = false,
 }: PropertiesPanelProps) => {
   const selectedText = selectedType === 'text' ? texts.find((t) => t.id === selectedId) : null;
   const selectedElement = selectedType === 'element' ? elements.find((e) => e.id === selectedId) : null;
 
-  if (!selectedId) {
+  if (!selectedId && !isMobile) {
     return (
       <div className="w-72 border-l border-border bg-card p-6 flex flex-col items-center justify-center text-center shrink-0">
         <div className="text-muted-foreground">
           <p className="font-medium mb-1">No selection</p>
           <p className="text-sm">Click on an element or text to edit its properties</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!selectedId && isMobile) {
+    return (
+      <div className="p-6 flex flex-col items-center justify-center text-center h-full">
+        <div className="text-muted-foreground">
+          <p className="font-medium mb-1">No selection</p>
+          <p className="text-sm">Tap on an element or text to edit</p>
         </div>
       </div>
     );
@@ -65,18 +78,19 @@ export const PropertiesPanel = ({
     '#000080', '#006400', '#4b0082', '#ff69b4',
   ];
 
-  return (
-    <div className="w-72 border-l border-border bg-card flex flex-col shrink-0">
+  const panelContent = (
+    <>
       <div className="p-4 border-b border-border flex items-center justify-between">
-        <h2 className="font-semibold">Properties</h2>
-        <div className="flex gap-1">
-          <Button variant="ghost" size="icon" className="h-8 w-8" onClick={onDuplicate}>
+        <h2 className="font-semibold text-lg">Edit {selectedType === 'text' ? 'Text' : 'Element'}</h2>
+        <div className="flex gap-2">
+          <Button variant="outline" size="sm" className="gap-1" onClick={onDuplicate}>
             <Copy className="w-4 h-4" />
+            Copy
           </Button>
           <Button
-            variant="ghost"
-            size="icon"
-            className="h-8 w-8 text-destructive hover:text-destructive"
+            variant="destructive"
+            size="sm"
+            className="gap-1"
             onClick={() => {
               if (selectedType === 'text' && selectedId) {
                 onTextDelete(selectedId);
@@ -86,6 +100,7 @@ export const PropertiesPanel = ({
             }}
           >
             <Trash2 className="w-4 h-4" />
+            Delete
           </Button>
         </div>
       </div>
@@ -273,6 +288,16 @@ export const PropertiesPanel = ({
           </div>
         )}
       </ScrollArea>
+    </>
+  );
+
+  if (isMobile) {
+    return <div className="flex flex-col h-full bg-card">{panelContent}</div>;
+  }
+
+  return (
+    <div className="w-72 border-l border-border bg-card flex flex-col shrink-0">
+      {panelContent}
     </div>
   );
 };

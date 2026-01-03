@@ -13,18 +13,23 @@ import { EditorSidebar } from './EditorSidebar';
 import { EditorCanvas } from './EditorCanvas';
 import { PropertiesPanel } from './PropertiesPanel';
 import { toast } from 'sonner';
+import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { Button } from '@/components/ui/button';
+import { Shapes, Type, Sliders } from 'lucide-react';
 
-interface CanvasEditorProps {
+interface CardEditorProps {
   cardData: BusinessCardData;
   onUpdate: (data: BusinessCardData) => void;
   onBack: () => void;
 }
 
-export const CanvasEditor = ({ cardData, onUpdate, onBack }: CanvasEditorProps) => {
+export const CardEditor = ({ cardData, onUpdate, onBack }: CardEditorProps) => {
   const [activeSide, setActiveSide] = useState<'front' | 'back'>('front');
   const [zoom, setZoom] = useState(1);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [selectedType, setSelectedType] = useState<'text' | 'element' | null>(null);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [propertiesOpen, setPropertiesOpen] = useState(false);
 
   const info = categoryInfo[cardData.category];
   const sideData = cardData[activeSide];
@@ -71,6 +76,7 @@ export const CanvasEditor = ({ cardData, onUpdate, onBack }: CanvasEditorProps) 
     updateSide(activeSide, { texts: [...sideData.texts, newText] });
     setSelectedId(newText.id);
     setSelectedType('text');
+    setSidebarOpen(false);
   };
 
   const handleTextDelete = (id: string) => {
@@ -93,6 +99,7 @@ export const CanvasEditor = ({ cardData, onUpdate, onBack }: CanvasEditorProps) 
     updateSide(activeSide, { elements: [...currentElements, element] });
     setSelectedId(element.id);
     setSelectedType('element');
+    setSidebarOpen(false);
   };
 
   const handleElementUpdate = (id: string, updates: Partial<CardElement>) => {
@@ -123,6 +130,9 @@ export const CanvasEditor = ({ cardData, onUpdate, onBack }: CanvasEditorProps) 
   const handleSelect = (id: string | null, type: 'text' | 'element' | null) => {
     setSelectedId(id);
     setSelectedType(type);
+    if (id) {
+      setPropertiesOpen(true);
+    }
   };
 
   const handleDuplicate = () => {
@@ -171,7 +181,8 @@ export const CanvasEditor = ({ cardData, onUpdate, onBack }: CanvasEditorProps) 
         onBack={onBack}
       />
 
-      <div className="flex-1 flex overflow-hidden">
+      {/* Desktop Layout */}
+      <div className="flex-1 hidden md:flex overflow-hidden">
         <EditorSidebar
           category={cardData.category}
           background={sideData.background}
@@ -206,6 +217,74 @@ export const CanvasEditor = ({ cardData, onUpdate, onBack }: CanvasEditorProps) 
           onElementDelete={handleElementDelete}
           onDuplicate={handleDuplicate}
         />
+      </div>
+
+      {/* Mobile Layout */}
+      <div className="flex-1 flex flex-col md:hidden overflow-hidden">
+        <EditorCanvas
+          sideData={sideData}
+          orientation={cardData.orientation}
+          zoom={zoom}
+          onTextUpdate={handleTextUpdate}
+          onElementsUpdate={handleElementsUpdate}
+          selectedId={selectedId}
+          onSelect={handleSelect}
+        />
+
+        {/* Mobile Bottom Toolbar */}
+        <div className="border-t border-border bg-card p-3 flex justify-center gap-4">
+          <Sheet open={sidebarOpen} onOpenChange={setSidebarOpen}>
+            <SheetTrigger asChild>
+              <Button size="lg" variant="outline" className="flex-1 max-w-32 gap-2">
+                <Shapes className="w-5 h-5" />
+                Add
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="bottom" className="h-[70vh] p-0">
+              <EditorSidebar
+                category={cardData.category}
+                background={sideData.background}
+                texts={sideData.texts}
+                onAddElement={handleAddElement}
+                onAddText={handleAddText}
+                onBackgroundChange={handleBackgroundChange}
+                onImageUpload={handleImageUpload}
+                cardWidth={cardWidth}
+                cardHeight={cardHeight}
+                isMobile
+              />
+            </SheetContent>
+          </Sheet>
+
+          <Sheet open={propertiesOpen} onOpenChange={setPropertiesOpen}>
+            <SheetTrigger asChild>
+              <Button 
+                size="lg" 
+                variant={selectedId ? "default" : "outline"} 
+                className="flex-1 max-w-32 gap-2"
+                disabled={!selectedId}
+              >
+                <Sliders className="w-5 h-5" />
+                Edit
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="bottom" className="h-[60vh] p-0">
+              <PropertiesPanel
+                selectedId={selectedId}
+                selectedType={selectedType}
+                texts={sideData.texts}
+                elements={sideData.elements || []}
+                onTextUpdate={handleSingleTextUpdate}
+                onTextStyleUpdate={handleTextStyleUpdate}
+                onTextDelete={handleTextDelete}
+                onElementUpdate={handleElementUpdate}
+                onElementDelete={handleElementDelete}
+                onDuplicate={handleDuplicate}
+                isMobile
+              />
+            </SheetContent>
+          </Sheet>
+        </div>
       </div>
     </div>
   );

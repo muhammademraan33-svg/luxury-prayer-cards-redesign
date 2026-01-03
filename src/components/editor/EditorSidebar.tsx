@@ -80,6 +80,7 @@ interface EditorSidebarProps {
   onImageUpload: (src: string) => void;
   cardWidth: number;
   cardHeight: number;
+  isMobile?: boolean;
 }
 
 export const EditorSidebar = ({
@@ -92,6 +93,7 @@ export const EditorSidebar = ({
   onImageUpload,
   cardWidth,
   cardHeight,
+  isMobile = false,
 }: EditorSidebarProps) => {
   const [activeTab, setActiveTab] = useState<SidebarTab>('elements');
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -357,6 +359,35 @@ export const EditorSidebar = ({
         return null;
     }
   };
+
+  if (isMobile) {
+    return (
+      <div className="flex flex-col h-full bg-card">
+        {/* Mobile horizontal tabs */}
+        <div className="flex border-b border-border overflow-x-auto">
+          {tabs.map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={cn(
+                'flex-1 min-w-[70px] py-4 px-2 flex flex-col items-center justify-center gap-1 transition-all',
+                activeTab === tab.id
+                  ? 'bg-primary/10 text-primary border-b-2 border-primary'
+                  : 'text-muted-foreground'
+              )}
+            >
+              {tab.icon}
+              <span className="text-xs font-medium">{tab.label}</span>
+            </button>
+          ))}
+        </div>
+        {/* Tab content */}
+        <ScrollArea className="flex-1 p-4">
+          {renderTabContent()}
+        </ScrollArea>
+      </div>
+    );
+  }
 
   return (
     <div className="w-80 border-r border-border bg-card flex shrink-0">
