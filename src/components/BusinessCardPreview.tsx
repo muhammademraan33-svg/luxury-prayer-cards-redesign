@@ -1,6 +1,5 @@
 import { forwardRef } from 'react';
 import { BusinessCardData } from '@/types/businessCard';
-import { Mail, Phone, Globe } from 'lucide-react';
 
 interface BusinessCardPreviewProps {
   data: BusinessCardData;
@@ -12,7 +11,7 @@ export const BusinessCardPreview = forwardRef<HTMLDivElement, BusinessCardPrevie
       switch (data.frameStyle) {
         case 'solid':
           return {
-            border: `3px solid ${data.frameColor}`,
+            border: `2px solid ${data.frameColor}`,
           };
         case 'double':
           return {
@@ -25,19 +24,22 @@ export const BusinessCardPreview = forwardRef<HTMLDivElement, BusinessCardPrevie
             backgroundOrigin: 'border-box',
             backgroundClip: 'padding-box, border-box',
           };
-        case 'shadow':
+        case 'ornate':
           return {
-            boxShadow: `0 0 0 3px ${data.frameColor}, 0 8px 32px -8px rgba(0,0,0,0.3)`,
+            border: `2px solid ${data.frameColor}`,
+            boxShadow: `inset 0 0 0 4px ${data.backgroundColor}, inset 0 0 0 5px ${data.frameColor}`,
           };
         default:
           return {};
       }
     };
 
+    const isOrnate = data.frameStyle === 'ornate';
+
     return (
       <div
         ref={ref}
-        className="business-card w-[400px] h-[240px] p-6 relative overflow-hidden"
+        className={`metal-card w-[400px] h-[260px] p-8 relative overflow-hidden flex flex-col justify-center items-center text-center ${isOrnate ? 'ornate-frame' : ''}`}
         style={{
           backgroundColor: data.backgroundColor,
           borderRadius: `${data.borderRadius}px`,
@@ -45,102 +47,75 @@ export const BusinessCardPreview = forwardRef<HTMLDivElement, BusinessCardPrevie
           ...getFrameStyles(),
         }}
       >
-        <div className="flex h-full">
-          {/* Left side - Logo */}
-          <div className="flex-shrink-0 w-20 flex items-start justify-center pt-2">
-            {data.logo ? (
-              <img
-                src={data.logo}
-                alt="Logo"
-                className="w-16 h-16 object-contain rounded-lg"
-              />
-            ) : (
-              <div
-                className="w-16 h-16 rounded-lg flex items-center justify-center text-xl font-bold"
-                style={{
-                  backgroundColor: data.accentColor,
-                  color: data.backgroundColor,
-                }}
-              >
-                {data.company.charAt(0)}
-              </div>
-            )}
-          </div>
+        {/* Logo/Image */}
+        {data.logo && (
+          <img
+            src={data.logo}
+            alt="Card image"
+            className="w-16 h-16 object-contain rounded-lg mb-3"
+          />
+        )}
 
-          {/* Right side - Content */}
-          <div className="flex-1 flex flex-col justify-between pl-4">
-            <div>
-              <h2
-                className="text-2xl font-bold leading-tight"
-                style={{ color: data.textColor }}
-              >
-                {data.name}
-              </h2>
-              <p
-                className="text-sm font-medium mt-1"
-                style={{ color: data.accentColor }}
-              >
-                {data.title}
-              </p>
-              <p
-                className="text-sm mt-0.5 opacity-80"
-                style={{ color: data.textColor }}
-              >
-                {data.company}
-              </p>
-            </div>
-
-            <div className="space-y-1.5">
-              {data.email && (
-                <div className="flex items-center gap-2">
-                  <Mail
-                    className="w-3.5 h-3.5"
-                    style={{ color: data.accentColor }}
-                  />
-                  <span
-                    className="text-xs"
-                    style={{ color: data.textColor }}
-                  >
-                    {data.email}
-                  </span>
-                </div>
-              )}
-              {data.phone && (
-                <div className="flex items-center gap-2">
-                  <Phone
-                    className="w-3.5 h-3.5"
-                    style={{ color: data.accentColor }}
-                  />
-                  <span
-                    className="text-xs"
-                    style={{ color: data.textColor }}
-                  >
-                    {data.phone}
-                  </span>
-                </div>
-              )}
-              {data.website && (
-                <div className="flex items-center gap-2">
-                  <Globe
-                    className="w-3.5 h-3.5"
-                    style={{ color: data.accentColor }}
-                  />
-                  <span
-                    className="text-xs"
-                    style={{ color: data.textColor }}
-                  >
-                    {data.website}
-                  </span>
-                </div>
-              )}
-            </div>
-          </div>
+        {/* Main Content */}
+        <div className="space-y-2">
+          <p
+            className="text-sm uppercase tracking-[0.2em] font-medium"
+            style={{ color: data.accentColor }}
+          >
+            {data.name}
+          </p>
+          
+          <h2
+            className="text-2xl font-semibold leading-tight"
+            style={{ color: data.textColor }}
+          >
+            {data.title}
+          </h2>
+          
+          {data.subtitle && (
+            <p
+              className="text-base italic"
+              style={{ color: data.textColor, opacity: 0.85 }}
+            >
+              {data.subtitle}
+            </p>
+          )}
         </div>
 
-        {/* Decorative accent */}
+        {/* Details */}
+        <div className="mt-4 space-y-1">
+          {data.line1 && (
+            <p
+              className="text-sm"
+              style={{ color: data.textColor, opacity: 0.9 }}
+            >
+              {data.line1}
+            </p>
+          )}
+          {data.line2 && (
+            <p
+              className="text-sm"
+              style={{ color: data.textColor, opacity: 0.75 }}
+            >
+              {data.line2}
+            </p>
+          )}
+          {data.line3 && (
+            <p
+              className="text-xs mt-2"
+              style={{ color: data.accentColor }}
+            >
+              {data.line3}
+            </p>
+          )}
+        </div>
+
+        {/* Subtle decorative element */}
         <div
-          className="absolute bottom-0 right-0 w-32 h-32 opacity-10 rounded-tl-full"
-          style={{ backgroundColor: data.accentColor }}
+          className="absolute top-0 left-0 w-full h-full pointer-events-none opacity-[0.03]"
+          style={{
+            background: `radial-gradient(circle at 30% 20%, ${data.accentColor} 0%, transparent 50%)`,
+          }}
         />
       </div>
     );
