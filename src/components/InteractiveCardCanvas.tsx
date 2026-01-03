@@ -1,6 +1,6 @@
 import { useEffect, useRef, useCallback, useState } from 'react';
-import { Canvas as FabricCanvas, FabricText, FabricImage, Rect, Line, IText, FabricObject } from 'fabric';
-import { BusinessCardData, TextElementStyle } from '@/types/businessCard';
+import { Canvas as FabricCanvas, FabricImage, Rect, Line, IText } from 'fabric';
+import { CardSideData, TextElementStyle } from '@/types/businessCard';
 import { TextToolbar } from './TextToolbar';
 
 declare module 'fabric' {
@@ -16,12 +16,13 @@ interface TextStyleState {
 }
 
 interface InteractiveCardCanvasProps {
-  data: BusinessCardData;
-  onUpdate: (updates: Partial<BusinessCardData>) => void;
+  sideData: CardSideData;
+  orientation: 'landscape' | 'portrait';
+  onUpdate: (updates: Partial<CardSideData>) => void;
   onExport: (canvas: HTMLCanvasElement) => void;
 }
 
-export const InteractiveCardCanvas = ({ data, onUpdate, onExport }: InteractiveCardCanvasProps) => {
+export const InteractiveCardCanvas = ({ sideData, orientation, onUpdate, onExport }: InteractiveCardCanvasProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const fabricRef = useRef<FabricCanvas | null>(null);
@@ -30,11 +31,11 @@ export const InteractiveCardCanvas = ({ data, onUpdate, onExport }: InteractiveC
   const [selectedElement, setSelectedElement] = useState<string | null>(null);
   const [textStyles, setTextStyles] = useState<Record<string, TextStyleState>>({});
 
-  const CANVAS_WIDTH = data.orientation === 'landscape' ? 400 : 260;
-  const CANVAS_HEIGHT = data.orientation === 'landscape' ? 260 : 400;
+  const CANVAS_WIDTH = orientation === 'landscape' ? 400 : 260;
+  const CANVAS_HEIGHT = orientation === 'landscape' ? 260 : 400;
 
-  const getStyleKey = (elementName: string): keyof BusinessCardData | null => {
-    const styleMap: Record<string, keyof BusinessCardData> = {
+  const getStyleKey = (elementName: string): keyof CardSideData | null => {
+    const styleMap: Record<string, keyof CardSideData> = {
       name: 'nameStyle',
       title: 'titleStyle',
       subtitle: 'subtitleStyle',
@@ -45,8 +46,8 @@ export const InteractiveCardCanvas = ({ data, onUpdate, onExport }: InteractiveC
     return styleMap[elementName] || null;
   };
 
-  const getTextKey = (elementName: string): keyof BusinessCardData | null => {
-    const textMap: Record<string, keyof BusinessCardData> = {
+  const getTextKey = (elementName: string): keyof CardSideData | null => {
+    const textMap: Record<string, keyof CardSideData> = {
       name: 'name',
       title: 'title',
       subtitle: 'subtitle',
@@ -64,11 +65,11 @@ export const InteractiveCardCanvas = ({ data, onUpdate, onExport }: InteractiveC
     );
     existingFrame.forEach(obj => canvas.remove(obj));
 
-    const frameColor = data.frameColor;
+    const frameColor = sideData.frameColor;
     const width = CANVAS_WIDTH;
     const height = CANVAS_HEIGHT;
 
-    switch (data.frameStyle) {
+    switch (sideData.frameStyle) {
       case 'solid':
         canvas.add(new Rect({
           left: 1, top: 1, width: width - 2, height: height - 2,
@@ -172,7 +173,7 @@ export const InteractiveCardCanvas = ({ data, onUpdate, onExport }: InteractiveC
       obj.name === 'frame' || obj.name === 'innerFrame' || 
       obj.name?.startsWith('corner') || obj.name === 'shadowFrame'
     ).forEach(obj => canvas.sendObjectToBack(obj));
-  }, [data.frameStyle, data.frameColor, CANVAS_WIDTH, CANVAS_HEIGHT]);
+  }, [sideData.frameStyle, sideData.frameColor, CANVAS_WIDTH, CANVAS_HEIGHT]);
 
   // Initialize canvas
   useEffect(() => {
@@ -187,7 +188,7 @@ export const InteractiveCardCanvas = ({ data, onUpdate, onExport }: InteractiveC
     const canvas = new FabricCanvas(canvasRef.current, {
       width: CANVAS_WIDTH,
       height: CANVAS_HEIGHT,
-      backgroundColor: data.backgroundColor,
+      backgroundColor: sideData.backgroundColor,
       selection: true,
     });
 
@@ -241,20 +242,20 @@ export const InteractiveCardCanvas = ({ data, onUpdate, onExport }: InteractiveC
       canvas.remove(existingBg);
     }
 
-    if (data.logo) {
-      FabricImage.fromURL(data.logo, { crossOrigin: 'anonymous' }).then((img) => {
+    if (sideData.logo) {
+      FabricImage.fromURL(sideData.logo, { crossOrigin: 'anonymous' }).then((img) => {
         const scaleX = CANVAS_WIDTH / (img.width || 1);
         const scaleY = CANVAS_HEIGHT / (img.height || 1);
-        const scale = Math.max(scaleX, scaleY) * data.logoScale;
+        const scale = Math.max(scaleX, scaleY) * sideData.logoScale;
         
         img.set({
-          left: CANVAS_WIDTH / 2 + (data.logoX - 200),
-          top: CANVAS_HEIGHT / 2 + (data.logoY - 130),
+          left: CANVAS_WIDTH / 2 + (sideData.logoX - 200),
+          top: CANVAS_HEIGHT / 2 + (sideData.logoY - 130),
           scaleX: scale,
           scaleY: scale,
           originX: 'center',
           originY: 'center',
-          opacity: data.logoOpacity,
+          opacity: sideData.logoOpacity,
           name: 'backgroundImage',
         });
 
@@ -272,11 +273,11 @@ export const InteractiveCardCanvas = ({ data, onUpdate, onExport }: InteractiveC
         canvas.renderAll();
       });
     } else {
-      canvas.backgroundColor = data.backgroundColor;
+      canvas.backgroundColor = sideData.backgroundColor;
       drawFrame(canvas);
       canvas.renderAll();
     }
-  }, [data.logo, data.logoX, data.logoY, data.logoScale, data.logoOpacity, data.backgroundColor, CANVAS_WIDTH, CANVAS_HEIGHT, drawFrame, onUpdate]);
+  }, [sideData.logo, sideData.logoX, sideData.logoY, sideData.logoScale, sideData.logoOpacity, sideData.backgroundColor, CANVAS_WIDTH, CANVAS_HEIGHT, drawFrame, onUpdate]);
 
   // Update frame
   useEffect(() => {
@@ -284,7 +285,7 @@ export const InteractiveCardCanvas = ({ data, onUpdate, onExport }: InteractiveC
     if (!canvas) return;
     drawFrame(canvas);
     canvas.renderAll();
-  }, [data.frameStyle, data.frameColor, drawFrame]);
+  }, [sideData.frameStyle, sideData.frameColor, drawFrame]);
 
   // Create or update text elements
   const updateTextElement = useCallback((
@@ -298,8 +299,8 @@ export const InteractiveCardCanvas = ({ data, onUpdate, onExport }: InteractiveC
 
     let textObj = objectsRef.current.get(id) as IText | undefined;
 
-    const adjustedX = data.orientation === 'portrait' ? style.x * 0.65 : style.x;
-    const adjustedY = data.orientation === 'portrait' ? style.y * 1.54 : style.y;
+    const adjustedX = orientation === 'portrait' ? style.x * 0.65 : style.x;
+    const adjustedY = orientation === 'portrait' ? style.y * 1.54 : style.y;
 
     const styleState = textStyles[id] || { isBold: false, isItalic: false, isUnderline: false };
 
@@ -327,8 +328,8 @@ export const InteractiveCardCanvas = ({ data, onUpdate, onExport }: InteractiveC
           onUpdate({
             [styleKey]: {
               ...style,
-              x: data.orientation === 'portrait' ? (textObj!.left || adjustedX) / 0.65 : textObj!.left || style.x,
-              y: data.orientation === 'portrait' ? (textObj!.top || adjustedY) / 1.54 : textObj!.top || style.y,
+              x: orientation === 'portrait' ? (textObj!.left || adjustedX) / 0.65 : textObj!.left || style.x,
+              y: orientation === 'portrait' ? (textObj!.top || adjustedY) / 1.54 : textObj!.top || style.y,
               scaleX: textObj!.scaleX || 1,
               scaleY: textObj!.scaleY || 1,
             },
@@ -370,23 +371,23 @@ export const InteractiveCardCanvas = ({ data, onUpdate, onExport }: InteractiveC
     }
 
     canvas.renderAll();
-  }, [onUpdate, data.orientation, textStyles]);
+  }, [onUpdate, orientation, textStyles]);
 
   // Update all text elements
   useEffect(() => {
-    updateTextElement('name', data.name, data.nameStyle, { charSpacing: 200 });
-    updateTextElement('title', data.title, data.titleStyle);
-    updateTextElement('subtitle', data.subtitle, data.subtitleStyle, { opacity: 0.85 });
-    updateTextElement('line1', data.line1, data.line1Style, { opacity: 0.9 });
-    updateTextElement('line2', data.line2, data.line2Style, { opacity: 0.75 });
-    updateTextElement('line3', data.line3, data.line3Style);
+    updateTextElement('name', sideData.name, sideData.nameStyle, { charSpacing: 200 });
+    updateTextElement('title', sideData.title, sideData.titleStyle);
+    updateTextElement('subtitle', sideData.subtitle, sideData.subtitleStyle, { opacity: 0.85 });
+    updateTextElement('line1', sideData.line1, sideData.line1Style, { opacity: 0.9 });
+    updateTextElement('line2', sideData.line2, sideData.line2Style, { opacity: 0.75 });
+    updateTextElement('line3', sideData.line3, sideData.line3Style);
   }, [
-    data.name, data.nameStyle,
-    data.title, data.titleStyle,
-    data.subtitle, data.subtitleStyle,
-    data.line1, data.line1Style,
-    data.line2, data.line2Style,
-    data.line3, data.line3Style,
+    sideData.name, sideData.nameStyle,
+    sideData.title, sideData.titleStyle,
+    sideData.subtitle, sideData.subtitleStyle,
+    sideData.line1, sideData.line1Style,
+    sideData.line2, sideData.line2Style,
+    sideData.line3, sideData.line3Style,
     updateTextElement
   ]);
 
@@ -394,7 +395,7 @@ export const InteractiveCardCanvas = ({ data, onUpdate, onExport }: InteractiveC
     if (!selectedElement) return;
     const styleKey = getStyleKey(selectedElement);
     if (styleKey) {
-      const currentStyle = data[styleKey] as TextElementStyle;
+      const currentStyle = sideData[styleKey] as TextElementStyle;
       onUpdate({ [styleKey]: { ...currentStyle, ...updates } });
     }
   };
@@ -439,7 +440,7 @@ export const InteractiveCardCanvas = ({ data, onUpdate, onExport }: InteractiveC
   };
 
   const currentStyle = selectedElement 
-    ? (data[getStyleKey(selectedElement) as keyof BusinessCardData] as TextElementStyle)
+    ? (sideData[getStyleKey(selectedElement) as keyof CardSideData] as TextElementStyle)
     : null;
 
   const currentTextStyles = selectedElement ? textStyles[selectedElement] : null;
