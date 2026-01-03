@@ -15,7 +15,8 @@ import { EditorSidebar } from './editor/EditorSidebar';
 import { EditorCanvas } from './editor/EditorCanvas';
 import { PropertiesPanel } from './editor/PropertiesPanel';
 import { toast } from 'sonner';
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { Sheet, SheetContent, SheetTrigger, SheetTitle } from '@/components/ui/sheet';
+import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
 import { Button } from '@/components/ui/button';
 import { Shapes, Sliders } from 'lucide-react';
 
@@ -247,7 +248,10 @@ export const BusinessCardEditor = () => {
                 Add
               </Button>
             </SheetTrigger>
-            <SheetContent side="bottom" className="h-[70vh] p-0">
+            <SheetContent side="bottom" className="h-[70vh] p-0" aria-describedby={undefined}>
+              <VisuallyHidden>
+                <SheetTitle>Add Elements</SheetTitle>
+              </VisuallyHidden>
               <EditorSidebar
                 category={cardData.category}
                 background={sideData.background}
@@ -276,7 +280,10 @@ export const BusinessCardEditor = () => {
                 Edit
               </Button>
             </SheetTrigger>
-            <SheetContent side="bottom" className="h-[60vh] p-0">
+            <SheetContent side="bottom" className="h-[60vh] p-0" aria-describedby={undefined}>
+              <VisuallyHidden>
+                <SheetTitle>Edit Properties</SheetTitle>
+              </VisuallyHidden>
               <PropertiesPanel
                 selectedId={selectedId}
                 selectedType={selectedType}
