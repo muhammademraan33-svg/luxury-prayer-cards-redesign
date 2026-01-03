@@ -1,5 +1,33 @@
 import { CardElement, ShapeElement, IconElement, StickerElement, LineElement, ImageElement } from '@/types/cardElements';
-import { iconComponents } from './ElementsPanel';
+import {
+  Heart,
+  Star,
+  Crown,
+  Sparkles,
+  Flower2,
+  Sun,
+  Moon,
+  Cloud,
+  Music,
+  Camera,
+  Gift,
+  Cake,
+  Baby,
+  Church,
+  Cross,
+  Bird,
+  CircleDot,
+  GraduationCap,
+  Award,
+  Trophy,
+} from 'lucide-react';
+
+// Icon component mapper
+const iconComponents: Record<string, React.ComponentType<{ className?: string; style?: React.CSSProperties }>> = {
+  Heart, Star, Crown, Sparkles, Flower2, Sun, Moon, Cloud,
+  Music, Camera, Gift, Cake, Baby, Church, Cross, Bird,
+  CircleDot, GraduationCap, Award, Trophy,
+};
 
 interface ElementRendererProps {
   element: CardElement;
