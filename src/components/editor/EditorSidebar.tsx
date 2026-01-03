@@ -31,6 +31,7 @@ import {
   GraduationCap,
   Award,
   Trophy,
+  BookOpen,
 } from 'lucide-react';
 import {
   CardElement,
@@ -49,7 +50,9 @@ import {
   CardCategory,
   TextElement,
   categoryInfo,
+  createDefaultTextElement,
 } from '@/types/businessCard';
+import { prayerTemplates, getTraditionLabel, PrayerTemplate } from '@/data/prayerTemplates';
 
 // Icon component mapper
 const iconComponents: Record<string, React.ComponentType<{ className?: string }>> = {
@@ -58,7 +61,7 @@ const iconComponents: Record<string, React.ComponentType<{ className?: string }>
   CircleDot, GraduationCap, Award, Trophy,
 };
 
-type SidebarTab = 'templates' | 'elements' | 'text' | 'uploads' | 'background' | 'stickers';
+type SidebarTab = 'templates' | 'elements' | 'text' | 'prayers' | 'uploads' | 'background' | 'stickers';
 
 const categories: CardCategory[] = ['wedding', 'baby', 'prayer', 'memorial', 'graduation', 'anniversary'];
 
@@ -68,6 +71,7 @@ interface EditorSidebarProps {
   texts: TextElement[];
   onAddElement: (element: CardElement) => void;
   onAddText: () => void;
+  onAddPrayer: (prayer: PrayerTemplate) => void;
   onBackgroundChange: (bg: BackgroundStyle) => void;
   onImageUpload: (src: string) => void;
   onCategoryChange: (category: CardCategory) => void;
@@ -82,6 +86,7 @@ export const EditorSidebar = ({
   texts,
   onAddElement,
   onAddText,
+  onAddPrayer,
   onBackgroundChange,
   onImageUpload,
   onCategoryChange,
@@ -96,6 +101,7 @@ export const EditorSidebar = ({
     { id: 'templates', icon: <LayoutTemplate className="w-5 h-5" />, label: 'Templates' },
     { id: 'elements', icon: <Shapes className="w-5 h-5" />, label: 'Elements' },
     { id: 'text', icon: <Type className="w-5 h-5" />, label: 'Text' },
+    { id: 'prayers', icon: <BookOpen className="w-5 h-5" />, label: 'Prayers' },
     { id: 'stickers', icon: <Smile className="w-5 h-5" />, label: 'Stickers' },
     { id: 'uploads', icon: <ImageIcon className="w-5 h-5" />, label: 'Uploads' },
     { id: 'background', icon: <Palette className="w-5 h-5" />, label: 'Background' },
@@ -262,6 +268,44 @@ export const EditorSidebar = ({
                 </div>
               </div>
             )}
+          </div>
+        );
+
+      case 'prayers':
+        const traditionOrder: PrayerTemplate['tradition'][] = ['christian', 'catholic', 'jewish', 'universal', 'secular'];
+        const groupedPrayers = traditionOrder.reduce((acc, tradition) => {
+          acc[tradition] = prayerTemplates.filter(p => p.tradition === tradition);
+          return acc;
+        }, {} as Record<PrayerTemplate['tradition'], PrayerTemplate[]>);
+
+        return (
+          <div className="space-y-6">
+            <p className="text-sm text-muted-foreground">
+              Select a prayer or blessing to add to the back of your card.
+            </p>
+            {traditionOrder.map(tradition => (
+              groupedPrayers[tradition].length > 0 && (
+                <div key={tradition}>
+                  <h3 className="text-sm font-medium mb-3 text-muted-foreground uppercase tracking-wide">
+                    {getTraditionLabel(tradition)}
+                  </h3>
+                  <div className="space-y-2">
+                    {groupedPrayers[tradition].map(prayer => (
+                      <button
+                        key={prayer.id}
+                        onClick={() => onAddPrayer(prayer)}
+                        className="w-full text-left p-3 rounded-lg border border-border hover:border-primary hover:bg-accent/50 transition-all"
+                      >
+                        <div className="font-medium text-sm">{prayer.name}</div>
+                        <div className="text-xs text-muted-foreground mt-1 line-clamp-2 whitespace-pre-line">
+                          {prayer.text.split('\n').slice(0, 2).join('\n')}...
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )
+            ))}
           </div>
         );
 

@@ -10,6 +10,7 @@ import {
   CardCategory,
 } from '@/types/businessCard';
 import { CardElement, createImageElement } from '@/types/cardElements';
+import { PrayerTemplate } from '@/data/prayerTemplates';
 import { EditorHeader } from './editor/EditorHeader';
 import { EditorSidebar } from './editor/EditorSidebar';
 import { EditorCanvas } from './editor/EditorCanvas';
@@ -95,6 +96,24 @@ export const BusinessCardEditor = () => {
     updateSide(activeSide, { texts: sideData.texts.filter((t) => t.id !== id) });
     setSelectedId(null);
     setSelectedType(null);
+  };
+
+  const handleAddPrayer = (prayer: PrayerTemplate) => {
+    const newText = createDefaultTextElement(
+      `prayer-${Date.now()}`,
+      prayer.text,
+      12,
+      cardHeight / 2,
+      info.defaultTextColor,
+      'Georgia'
+    );
+    newText.style.x = cardWidth / 2;
+    updateSide('back', { texts: [...cardData.back.texts, newText] });
+    setActiveSide('back');
+    setSelectedId(newText.id);
+    setSelectedType('text');
+    setSidebarOpen(false);
+    toast.success(`Added "${prayer.name}" to back of card`);
   };
 
   // Element handlers
@@ -196,6 +215,7 @@ export const BusinessCardEditor = () => {
           texts={sideData.texts}
           onAddElement={handleAddElement}
           onAddText={handleAddText}
+          onAddPrayer={handleAddPrayer}
           onBackgroundChange={handleBackgroundChange}
           onImageUpload={handleImageUpload}
           onCategoryChange={handleCategoryChange}
@@ -258,6 +278,7 @@ export const BusinessCardEditor = () => {
                 texts={sideData.texts}
                 onAddElement={handleAddElement}
                 onAddText={handleAddText}
+                onAddPrayer={handleAddPrayer}
                 onBackgroundChange={handleBackgroundChange}
                 onImageUpload={handleImageUpload}
                 onCategoryChange={handleCategoryChange}
