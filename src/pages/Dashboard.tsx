@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -7,7 +7,8 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Sparkles, Plus, QrCode, LogOut, Loader2, ExternalLink, Trash2, Truck, Zap, ArrowLeft, ArrowRight } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Sparkles, Plus, QrCode, LogOut, Loader2, ExternalLink, Trash2, Truck, Zap, ArrowLeft, ArrowRight, Upload, ImageIcon, RotateCcw, RectangleHorizontal, RectangleVertical } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface FuneralHome {
@@ -28,6 +29,8 @@ interface MemorialOrder {
 }
 
 type MetalFinish = 'silver' | 'gold' | 'black' | 'rose-gold';
+type Orientation = 'landscape' | 'portrait';
+type CardSide = 'front' | 'back';
 
 const METAL_FINISHES: { id: MetalFinish; name: string; gradient: string }[] = [
   { id: 'silver', name: 'Brushed Silver', gradient: 'from-slate-400 via-slate-300 to-slate-500' },
@@ -55,6 +58,16 @@ const Dashboard = () => {
   const [metalFinish, setMetalFinish] = useState<MetalFinish>('silver');
   const [shipping, setShipping] = useState<'standard' | 'express'>('standard');
   const [epitaph, setEpitaph] = useState('Forever in our hearts');
+  const [orientation, setOrientation] = useState<Orientation>('landscape');
+  const [cardSide, setCardSide] = useState<CardSide>('front');
+  const [frontBgImage, setFrontBgImage] = useState<string | null>(null);
+  const [backBgImage, setBackBgImage] = useState<string | null>(null);
+  const [uploadingFront, setUploadingFront] = useState(false);
+  const [uploadingBack, setUploadingBack] = useState(false);
+  const [backText, setBackText] = useState('The Lord is my shepherd; I shall not want.');
+
+  const frontInputRef = useRef<HTMLInputElement>(null);
+  const backInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
@@ -122,6 +135,41 @@ const Dashboard = () => {
     return baseTotal * shippingMultiplier;
   };
 
+  const handleImageUpload = async (file: File, side: 'front' | 'back') => {
+    if (!file) return;
+    
+    const setUploading = side === 'front' ? setUploadingFront : setUploadingBack;
+    const setImage = side === 'front' ? setFrontBgImage : setBackBgImage;
+    
+    setUploading(true);
+    
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Not authenticated');
+
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${user.id}/${Date.now()}-${side}.${fileExt}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('card-backgrounds')
+        .upload(fileName, file);
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('card-backgrounds')
+        .getPublicUrl(fileName);
+
+      setImage(publicUrl);
+      toast.success(`${side === 'front' ? 'Front' : 'Back'} background uploaded!`);
+    } catch (error) {
+      console.error('Upload error:', error);
+      toast.error('Failed to upload image');
+    } finally {
+      setUploading(false);
+    }
+  };
+
   const handleCreateOrder = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!deceasedName.trim()) {
@@ -171,6 +219,11 @@ const Dashboard = () => {
     setMetalFinish('silver');
     setShipping('standard');
     setEpitaph('Forever in our hearts');
+    setOrientation('landscape');
+    setCardSide('front');
+    setFrontBgImage(null);
+    setBackBgImage(null);
+    setBackText('The Lord is my shepherd; I shall not want.');
   };
 
   const handleDeleteOrder = async (orderId: string) => {
@@ -193,6 +246,12 @@ const Dashboard = () => {
   };
 
   const currentFinish = METAL_FINISHES.find(f => f.id === metalFinish) || METAL_FINISHES[0];
+  const currentBgImage = cardSide === 'front' ? frontBgImage : backBgImage;
+
+  // Card dimensions based on orientation
+  const cardClass = orientation === 'landscape' 
+    ? 'aspect-[3.5/2] w-80' 
+    : 'aspect-[2/3.5] w-56';
 
   if (loading) {
     return (
@@ -240,7 +299,7 @@ const Dashboard = () => {
                 New Prayer Card
               </Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-2xl bg-slate-800 border-slate-700 text-white">
+            <DialogContent className="sm:max-w-3xl bg-slate-800 border-slate-700 text-white max-h-[90vh] overflow-y-auto">
               <DialogHeader>
                 <DialogTitle className="text-amber-100">
                   {step === 1 && 'Design Your Metal Prayer Card'}
@@ -256,35 +315,185 @@ const Dashboard = () => {
                 {/* Step 1: Card Design */}
                 {step === 1 && (
                   <div className="space-y-6">
-                    {/* Metal Card Preview */}
-                    <div className="flex justify-center">
-                      <div className={`aspect-[3.5/2] w-80 rounded-2xl bg-gradient-to-br ${currentFinish.gradient} shadow-2xl p-5 relative overflow-hidden`}>
-                        <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-transparent to-black/30"></div>
-                        <div className="relative z-10 h-full flex flex-col justify-between">
-                          <div>
-                            <p className={`text-xs uppercase tracking-widest mb-1 ${metalFinish === 'black' ? 'text-slate-300' : 'text-slate-700'}`}>In Loving Memory</p>
-                            <p className={`text-lg font-serif ${metalFinish === 'black' ? 'text-white' : 'text-slate-800'}`}>
-                              {deceasedName || 'Name Here'}
-                            </p>
-                            <p className={`text-sm ${metalFinish === 'black' ? 'text-slate-400' : 'text-slate-600'}`}>
-                              {birthDate && deathDate ? `${birthDate} – ${deathDate}` : '1945 – 2025'}
-                            </p>
-                          </div>
-                          <div className="flex items-end justify-between">
-                            <p className={`text-xs italic max-w-[55%] ${metalFinish === 'black' ? 'text-slate-400' : 'text-slate-600'}`}>
-                              "{epitaph}"
-                            </p>
-                            <div className="w-14 h-14 bg-white rounded-lg flex items-center justify-center shadow-md">
-                              <QrCode className="h-10 w-10 text-slate-800" />
+                    {/* Orientation Toggle */}
+                    <div className="flex items-center justify-center gap-4">
+                      <Button
+                        type="button"
+                        variant={orientation === 'landscape' ? 'default' : 'outline'}
+                        onClick={() => setOrientation('landscape')}
+                        className={orientation === 'landscape' 
+                          ? 'bg-amber-500 hover:bg-amber-600 text-slate-900' 
+                          : 'border-slate-600 text-slate-300'}
+                      >
+                        <RectangleHorizontal className="h-4 w-4 mr-2" />
+                        Landscape
+                      </Button>
+                      <Button
+                        type="button"
+                        variant={orientation === 'portrait' ? 'default' : 'outline'}
+                        onClick={() => setOrientation('portrait')}
+                        className={orientation === 'portrait' 
+                          ? 'bg-amber-500 hover:bg-amber-600 text-slate-900' 
+                          : 'border-slate-600 text-slate-300'}
+                      >
+                        <RectangleVertical className="h-4 w-4 mr-2" />
+                        Portrait
+                      </Button>
+                    </div>
+
+                    {/* Front/Back Tabs */}
+                    <Tabs value={cardSide} onValueChange={(v) => setCardSide(v as CardSide)} className="w-full">
+                      <TabsList className="grid w-full grid-cols-2 bg-slate-700">
+                        <TabsTrigger value="front" className="data-[state=active]:bg-amber-500 data-[state=active]:text-slate-900">
+                          Front
+                        </TabsTrigger>
+                        <TabsTrigger value="back" className="data-[state=active]:bg-amber-500 data-[state=active]:text-slate-900">
+                          Back
+                        </TabsTrigger>
+                      </TabsList>
+
+                      {/* Front Card */}
+                      <TabsContent value="front" className="mt-4">
+                        <div className="flex flex-col items-center gap-4">
+                          {/* Card Preview */}
+                          <div 
+                            className={`${cardClass} rounded-2xl bg-gradient-to-br ${currentFinish.gradient} shadow-2xl p-5 relative overflow-hidden`}
+                            style={frontBgImage ? { backgroundImage: `url(${frontBgImage})`, backgroundSize: 'cover', backgroundPosition: 'center' } : {}}
+                          >
+                            {!frontBgImage && (
+                              <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-transparent to-black/30"></div>
+                            )}
+                            {frontBgImage && (
+                              <div className="absolute inset-0 bg-black/30"></div>
+                            )}
+                            <div className="relative z-10 h-full flex flex-col justify-between">
+                              <div>
+                                <p className={`text-xs uppercase tracking-widest mb-1 ${frontBgImage || metalFinish === 'black' ? 'text-slate-200' : 'text-slate-700'}`}>
+                                  In Loving Memory
+                                </p>
+                                <p className={`text-lg font-serif ${frontBgImage || metalFinish === 'black' ? 'text-white' : 'text-slate-800'}`}>
+                                  {deceasedName || 'Name Here'}
+                                </p>
+                                <p className={`text-sm ${frontBgImage || metalFinish === 'black' ? 'text-slate-300' : 'text-slate-600'}`}>
+                                  {birthDate && deathDate ? `${birthDate} – ${deathDate}` : '1945 – 2025'}
+                                </p>
+                              </div>
+                              <div className="flex items-end justify-between">
+                                <p className={`text-xs italic max-w-[55%] ${frontBgImage || metalFinish === 'black' ? 'text-slate-300' : 'text-slate-600'}`}>
+                                  "{epitaph}"
+                                </p>
+                                <div className="w-14 h-14 bg-white rounded-lg flex items-center justify-center shadow-md">
+                                  <QrCode className="h-10 w-10 text-slate-800" />
+                                </div>
+                              </div>
                             </div>
                           </div>
+
+                          {/* Upload Front Background */}
+                          <input
+                            ref={frontInputRef}
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                            onChange={(e) => e.target.files?.[0] && handleImageUpload(e.target.files[0], 'front')}
+                          />
+                          <div className="flex gap-2">
+                            <Button
+                              type="button"
+                              variant="outline"
+                              onClick={() => frontInputRef.current?.click()}
+                              disabled={uploadingFront}
+                              className="border-slate-600 text-slate-300 hover:bg-slate-700"
+                            >
+                              {uploadingFront ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Upload className="h-4 w-4 mr-2" />}
+                              {frontBgImage ? 'Change Background' : 'Upload Background'}
+                            </Button>
+                            {frontBgImage && (
+                              <Button
+                                type="button"
+                                variant="outline"
+                                onClick={() => setFrontBgImage(null)}
+                                className="border-slate-600 text-slate-300 hover:bg-slate-700"
+                              >
+                                <RotateCcw className="h-4 w-4 mr-2" />
+                                Use Metal
+                              </Button>
+                            )}
+                          </div>
                         </div>
-                      </div>
-                    </div>
+                      </TabsContent>
+
+                      {/* Back Card */}
+                      <TabsContent value="back" className="mt-4">
+                        <div className="flex flex-col items-center gap-4">
+                          {/* Card Preview */}
+                          <div 
+                            className={`${cardClass} rounded-2xl bg-gradient-to-br ${currentFinish.gradient} shadow-2xl p-5 relative overflow-hidden`}
+                            style={backBgImage ? { backgroundImage: `url(${backBgImage})`, backgroundSize: 'cover', backgroundPosition: 'center' } : {}}
+                          >
+                            {!backBgImage && (
+                              <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-transparent to-black/30"></div>
+                            )}
+                            {backBgImage && (
+                              <div className="absolute inset-0 bg-black/30"></div>
+                            )}
+                            <div className="relative z-10 h-full flex flex-col items-center justify-center text-center">
+                              <p className={`text-sm leading-relaxed font-serif italic ${backBgImage || metalFinish === 'black' ? 'text-white' : 'text-slate-700'}`}>
+                                {backText}
+                              </p>
+                            </div>
+                          </div>
+
+                          {/* Upload Back Background */}
+                          <input
+                            ref={backInputRef}
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                            onChange={(e) => e.target.files?.[0] && handleImageUpload(e.target.files[0], 'back')}
+                          />
+                          <div className="flex gap-2">
+                            <Button
+                              type="button"
+                              variant="outline"
+                              onClick={() => backInputRef.current?.click()}
+                              disabled={uploadingBack}
+                              className="border-slate-600 text-slate-300 hover:bg-slate-700"
+                            >
+                              {uploadingBack ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Upload className="h-4 w-4 mr-2" />}
+                              {backBgImage ? 'Change Background' : 'Upload Background'}
+                            </Button>
+                            {backBgImage && (
+                              <Button
+                                type="button"
+                                variant="outline"
+                                onClick={() => setBackBgImage(null)}
+                                className="border-slate-600 text-slate-300 hover:bg-slate-700"
+                              >
+                                <RotateCcw className="h-4 w-4 mr-2" />
+                                Use Metal
+                              </Button>
+                            )}
+                          </div>
+
+                          {/* Back Text */}
+                          <div className="w-full max-w-md">
+                            <Label htmlFor="back-text" className="text-slate-300">Prayer or Scripture</Label>
+                            <Input
+                              id="back-text"
+                              placeholder="The Lord is my shepherd..."
+                              value={backText}
+                              onChange={(e) => setBackText(e.target.value)}
+                              className="bg-slate-700 border-slate-600 text-white"
+                            />
+                          </div>
+                        </div>
+                      </TabsContent>
+                    </Tabs>
 
                     {/* Metal Finish Selection */}
                     <div>
-                      <Label className="text-slate-300 mb-3 block">Choose Metal Finish</Label>
+                      <Label className="text-slate-300 mb-3 block">Metal Finish (visible where no background image)</Label>
                       <div className="grid grid-cols-4 gap-3">
                         {METAL_FINISHES.map((finish) => (
                           <button
@@ -306,7 +515,7 @@ const Dashboard = () => {
 
                     {/* Epitaph */}
                     <div>
-                      <Label htmlFor="epitaph" className="text-slate-300">Epitaph / Quote</Label>
+                      <Label htmlFor="epitaph" className="text-slate-300">Front Epitaph / Quote</Label>
                       <Input
                         id="epitaph"
                         placeholder="Forever in our hearts"
@@ -435,7 +644,7 @@ const Dashboard = () => {
                     <div className="bg-slate-700/50 rounded-lg p-4 space-y-2">
                       <h4 className="text-amber-100 font-medium mb-3">Order Summary</h4>
                       <div className="flex justify-between text-sm">
-                        <span className="text-slate-400">{currentFinish.name} Metal Cards</span>
+                        <span className="text-slate-400">{currentFinish.name} Metal Cards ({orientation})</span>
                         <span className="text-white">×{quantity}</span>
                       </div>
                       <div className="flex justify-between text-sm">
