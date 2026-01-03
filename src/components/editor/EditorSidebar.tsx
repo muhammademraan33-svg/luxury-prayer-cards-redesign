@@ -2,9 +2,6 @@ import { useState, useRef } from 'react';
 import { cn } from '@/lib/utils';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Slider } from '@/components/ui/slider';
 import {
   Shapes,
   Type,
@@ -13,15 +10,11 @@ import {
   Smile,
   LayoutTemplate,
   Minus,
-  Square,
-  Circle,
-  Triangle,
-  Star,
-  Heart,
-  Hexagon,
   Plus,
-  Sparkles,
+  Heart,
+  Star,
   Crown,
+  Sparkles,
   Flower2,
   Sun,
   Moon,
@@ -49,16 +42,13 @@ import {
   createIconElement,
   createStickerElement,
   createLineElement,
-  createImageElement,
 } from '@/types/cardElements';
 import {
-  BackgroundTexture,
   BackgroundStyle,
   backgroundTextures,
   CardCategory,
   TextElement,
   categoryInfo,
-  fontOptions,
 } from '@/types/businessCard';
 
 // Icon component mapper
@@ -68,7 +58,9 @@ const iconComponents: Record<string, React.ComponentType<{ className?: string }>
   CircleDot, GraduationCap, Award, Trophy,
 };
 
-type SidebarTab = 'elements' | 'text' | 'uploads' | 'background' | 'stickers';
+type SidebarTab = 'templates' | 'elements' | 'text' | 'uploads' | 'background' | 'stickers';
+
+const categories: CardCategory[] = ['wedding', 'baby', 'prayer', 'memorial', 'graduation', 'anniversary'];
 
 interface EditorSidebarProps {
   category: CardCategory;
@@ -78,6 +70,7 @@ interface EditorSidebarProps {
   onAddText: () => void;
   onBackgroundChange: (bg: BackgroundStyle) => void;
   onImageUpload: (src: string) => void;
+  onCategoryChange: (category: CardCategory) => void;
   cardWidth: number;
   cardHeight: number;
   isMobile?: boolean;
@@ -91,14 +84,16 @@ export const EditorSidebar = ({
   onAddText,
   onBackgroundChange,
   onImageUpload,
+  onCategoryChange,
   cardWidth,
   cardHeight,
   isMobile = false,
 }: EditorSidebarProps) => {
-  const [activeTab, setActiveTab] = useState<SidebarTab>('elements');
+  const [activeTab, setActiveTab] = useState<SidebarTab>('templates');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const tabs: { id: SidebarTab; icon: React.ReactNode; label: string }[] = [
+    { id: 'templates', icon: <LayoutTemplate className="w-5 h-5" />, label: 'Templates' },
     { id: 'elements', icon: <Shapes className="w-5 h-5" />, label: 'Elements' },
     { id: 'text', icon: <Type className="w-5 h-5" />, label: 'Text' },
     { id: 'stickers', icon: <Smile className="w-5 h-5" />, label: 'Stickers' },
@@ -145,6 +140,36 @@ export const EditorSidebar = ({
 
   const renderTabContent = () => {
     switch (activeTab) {
+      case 'templates':
+        return (
+          <div className="space-y-4">
+            <p className="text-sm text-muted-foreground">
+              Choose a template to get started. You can customize everything after.
+            </p>
+            <div className="grid grid-cols-2 gap-3">
+              {categories.map((cat) => {
+                const info = categoryInfo[cat];
+                return (
+                  <button
+                    key={cat}
+                    onClick={() => onCategoryChange(cat)}
+                    className={cn(
+                      'p-4 rounded-xl border-2 text-left transition-all hover:shadow-md',
+                      category === cat
+                        ? 'border-primary bg-primary/5 shadow-sm'
+                        : 'border-border hover:border-primary/50'
+                    )}
+                  >
+                    <div className="text-3xl mb-2">{info.icon}</div>
+                    <div className="font-medium text-sm">{info.name}</div>
+                    <div className="text-xs text-muted-foreground mt-0.5">{info.description}</div>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        );
+
       case 'elements':
         return (
           <div className="space-y-6">
