@@ -22,40 +22,35 @@ export const TemplateCard = ({ template, onSelect }: TemplateCardProps) => {
   return (
     <button
       onClick={() => onSelect(template)}
-      className="group relative aspect-[4/3] rounded-2xl overflow-hidden border-2 border-transparent bg-card transition-all duration-300 hover:border-primary hover:shadow-xl hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-primary/50"
+      className="group relative aspect-[3/2] rounded-lg overflow-hidden bg-card shadow-md transition-all duration-300 hover:shadow-2xl hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-primary/50"
     >
+      {/* Full photo background */}
       <img
         src={template.thumbnail}
         alt={template.name}
-        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+        className="w-full h-full object-cover"
       />
-      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent opacity-90 group-hover:opacity-100 transition-opacity" />
       
-      {/* Color preview dots */}
-      <div className="absolute top-3 right-3 flex gap-1.5">
-        <div 
-          className="w-5 h-5 rounded-full border-2 border-white/60 shadow-md"
-          style={{ backgroundColor: template.backgroundColor }}
-        />
-        <div 
-          className="w-5 h-5 rounded-full border-2 border-white/60 shadow-md"
-          style={{ backgroundColor: template.accentColor }}
-        />
+      {/* Subtle gradient overlay for text readability */}
+      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+
+      {/* Template info - bottom positioned like reference */}
+      <div className="absolute bottom-0 left-0 right-0 p-4 text-left">
+        <h3 
+          className="text-white text-xl font-bold tracking-wide drop-shadow-lg"
+          style={{ fontFamily: template.fontFamily }}
+        >
+          {template.name}
+        </h3>
+        <p className="text-white/90 text-sm mt-1 drop-shadow">
+          {categoryInfo[template.category].name}
+        </p>
       </div>
 
-      {/* Template info */}
-      <div className="absolute bottom-0 left-0 right-0 p-4">
-        <p className="text-white font-semibold text-lg mb-1">{template.name}</p>
-        <div className="flex items-center gap-2 text-white/80 text-sm">
-          <span>{categoryInfo[template.category].icon}</span>
-          <span>{categoryInfo[template.category].name}</span>
-        </div>
-      </div>
-
-      {/* Hover overlay with CTA */}
-      <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-        <span className="px-5 py-2.5 bg-white text-primary font-semibold rounded-full shadow-lg transform translate-y-2 group-hover:translate-y-0 transition-transform">
-          Use This Template
+      {/* Hover state - simple darken with CTA */}
+      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+        <span className="px-6 py-2 bg-white text-foreground font-medium rounded shadow-lg">
+          Customize
         </span>
       </div>
     </button>
