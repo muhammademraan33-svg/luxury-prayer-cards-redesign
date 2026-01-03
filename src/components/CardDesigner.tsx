@@ -9,12 +9,14 @@ import {
   FrameStyleType,
   TextElement
 } from '@/types/businessCard';
+import { CardElement } from '@/types/cardElements';
 import { BackgroundSelector } from './BackgroundSelector';
 import { FrameStyleSelector } from './FrameStyleSelector';
 import { FontSetSelector, FontSet } from './FontSetSelector';
 import { CardPreview } from './CardPreview';
 import { InteractiveCardPreview } from './InteractiveCardPreview';
 import { TextEditor } from './TextEditor';
+import { ElementsPanel } from './elements/ElementsPanel';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, ArrowRight, Check, Download, RotateCcw } from 'lucide-react';
 import { toast } from 'sonner';
@@ -30,10 +32,12 @@ const stepLabels: Record<EditorStep, string> = {
   'front-background': 'Front Background',
   'front-fonts': 'Choose Fonts',
   'front-frame': 'Front Frame',
+  'front-elements': 'Add Elements',
   'front-text': 'Front Text',
   'back-background': 'Back Background',
   'back-fonts': 'Back Fonts',
   'back-frame': 'Back Frame',
+  'back-elements': 'Back Elements',
   'back-text': 'Back Text',
   'review': 'Review & Download',
 };
@@ -42,10 +46,12 @@ const steps: EditorStep[] = [
   'front-background',
   'front-fonts',
   'front-frame',
+  'front-elements',
   'front-text',
   'back-background',
   'back-fonts',
   'back-frame',
+  'back-elements',
   'back-text',
   'review',
 ];
@@ -53,6 +59,7 @@ const steps: EditorStep[] = [
 export const CardDesigner = ({ cardData, onUpdate, onBack }: CardDesignerProps) => {
   const [currentStep, setCurrentStep] = useState<EditorStep>('front-background');
   const [selectedFontSet, setSelectedFontSet] = useState<FontSet | null>(null);
+  const [selectedElementId, setSelectedElementId] = useState<string | null>(null);
   const info = categoryInfo[cardData.category];
 
   const currentStepIndex = steps.indexOf(currentStep);
@@ -87,6 +94,31 @@ export const CardDesigner = ({ cardData, onUpdate, onBack }: CardDesignerProps) 
 
   const handleTextUpdate = (texts: TextElement[]) => {
     updateSide(currentSide, { texts });
+  };
+
+  const handleElementsUpdate = (elements: CardElement[]) => {
+    updateSide(currentSide, { elements });
+  };
+
+  const handleAddElement = (element: CardElement) => {
+    const currentElements = sideData.elements || [];
+    updateSide(currentSide, { elements: [...currentElements, element] });
+  };
+
+  const handleUpdateElement = (id: string, updates: Partial<CardElement>) => {
+    const currentElements = sideData.elements || [];
+    updateSide(currentSide, {
+      elements: currentElements.map((el) =>
+        el.id === id ? { ...el, ...updates } : el
+      ) as CardElement[],
+    });
+  };
+
+  const handleDeleteElement = (id: string) => {
+    const currentElements = sideData.elements || [];
+    updateSide(currentSide, {
+      elements: currentElements.filter((el) => el.id !== id),
+    });
   };
 
   const handleFontSetSelect = (fontSet: FontSet) => {
@@ -161,6 +193,21 @@ export const CardDesigner = ({ cardData, onUpdate, onBack }: CardDesignerProps) 
             onFrameStyleChange={handleFrameStyleChange}
             onFrameColorChange={handleFrameColorChange}
             suggestedColors={info.suggestedFrameColors}
+          />
+        );
+      case 'front-elements':
+      case 'back-elements':
+        return (
+          <ElementsPanel
+            elements={sideData.elements || []}
+            selectedElementId={selectedElementId}
+            onAddElement={handleAddElement}
+            onUpdateElement={handleUpdateElement}
+            onDeleteElement={handleDeleteElement}
+            onSelectElement={setSelectedElementId}
+            category={cardData.category}
+            cardWidth={cardData.orientation === 'landscape' ? 400 : 260}
+            cardHeight={cardData.orientation === 'landscape' ? 260 : 400}
           />
         );
       case 'front-text':
@@ -275,6 +322,9 @@ export const CardDesigner = ({ cardData, onUpdate, onBack }: CardDesignerProps) 
                   sideData={sideData}
                   orientation={cardData.orientation}
                   onTextUpdate={handleTextUpdate}
+                  onElementsUpdate={handleElementsUpdate}
+                  selectedElementId={selectedElementId}
+                  onSelectElement={setSelectedElementId}
                   editable={true}
                 />
               )}

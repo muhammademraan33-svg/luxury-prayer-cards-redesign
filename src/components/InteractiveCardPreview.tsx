@@ -1,11 +1,16 @@
 import { useState, useRef, useEffect } from 'react';
 import { CardSideData, backgroundTextures, TextElement } from '@/types/businessCard';
+import { CardElement } from '@/types/cardElements';
+import { ElementRenderer } from '@/components/elements/ElementRenderer';
 import { Input } from '@/components/ui/input';
 
 interface InteractiveCardPreviewProps {
   sideData: CardSideData;
   orientation: 'landscape' | 'portrait';
   onTextUpdate?: (texts: TextElement[]) => void;
+  onElementsUpdate?: (elements: CardElement[]) => void;
+  selectedElementId?: string | null;
+  onSelectElement?: (id: string | null) => void;
   editable?: boolean;
 }
 
@@ -13,6 +18,9 @@ export const InteractiveCardPreview = ({
   sideData, 
   orientation, 
   onTextUpdate,
+  onElementsUpdate,
+  selectedElementId,
+  onSelectElement,
   editable = false 
 }: InteractiveCardPreviewProps) => {
   const width = orientation === 'landscape' ? 400 : 260;
@@ -20,16 +28,19 @@ export const InteractiveCardPreview = ({
   
   const [editingId, setEditingId] = useState<string | null>(null);
   const [draggingId, setDraggingId] = useState<string | null>(null);
+  const [draggingType, setDraggingType] = useState<'text' | 'element' | null>(null);
 
   // Pointer/touch handling (mobile-friendly)
-  const [activeTextId, setActiveTextId] = useState<string | null>(null);
+  const [activeItemId, setActiveItemId] = useState<string | null>(null);
   const [activePointerId, setActivePointerId] = useState<number | null>(null);
   const [pointerStart, setPointerStart] = useState<{ x: number; y: number } | null>(null);
-  const [textStart, setTextStart] = useState<{ x: number; y: number } | null>(null);
+  const [itemStart, setItemStart] = useState<{ x: number; y: number } | null>(null);
   const [hasMoved, setHasMoved] = useState(false);
 
   const cardRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  
+  const elements = sideData.elements || [];
 
   useEffect(() => {
     if (editingId && inputRef.current) {
@@ -129,11 +140,12 @@ export const InteractiveCardPreview = ({
 
   const stopPointerInteraction = () => {
     setActivePointerId(null);
-    setActiveTextId(null);
+    setActiveItemId(null);
     setPointerStart(null);
-    setTextStart(null);
+    setItemStart(null);
     setHasMoved(false);
     setDraggingId(null);
+    setDraggingType(null);
   };
 
   const handleInputBlur = () => {
@@ -162,23 +174,46 @@ export const InteractiveCardPreview = ({
     if (!editable) return;
     // If an input is open, tapping elsewhere should close it.
     if (editingId && editingId !== textId) setEditingId(null);
+    // Deselect any element
+    onSelectElement?.(null);
 
     const pos = getTextPosition(sideData.texts.find((t) => t.id === textId)!, index);
 
-    setActiveTextId(textId);
+    setActiveItemId(textId);
+    setDraggingType('text');
     setActivePointerId(e.pointerId);
     setPointerStart({ x: e.clientX, y: e.clientY });
-    setTextStart({ x: pos.x, y: pos.y });
+    setItemStart({ x: pos.x, y: pos.y });
     setHasMoved(false);
 
     // Keep receiving events even if pointer leaves the element while dragging.
     (e.currentTarget as HTMLElement).setPointerCapture?.(e.pointerId);
   };
 
+  const handleElementPointerDown = (e: React.PointerEvent, elementId: string) => {
+    if (!editable) return;
+    const element = elements.find((el) => el.id === elementId);
+    if (!element || element.locked) return;
+
+    // Close text editing
+    if (editingId) setEditingId(null);
+    // Select this element
+    onSelectElement?.(elementId);
+
+    setActiveItemId(elementId);
+    setDraggingType('element');
+    setActivePointerId(e.pointerId);
+    setPointerStart({ x: e.clientX, y: e.clientY });
+    setItemStart({ x: element.x, y: element.y });
+    setHasMoved(false);
+
+    (e.currentTarget as HTMLElement).setPointerCapture?.(e.pointerId);
+  };
+
   const handleCardPointerMove = (e: React.PointerEvent) => {
-    if (!activeTextId || !onTextUpdate) return;
+    if (!activeItemId) return;
     if (activePointerId !== null && e.pointerId !== activePointerId) return;
-    if (!pointerStart || !textStart) return;
+    if (!pointerStart || !itemStart) return;
 
     const dx = e.clientX - pointerStart.x;
     const dy = e.clientY - pointerStart.y;
@@ -187,32 +222,40 @@ export const InteractiveCardPreview = ({
     const moved = Math.abs(dx) + Math.abs(dy) > threshold;
     if (!hasMoved && moved) {
       setHasMoved(true);
-      setDraggingId(activeTextId);
+      setDraggingId(activeItemId);
     }
 
     if (!moved) return;
 
-    const x = Math.max(20, Math.min(width - 20, textStart.x + dx));
-    const y = Math.max(20, Math.min(height - 20, textStart.y + dy));
+    const x = Math.max(20, Math.min(width - 20, itemStart.x + dx));
+    const y = Math.max(20, Math.min(height - 20, itemStart.y + dy));
 
-    const updatedTexts = sideData.texts.map((t) =>
-      t.id === activeTextId ? { ...t, style: { ...t.style, x, y } } : t
-    );
-    onTextUpdate(updatedTexts);
+    if (draggingType === 'text' && onTextUpdate) {
+      const updatedTexts = sideData.texts.map((t) =>
+        t.id === activeItemId ? { ...t, style: { ...t.style, x, y } } : t
+      );
+      onTextUpdate(updatedTexts);
+    } else if (draggingType === 'element' && onElementsUpdate) {
+      const updatedElements = elements.map((el) =>
+        el.id === activeItemId ? { ...el, x, y } : el
+      );
+      onElementsUpdate(updatedElements);
+    }
   };
 
   const handleCardPointerUp = (e: React.PointerEvent) => {
-    if (!activeTextId) return;
+    if (!activeItemId) return;
     if (activePointerId !== null && e.pointerId !== activePointerId) return;
 
     const didMove = hasMoved;
-    const tappedTextId = activeTextId;
+    const tappedId = activeItemId;
+    const type = draggingType;
 
     stopPointerInteraction();
 
-    // Tap (no drag) => enter edit mode (mobile-friendly)
-    if (editable && !didMove) {
-      setEditingId(tappedTextId);
+    // Tap (no drag) => enter edit mode for text
+    if (editable && !didMove && type === 'text') {
+      setEditingId(tappedId);
     }
   };
 
@@ -233,6 +276,17 @@ export const InteractiveCardPreview = ({
       onPointerLeave={stopPointerInteraction}
     >
       {renderCornerFrame()}
+
+      {/* Elements Layer */}
+      {elements.map((element) => (
+        <ElementRenderer
+          key={element.id}
+          element={element}
+          isSelected={selectedElementId === element.id}
+          isDragging={draggingId === element.id}
+          onPointerDown={(e) => handleElementPointerDown(e, element.id)}
+        />
+      ))}
 
       {/* Text Content - Positioned absolutely */}
       {sideData.texts.map((textEl, index) => {
