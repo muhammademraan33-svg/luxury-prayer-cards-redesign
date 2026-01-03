@@ -350,63 +350,33 @@ const Dashboard = () => {
                     <Tabs value={cardSide} onValueChange={(v) => setCardSide(v as CardSide)} className="w-full">
                       <TabsList className="grid w-full grid-cols-2 bg-slate-700">
                         <TabsTrigger value="front" className="data-[state=active]:bg-amber-500 data-[state=active]:text-slate-900">
-                          Front
+                          Front (Photo)
                         </TabsTrigger>
                         <TabsTrigger value="back" className="data-[state=active]:bg-amber-500 data-[state=active]:text-slate-900">
-                          Back
+                          Back (Info + QR)
                         </TabsTrigger>
                       </TabsList>
 
-                      {/* Front Card */}
+                      {/* Front Card - Photo Only */}
                       <TabsContent value="front" className="mt-4">
                         <div className="flex flex-col items-center gap-4">
-                          {/* Card Preview */}
-                          <div 
-                            className={`${cardClass} rounded-2xl bg-gradient-to-br ${currentFinish.gradient} shadow-2xl p-4 relative overflow-hidden`}
-                            style={frontBgImage ? { backgroundImage: `url(${frontBgImage})`, backgroundSize: 'cover', backgroundPosition: 'center' } : {}}
-                          >
-                            {!frontBgImage && (
-                              <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-transparent to-black/30"></div>
-                            )}
-                            {frontBgImage && (
-                              <div className="absolute inset-0 bg-black/30"></div>
-                            )}
-                            <div className="relative z-10 h-full flex flex-col justify-between">
-                              {/* Top section with photo and info */}
-                              <div className={`flex ${orientation === 'portrait' ? 'flex-col items-center text-center' : 'items-start gap-3'}`}>
-                                {/* Deceased Photo */}
-                                <div className={`${orientation === 'portrait' ? 'w-20 h-24 mb-2' : 'w-16 h-20'} rounded-lg overflow-hidden bg-slate-600/50 flex-shrink-0 flex items-center justify-center border-2 border-white/30`}>
-                                  {deceasedPhoto ? (
-                                    <img src={deceasedPhoto} alt="Deceased" className="w-full h-full object-cover" />
-                                  ) : (
-                                    <ImageIcon className={`${orientation === 'portrait' ? 'h-8 w-8' : 'h-6 w-6'} text-slate-400`} />
-                                  )}
-                                </div>
-                                <div className={orientation === 'portrait' ? '' : 'flex-1'}>
-                                  <p className={`text-[10px] uppercase tracking-widest mb-0.5 ${frontBgImage || metalFinish === 'black' ? 'text-slate-200' : 'text-slate-700'}`}>
-                                    In Loving Memory
-                                  </p>
-                                  <p className={`${orientation === 'portrait' ? 'text-base' : 'text-sm'} font-serif leading-tight ${frontBgImage || metalFinish === 'black' ? 'text-white' : 'text-slate-800'}`}>
-                                    {deceasedName || 'Name Here'}
-                                  </p>
-                                  <p className={`text-xs ${frontBgImage || metalFinish === 'black' ? 'text-slate-300' : 'text-slate-600'}`}>
-                                    {birthDate && deathDate ? `${birthDate} – ${deathDate}` : '1945 – 2025'}
-                                  </p>
-                                </div>
-                              </div>
-                              {/* Bottom section */}
-                              <div className="flex items-end justify-between">
-                                <p className={`text-[10px] italic max-w-[55%] leading-tight ${frontBgImage || metalFinish === 'black' ? 'text-slate-300' : 'text-slate-600'}`}>
-                                  "{epitaph}"
-                                </p>
-                                <div className="w-12 h-12 bg-white rounded-lg flex items-center justify-center shadow-md flex-shrink-0">
-                                  <QrCode className="h-8 w-8 text-slate-800" />
-                                </div>
+                          {/* Card Preview - Full Photo */}
+                          <div className={`${cardClass} rounded-2xl overflow-hidden shadow-2xl relative`}>
+                            <div className={`absolute inset-0 bg-gradient-to-br ${currentFinish.gradient} p-1`}>
+                              <div className="w-full h-full rounded-xl overflow-hidden bg-slate-700 flex items-center justify-center">
+                                {deceasedPhoto ? (
+                                  <img src={deceasedPhoto} alt="Deceased" className="w-full h-full object-cover" />
+                                ) : (
+                                  <div className="text-center p-4">
+                                    <ImageIcon className="h-12 w-12 text-slate-500 mx-auto mb-2" />
+                                    <p className="text-slate-400 text-sm">Upload photo</p>
+                                  </div>
+                                )}
                               </div>
                             </div>
                           </div>
 
-                          {/* Upload inputs */}
+                          {/* Photo Upload */}
                           <input
                             ref={photoInputRef}
                             type="file"
@@ -414,15 +384,6 @@ const Dashboard = () => {
                             className="hidden"
                             onChange={(e) => e.target.files?.[0] && handleImageUpload(e.target.files[0], 'photo')}
                           />
-                          <input
-                            ref={frontInputRef}
-                            type="file"
-                            accept="image/*"
-                            className="hidden"
-                            onChange={(e) => e.target.files?.[0] && handleImageUpload(e.target.files[0], 'front')}
-                          />
-                          
-                          {/* Photo Upload */}
                           <div className="flex gap-2 flex-wrap justify-center">
                             <Button
                               type="button"
@@ -445,52 +406,54 @@ const Dashboard = () => {
                               </Button>
                             )}
                           </div>
-
-                          {/* Background Upload */}
-                          <div className="flex gap-2 flex-wrap justify-center">
-                            <Button
-                              type="button"
-                              variant="outline"
-                              onClick={() => frontInputRef.current?.click()}
-                              disabled={uploadingFront}
-                              className="border-slate-600 text-slate-300 hover:bg-slate-700"
-                            >
-                              {uploadingFront ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Upload className="h-4 w-4 mr-2" />}
-                              {frontBgImage ? 'Change Background' : 'Upload Background'}
-                            </Button>
-                            {frontBgImage && (
-                              <Button
-                                type="button"
-                                variant="outline"
-                                onClick={() => setFrontBgImage(null)}
-                                className="border-slate-600 text-slate-300 hover:bg-slate-700"
-                              >
-                                <RotateCcw className="h-4 w-4 mr-2" />
-                                Use Metal
-                              </Button>
-                            )}
-                          </div>
+                          <p className="text-slate-500 text-xs text-center">The photo fills the entire front of the card with a metal border frame</p>
                         </div>
                       </TabsContent>
 
-                      {/* Back Card */}
+                      {/* Back Card - Info + Prayer + QR */}
                       <TabsContent value="back" className="mt-4">
                         <div className="flex flex-col items-center gap-4">
                           {/* Card Preview */}
                           <div 
-                            className={`${cardClass} rounded-2xl bg-gradient-to-br ${currentFinish.gradient} shadow-2xl p-5 relative overflow-hidden`}
+                            className={`${cardClass} rounded-2xl bg-gradient-to-br ${currentFinish.gradient} shadow-2xl p-4 relative overflow-hidden`}
                             style={backBgImage ? { backgroundImage: `url(${backBgImage})`, backgroundSize: 'cover', backgroundPosition: 'center' } : {}}
                           >
                             {!backBgImage && (
                               <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-transparent to-black/30"></div>
                             )}
                             {backBgImage && (
-                              <div className="absolute inset-0 bg-black/30"></div>
+                              <div className="absolute inset-0 bg-black/40"></div>
                             )}
-                            <div className="relative z-10 h-full flex flex-col items-center justify-center text-center">
-                              <p className={`text-sm leading-relaxed font-serif italic ${backBgImage || metalFinish === 'black' ? 'text-white' : 'text-slate-700'}`}>
-                                {backText}
-                              </p>
+                            <div className="relative z-10 h-full flex flex-col justify-between text-center">
+                              {/* Top - Name & Dates */}
+                              <div>
+                                <p className={`text-[9px] uppercase tracking-[0.15em] mb-1 ${backBgImage || metalFinish === 'black' ? 'text-slate-300' : 'text-slate-600'}`}>
+                                  In Loving Memory
+                                </p>
+                                <p className={`${orientation === 'portrait' ? 'text-lg' : 'text-base'} font-serif ${backBgImage || metalFinish === 'black' ? 'text-white' : 'text-slate-800'}`}>
+                                  {deceasedName || 'Name Here'}
+                                </p>
+                                <p className={`text-xs ${backBgImage || metalFinish === 'black' ? 'text-slate-300' : 'text-slate-600'}`}>
+                                  {birthDate && deathDate ? `${birthDate} – ${deathDate}` : '1945 – 2025'}
+                                </p>
+                              </div>
+
+                              {/* Middle - Prayer */}
+                              <div className="flex-1 flex items-center justify-center py-2">
+                                <p className={`${orientation === 'portrait' ? 'text-sm' : 'text-xs'} leading-relaxed font-serif italic ${backBgImage || metalFinish === 'black' ? 'text-slate-200' : 'text-slate-700'}`}>
+                                  {backText}
+                                </p>
+                              </div>
+
+                              {/* Bottom - QR Code */}
+                              <div className="flex flex-col items-center">
+                                <div className={`${orientation === 'portrait' ? 'w-14 h-14' : 'w-10 h-10'} bg-white rounded-lg flex items-center justify-center shadow-md`}>
+                                  <QrCode className={`${orientation === 'portrait' ? 'h-10 w-10' : 'h-7 w-7'} text-slate-800`} />
+                                </div>
+                                <p className={`text-[8px] mt-1 ${backBgImage || metalFinish === 'black' ? 'text-slate-400' : 'text-slate-500'}`}>
+                                  Scan to share memories
+                                </p>
+                              </div>
                             </div>
                           </div>
 

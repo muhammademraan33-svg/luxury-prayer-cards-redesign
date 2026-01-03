@@ -67,63 +67,81 @@ const Index = () => {
           
           <div className="flex flex-col lg:flex-row items-center gap-8 lg:gap-16">
             {/* Card Preview */}
-            <div className="flex-1 flex justify-center perspective-1000">
+            <div className="flex-1 flex justify-center">
               <div 
-                className={`relative w-80 aspect-[3.5/2] transition-transform duration-700 transform-style-preserve-3d cursor-pointer ${showBack ? 'rotate-y-180' : ''}`}
+                className="relative w-72 aspect-[2/3] cursor-pointer group"
                 onClick={() => setShowBack(!showBack)}
-                style={{ transformStyle: 'preserve-3d' }}
+                style={{ perspective: '1000px' }}
               >
-                {/* Front */}
                 <div 
-                  className={`absolute inset-0 rounded-2xl bg-gradient-to-br ${currentFinish.gradient} shadow-2xl p-4 backface-hidden`}
-                  style={{ backfaceVisibility: 'hidden' }}
+                  className="relative w-full h-full transition-transform duration-700"
+                  style={{ 
+                    transformStyle: 'preserve-3d',
+                    transform: showBack ? 'rotateY(180deg)' : 'rotateY(0deg)'
+                  }}
                 >
-                  <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-transparent to-black/30 rounded-2xl"></div>
-                  <div className="relative z-10 h-full flex flex-col justify-between">
-                    <div className="flex items-start gap-3">
-                      <div className="w-16 h-20 rounded-lg overflow-hidden bg-slate-600/50 flex-shrink-0 border-2 border-white/30">
+                  {/* Front - Photo */}
+                  <div 
+                    className={`absolute inset-0 rounded-2xl overflow-hidden shadow-2xl border-4 border-gradient-to-br ${currentFinish.gradient}`}
+                    style={{ backfaceVisibility: 'hidden' }}
+                  >
+                    <div className={`absolute inset-0 bg-gradient-to-br ${currentFinish.gradient} p-1`}>
+                      <div className="w-full h-full rounded-xl overflow-hidden">
                         <img 
-                          src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=250&fit=crop&crop=face" 
+                          src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=600&fit=crop&crop=face" 
                           alt="Memorial" 
                           className="w-full h-full object-cover"
                         />
                       </div>
-                      <div>
-                        <p className={`text-[10px] uppercase tracking-widest mb-0.5 ${selectedFinish === 'black' ? 'text-slate-200' : 'text-slate-700'}`}>
-                          In Loving Memory
-                        </p>
-                        <p className={`text-sm font-serif leading-tight ${selectedFinish === 'black' ? 'text-white' : 'text-slate-800'}`}>
-                          John David Smith
-                        </p>
-                        <p className={`text-xs ${selectedFinish === 'black' ? 'text-slate-300' : 'text-slate-600'}`}>
-                          1945 – 2025
-                        </p>
-                      </div>
                     </div>
-                    <div className="flex items-end justify-between">
-                      <p className={`text-[10px] italic max-w-[55%] leading-tight ${selectedFinish === 'black' ? 'text-slate-300' : 'text-slate-600'}`}>
-                        "Forever in our hearts"
-                      </p>
-                      <div className="w-12 h-12 bg-white rounded-lg flex items-center justify-center shadow-md">
-                        <QrCode className="h-8 w-8 text-slate-800" />
-                      </div>
+                    {/* Subtle overlay hint */}
+                    <div className="absolute bottom-3 left-0 right-0 text-center">
+                      <span className="text-white/70 text-xs bg-black/30 px-3 py-1 rounded-full">Tap to flip</span>
                     </div>
                   </div>
-                </div>
 
-                {/* Back */}
-                <div 
-                  className={`absolute inset-0 rounded-2xl bg-gradient-to-br ${currentFinish.gradient} shadow-2xl p-5 backface-hidden rotate-y-180`}
-                  style={{ backfaceVisibility: 'hidden', transform: 'rotateY(180deg)' }}
-                >
-                  <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-transparent to-black/30 rounded-2xl"></div>
-                  <div className="relative z-10 h-full flex flex-col items-center justify-center text-center">
-                    <p className={`text-sm leading-relaxed font-serif italic ${selectedFinish === 'black' ? 'text-white' : 'text-slate-700'}`}>
-                      The Lord is my shepherd;<br />
-                      I shall not want.<br />
-                      He maketh me to lie down<br />
-                      in green pastures.
-                    </p>
+                  {/* Back - Info, Prayer, QR */}
+                  <div 
+                    className={`absolute inset-0 rounded-2xl bg-gradient-to-br ${currentFinish.gradient} shadow-2xl p-5`}
+                    style={{ backfaceVisibility: 'hidden', transform: 'rotateY(180deg)' }}
+                  >
+                    <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-transparent to-black/30 rounded-2xl"></div>
+                    <div className="relative z-10 h-full flex flex-col justify-between text-center">
+                      {/* Top - Name & Dates */}
+                      <div>
+                        <p className={`text-[10px] uppercase tracking-[0.2em] mb-2 ${selectedFinish === 'black' ? 'text-slate-300' : 'text-slate-600'}`}>
+                          In Loving Memory
+                        </p>
+                        <p className={`text-xl font-serif ${selectedFinish === 'black' ? 'text-white' : 'text-slate-800'}`}>
+                          John David Smith
+                        </p>
+                        <p className={`text-sm mt-1 ${selectedFinish === 'black' ? 'text-slate-300' : 'text-slate-600'}`}>
+                          March 15, 1945 – January 2, 2025
+                        </p>
+                      </div>
+
+                      {/* Middle - Prayer */}
+                      <div className="flex-1 flex items-center justify-center py-4">
+                        <p className={`text-sm leading-relaxed font-serif italic ${selectedFinish === 'black' ? 'text-slate-200' : 'text-slate-700'}`}>
+                          The Lord is my shepherd;<br />
+                          I shall not want.<br />
+                          He maketh me to lie down<br />
+                          in green pastures;<br />
+                          He leadeth me beside<br />
+                          the still waters.
+                        </p>
+                      </div>
+
+                      {/* Bottom - QR Code */}
+                      <div className="flex flex-col items-center">
+                        <div className="w-16 h-16 bg-white rounded-lg flex items-center justify-center shadow-md mb-2">
+                          <QrCode className="h-12 w-12 text-slate-800" />
+                        </div>
+                        <p className={`text-[9px] ${selectedFinish === 'black' ? 'text-slate-400' : 'text-slate-500'}`}>
+                          Scan to share memories
+                        </p>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
