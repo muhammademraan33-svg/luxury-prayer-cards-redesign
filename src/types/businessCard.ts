@@ -1,55 +1,135 @@
 export interface BusinessCardData {
   name: string;
   title: string;
-  company: string;
-  email: string;
-  phone: string;
-  website: string;
+  subtitle: string;
+  line1: string;
+  line2: string;
+  line3: string;
   logo: string | null;
   backgroundColor: string;
   textColor: string;
   accentColor: string;
   fontFamily: string;
   borderRadius: number;
-  frameStyle: 'none' | 'solid' | 'double' | 'gradient' | 'shadow';
+  frameStyle: 'none' | 'solid' | 'double' | 'gradient' | 'ornate';
   frameColor: string;
+  category: CardCategory;
 }
 
-export const defaultCardData: BusinessCardData = {
-  name: 'John Smith',
-  title: 'Creative Director',
-  company: 'Design Studio',
-  email: 'john@designstudio.com',
-  phone: '+1 (555) 123-4567',
-  website: 'www.designstudio.com',
-  logo: null,
-  backgroundColor: '#ffffff',
-  textColor: '#1a1a2e',
-  accentColor: '#2d9596',
-  fontFamily: 'Inter',
-  borderRadius: 16,
-  frameStyle: 'none',
-  frameColor: '#2d9596',
+export type CardCategory = 'wedding' | 'baby' | 'prayer' | 'memorial' | 'graduation' | 'anniversary';
+
+export const categoryDefaults: Record<CardCategory, Partial<BusinessCardData>> = {
+  wedding: {
+    name: 'Sarah & Michael',
+    title: 'Request the pleasure of your company',
+    subtitle: 'at their wedding celebration',
+    line1: 'Saturday, June 15th, 2025',
+    line2: 'The Grand Estate • 5:00 PM',
+    line3: 'Dinner & Dancing to follow',
+    backgroundColor: '#fefefe',
+    textColor: '#2c2c2c',
+    accentColor: '#b8860b',
+    fontFamily: 'Playfair Display',
+  },
+  baby: {
+    name: 'Introducing',
+    title: 'Emma Rose Johnson',
+    subtitle: 'Born March 12, 2025',
+    line1: '7 lbs 8 oz • 20 inches',
+    line2: 'Proud Parents: James & Anna',
+    line3: '♥',
+    backgroundColor: '#fdf6f0',
+    textColor: '#5c4033',
+    accentColor: '#e8b4b8',
+    fontFamily: 'Cormorant Garamond',
+  },
+  prayer: {
+    name: 'In Loving Memory',
+    title: 'Robert James Wilson',
+    subtitle: '1945 - 2024',
+    line1: '"Forever in our hearts"',
+    line2: 'Those we love don\'t go away,',
+    line3: 'they walk beside us every day.',
+    backgroundColor: '#f5f5f5',
+    textColor: '#333333',
+    accentColor: '#708090',
+    fontFamily: 'Cormorant Garamond',
+  },
+  memorial: {
+    name: 'Celebration of Life',
+    title: 'Margaret Anne Thompson',
+    subtitle: '1938 - 2024',
+    line1: 'A beautiful soul, forever remembered',
+    line2: 'Service: March 20, 2025',
+    line3: 'St. Mary\'s Chapel',
+    backgroundColor: '#faf8f5',
+    textColor: '#3d3d3d',
+    accentColor: '#8b7355',
+    fontFamily: 'Cormorant Garamond',
+  },
+  graduation: {
+    name: 'Class of 2025',
+    title: 'Alexandra Chen',
+    subtitle: 'Bachelor of Science, Magna Cum Laude',
+    line1: 'University of California',
+    line2: 'Commencement: May 18, 2025',
+    line3: 'The future belongs to those who believe',
+    backgroundColor: '#1a1a2e',
+    textColor: '#ffffff',
+    accentColor: '#c9a227',
+    fontFamily: 'Montserrat',
+  },
+  anniversary: {
+    name: '25 Years',
+    title: 'David & Elizabeth',
+    subtitle: 'Silver Anniversary Celebration',
+    line1: 'Join us as we celebrate',
+    line2: 'August 22, 2025 • 6:00 PM',
+    line3: 'The Riverside Ballroom',
+    backgroundColor: '#f8f8f8',
+    textColor: '#2c2c2c',
+    accentColor: '#c0c0c0',
+    fontFamily: 'Playfair Display',
+  },
 };
 
+export const defaultCardData: BusinessCardData = {
+  ...categoryDefaults.wedding,
+  logo: null,
+  borderRadius: 12,
+  frameStyle: 'ornate',
+  frameColor: '#b8860b',
+  category: 'wedding',
+} as BusinessCardData;
+
 export const fontOptions = [
-  { name: 'Inter', value: 'Inter', className: 'font-sans' },
   { name: 'Playfair Display', value: 'Playfair Display', className: 'font-display' },
+  { name: 'Cormorant Garamond', value: 'Cormorant Garamond', className: 'font-cormorant' },
   { name: 'Montserrat', value: 'Montserrat', className: 'font-montserrat' },
-  { name: 'Roboto Slab', value: 'Roboto Slab', className: 'font-roboto-slab' },
+  { name: 'Great Vibes', value: 'Great Vibes', className: 'font-script' },
   { name: 'Poppins', value: 'Poppins', className: 'font-poppins' },
 ];
 
 export const colorPresets = [
-  '#ffffff', '#f8f9fa', '#1a1a2e', '#16213e', '#0f3460',
-  '#2d9596', '#e94560', '#ff6b35', '#ffc045', '#4ecdc4',
-  '#95e1d3', '#f38181', '#aa96da', '#fcbad3', '#a8d8ea',
+  '#fefefe', '#fdf6f0', '#f5f5f5', '#faf8f5', '#f8f8f8',
+  '#1a1a2e', '#2c2c2c', '#333333', '#5c4033', '#3d3d3d',
+  '#b8860b', '#c9a227', '#c0c0c0', '#e8b4b8', '#708090',
+  '#8b7355', '#d4af37', '#a67c52', '#9c8b75', '#4a5568',
 ];
 
 export const frameStyles = [
   { name: 'None', value: 'none' as const },
-  { name: 'Solid', value: 'solid' as const },
+  { name: 'Simple', value: 'solid' as const },
   { name: 'Double', value: 'double' as const },
   { name: 'Gradient', value: 'gradient' as const },
-  { name: 'Shadow', value: 'shadow' as const },
+  { name: 'Ornate', value: 'ornate' as const },
 ];
+
+export const categoryInfo: Record<CardCategory, { name: string; icon: string; description: string }> = {
+  wedding: { name: 'Wedding', icon: '💍', description: 'Invitations & Save the Dates' },
+  baby: { name: 'Baby', icon: '👶', description: 'Birth Announcements' },
+  prayer: { name: 'Prayer', icon: '🕊️', description: 'Memorial Prayer Cards' },
+  memorial: { name: 'Memorial', icon: '🕯️', description: 'Celebration of Life' },
+  graduation: { name: 'Graduation', icon: '🎓', description: 'Achievement Cards' },
+  anniversary: { name: 'Anniversary', icon: '💝', description: 'Milestone Celebrations' },
+};

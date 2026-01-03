@@ -5,7 +5,7 @@ import { cn } from '@/lib/utils';
 interface FrameSelectorProps {
   value: string;
   frameColor: string;
-  onChange: (frame: 'none' | 'solid' | 'double' | 'gradient' | 'shadow') => void;
+  onChange: (frame: 'none' | 'solid' | 'double' | 'gradient' | 'ornate') => void;
 }
 
 export const FrameSelector = ({ value, frameColor, onChange }: FrameSelectorProps) => {
@@ -13,8 +13,8 @@ export const FrameSelector = ({ value, frameColor, onChange }: FrameSelectorProp
     const base = {
       width: '100%',
       height: '100%',
-      borderRadius: '6px',
-      backgroundColor: '#f8f9fa',
+      borderRadius: '4px',
+      backgroundColor: '#fefefe',
     };
 
     switch (frameType) {
@@ -26,12 +26,16 @@ export const FrameSelector = ({ value, frameColor, onChange }: FrameSelectorProp
         return {
           ...base,
           border: '2px solid transparent',
-          backgroundImage: `linear-gradient(#f8f9fa, #f8f9fa), linear-gradient(135deg, ${frameColor}, #4ecdc4)`,
+          backgroundImage: `linear-gradient(#fefefe, #fefefe), linear-gradient(135deg, ${frameColor}, #c9a227)`,
           backgroundOrigin: 'border-box',
           backgroundClip: 'padding-box, border-box',
         };
-      case 'shadow':
-        return { ...base, boxShadow: `0 0 0 2px ${frameColor}` };
+      case 'ornate':
+        return { 
+          ...base, 
+          border: `2px solid ${frameColor}`,
+          boxShadow: `inset 0 0 0 2px #fefefe, inset 0 0 0 3px ${frameColor}`,
+        };
       default:
         return base;
     }
@@ -46,7 +50,7 @@ export const FrameSelector = ({ value, frameColor, onChange }: FrameSelectorProp
             key={frame.value}
             onClick={() => onChange(frame.value)}
             className={cn(
-              'h-12 rounded-lg border-2 transition-all p-1',
+              'h-12 rounded-lg border-2 transition-all p-1.5',
               value === frame.value
                 ? 'border-primary bg-accent'
                 : 'border-border hover:border-muted-foreground/30'
@@ -55,6 +59,11 @@ export const FrameSelector = ({ value, frameColor, onChange }: FrameSelectorProp
           >
             <div style={getFramePreviewStyle(frame.value)} />
           </button>
+        ))}
+      </div>
+      <div className="flex gap-1 text-[10px] text-muted-foreground">
+        {frameStyles.map((frame) => (
+          <span key={frame.value} className="flex-1 text-center">{frame.name}</span>
         ))}
       </div>
     </div>
