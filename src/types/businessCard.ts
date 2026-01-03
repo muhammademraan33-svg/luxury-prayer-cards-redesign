@@ -1,3 +1,5 @@
+import { CardElement } from './cardElements';
+
 // Background textures for premium metal cards
 export type BackgroundTexture = 
   | 'marble-white' 
@@ -41,6 +43,7 @@ export interface CardSideData {
   frameStyle: FrameStyleType;
   frameColor: string;
   texts: TextElement[];
+  elements: CardElement[];
   logo: string | null;
   logoScale: number;
   logoX: number;
@@ -205,6 +208,7 @@ export const createDefaultSide = (category: CardCategory, isFront: boolean): Car
     frameStyle: 'ornate',
     frameColor,
     texts,
+    elements: [],
     logo: null,
     logoScale: 1,
     logoX: 200,
@@ -221,4 +225,4 @@ export const createDefaultCardData = (category: CardCategory): BusinessCardData 
   activeSide: 'front',
 });
 
-export type EditorStep = 'celebration' | 'front-background' | 'front-fonts' | 'front-frame' | 'front-text' | 'back-background' | 'back-fonts' | 'back-frame' | 'back-text' | 'review';
+export type EditorStep = 'celebration' | 'front-background' | 'front-fonts' | 'front-frame' | 'front-elements' | 'front-text' | 'back-background' | 'back-fonts' | 'back-frame' | 'back-elements' | 'back-text' | 'review';
