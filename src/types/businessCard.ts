@@ -23,10 +23,10 @@ export interface BusinessCardData {
   textColor: string;
   accentColor: string;
   fontFamily: string;
-  borderRadius: number;
-  frameStyle: 'none' | 'solid' | 'double' | 'gradient' | 'ornate';
+  frameStyle: 'none' | 'solid' | 'double' | 'gradient' | 'ornate' | 'dashed' | 'dotted' | 'inset' | 'shadow' | 'corner';
   frameColor: string;
   category: CardCategory;
+  orientation: 'landscape' | 'portrait';
   // Per-element styles
   nameStyle: TextElementStyle;
   titleStyle: TextElementStyle;
@@ -137,11 +137,11 @@ export const defaultCardData: BusinessCardData = {
   logo: null,
   logoScale: 1,
   logoX: 200,
-  logoY: 45,
-  borderRadius: 12,
+  logoY: 130,
   frameStyle: 'ornate',
   frameColor: '#b8860b',
   category: 'wedding',
+  orientation: 'landscape',
   ...createDefaultStyles('#2c2c2c', '#b8860b'),
 } as BusinessCardData;
 
@@ -171,6 +171,11 @@ export const frameStyles = [
   { name: 'Double', value: 'double' as const },
   { name: 'Gradient', value: 'gradient' as const },
   { name: 'Ornate', value: 'ornate' as const },
+  { name: 'Dashed', value: 'dashed' as const },
+  { name: 'Dotted', value: 'dotted' as const },
+  { name: 'Inset', value: 'inset' as const },
+  { name: 'Shadow', value: 'shadow' as const },
+  { name: 'Corner', value: 'corner' as const },
 ];
 
 export const categoryInfo: Record<CardCategory, { name: string; icon: string; description: string }> = {
