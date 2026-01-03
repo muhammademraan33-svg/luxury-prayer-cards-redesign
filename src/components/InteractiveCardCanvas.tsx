@@ -1,12 +1,18 @@
-import { useEffect, useRef, useCallback } from 'react';
-import { Canvas as FabricCanvas, FabricText, FabricImage, Rect, Line, FabricObject } from 'fabric';
+import { useEffect, useRef, useCallback, useState } from 'react';
+import { Canvas as FabricCanvas, FabricText, FabricImage, Rect, Line, IText, FabricObject } from 'fabric';
 import { BusinessCardData, TextElementStyle } from '@/types/businessCard';
+import { FloatingTextToolbar } from './FloatingTextToolbar';
 
-// Extend FabricObject to include custom name property
 declare module 'fabric' {
   interface FabricObject {
     name?: string;
   }
+}
+
+interface TextStyleState {
+  isBold: boolean;
+  isItalic: boolean;
+  isUnderline: boolean;
 }
 
 interface InteractiveCardCanvasProps {
@@ -17,14 +23,42 @@ interface InteractiveCardCanvasProps {
 
 export const InteractiveCardCanvas = ({ data, onUpdate, onExport }: InteractiveCardCanvasProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const fabricRef = useRef<FabricCanvas | null>(null);
-  const objectsRef = useRef<Map<string, FabricText | FabricImage>>(new Map());
+  const objectsRef = useRef<Map<string, IText | FabricImage>>(new Map());
+  
+  const [selectedElement, setSelectedElement] = useState<string | null>(null);
+  const [toolbarPosition, setToolbarPosition] = useState({ x: 0, y: 0 });
+  const [textStyles, setTextStyles] = useState<Record<string, TextStyleState>>({});
 
   const CANVAS_WIDTH = data.orientation === 'landscape' ? 400 : 260;
   const CANVAS_HEIGHT = data.orientation === 'landscape' ? 260 : 400;
 
+  const getStyleKey = (elementName: string): keyof BusinessCardData | null => {
+    const styleMap: Record<string, keyof BusinessCardData> = {
+      name: 'nameStyle',
+      title: 'titleStyle',
+      subtitle: 'subtitleStyle',
+      line1: 'line1Style',
+      line2: 'line2Style',
+      line3: 'line3Style',
+    };
+    return styleMap[elementName] || null;
+  };
+
+  const getTextKey = (elementName: string): keyof BusinessCardData | null => {
+    const textMap: Record<string, keyof BusinessCardData> = {
+      name: 'name',
+      title: 'title',
+      subtitle: 'subtitle',
+      line1: 'line1',
+      line2: 'line2',
+      line3: 'line3',
+    };
+    return textMap[elementName] || null;
+  };
+
   const drawFrame = useCallback((canvas: FabricCanvas) => {
-    // Remove existing frame elements
     const existingFrame = canvas.getObjects().filter(obj => 
       obj.name === 'frame' || obj.name === 'innerFrame' || 
       obj.name?.startsWith('corner') || obj.name === 'shadowFrame'
@@ -117,14 +151,14 @@ export const InteractiveCardCanvas = ({ data, onUpdate, onExport }: InteractiveC
       case 'corner':
         const cornerSize = 20;
         const cornerConfigs = [
-          { x1: 4, y1: 4, x2: 4 + cornerSize, y2: 4 }, // top-left h
-          { x1: 4, y1: 4, x2: 4, y2: 4 + cornerSize }, // top-left v
-          { x1: width - 4, y1: 4, x2: width - 4 - cornerSize, y2: 4 }, // top-right h
-          { x1: width - 4, y1: 4, x2: width - 4, y2: 4 + cornerSize }, // top-right v
-          { x1: 4, y1: height - 4, x2: 4 + cornerSize, y2: height - 4 }, // bottom-left h
-          { x1: 4, y1: height - 4, x2: 4, y2: height - 4 - cornerSize }, // bottom-left v
-          { x1: width - 4, y1: height - 4, x2: width - 4 - cornerSize, y2: height - 4 }, // bottom-right h
-          { x1: width - 4, y1: height - 4, x2: width - 4, y2: height - 4 - cornerSize }, // bottom-right v
+          { x1: 4, y1: 4, x2: 4 + cornerSize, y2: 4 },
+          { x1: 4, y1: 4, x2: 4, y2: 4 + cornerSize },
+          { x1: width - 4, y1: 4, x2: width - 4 - cornerSize, y2: 4 },
+          { x1: width - 4, y1: 4, x2: width - 4, y2: 4 + cornerSize },
+          { x1: 4, y1: height - 4, x2: 4 + cornerSize, y2: height - 4 },
+          { x1: 4, y1: height - 4, x2: 4, y2: height - 4 - cornerSize },
+          { x1: width - 4, y1: height - 4, x2: width - 4 - cornerSize, y2: height - 4 },
+          { x1: width - 4, y1: height - 4, x2: width - 4, y2: height - 4 - cornerSize },
         ];
         cornerConfigs.forEach((cfg, i) => {
           canvas.add(new Line([cfg.x1, cfg.y1, cfg.x2, cfg.y2], {
@@ -135,7 +169,6 @@ export const InteractiveCardCanvas = ({ data, onUpdate, onExport }: InteractiveC
         break;
     }
 
-    // Send frames to back
     canvas.getObjects().filter(obj => 
       obj.name === 'frame' || obj.name === 'innerFrame' || 
       obj.name?.startsWith('corner') || obj.name === 'shadowFrame'
@@ -146,7 +179,6 @@ export const InteractiveCardCanvas = ({ data, onUpdate, onExport }: InteractiveC
   useEffect(() => {
     if (!canvasRef.current) return;
 
-    // Dispose previous canvas if exists
     if (fabricRef.current) {
       fabricRef.current.dispose();
       fabricRef.current = null;
@@ -162,7 +194,39 @@ export const InteractiveCardCanvas = ({ data, onUpdate, onExport }: InteractiveC
 
     fabricRef.current = canvas;
 
-    // Expose export function
+    // Selection events
+    canvas.on('selection:created', (e) => {
+      const obj = e.selected?.[0];
+      if (obj?.name && obj instanceof IText) {
+        setSelectedElement(obj.name);
+        updateToolbarPosition(obj);
+      }
+    });
+
+    canvas.on('selection:updated', (e) => {
+      const obj = e.selected?.[0];
+      if (obj?.name && obj instanceof IText) {
+        setSelectedElement(obj.name);
+        updateToolbarPosition(obj);
+      }
+    });
+
+    canvas.on('selection:cleared', () => {
+      setSelectedElement(null);
+    });
+
+    canvas.on('object:moving', (e) => {
+      if (e.target?.name && e.target instanceof IText) {
+        updateToolbarPosition(e.target);
+      }
+    });
+
+    canvas.on('object:scaling', (e) => {
+      if (e.target?.name && e.target instanceof IText) {
+        updateToolbarPosition(e.target);
+      }
+    });
+
     const exportCanvas = () => {
       if (fabricRef.current) {
         canvas.discardActiveObject();
@@ -181,6 +245,19 @@ export const InteractiveCardCanvas = ({ data, onUpdate, onExport }: InteractiveC
       delete (window as any).__exportCardCanvas;
     };
   }, [CANVAS_WIDTH, CANVAS_HEIGHT]);
+
+  const updateToolbarPosition = (obj: FabricObject) => {
+    if (!containerRef.current) return;
+    const rect = containerRef.current.getBoundingClientRect();
+    const objCenter = obj.getCenterPoint();
+    const objTop = obj.top || 0;
+    const objHeight = (obj.height || 0) * (obj.scaleY || 1);
+    
+    setToolbarPosition({
+      x: objCenter.x,
+      y: Math.max(50, objTop - 10),
+    });
+  };
 
   // Update background image
   useEffect(() => {
@@ -241,19 +318,20 @@ export const InteractiveCardCanvas = ({ data, onUpdate, onExport }: InteractiveC
     id: string,
     text: string,
     style: TextElementStyle,
-    extraProps: Partial<FabricText> = {}
+    extraProps: Partial<IText> = {}
   ) => {
     const canvas = fabricRef.current;
     if (!canvas) return;
 
-    let textObj = objectsRef.current.get(id) as FabricText | undefined;
+    let textObj = objectsRef.current.get(id) as IText | undefined;
 
-    // Adjust position for orientation
     const adjustedX = data.orientation === 'portrait' ? style.x * 0.65 : style.x;
     const adjustedY = data.orientation === 'portrait' ? style.y * 1.54 : style.y;
 
+    const styleState = textStyles[id] || { isBold: false, isItalic: false, isUnderline: false };
+
     if (!textObj) {
-      textObj = new FabricText(text, {
+      textObj = new IText(text, {
         left: adjustedX,
         top: adjustedY,
         fontFamily: style.fontFamily,
@@ -264,20 +342,39 @@ export const InteractiveCardCanvas = ({ data, onUpdate, onExport }: InteractiveC
         scaleX: style.scaleX,
         scaleY: style.scaleY,
         name: id,
+        fontWeight: styleState.isBold ? 'bold' : 'normal',
+        fontStyle: styleState.isItalic ? 'italic' : 'normal',
+        underline: styleState.isUnderline,
         ...extraProps,
       });
 
       textObj.on('modified', () => {
-        const styleKey = `${id}Style` as keyof BusinessCardData;
-        onUpdate({
-          [styleKey]: {
-            ...style,
-            x: data.orientation === 'portrait' ? (textObj!.left || adjustedX) / 0.65 : textObj!.left || style.x,
-            y: data.orientation === 'portrait' ? (textObj!.top || adjustedY) / 1.54 : textObj!.top || style.y,
-            scaleX: textObj!.scaleX || 1,
-            scaleY: textObj!.scaleY || 1,
-          },
-        });
+        const styleKey = getStyleKey(id);
+        if (styleKey) {
+          onUpdate({
+            [styleKey]: {
+              ...style,
+              x: data.orientation === 'portrait' ? (textObj!.left || adjustedX) / 0.65 : textObj!.left || style.x,
+              y: data.orientation === 'portrait' ? (textObj!.top || adjustedY) / 1.54 : textObj!.top || style.y,
+              scaleX: textObj!.scaleX || 1,
+              scaleY: textObj!.scaleY || 1,
+            },
+          });
+        }
+      });
+
+      textObj.on('changed', () => {
+        const textKey = getTextKey(id);
+        if (textKey && textObj) {
+          onUpdate({ [textKey]: textObj.text || '' });
+        }
+      });
+
+      textObj.on('editing:exited', () => {
+        const textKey = getTextKey(id);
+        if (textKey && textObj) {
+          onUpdate({ [textKey]: textObj.text || '' });
+        }
       });
 
       canvas.add(textObj);
@@ -292,33 +389,23 @@ export const InteractiveCardCanvas = ({ data, onUpdate, onExport }: InteractiveC
         top: adjustedY,
         scaleX: style.scaleX,
         scaleY: style.scaleY,
+        fontWeight: styleState.isBold ? 'bold' : (extraProps.fontWeight || 'normal'),
+        fontStyle: styleState.isItalic ? 'italic' : (extraProps.fontStyle || 'normal'),
+        underline: styleState.isUnderline,
         ...extraProps,
       });
     }
 
     canvas.renderAll();
-  }, [onUpdate, data.orientation]);
+  }, [onUpdate, data.orientation, textStyles]);
 
   // Update all text elements
   useEffect(() => {
-    updateTextElement('name', data.name, data.nameStyle, { 
-      fontWeight: '500',
-      charSpacing: 200,
-      fontSize: data.nameStyle.fontSize,
-    });
-    updateTextElement('title', data.title, data.titleStyle, { 
-      fontWeight: '600',
-    });
-    updateTextElement('subtitle', data.subtitle, data.subtitleStyle, { 
-      fontStyle: 'italic',
-      opacity: 0.85,
-    });
-    updateTextElement('line1', data.line1, data.line1Style, { 
-      opacity: 0.9,
-    });
-    updateTextElement('line2', data.line2, data.line2Style, { 
-      opacity: 0.75,
-    });
+    updateTextElement('name', data.name, data.nameStyle, { charSpacing: 200 });
+    updateTextElement('title', data.title, data.titleStyle);
+    updateTextElement('subtitle', data.subtitle, data.subtitleStyle, { opacity: 0.85 });
+    updateTextElement('line1', data.line1, data.line1Style, { opacity: 0.9 });
+    updateTextElement('line2', data.line2, data.line2Style, { opacity: 0.75 });
     updateTextElement('line3', data.line3, data.line3Style);
   }, [
     data.name, data.nameStyle,
@@ -330,11 +417,79 @@ export const InteractiveCardCanvas = ({ data, onUpdate, onExport }: InteractiveC
     updateTextElement
   ]);
 
+  const handleStyleChange = (updates: Partial<TextElementStyle>) => {
+    if (!selectedElement) return;
+    const styleKey = getStyleKey(selectedElement);
+    if (styleKey) {
+      const currentStyle = data[styleKey] as TextElementStyle;
+      onUpdate({ [styleKey]: { ...currentStyle, ...updates } });
+    }
+  };
+
+  const handleBoldChange = (bold: boolean) => {
+    if (!selectedElement) return;
+    setTextStyles(prev => ({
+      ...prev,
+      [selectedElement]: { ...prev[selectedElement], isBold: bold }
+    }));
+    const textObj = objectsRef.current.get(selectedElement) as IText | undefined;
+    if (textObj) {
+      textObj.set('fontWeight', bold ? 'bold' : 'normal');
+      fabricRef.current?.renderAll();
+    }
+  };
+
+  const handleItalicChange = (italic: boolean) => {
+    if (!selectedElement) return;
+    setTextStyles(prev => ({
+      ...prev,
+      [selectedElement]: { ...prev[selectedElement], isItalic: italic }
+    }));
+    const textObj = objectsRef.current.get(selectedElement) as IText | undefined;
+    if (textObj) {
+      textObj.set('fontStyle', italic ? 'italic' : 'normal');
+      fabricRef.current?.renderAll();
+    }
+  };
+
+  const handleUnderlineChange = (underline: boolean) => {
+    if (!selectedElement) return;
+    setTextStyles(prev => ({
+      ...prev,
+      [selectedElement]: { ...prev[selectedElement], isUnderline: underline }
+    }));
+    const textObj = objectsRef.current.get(selectedElement) as IText | undefined;
+    if (textObj) {
+      textObj.set('underline', underline);
+      fabricRef.current?.renderAll();
+    }
+  };
+
+  const currentStyle = selectedElement 
+    ? (data[getStyleKey(selectedElement) as keyof BusinessCardData] as TextElementStyle)
+    : null;
+
+  const currentTextStyles = selectedElement ? textStyles[selectedElement] : null;
+
   return (
-    <div className="relative overflow-hidden shadow-2xl rounded-sm">
-      <canvas ref={canvasRef} className="block" />
-      <div className="absolute bottom-2 right-2 text-xs text-white/50 bg-black/20 px-2 py-1 rounded pointer-events-none">
-        Click & drag to edit
+    <div ref={containerRef} className="relative overflow-visible">
+      <FloatingTextToolbar
+        style={currentStyle || { fontFamily: 'Playfair Display', fontSize: 14, color: '#000', x: 0, y: 0, scaleX: 1, scaleY: 1 }}
+        isBold={currentTextStyles?.isBold || false}
+        isItalic={currentTextStyles?.isItalic || false}
+        isUnderline={currentTextStyles?.isUnderline || false}
+        position={toolbarPosition}
+        onStyleChange={handleStyleChange}
+        onBoldChange={handleBoldChange}
+        onItalicChange={handleItalicChange}
+        onUnderlineChange={handleUnderlineChange}
+        visible={!!selectedElement && !!currentStyle}
+      />
+      <div className="overflow-hidden shadow-2xl rounded-sm">
+        <canvas ref={canvasRef} className="block" />
+      </div>
+      <div className="mt-3 text-center text-xs text-muted-foreground">
+        Double-click text to edit • Drag to move • Corner handles to resize
       </div>
     </div>
   );
