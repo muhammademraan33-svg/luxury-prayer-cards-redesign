@@ -254,6 +254,7 @@ export const InteractiveCardCanvas = ({ data, onUpdate, onExport }: InteractiveC
           scaleY: scale,
           originX: 'center',
           originY: 'center',
+          opacity: data.logoOpacity,
           name: 'backgroundImage',
         });
 
@@ -275,7 +276,7 @@ export const InteractiveCardCanvas = ({ data, onUpdate, onExport }: InteractiveC
       drawFrame(canvas);
       canvas.renderAll();
     }
-  }, [data.logo, data.logoX, data.logoY, data.logoScale, data.backgroundColor, CANVAS_WIDTH, CANVAS_HEIGHT, drawFrame, onUpdate]);
+  }, [data.logo, data.logoX, data.logoY, data.logoScale, data.logoOpacity, data.backgroundColor, CANVAS_WIDTH, CANVAS_HEIGHT, drawFrame, onUpdate]);
 
   // Update frame
   useEffect(() => {

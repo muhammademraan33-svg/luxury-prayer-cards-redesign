@@ -22,10 +22,11 @@ export const CardEditorView = ({ template, onBack }: CardEditorViewProps) => {
     fontFamily: template.fontFamily,
     frameStyle: template.frameStyle,
     frameColor: template.frameColor,
-    logo: template.backgroundImage, // Use the template's background image
+    logo: template.backgroundImage,
     logoScale: 1,
     logoX: 200,
     logoY: 130,
+    logoOpacity: 1,
     orientation: 'landscape',
   } as BusinessCardData;
 
