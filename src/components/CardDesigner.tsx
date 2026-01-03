@@ -11,6 +11,7 @@ import {
 } from '@/types/businessCard';
 import { BackgroundSelector } from './BackgroundSelector';
 import { FrameStyleSelector } from './FrameStyleSelector';
+import { FontSetSelector, FontSet } from './FontSetSelector';
 import { CardPreview } from './CardPreview';
 import { TextEditor } from './TextEditor';
 import { Button } from '@/components/ui/button';
@@ -26,9 +27,11 @@ interface CardDesignerProps {
 const stepLabels: Record<EditorStep, string> = {
   'celebration': 'Celebration',
   'front-background': 'Front Background',
+  'front-fonts': 'Choose Fonts',
   'front-frame': 'Front Frame',
   'front-text': 'Front Text',
   'back-background': 'Back Background',
+  'back-fonts': 'Back Fonts',
   'back-frame': 'Back Frame',
   'back-text': 'Back Text',
   'review': 'Review & Download',
@@ -36,9 +39,11 @@ const stepLabels: Record<EditorStep, string> = {
 
 const steps: EditorStep[] = [
   'front-background',
+  'front-fonts',
   'front-frame',
   'front-text',
   'back-background',
+  'back-fonts',
   'back-frame',
   'back-text',
   'review',
@@ -46,6 +51,7 @@ const steps: EditorStep[] = [
 
 export const CardDesigner = ({ cardData, onUpdate, onBack }: CardDesignerProps) => {
   const [currentStep, setCurrentStep] = useState<EditorStep>('front-background');
+  const [selectedFontSet, setSelectedFontSet] = useState<FontSet | null>(null);
   const info = categoryInfo[cardData.category];
 
   const currentStepIndex = steps.indexOf(currentStep);
@@ -82,6 +88,27 @@ export const CardDesigner = ({ cardData, onUpdate, onBack }: CardDesignerProps) 
     updateSide(currentSide, { texts });
   };
 
+  const handleFontSetSelect = (fontSet: FontSet) => {
+    setSelectedFontSet(fontSet);
+    // Apply font set to texts
+    const updatedTexts = sideData.texts.map((text, index) => {
+      // First text (title) gets main font, others get sub font
+      const isTitle = index === 1; // index 1 is usually the main title
+      return {
+        ...text,
+        style: {
+          ...text.style,
+          fontFamily: isTitle ? fontSet.mainFont : fontSet.subFont,
+          color: isTitle ? fontSet.textColor : text.style.color,
+        },
+      };
+    });
+    updateSide(currentSide, { 
+      texts: updatedTexts,
+      frameColor: fontSet.accentColor 
+    });
+  };
+
   const goNext = () => {
     if (!isLastStep) {
       setCurrentStep(steps[currentStepIndex + 1]);
@@ -111,6 +138,16 @@ export const CardDesigner = ({ cardData, onUpdate, onBack }: CardDesignerProps) 
             onChange={handleBackgroundChange}
             orientation={cardData.orientation}
             onOrientationChange={handleOrientationChange}
+          />
+        );
+      case 'front-fonts':
+      case 'back-fonts':
+        return (
+          <FontSetSelector
+            category={cardData.category}
+            background={sideData.background}
+            selectedFontSet={selectedFontSet}
+            onSelect={handleFontSetSelect}
           />
         );
       case 'front-frame':

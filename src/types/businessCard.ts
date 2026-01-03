@@ -221,4 +221,4 @@ export const createDefaultCardData = (category: CardCategory): BusinessCardData 
   activeSide: 'front',
 });
 
-export type EditorStep = 'celebration' | 'front-background' | 'front-frame' | 'front-text' | 'back-background' | 'back-frame' | 'back-text' | 'review';
+export type EditorStep = 'celebration' | 'front-background' | 'front-fonts' | 'front-frame' | 'front-text' | 'back-background' | 'back-fonts' | 'back-frame' | 'back-text' | 'review';
