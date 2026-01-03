@@ -1,7 +1,7 @@
 import { useEffect, useRef, useCallback, useState } from 'react';
 import { Canvas as FabricCanvas, FabricText, FabricImage, Rect, Line, IText, FabricObject } from 'fabric';
 import { BusinessCardData, TextElementStyle } from '@/types/businessCard';
-import { FloatingTextToolbar } from './FloatingTextToolbar';
+import { TextToolbar } from './TextToolbar';
 
 declare module 'fabric' {
   interface FabricObject {
@@ -28,7 +28,6 @@ export const InteractiveCardCanvas = ({ data, onUpdate, onExport }: InteractiveC
   const objectsRef = useRef<Map<string, IText | FabricImage>>(new Map());
   
   const [selectedElement, setSelectedElement] = useState<string | null>(null);
-  const [toolbarPosition, setToolbarPosition] = useState({ x: 0, y: 0 });
   const [textStyles, setTextStyles] = useState<Record<string, TextStyleState>>({});
 
   const CANVAS_WIDTH = data.orientation === 'landscape' ? 400 : 260;
@@ -199,7 +198,6 @@ export const InteractiveCardCanvas = ({ data, onUpdate, onExport }: InteractiveC
       const obj = e.selected?.[0];
       if (obj?.name && obj instanceof IText) {
         setSelectedElement(obj.name);
-        updateToolbarPosition(obj);
       }
     });
 
@@ -207,24 +205,11 @@ export const InteractiveCardCanvas = ({ data, onUpdate, onExport }: InteractiveC
       const obj = e.selected?.[0];
       if (obj?.name && obj instanceof IText) {
         setSelectedElement(obj.name);
-        updateToolbarPosition(obj);
       }
     });
 
     canvas.on('selection:cleared', () => {
       setSelectedElement(null);
-    });
-
-    canvas.on('object:moving', (e) => {
-      if (e.target?.name && e.target instanceof IText) {
-        updateToolbarPosition(e.target);
-      }
-    });
-
-    canvas.on('object:scaling', (e) => {
-      if (e.target?.name && e.target instanceof IText) {
-        updateToolbarPosition(e.target);
-      }
     });
 
     const exportCanvas = () => {
@@ -245,17 +230,6 @@ export const InteractiveCardCanvas = ({ data, onUpdate, onExport }: InteractiveC
       delete (window as any).__exportCardCanvas;
     };
   }, [CANVAS_WIDTH, CANVAS_HEIGHT]);
-
-  const updateToolbarPosition = (obj: FabricObject) => {
-    if (!containerRef.current) return;
-    const objCenter = obj.getCenterPoint();
-    const objBottom = (obj.top || 0) + ((obj.height || 0) * (obj.scaleY || 1)) / 2;
-    
-    setToolbarPosition({
-      x: objCenter.x,
-      y: objBottom + 15, // Position below the text
-    });
-  };
 
   // Update background image
   useEffect(() => {
@@ -470,23 +444,23 @@ export const InteractiveCardCanvas = ({ data, onUpdate, onExport }: InteractiveC
   const currentTextStyles = selectedElement ? textStyles[selectedElement] : null;
 
   return (
-    <div ref={containerRef} className="relative overflow-visible">
-      <FloatingTextToolbar
+    <div ref={containerRef} className="flex flex-col gap-3">
+      <TextToolbar
         style={currentStyle || { fontFamily: 'Playfair Display', fontSize: 14, color: '#000', x: 0, y: 0, scaleX: 1, scaleY: 1 }}
         isBold={currentTextStyles?.isBold || false}
         isItalic={currentTextStyles?.isItalic || false}
         isUnderline={currentTextStyles?.isUnderline || false}
-        position={toolbarPosition}
         onStyleChange={handleStyleChange}
         onBoldChange={handleBoldChange}
         onItalicChange={handleItalicChange}
         onUnderlineChange={handleUnderlineChange}
         visible={!!selectedElement && !!currentStyle}
+        selectedElementName={selectedElement}
       />
-      <div className="overflow-hidden shadow-2xl rounded-sm">
+      <div className="overflow-hidden shadow-2xl rounded-sm self-center">
         <canvas ref={canvasRef} className="block" />
       </div>
-      <div className="mt-3 text-center text-xs text-muted-foreground">
+      <div className="text-center text-xs text-muted-foreground">
         Double-click text to edit • Drag to move • Corner handles to resize
       </div>
     </div>

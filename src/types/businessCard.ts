@@ -159,10 +159,22 @@ export const fontOptions = [
 ];
 
 export const colorPresets = [
-  '#fefefe', '#fdf6f0', '#f5f5f5', '#faf8f5', '#f8f8f8',
-  '#1a1a2e', '#2c2c2c', '#333333', '#5c4033', '#3d3d3d',
-  '#b8860b', '#c9a227', '#c0c0c0', '#e8b4b8', '#708090',
-  '#8b7355', '#d4af37', '#a67c52', '#9c8b75', '#4a5568',
+  // Whites & Creams
+  '#ffffff', '#fefefe', '#fdf6f0', '#f5f5f5', '#faf8f5', '#f8f8f8', '#fffaf0', '#fff8dc',
+  // Blacks & Grays
+  '#000000', '#1a1a2e', '#2c2c2c', '#333333', '#4a4a4a', '#5c5c5c', '#708090', '#4a5568',
+  // Golds & Browns
+  '#b8860b', '#c9a227', '#d4af37', '#daa520', '#8b7355', '#a67c52', '#5c4033', '#3d3d3d',
+  // Silvers & Metallics
+  '#c0c0c0', '#9c8b75', '#a8a8a8', '#b0b0b0',
+  // Pinks & Reds
+  '#e8b4b8', '#dda0dd', '#ffb6c1', '#ff69b4', '#dc143c', '#8b0000', '#a52a2a',
+  // Blues
+  '#000080', '#00008b', '#4169e1', '#6495ed', '#87ceeb', '#add8e6',
+  // Greens
+  '#006400', '#228b22', '#2e8b57', '#3cb371', '#90ee90',
+  // Purples
+  '#4b0082', '#800080', '#9370db', '#ba55d3', '#dda0dd',
 ];
 
 export const frameStyles = [
