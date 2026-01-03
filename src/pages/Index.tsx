@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Sparkles, QrCode, MessageSquare, Building2, Shield, RotateCcw } from 'lucide-react';
+import { QrCode, MessageSquare, Building2, Shield, RotateCcw } from 'lucide-react';
+import eternityLogo from '@/assets/eternity-cards-logo.png';
 
 type MetalFinish = 'silver' | 'gold' | 'black' | 'rose-gold';
 
@@ -23,11 +24,8 @@ const Index = () => {
       {/* Header */}
       <header className="border-b border-amber-900/30 bg-slate-900/80 backdrop-blur-sm sticky top-0 z-50">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center">
-              <Sparkles className="h-5 w-5 text-slate-900" />
-            </div>
-            <span className="text-xl font-semibold text-amber-100 tracking-wide">Eternity Cards</span>
+          <div className="flex items-center gap-3">
+            <img src={eternityLogo} alt="Eternity Cards" className="h-12 w-auto" />
           </div>
           <Link to="/auth">
             <Button variant="outline" className="border-amber-600/50 text-amber-100 hover:bg-amber-600/20">
