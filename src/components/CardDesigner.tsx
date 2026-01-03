@@ -255,15 +255,24 @@ export const CardDesigner = ({ cardData, onUpdate, onBack }: CardDesignerProps) 
 
         {/* Preview Area */}
         <div className="flex-1 canvas-area flex items-center justify-center p-8">
-          <div className="space-y-4">
-            <CardPreview
-              sideData={sideData}
-              orientation={cardData.orientation}
-            />
-            <p className="text-center text-xs text-muted-foreground">
-              {currentSide === 'front' ? 'Front' : 'Back'} Preview
-            </p>
-          </div>
+          {currentStep.endsWith('background') ? (
+            <div className="max-w-md text-center space-y-2">
+              <h3 className="text-base font-medium text-foreground">Preview appears on the next step</h3>
+              <p className="text-sm text-muted-foreground">
+                Choose your background finish first, then tap Continue to start editing your text.
+              </p>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              <CardPreview
+                sideData={sideData}
+                orientation={cardData.orientation}
+              />
+              <p className="text-center text-xs text-muted-foreground">
+                {currentSide === 'front' ? 'Front' : 'Back'} Preview
+              </p>
+            </div>
+          )}
         </div>
       </main>
 
