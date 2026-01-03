@@ -1,10 +1,9 @@
-import { forwardRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { fontOptions, colorPresets, TextElementStyle } from '@/types/businessCard';
-import { Bold, Italic, Underline, Type, Palette, Minus, Plus } from 'lucide-react';
+import { Bold, Italic, Underline, Type, Minus, Plus } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface FloatingTextToolbarProps {
@@ -20,7 +19,7 @@ interface FloatingTextToolbarProps {
   visible: boolean;
 }
 
-export const FloatingTextToolbar = forwardRef<HTMLDivElement, FloatingTextToolbarProps>(({
+function FloatingTextToolbar({
   style,
   isBold,
   isItalic,
@@ -31,12 +30,11 @@ export const FloatingTextToolbar = forwardRef<HTMLDivElement, FloatingTextToolba
   onItalicChange,
   onUnderlineChange,
   visible,
-}, ref) => {
+}: FloatingTextToolbarProps) {
   if (!visible) return null;
 
   return (
     <div
-      ref={ref}
       className="absolute z-50 bg-card/95 backdrop-blur-sm border border-border rounded-xl shadow-2xl p-1.5 flex items-center gap-1 animate-in fade-in-0 zoom-in-95"
       style={{
         left: position.x,
@@ -164,6 +162,6 @@ export const FloatingTextToolbar = forwardRef<HTMLDivElement, FloatingTextToolba
       </Popover>
     </div>
   );
-});
+}
 
-FloatingTextToolbar.displayName = 'FloatingTextToolbar';
+export { FloatingTextToolbar };
