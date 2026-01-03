@@ -170,6 +170,7 @@ export const CardDesigner = ({ cardData, onUpdate, onBack }: CardDesignerProps) 
             onUpdate={handleTextUpdate}
             category={cardData.category}
             suggestedFonts={info.suggestedFonts}
+            background={sideData.background}
           />
         );
       case 'review':
