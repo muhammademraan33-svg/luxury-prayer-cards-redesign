@@ -1,34 +1,31 @@
 import { useState } from 'react';
-import { TemplateGalleryView } from './TemplateGalleryView';
-import { CardEditorView } from './CardEditorView';
-import { Template } from './TemplateCard';
-
-type EditorView = 'gallery' | 'editor';
+import { CelebrationSelector } from './CelebrationSelector';
+import { CardDesigner } from './CardDesigner';
+import { CardCategory, BusinessCardData, createDefaultCardData, EditorStep } from '@/types/businessCard';
 
 export const BusinessCardEditor = () => {
-  const [view, setView] = useState<EditorView>('gallery');
-  const [selectedTemplate, setSelectedTemplate] = useState<Template | null>(null);
+  const [category, setCategory] = useState<CardCategory | null>(null);
+  const [cardData, setCardData] = useState<BusinessCardData | null>(null);
 
-  const handleSelectTemplate = (template: Template) => {
-    setSelectedTemplate(template);
-    setView('editor');
+  const handleSelectCategory = (selectedCategory: CardCategory) => {
+    setCategory(selectedCategory);
+    setCardData(createDefaultCardData(selectedCategory));
   };
 
-  const handleBackToGallery = () => {
-    setView('gallery');
-    setSelectedTemplate(null);
+  const handleBack = () => {
+    setCategory(null);
+    setCardData(null);
   };
 
-  if (view === 'editor' && selectedTemplate) {
-    return (
-      <CardEditorView
-        template={selectedTemplate}
-        onBack={handleBackToGallery}
-      />
-    );
+  if (!category || !cardData) {
+    return <CelebrationSelector onSelect={handleSelectCategory} />;
   }
 
   return (
-    <TemplateGalleryView onSelectTemplate={handleSelectTemplate} />
+    <CardDesigner
+      cardData={cardData}
+      onUpdate={setCardData}
+      onBack={handleBack}
+    />
   );
 };
