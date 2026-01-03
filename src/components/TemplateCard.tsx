@@ -5,6 +5,7 @@ export interface Template {
   name: string;
   category: CardCategory;
   thumbnail: string;
+  backgroundImage: string; // Full-size image for the actual card
   backgroundColor: string;
   frameStyle: 'none' | 'solid' | 'double' | 'gradient' | 'ornate' | 'dashed' | 'dotted' | 'inset' | 'shadow' | 'corner';
   frameColor: string;
