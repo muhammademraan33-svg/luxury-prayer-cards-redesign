@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { CelebrationSelector } from './CelebrationSelector';
-import { CardDesigner } from './CardDesigner';
-import { CardCategory, BusinessCardData, createDefaultCardData, EditorStep } from '@/types/businessCard';
+import { CanvasEditor } from './editor/CanvasEditor';
+import { CardCategory, BusinessCardData, createDefaultCardData } from '@/types/businessCard';
 
 export const BusinessCardEditor = () => {
   const [category, setCategory] = useState<CardCategory | null>(null);
@@ -22,7 +22,7 @@ export const BusinessCardEditor = () => {
   }
 
   return (
-    <CardDesigner
+    <CanvasEditor
       cardData={cardData}
       onUpdate={setCardData}
       onBack={handleBack}
