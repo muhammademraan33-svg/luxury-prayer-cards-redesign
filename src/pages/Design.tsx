@@ -66,7 +66,7 @@ const Design = () => {
   const [isPanning, setIsPanning] = useState(false);
   const [backBgImage, setBackBgImage] = useState<string | null>(null);
   const [backText, setBackText] = useState('The Lord is my shepherd; I shall not want.');
-  const [prayerTextSize, setPrayerTextSize] = useState<number | 'auto'>(14);
+  const [prayerTextSize, setPrayerTextSize] = useState<number | 'auto'>(16);
   
   // Front card text state
   const [showNameOnFront, setShowNameOnFront] = useState(true);
@@ -79,15 +79,15 @@ const Design = () => {
   const [nameColor, setNameColor] = useState('#ffffff');
   const [frontDatesColor, setFrontDatesColor] = useState('#ffffffcc');
   const [backDatesColor, setBackDatesColor] = useState('#666666');
-  const [nameSize, setNameSize] = useState(18);
-  const [frontDatesSize, setFrontDatesSize] = useState<number | 'auto'>(14);
-  const [backDatesSize, setBackDatesSize] = useState<number | 'auto'>(12);
+  const [nameSize, setNameSize] = useState(24);
+  const [frontDatesSize, setFrontDatesSize] = useState<number | 'auto'>(16);
+  const [backDatesSize, setBackDatesSize] = useState<number | 'auto'>(14);
   const [frontDateFormat, setFrontDateFormat] = useState<'full' | 'short-month' | 'mmm-dd-yyyy' | 'numeric' | 'year'>('mmm-dd-yyyy');
   const [backDateFormat, setBackDateFormat] = useState<'full' | 'short-month' | 'mmm-dd-yyyy' | 'numeric' | 'year'>('mmm-dd-yyyy');
   const [additionalText, setAdditionalText] = useState('');
   const [additionalTextPosition, setAdditionalTextPosition] = useState({ x: 50, y: 70 });
   const [additionalTextColor, setAdditionalTextColor] = useState('#ffffff');
-  const [additionalTextSize, setAdditionalTextSize] = useState(10);
+  const [additionalTextSize, setAdditionalTextSize] = useState(14);
   const [additionalTextFont, setAdditionalTextFont] = useState('Cormorant Garamond');
   const [showAdditionalText, setShowAdditionalText] = useState(false);
   const [selectedPrayerId, setSelectedPrayerId] = useState<string>('custom');
@@ -108,7 +108,7 @@ const Design = () => {
   // "In Loving Memory" customization
   const [inLovingMemoryText, setInLovingMemoryText] = useState('In Loving Memory');
   const [inLovingMemoryColor, setInLovingMemoryColor] = useState('#a1a1aa');
-  const [inLovingMemorySize, setInLovingMemorySize] = useState(10);
+  const [inLovingMemorySize, setInLovingMemorySize] = useState(12);
   const [inLovingMemoryFont, setInLovingMemoryFont] = useState('Cormorant Garamond');
   const [showInLovingMemory, setShowInLovingMemory] = useState(true);
   
