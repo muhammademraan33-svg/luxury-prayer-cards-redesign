@@ -302,6 +302,18 @@ const Design = () => {
     return `${formatSingleDate(birthD, format)} – ${formatSingleDate(deathD, format)}`;
   };
 
+  // Prevent orphan words by replacing the last space in each line with a non-breaking space
+  const preventOrphans = (text: string): string => {
+    // Split by newlines to handle each line separately
+    return text.split('\n').map(line => {
+      const words = line.trim().split(' ');
+      if (words.length <= 2) return line; // Don't modify lines with 2 or fewer words
+      // Join the last two words with a non-breaking space
+      const lastTwo = words.slice(-2).join('\u00A0');
+      return [...words.slice(0, -2), lastTwo].join(' ');
+    }).join('\n');
+  };
+
   const handlePrayerSelect = (prayerId: string) => {
     setSelectedPrayerId(prayerId);
     if (prayerId === 'custom') {
@@ -1182,7 +1194,7 @@ const Design = () => {
                                       overflow: 'hidden',
                                     }}
                                   >
-                                    {backText}
+                                    {preventOrphans(backText)}
                                   </p>
                                 </div>
 
