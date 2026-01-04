@@ -682,7 +682,7 @@ const Design = () => {
                                   onPointerCancel={handleTextPointerUp}
                                   onWheel={(e) => handleTextWheel(e, 'name')}
                                 >
-                                  <span style={{ fontSize: `${nameSize}px`, color: nameColor, fontWeight: nameBold ? 'bold' : 'normal' }}>
+                                  <span style={{ fontSize: `${nameSize}px`, color: nameColor, fontWeight: nameBold ? 'bold' : 'normal', whiteSpace: 'pre-line', textAlign: 'center' }}>
                                     {deceasedName || 'Name Here'}
                                   </span>
                                 </div>
@@ -810,11 +810,12 @@ const Design = () => {
                           <div className="space-y-2 p-3 bg-slate-700/30 rounded-lg">
                             <Label className="text-white text-sm font-medium">Name</Label>
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                              <Input
-                                placeholder="John David Smith"
+                              <Textarea
+                                placeholder="John David&#10;Smith"
                                 value={deceasedName}
                                 onChange={(e) => setDeceasedName(e.target.value)}
-                                className="bg-slate-700 border-slate-600 text-white"
+                                className="bg-slate-700 border-slate-600 text-white resize-none min-h-[60px]"
+                                rows={2}
                               />
                               <Select value={nameFont} onValueChange={setNameFont}>
                                 <SelectTrigger className="bg-slate-700 border-slate-600 text-white">
@@ -1210,7 +1211,7 @@ const Design = () => {
                                     </p>
                                   )}
                                   <p 
-                                    className={`${orientation === 'portrait' ? 'text-base' : 'text-sm'} font-serif mb-0.5`}
+                                    className={`${orientation === 'portrait' ? 'text-base' : 'text-sm'} font-serif mb-0.5 whitespace-pre-line text-center`}
                                     style={{ 
                                       color: backBgImage || metalFinish === 'black' ? '#ffffff' : '#18181b',
                                       fontWeight: nameBold ? 'bold' : 'normal'
