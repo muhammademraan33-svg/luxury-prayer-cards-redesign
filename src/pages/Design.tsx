@@ -7,13 +7,14 @@ import { Card, CardContent } from '@/components/ui/card';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Sparkles, QrCode, Loader2, Truck, Zap, ArrowLeft, ArrowRight, ImageIcon, RotateCcw, RectangleHorizontal, RectangleVertical, Type, Book, Trash2, Package, Clock } from 'lucide-react';
+import { Sparkles, QrCode, Loader2, Truck, Zap, ArrowLeft, ArrowRight, ImageIcon, RotateCcw, RectangleHorizontal, RectangleVertical, Type, Book, Trash2, Package, Clock, MapPin } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 import { Textarea } from '@/components/ui/textarea';
 import { prayerTemplates } from '@/data/prayerTemplates';
 import { toast } from 'sonner';
 import eternityLogo from '@/assets/eternity-cards-logo.png';
-
+import html2canvas from 'html2canvas';
+import { supabase } from '@/integrations/supabase/client';
 const FONT_OPTIONS = [
   { value: 'Playfair Display', name: 'Playfair Display' },
   { value: 'Cormorant Garamond', name: 'Cormorant Garamond' },
@@ -134,6 +135,20 @@ const Design = () => {
   const [easelPhotoTextSize, setEaselPhotoTextSize] = useState(24);
   const [showEaselPhotoText, setShowEaselPhotoText] = useState(true);
   const easelPhotosInputRef = useRef<HTMLInputElement>(null);
+  
+  // Shipping address state
+  const [customerName, setCustomerName] = useState('');
+  const [customerEmail, setCustomerEmail] = useState('');
+  const [shippingStreet, setShippingStreet] = useState('');
+  const [shippingCity, setShippingCity] = useState('');
+  const [shippingState, setShippingState] = useState('');
+  const [shippingZip, setShippingZip] = useState('');
+  const [shippingPhone, setShippingPhone] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  // Refs for print capture
+  const frontPrintRef = useRef<HTMLDivElement>(null);
+  const backPrintRef = useRef<HTMLDivElement>(null);
   
   const textDragStartRef = useRef<{ x: number; y: number; posX: number; posY: number } | null>(null);
   const textPinchStartRef = useRef<{ distance: number; size: number } | null>(null);
@@ -547,14 +562,87 @@ const Design = () => {
     return total;
   };
 
-  const handleSubmitOrder = (e: React.FormEvent) => {
+  const handleSubmitOrder = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!deceasedName.trim()) {
       toast.error('Please enter the name of the deceased');
       return;
     }
-    toast.success('Order submitted! We will contact you shortly to complete your order.');
-    // In a real app, this would submit to a backend
+    if (!customerName.trim() || !customerEmail.trim() || !shippingStreet.trim() || 
+        !shippingCity.trim() || !shippingState.trim() || !shippingZip.trim() || !shippingPhone.trim()) {
+      toast.error('Please fill in all shipping information');
+      return;
+    }
+
+    setIsSubmitting(true);
+    
+    try {
+      // Generate print-ready images with bleed
+      let frontCardImage = '';
+      let backCardImage = '';
+      
+      // Capture front card
+      if (frontPrintRef.current) {
+        const frontCanvas = await html2canvas(frontPrintRef.current, {
+          scale: 3, // High resolution for print
+          useCORS: true,
+          backgroundColor: null,
+        });
+        frontCardImage = frontCanvas.toDataURL('image/png');
+      }
+      
+      // Capture back card
+      if (backPrintRef.current) {
+        const backCanvas = await html2canvas(backPrintRef.current, {
+          scale: 3,
+          useCORS: true,
+          backgroundColor: null,
+        });
+        backCardImage = backCanvas.toDataURL('image/png');
+      }
+
+      // Send order to edge function
+      const { data, error } = await supabase.functions.invoke('send-order-emails', {
+        body: {
+          customerEmail,
+          customerName,
+          shippingAddress: {
+            street: shippingStreet,
+            city: shippingCity,
+            state: shippingState,
+            zip: shippingZip,
+            phone: shippingPhone,
+          },
+          orderDetails: {
+            deceasedName,
+            birthDate,
+            deathDate,
+            metalFinish: currentFinish.name,
+            orientation,
+            totalCards: 55 + (additionalSets * 55),
+            easelPhotoCount: Math.max(2, easelPhotos.length),
+            easelPhotoSize,
+            shipping,
+            totalPrice: calculatePrice(),
+            additionalSets,
+            prayerText: backText,
+            qrUrl,
+          },
+          frontCardImage,
+          backCardImage,
+        },
+      });
+
+      if (error) throw error;
+
+      toast.success(`Order #${data.orderId} placed successfully! Check your email for confirmation.`);
+      setStep(5); // Success step
+    } catch (error) {
+      console.error('Order submission error:', error);
+      toast.error('Failed to submit order. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const currentFinish = METAL_FINISHES.find(f => f.id === metalFinish) || METAL_FINISHES[0];
@@ -572,7 +660,7 @@ const Design = () => {
             <img src={eternityLogo} alt="Metal Prayer Cards" className="h-10 w-auto" />
           </Link>
           <div className="text-sm text-slate-400">
-            Step {step} of 3
+            Step {step} of 4
           </div>
         </div>
       </header>
@@ -583,12 +671,15 @@ const Design = () => {
           <h1 className="text-3xl font-bold text-white mb-2">
             {step === 1 && 'Design Your Metal Prayer Card'}
             {step === 2 && 'Choose Your Package'}
-            {step === 3 && 'Review & Order'}
+            {step === 3 && 'Shipping Information'}
+            {step === 4 && 'Review & Order'}
+            {step === 5 && 'Order Confirmed!'}
           </h1>
           <p className="text-slate-400">
             {step === 1 && 'Customize the front and back of your prayer card'}
             {step === 2 && 'Select quantity and shipping options'}
-            {step === 3 && 'Confirm your order details'}
+            {step === 3 && 'Enter your shipping details'}
+            {step === 4 && 'Confirm your order details'}
           </p>
         </div>
 
@@ -2307,8 +2398,125 @@ const Design = () => {
                 </div>
               )}
 
-              {/* Step 3: Review & Order */}
+              {/* Step 3: Shipping Information */}
               {step === 3 && (
+                <div className="space-y-6">
+                  <div className="flex items-center gap-2 mb-4">
+                    <MapPin className="h-5 w-5 text-amber-400" />
+                    <Label className="text-white font-semibold text-lg">Shipping Address</Label>
+                  </div>
+
+                  <div className="space-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label className="text-slate-400">Full Name *</Label>
+                        <Input
+                          value={customerName}
+                          onChange={(e) => setCustomerName(e.target.value)}
+                          placeholder="John Smith"
+                          className="bg-slate-700 border-slate-600 text-white"
+                          required
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label className="text-slate-400">Email *</Label>
+                        <Input
+                          type="email"
+                          value={customerEmail}
+                          onChange={(e) => setCustomerEmail(e.target.value)}
+                          placeholder="john@example.com"
+                          className="bg-slate-700 border-slate-600 text-white"
+                          required
+                        />
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label className="text-slate-400">Street Address *</Label>
+                      <Input
+                        value={shippingStreet}
+                        onChange={(e) => setShippingStreet(e.target.value)}
+                        placeholder="123 Main Street, Apt 4B"
+                        className="bg-slate-700 border-slate-600 text-white"
+                        required
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                      <div className="space-y-2 col-span-2 md:col-span-2">
+                        <Label className="text-slate-400">City *</Label>
+                        <Input
+                          value={shippingCity}
+                          onChange={(e) => setShippingCity(e.target.value)}
+                          placeholder="New York"
+                          className="bg-slate-700 border-slate-600 text-white"
+                          required
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label className="text-slate-400">State *</Label>
+                        <Input
+                          value={shippingState}
+                          onChange={(e) => setShippingState(e.target.value)}
+                          placeholder="NY"
+                          className="bg-slate-700 border-slate-600 text-white"
+                          required
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label className="text-slate-400">ZIP *</Label>
+                        <Input
+                          value={shippingZip}
+                          onChange={(e) => setShippingZip(e.target.value)}
+                          placeholder="10001"
+                          className="bg-slate-700 border-slate-600 text-white"
+                          required
+                        />
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label className="text-slate-400">Phone Number *</Label>
+                      <Input
+                        type="tel"
+                        value={shippingPhone}
+                        onChange={(e) => setShippingPhone(e.target.value)}
+                        placeholder="(555) 123-4567"
+                        className="bg-slate-700 border-slate-600 text-white"
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <div className="flex gap-3 pt-2">
+                    <Button 
+                      type="button" 
+                      variant="outline" 
+                      onClick={() => setStep(2)} 
+                      className="flex-1 border-slate-600 text-slate-300 hover:bg-slate-700"
+                    >
+                      <ArrowLeft className="h-4 w-4 mr-2" /> Back
+                    </Button>
+                    <Button 
+                      type="button" 
+                      onClick={() => {
+                        if (!customerName.trim() || !customerEmail.trim() || !shippingStreet.trim() || 
+                            !shippingCity.trim() || !shippingState.trim() || !shippingZip.trim() || !shippingPhone.trim()) {
+                          toast.error('Please fill in all shipping fields');
+                          return;
+                        }
+                        setStep(4);
+                      }} 
+                      className="flex-1 bg-amber-600 hover:bg-amber-700 text-white font-semibold"
+                    >
+                      Review Order <ArrowRight className="h-4 w-4 ml-2" />
+                    </Button>
+                  </div>
+                </div>
+              )}
+
+              {/* Step 4: Review & Order */}
+              {step === 4 && (
                 <div className="space-y-6">
                   {/* Order Summary */}
                   <div className="bg-slate-700/30 rounded-lg p-6 space-y-4">
@@ -2355,59 +2563,255 @@ const Design = () => {
                         </div>
                       </div>
                     </div>
+                  </div>
 
-                    <div className="bg-slate-800/50 rounded-lg p-4 mt-4">
-                      <h5 className="text-white font-medium mb-2">Card Details</h5>
+                  {/* Card Details */}
+                  <div className="bg-slate-800/50 rounded-lg p-4">
+                    <h5 className="text-white font-medium mb-2">Card Details</h5>
+                    <p className="text-slate-300">
+                      <span className="text-slate-400">Name:</span> {deceasedName}
+                    </p>
+                    {birthDate && deathDate && (
                       <p className="text-slate-300">
-                        <span className="text-slate-400">Name:</span> {deceasedName}
+                        <span className="text-slate-400">Dates:</span> {formatDates(birthDate, deathDate, frontDateFormat)}
                       </p>
-                      {birthDate && deathDate && (
-                        <p className="text-slate-300">
-                          <span className="text-slate-400">Dates:</span> {formatDates(birthDate, deathDate, frontDateFormat)}
-                        </p>
-                      )}
-                      <p className="text-slate-300">
-                        <span className="text-slate-400">Finish:</span> {currentFinish.name}
-                      </p>
-                      <p className="text-slate-300">
-                        <span className="text-slate-400">Orientation:</span> {orientation}
-                      </p>
-                      <p className="text-slate-300">
-                        <span className="text-slate-400">Total Cards:</span> {55 + (additionalSets * 55)}
-                      </p>
-                      <p className="text-slate-300">
-                        <span className="text-slate-400">Easel Photos:</span> {Math.max(2, easelPhotos.length)} ({easelPhotoSize})
-                      </p>
-                      {easelPhotoText && (
-                        <p className="text-slate-300">
-                          <span className="text-slate-400">Easel Text:</span> {easelPhotoText}
-                        </p>
-                      )}
-                    </div>
+                    )}
+                    <p className="text-slate-300">
+                      <span className="text-slate-400">Finish:</span> {currentFinish.name}
+                    </p>
+                    <p className="text-slate-300">
+                      <span className="text-slate-400">Orientation:</span> {orientation}
+                    </p>
+                    <p className="text-slate-300">
+                      <span className="text-slate-400">Total Cards:</span> {55 + (additionalSets * 55)}
+                    </p>
+                    <p className="text-slate-300">
+                      <span className="text-slate-400">Easel Photos:</span> {Math.max(2, easelPhotos.length)} ({easelPhotoSize})
+                    </p>
+                  </div>
+
+                  {/* Shipping Details */}
+                  <div className="bg-slate-800/50 rounded-lg p-4">
+                    <h5 className="text-white font-medium mb-2">Shipping To</h5>
+                    <p className="text-slate-300">{customerName}</p>
+                    <p className="text-slate-300">{shippingStreet}</p>
+                    <p className="text-slate-300">{shippingCity}, {shippingState} {shippingZip}</p>
+                    <p className="text-slate-300">{shippingPhone}</p>
+                    <p className="text-slate-400 text-sm mt-2">{customerEmail}</p>
                   </div>
 
                   <div className="flex gap-3">
                     <Button 
                       type="button" 
                       variant="outline" 
-                      onClick={() => setStep(2)} 
+                      onClick={() => setStep(3)} 
                       className="flex-1 border-slate-600 text-slate-300 hover:bg-slate-700"
+                      disabled={isSubmitting}
                     >
                       <ArrowLeft className="h-4 w-4 mr-2" /> Back
                     </Button>
                     <Button 
                       type="submit" 
                       className="flex-1 bg-amber-600 hover:bg-amber-700 text-white font-semibold"
+                      disabled={isSubmitting}
                     >
-                      Place Order - ${calculatePrice()}
+                      {isSubmitting ? (
+                        <>
+                          <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                          Processing...
+                        </>
+                      ) : (
+                        <>Place Order - ${calculatePrice()}</>
+                      )}
                     </Button>
                   </div>
+                </div>
+              )}
+
+              {/* Step 5: Order Confirmation */}
+              {step === 5 && (
+                <div className="text-center space-y-6 py-8">
+                  <div className="w-20 h-20 bg-green-500/20 rounded-full flex items-center justify-center mx-auto">
+                    <Package className="h-10 w-10 text-green-400" />
+                  </div>
+                  <h2 className="text-2xl font-bold text-white">Thank You for Your Order!</h2>
+                  <p className="text-slate-300 max-w-md mx-auto">
+                    A confirmation email has been sent to <strong>{customerEmail}</strong>.
+                    Your premium metal prayer cards will be shipped within {shipping === 'overnight' ? '24 hours' : '2 business days'}.
+                  </p>
+                  <Link to="/">
+                    <Button className="bg-amber-600 hover:bg-amber-700 text-white font-semibold mt-4">
+                      Return Home
+                    </Button>
+                  </Link>
                 </div>
               )}
             </form>
           </CardContent>
         </Card>
       </main>
+
+      {/* Hidden print-ready card captures (with 1.25" bleed at 300 DPI = ~375px padding) */}
+      <div className="fixed -left-[9999px] -top-[9999px] pointer-events-none">
+        {/* Front card print version */}
+        <div 
+          ref={frontPrintRef}
+          className="relative"
+          style={{
+            width: orientation === 'landscape' ? '1275px' : '825px', // 3.5" or 2.25" + bleed at 300 DPI
+            height: orientation === 'landscape' ? '900px' : '1275px',
+            padding: '112px', // ~0.375" bleed (1.25" total minus card edge)
+            backgroundColor: '#f5f5f5',
+          }}
+        >
+          <div 
+            className={`w-full h-full rounded-lg overflow-hidden relative bg-gradient-to-br ${currentFinish.gradient}`}
+            style={{ padding: '4px' }}
+          >
+            <div className="w-full h-full rounded-lg overflow-hidden bg-slate-700 relative">
+              {deceasedPhoto && (
+                <img
+                  src={deceasedPhoto}
+                  alt="Memorial"
+                  className="w-full h-full object-cover"
+                  style={{
+                    transform: `translate(${photoPanX}px, ${photoPanY}px) scale(${photoZoom})`,
+                    transformOrigin: 'center',
+                  }}
+                />
+              )}
+              {showNameOnFront && (
+                <div
+                  className="absolute px-2 py-1"
+                  style={{
+                    left: `${namePosition.x}%`,
+                    top: `${namePosition.y}%`,
+                    transform: 'translate(-50%, -50%)',
+                    fontFamily: nameFont,
+                    fontSize: `${nameSize * 3}px`,
+                    color: nameColor,
+                    fontWeight: nameBold ? 'bold' : 'normal',
+                    textShadow: '0 2px 4px rgba(0,0,0,0.5)',
+                    whiteSpace: 'pre-line',
+                    textAlign: 'center',
+                  }}
+                >
+                  {deceasedName || 'Name Here'}
+                </div>
+              )}
+              {showDatesOnFront && birthDate && deathDate && (
+                <div
+                  className="absolute"
+                  style={{
+                    left: `${datesPosition.x}%`,
+                    top: `${datesPosition.y}%`,
+                    transform: 'translate(-50%, -50%)',
+                    fontFamily: datesFont,
+                    fontSize: `${(typeof frontDatesSize === 'number' ? frontDatesSize : 12) * 3}px`,
+                    color: frontDatesColor,
+                    fontWeight: datesBold ? 'bold' : 'normal',
+                    textShadow: '0 1px 2px rgba(0,0,0,0.5)',
+                  }}
+                >
+                  {formatDates(birthDate, deathDate, frontDateFormat)}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Back card print version */}
+        <div 
+          ref={backPrintRef}
+          className="relative"
+          style={{
+            width: orientation === 'landscape' ? '1275px' : '825px',
+            height: orientation === 'landscape' ? '900px' : '1275px',
+            padding: '112px',
+            backgroundColor: '#f5f5f5',
+          }}
+        >
+          <div 
+            className={`w-full h-full rounded-lg overflow-hidden relative bg-gradient-to-br ${currentFinish.gradient}`}
+            style={{ padding: '4px' }}
+          >
+            <div 
+              className="w-full h-full rounded-lg overflow-hidden relative flex flex-col"
+              style={{
+                backgroundColor: backBgImage ? 'transparent' : '#ffffff',
+                backgroundImage: backBgImage ? `url(${backBgImage})` : 'none',
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+              }}
+            >
+              {/* Back content */}
+              <div className="flex-1 flex flex-col p-6 relative">
+                {showInLovingMemory && (
+                  <div
+                    className="text-center mb-2"
+                    style={{
+                      fontFamily: inLovingMemoryFont,
+                      fontSize: `${inLovingMemorySize * 3}px`,
+                      color: inLovingMemoryColor,
+                      fontWeight: inLovingMemoryBold ? 'bold' : 'normal',
+                    }}
+                  >
+                    {inLovingMemoryText}
+                  </div>
+                )}
+                {showNameOnBack && (
+                  <div
+                    className="text-center"
+                    style={{
+                      fontFamily: backNameFont,
+                      fontSize: `${backNameSize * 3}px`,
+                      color: backNameColor,
+                      fontWeight: backNameBold ? 'bold' : 'normal',
+                    }}
+                  >
+                    {deceasedName}
+                  </div>
+                )}
+                {showDatesOnBack && birthDate && deathDate && (
+                  <div
+                    className="text-center mt-1"
+                    style={{
+                      fontFamily: datesFont,
+                      fontSize: `${(typeof backDatesSize === 'number' ? backDatesSize : 10) * 3}px`,
+                      color: backDatesColor,
+                    }}
+                  >
+                    {formatDates(birthDate, deathDate, backDateFormat)}
+                  </div>
+                )}
+                <div
+                  className="flex-1 mt-4 text-center"
+                  style={{
+                    fontFamily: 'Cormorant Garamond',
+                    fontSize: `${(prayerTextSize === 'auto' ? autoPrayerFontSize : Math.min(prayerTextSize, autoPrayerFontSize)) * 3}px`,
+                    color: '#333',
+                    fontWeight: prayerBold ? 'bold' : 'normal',
+                    lineHeight: 1.5,
+                    whiteSpace: 'pre-line',
+                  }}
+                >
+                  {backText}
+                </div>
+                {showQrCode && qrUrl && (
+                  <div className="flex justify-center mt-4">
+                    <QRCodeSVG value={qrUrl} size={120} />
+                  </div>
+                )}
+                {funeralHomeLogo && funeralHomeLogoPosition === 'bottom' && (
+                  <div className="flex justify-center mt-4">
+                    <img src={funeralHomeLogo} alt="Logo" style={{ height: `${funeralHomeLogoSize * 2}px` }} />
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
 
       {/* Footer */}
       <footer className="border-t border-slate-800 py-8 mt-16">
