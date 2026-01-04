@@ -108,7 +108,8 @@ const Design = () => {
   // "In Loving Memory" customization
   const [inLovingMemoryText, setInLovingMemoryText] = useState('In Loving Memory');
   const [inLovingMemoryColor, setInLovingMemoryColor] = useState('#a1a1aa');
-  const [inLovingMemorySize, setInLovingMemorySize] = useState(8);
+  const [inLovingMemorySize, setInLovingMemorySize] = useState(10);
+  const [inLovingMemoryFont, setInLovingMemoryFont] = useState('Cormorant Garamond');
   const [showInLovingMemory, setShowInLovingMemory] = useState(true);
   
   // Funeral home logo
@@ -1123,7 +1124,8 @@ const Design = () => {
                                       style={{ 
                                         fontSize: `${inLovingMemorySize}px`,
                                         color: inLovingMemoryColor,
-                                        fontWeight: inLovingMemoryBold ? 'bold' : 'normal'
+                                        fontWeight: inLovingMemoryBold ? 'bold' : 'normal',
+                                        fontFamily: inLovingMemoryFont,
                                       }}
                                     >
                                       {inLovingMemoryText}
@@ -1396,6 +1398,21 @@ const Design = () => {
                                 onChange={(e) => setInLovingMemoryText(e.target.value)}
                                 className="bg-slate-700 border-slate-600 text-white"
                               />
+                              <div className="flex items-center gap-2">
+                                <Label className="text-slate-400 text-xs">Font</Label>
+                                <Select value={inLovingMemoryFont} onValueChange={setInLovingMemoryFont}>
+                                  <SelectTrigger className="h-8 flex-1 bg-slate-700 border-slate-600 text-white text-xs">
+                                    <SelectValue />
+                                  </SelectTrigger>
+                                  <SelectContent className="bg-slate-800 border-slate-600">
+                                    {FONT_OPTIONS.map((font) => (
+                                      <SelectItem key={font.value} value={font.value} className="text-white text-xs">
+                                        <span style={{ fontFamily: font.value }}>{font.name}</span>
+                                      </SelectItem>
+                                    ))}
+                                  </SelectContent>
+                                </Select>
+                              </div>
                               <div className="flex items-center gap-3 flex-wrap">
                                 <div className="flex items-center gap-2">
                                   <Label className="text-slate-400 text-xs">Color</Label>
@@ -1423,7 +1440,7 @@ const Design = () => {
                                     variant="outline"
                                     size="icon"
                                     className="h-6 w-6 border-slate-600"
-                                    onClick={() => setInLovingMemorySize(Math.min(16, inLovingMemorySize + 1))}
+                                    onClick={() => setInLovingMemorySize(Math.min(20, inLovingMemorySize + 1))}
                                   >
                                     <span className="text-xs">+</span>
                                   </Button>
