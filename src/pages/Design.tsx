@@ -92,11 +92,30 @@ const Design = () => {
   const [draggingText, setDraggingText] = useState<'name' | 'dates' | 'additional' | null>(null);
   const [resizingText, setResizingText] = useState<'name' | 'dates' | 'additional' | null>(null);
   
+  // Bold options
+  const [nameBold, setNameBold] = useState(false);
+  const [datesBold, setDatesBold] = useState(false);
+  const [additionalTextBold, setAdditionalTextBold] = useState(false);
+  const [inLovingMemoryBold, setInLovingMemoryBold] = useState(false);
+  const [prayerBold, setPrayerBold] = useState(false);
+  
+  // "In Loving Memory" customization
+  const [inLovingMemoryText, setInLovingMemoryText] = useState('In Loving Memory');
+  const [inLovingMemoryColor, setInLovingMemoryColor] = useState('#a1a1aa');
+  const [inLovingMemorySize, setInLovingMemorySize] = useState(8);
+  const [showInLovingMemory, setShowInLovingMemory] = useState(true);
+  
+  // Funeral home logo
+  const [funeralHomeLogo, setFuneralHomeLogo] = useState<string | null>(null);
+  const [funeralHomeLogoPosition, setFuneralHomeLogoPosition] = useState<'top' | 'bottom'>('bottom');
+  const [funeralHomeLogoSize, setFuneralHomeLogoSize] = useState(30);
+  
   const textDragStartRef = useRef<{ x: number; y: number; posX: number; posY: number } | null>(null);
   const textPinchStartRef = useRef<{ distance: number; size: number } | null>(null);
   const textPointerCacheRef = useRef<Map<number, PointerEvent>>(new Map());
   const photoInputRef = useRef<HTMLInputElement>(null);
   const backInputRef = useRef<HTMLInputElement>(null);
+  const logoInputRef = useRef<HTMLInputElement>(null);
   const photoContainerRef = useRef<HTMLDivElement>(null);
   const cardPreviewRef = useRef<HTMLDivElement>(null);
   const panStartRef = useRef<{ x: number; y: number; panX: number; panY: number } | null>(null);
@@ -358,7 +377,7 @@ const Design = () => {
     setPhotoPanY(clamped.panY);
   };
 
-  const handleImageUpload = (file: File, type: 'photo' | 'back') => {
+  const handleImageUpload = (file: File, type: 'photo' | 'back' | 'logo') => {
     if (!file) return;
 
     const previewUrl = URL.createObjectURL(file);
@@ -367,8 +386,10 @@ const Design = () => {
       setPhotoZoom(1);
       setPhotoPanX(0);
       setPhotoPanY(0);
-    } else {
+    } else if (type === 'back') {
       setBackBgImage(previewUrl);
+    } else if (type === 'logo') {
+      setFuneralHomeLogo(previewUrl);
     }
     toast.success('Image uploaded!');
   };
@@ -529,7 +550,7 @@ const Design = () => {
                                   onPointerCancel={handleTextPointerUp}
                                   onWheel={(e) => handleTextWheel(e, 'name')}
                                 >
-                                  <span className="font-medium" style={{ fontSize: `${nameSize}px`, color: nameColor }}>
+                                  <span style={{ fontSize: `${nameSize}px`, color: nameColor, fontWeight: nameBold ? 'bold' : 'normal' }}>
                                     {deceasedName || 'Name Here'}
                                   </span>
                                 </div>
@@ -555,7 +576,7 @@ const Design = () => {
                                   onPointerCancel={handleTextPointerUp}
                                   onWheel={(e) => handleTextWheel(e, 'dates')}
                                 >
-                                  <span style={{ fontSize: frontDatesSize === 'auto' ? '12px' : `${frontDatesSize}px`, color: frontDatesColor }}>
+                                  <span style={{ fontSize: frontDatesSize === 'auto' ? '12px' : `${frontDatesSize}px`, color: frontDatesColor, fontWeight: datesBold ? 'bold' : 'normal' }}>
                                     {formatDates(birthDate, deathDate, frontDateFormat)}
                                   </span>
                                 </div>
@@ -581,7 +602,7 @@ const Design = () => {
                                   onPointerCancel={handleTextPointerUp}
                                   onWheel={(e) => handleTextWheel(e, 'additional')}
                                 >
-                                  <span style={{ fontSize: `${additionalTextSize}px`, color: additionalTextColor, whiteSpace: 'pre-wrap', textAlign: 'center', display: 'block' }}>
+                                  <span style={{ fontSize: `${additionalTextSize}px`, color: additionalTextColor, whiteSpace: 'pre-wrap', textAlign: 'center', display: 'block', fontWeight: additionalTextBold ? 'bold' : 'normal' }}>
                                     {additionalText || 'Your text here'}
                                   </span>
                                 </div>
@@ -708,6 +729,15 @@ const Design = () => {
                                   <span className="text-xs">+</span>
                                 </Button>
                               </div>
+                              <Button
+                                type="button"
+                                variant={nameBold ? 'default' : 'outline'}
+                                size="sm"
+                                className={`h-7 px-3 text-xs font-bold ${nameBold ? 'bg-amber-600 text-white' : 'border-slate-600 text-slate-300'}`}
+                                onClick={() => setNameBold(!nameBold)}
+                              >
+                                B
+                              </Button>
                               <label className="flex items-center gap-2 cursor-pointer ml-auto">
                                 <input 
                                   type="checkbox" 
@@ -817,6 +847,15 @@ const Design = () => {
                                   disabled={!showDatesOnFront}
                                 >
                                   <span className="text-xs">+</span>
+                                </Button>
+                                <Button
+                                  type="button"
+                                  variant={datesBold ? 'default' : 'outline'}
+                                  size="sm"
+                                  className={`h-7 px-3 text-xs font-bold ${datesBold ? 'bg-amber-600 text-white' : 'border-slate-600 text-slate-300'}`}
+                                  onClick={() => setDatesBold(!datesBold)}
+                                >
+                                  B
                                 </Button>
                               </div>
                             </div>
@@ -929,7 +968,7 @@ const Design = () => {
                                       ))}
                                     </SelectContent>
                                   </Select>
-                                  <div className="flex items-center gap-2">
+                                  <div className="flex items-center gap-2 flex-wrap">
                                     <Label className="text-slate-400 text-xs">Color</Label>
                                     <input
                                       type="color"
@@ -956,6 +995,15 @@ const Design = () => {
                                         onClick={() => setAdditionalTextSize(Math.min(48, additionalTextSize + 2))}
                                       >
                                         <span className="text-xs">+</span>
+                                      </Button>
+                                      <Button
+                                        type="button"
+                                        variant={additionalTextBold ? 'default' : 'outline'}
+                                        size="sm"
+                                        className={`h-7 px-3 text-xs font-bold ${additionalTextBold ? 'bg-amber-600 text-white' : 'border-slate-600 text-slate-300'}`}
+                                        onClick={() => setAdditionalTextBold(!additionalTextBold)}
+                                      >
+                                        B
                                       </Button>
                                     </div>
                                   </div>
@@ -997,18 +1045,46 @@ const Design = () => {
                             )}
                             <div className="relative z-10 w-full h-full p-3">
                               <div className="h-full flex flex-col justify-between text-center">
+                                {/* Funeral Home Logo - Top */}
+                                {funeralHomeLogo && funeralHomeLogoPosition === 'top' && (
+                                  <div className="flex justify-center mb-1">
+                                    <img 
+                                      src={funeralHomeLogo} 
+                                      alt="Funeral Home Logo" 
+                                      className="object-contain"
+                                      style={{ height: `${funeralHomeLogoSize}px`, maxWidth: '60%' }}
+                                    />
+                                  </div>
+                                )}
+                                
                                 {/* Name & Dates */}
                                 <div>
-                                  <p className={`text-[8px] uppercase tracking-[0.12em] mb-0.5 ${backBgImage || metalFinish === 'black' ? 'text-zinc-300' : 'text-zinc-700'}`}>
-                                    In Loving Memory
-                                  </p>
-                                  <p className={`${orientation === 'portrait' ? 'text-base' : 'text-sm'} font-serif ${backBgImage || metalFinish === 'black' ? 'text-white' : 'text-zinc-900'}`}>
+                                  {showInLovingMemory && (
+                                    <p 
+                                      className="uppercase tracking-[0.12em] mb-0.5"
+                                      style={{ 
+                                        fontSize: `${inLovingMemorySize}px`,
+                                        color: inLovingMemoryColor,
+                                        fontWeight: inLovingMemoryBold ? 'bold' : 'normal'
+                                      }}
+                                    >
+                                      {inLovingMemoryText}
+                                    </p>
+                                  )}
+                                  <p 
+                                    className={`${orientation === 'portrait' ? 'text-base' : 'text-sm'} font-serif`}
+                                    style={{ 
+                                      color: backBgImage || metalFinish === 'black' ? '#ffffff' : '#18181b',
+                                      fontWeight: nameBold ? 'bold' : 'normal'
+                                    }}
+                                  >
                                     {deceasedName || 'Name Here'}
                                   </p>
                                   {showDatesOnBack && (
                                     <p style={{ 
                                       fontSize: backDatesSize === 'auto' ? '10px' : `${backDatesSize}px`,
-                                      color: backDatesColor 
+                                      color: backDatesColor,
+                                      fontWeight: datesBold ? 'bold' : 'normal'
                                     }}>
                                       {formatDates(birthDate, deathDate, backDateFormat)}
                                     </p>
@@ -1024,11 +1100,24 @@ const Design = () => {
                                         ? `clamp(8px, ${Math.max(9, 16 - backText.length / 40)}px, 16px)` 
                                         : `${prayerTextSize}px`,
                                       textWrap: 'balance',
+                                      fontWeight: prayerBold ? 'bold' : 'normal',
                                     }}
                                   >
                                     {backText}
                                   </p>
                                 </div>
+
+                                {/* Funeral Home Logo - Bottom */}
+                                {funeralHomeLogo && funeralHomeLogoPosition === 'bottom' && !showQrCode && (
+                                  <div className="flex justify-center mt-1">
+                                    <img 
+                                      src={funeralHomeLogo} 
+                                      alt="Funeral Home Logo" 
+                                      className="object-contain"
+                                      style={{ height: `${funeralHomeLogoSize}px`, maxWidth: '60%' }}
+                                    />
+                                  </div>
+                                )}
 
                                 {/* QR Code */}
                                 {showQrCode && qrUrl && (
@@ -1044,6 +1133,15 @@ const Design = () => {
                                     <p className={`text-[6px] mt-0.5 ${backBgImage || metalFinish === 'black' ? 'text-zinc-400' : 'text-zinc-600'}`}>
                                       Scan to visit
                                     </p>
+                                    {/* Logo below QR if position is bottom */}
+                                    {funeralHomeLogo && funeralHomeLogoPosition === 'bottom' && (
+                                      <img 
+                                        src={funeralHomeLogo} 
+                                        alt="Funeral Home Logo" 
+                                        className="object-contain mt-1"
+                                        style={{ height: `${Math.min(funeralHomeLogoSize, 20)}px`, maxWidth: '50%' }}
+                                      />
+                                    )}
                                   </div>
                                 )}
                               </div>
@@ -1079,6 +1177,156 @@ const Design = () => {
                               <RotateCcw className="h-4 w-4 mr-2" />
                               Use Metal
                             </Button>
+                          )}
+                        </div>
+
+                        {/* In Loving Memory Controls */}
+                        <div className="w-full max-w-md space-y-3 p-3 bg-slate-700/30 rounded-lg">
+                          <div className="flex items-center justify-between">
+                            <Label className="text-white text-sm font-medium">"In Loving Memory" Text</Label>
+                            <label className="flex items-center gap-2 cursor-pointer">
+                              <input 
+                                type="checkbox" 
+                                checked={showInLovingMemory} 
+                                onChange={(e) => setShowInLovingMemory(e.target.checked)}
+                                className="accent-amber-600"
+                              />
+                              <span className="text-slate-400 text-xs">Show</span>
+                            </label>
+                          </div>
+                          {showInLovingMemory && (
+                            <>
+                              <Input
+                                placeholder="In Loving Memory"
+                                value={inLovingMemoryText}
+                                onChange={(e) => setInLovingMemoryText(e.target.value)}
+                                className="bg-slate-700 border-slate-600 text-white"
+                              />
+                              <div className="flex items-center gap-3 flex-wrap">
+                                <div className="flex items-center gap-2">
+                                  <Label className="text-slate-400 text-xs">Color</Label>
+                                  <input
+                                    type="color"
+                                    value={inLovingMemoryColor}
+                                    onChange={(e) => setInLovingMemoryColor(e.target.value)}
+                                    className="w-7 h-7 rounded border border-slate-600 cursor-pointer"
+                                  />
+                                </div>
+                                <div className="flex items-center gap-1">
+                                  <Label className="text-slate-400 text-xs">Size</Label>
+                                  <Button
+                                    type="button"
+                                    variant="outline"
+                                    size="icon"
+                                    className="h-6 w-6 border-slate-600"
+                                    onClick={() => setInLovingMemorySize(Math.max(6, inLovingMemorySize - 1))}
+                                  >
+                                    <span className="text-xs">−</span>
+                                  </Button>
+                                  <span className="text-xs text-white bg-slate-700 px-2 py-1 rounded min-w-[40px] text-center">{inLovingMemorySize}px</span>
+                                  <Button
+                                    type="button"
+                                    variant="outline"
+                                    size="icon"
+                                    className="h-6 w-6 border-slate-600"
+                                    onClick={() => setInLovingMemorySize(Math.min(16, inLovingMemorySize + 1))}
+                                  >
+                                    <span className="text-xs">+</span>
+                                  </Button>
+                                </div>
+                                <Button
+                                  type="button"
+                                  variant={inLovingMemoryBold ? 'default' : 'outline'}
+                                  size="sm"
+                                  className={`h-7 px-3 text-xs font-bold ${inLovingMemoryBold ? 'bg-amber-600 text-white' : 'border-slate-600 text-slate-300'}`}
+                                  onClick={() => setInLovingMemoryBold(!inLovingMemoryBold)}
+                                >
+                                  B
+                                </Button>
+                              </div>
+                            </>
+                          )}
+                        </div>
+
+                        {/* Funeral Home Logo Upload */}
+                        <div className="w-full max-w-md space-y-3 p-3 bg-slate-700/30 rounded-lg">
+                          <Label className="text-white text-sm font-medium">Funeral Home Logo/Image</Label>
+                          <input
+                            ref={logoInputRef}
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                            onChange={(e) => e.target.files?.[0] && handleImageUpload(e.target.files[0], 'logo')}
+                          />
+                          <div className="flex gap-2 flex-wrap">
+                            <Button
+                              type="button"
+                              variant="outline"
+                              onClick={() => logoInputRef.current?.click()}
+                              className="border-amber-600/50 text-amber-400 hover:bg-amber-600/20"
+                            >
+                              <ImageIcon className="h-4 w-4 mr-2" />
+                              {funeralHomeLogo ? 'Change Logo' : 'Upload Logo'}
+                            </Button>
+                            {funeralHomeLogo && (
+                              <Button
+                                type="button"
+                                variant="outline"
+                                onClick={() => setFuneralHomeLogo(null)}
+                                className="border-rose-600/50 text-rose-400 hover:bg-rose-600/20"
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            )}
+                          </div>
+                          {funeralHomeLogo && (
+                            <div className="space-y-2">
+                              <div className="flex items-center gap-3">
+                                <Label className="text-slate-400 text-xs">Position</Label>
+                                <div className="flex gap-1">
+                                  <Button
+                                    type="button"
+                                    variant={funeralHomeLogoPosition === 'top' ? 'default' : 'outline'}
+                                    size="sm"
+                                    className={`h-7 px-3 text-xs ${funeralHomeLogoPosition === 'top' ? 'bg-amber-600 text-white' : 'border-slate-600 text-slate-300'}`}
+                                    onClick={() => setFuneralHomeLogoPosition('top')}
+                                  >
+                                    Top
+                                  </Button>
+                                  <Button
+                                    type="button"
+                                    variant={funeralHomeLogoPosition === 'bottom' ? 'default' : 'outline'}
+                                    size="sm"
+                                    className={`h-7 px-3 text-xs ${funeralHomeLogoPosition === 'bottom' ? 'bg-amber-600 text-white' : 'border-slate-600 text-slate-300'}`}
+                                    onClick={() => setFuneralHomeLogoPosition('bottom')}
+                                  >
+                                    Bottom
+                                  </Button>
+                                </div>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <Label className="text-slate-400 text-xs">Size</Label>
+                                <Button
+                                  type="button"
+                                  variant="outline"
+                                  size="icon"
+                                  className="h-6 w-6 border-slate-600"
+                                  onClick={() => setFuneralHomeLogoSize(Math.max(15, funeralHomeLogoSize - 5))}
+                                >
+                                  <span className="text-xs">−</span>
+                                </Button>
+                                <span className="text-xs text-white bg-slate-700 px-2 py-1 rounded min-w-[40px] text-center">{funeralHomeLogoSize}px</span>
+                                <Button
+                                  type="button"
+                                  variant="outline"
+                                  size="icon"
+                                  className="h-6 w-6 border-slate-600"
+                                  onClick={() => setFuneralHomeLogoSize(Math.min(60, funeralHomeLogoSize + 5))}
+                                >
+                                  <span className="text-xs">+</span>
+                                </Button>
+                              </div>
+                            </div>
                           )}
                         </div>
 
@@ -1173,6 +1421,15 @@ const Design = () => {
                                 className={`text-xs px-2 py-1 h-7 ${prayerTextSize === 14 ? 'bg-amber-600 text-white border-amber-600' : 'border-slate-600 text-slate-300'}`}
                               >
                                 Large
+                              </Button>
+                              <Button
+                                type="button"
+                                variant={prayerBold ? 'default' : 'outline'}
+                                size="sm"
+                                className={`h-7 px-3 text-xs font-bold ${prayerBold ? 'bg-amber-600 text-white' : 'border-slate-600 text-slate-300'}`}
+                                onClick={() => setPrayerBold(!prayerBold)}
+                              >
+                                B
                               </Button>
                             </div>
                           </div>
