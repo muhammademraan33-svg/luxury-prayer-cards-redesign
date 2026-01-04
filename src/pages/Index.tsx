@@ -110,37 +110,62 @@ const Index = () => {
 
                   {/* Back - Info, Prayer, Funeral Home Logo */}
                   <div 
-                    className={`absolute inset-0 rounded-2xl bg-gradient-to-br ${currentFinish.gradient} shadow-2xl p-5`}
-                    style={{ backfaceVisibility: 'hidden', transform: 'rotateY(180deg)' }}
+                    className={`absolute inset-0 rounded-2xl shadow-2xl p-1`}
+                    style={{ 
+                      backfaceVisibility: 'hidden', 
+                      transform: 'rotateY(180deg)',
+                      background: `linear-gradient(to br, ${currentFinish.id === 'gold' ? '#d4af37, #f5e6a3, #d4af37' : currentFinish.id === 'rose-gold' ? '#e8b4b8, #f5d0d3, #e8b4b8' : currentFinish.id === 'black' ? '#2d3748, #1a202c, #2d3748' : '#a0aec0, #e2e8f0, #a0aec0'})`
+                    }}
                   >
-                    <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-transparent to-black/30 rounded-2xl"></div>
-                    <div className="relative z-10 h-full flex flex-col justify-between text-center">
+                    {/* Marble inner background */}
+                    <div 
+                      className="absolute inset-1 rounded-xl"
+                      style={{
+                        background: `
+                          linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(245,245,245,0.95) 50%, rgba(255,255,255,0.9) 100%),
+                          url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.015' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")
+                        `,
+                        backgroundBlendMode: 'overlay'
+                      }}
+                    />
+                    {/* Marble veins effect */}
+                    <div 
+                      className="absolute inset-1 rounded-xl opacity-30"
+                      style={{
+                        background: `
+                          radial-gradient(ellipse at 20% 30%, rgba(180,180,180,0.4) 0%, transparent 50%),
+                          radial-gradient(ellipse at 80% 70%, rgba(160,160,160,0.3) 0%, transparent 40%),
+                          radial-gradient(ellipse at 50% 50%, rgba(200,200,200,0.2) 0%, transparent 60%)
+                        `
+                      }}
+                    />
+                    <div className="relative z-10 h-full flex flex-col justify-between text-center p-4">
                       {/* Top - Funeral Home Logo */}
                       <div className="flex flex-col items-center">
-                        <div className={`w-12 h-12 rounded-full flex items-center justify-center mb-1 ${selectedFinish === 'black' ? 'bg-white/10' : 'bg-slate-800/10'}`}>
-                          <Building2 className={`h-6 w-6 ${selectedFinish === 'black' ? 'text-white' : 'text-slate-700'}`} />
+                        <div className="w-12 h-12 rounded-full flex items-center justify-center mb-1 bg-slate-800/10">
+                          <Building2 className="h-6 w-6 text-slate-700" />
                         </div>
-                        <p className={`text-[9px] uppercase tracking-wider font-medium ${selectedFinish === 'black' ? 'text-slate-300' : 'text-slate-600'}`}>
+                        <p className="text-[9px] uppercase tracking-wider font-medium text-slate-600">
                           Grace Memorial Chapel
                         </p>
                       </div>
 
                       {/* Name & Dates */}
                       <div className="mt-2">
-                        <p className={`text-[10px] uppercase tracking-[0.2em] mb-1 ${selectedFinish === 'black' ? 'text-slate-400' : 'text-slate-500'}`}>
+                        <p className="text-[10px] uppercase tracking-[0.2em] mb-1 text-slate-500">
                           In Loving Memory
                         </p>
-                        <p className={`text-lg font-serif ${selectedFinish === 'black' ? 'text-white' : 'text-slate-800'}`}>
+                        <p className="text-lg font-serif text-slate-800">
                           Margaret Rose Johnson
                         </p>
-                        <p className={`text-xs mt-0.5 ${selectedFinish === 'black' ? 'text-slate-300' : 'text-slate-600'}`}>
+                        <p className="text-xs mt-0.5 text-slate-600">
                           June 12, 1942 – January 2, 2025
                         </p>
                       </div>
 
                       {/* Middle - Prayer */}
                       <div className="flex-1 flex items-center justify-center py-3">
-                        <p className={`text-[11px] leading-relaxed font-serif italic ${selectedFinish === 'black' ? 'text-slate-200' : 'text-slate-700'}`}>
+                        <p className="text-[11px] leading-relaxed font-serif italic text-slate-700">
                           The Lord is my shepherd;<br />
                           I shall not want.<br />
                           He maketh me to lie down<br />
@@ -160,7 +185,7 @@ const Index = () => {
                             Pro
                           </div>
                         </div>
-                        <p className={`text-[8px] mt-1 ${selectedFinish === 'black' ? 'text-amber-300' : 'text-amber-600'} font-medium`}>
+                        <p className="text-[8px] mt-1 text-amber-600 font-medium">
                           + Living Memorial Page
                         </p>
                       </div>
