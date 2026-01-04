@@ -108,8 +108,7 @@ const Dashboard = () => {
   const [datesColor, setDatesColor] = useState('#ffffffcc');
   const [nameSize, setNameSize] = useState(18); // pixels
   const [datesSize, setDatesSize] = useState(12); // pixels
-  const [frontDateFormat, setFrontDateFormat] = useState<'full' | 'short-month' | 'numeric' | 'year'>('full'); // front date format
-  const [backDateFormat, setBackDateFormat] = useState<'full' | 'short-month' | 'numeric' | 'year'>('full'); // back date format
+  const [dateFormat, setDateFormat] = useState<'full' | 'short-month' | 'mmm-dd-yyyy' | 'numeric' | 'year'>('full'); // shared date format for front and back
   const [additionalText, setAdditionalText] = useState('');
   const [additionalTextPosition, setAdditionalTextPosition] = useState({ x: 50, y: 70 });
   const [additionalTextColor, setAdditionalTextColor] = useState('#ffffff');
@@ -226,11 +225,31 @@ const Dashboard = () => {
     }
   };
 
-  const formatDates = (birth: string, death: string, format: 'full' | 'short-month' | 'numeric' | 'year'): string => {
+  const formatDates = (birth: string, death: string, format: 'full' | 'short-month' | 'mmm-dd-yyyy' | 'numeric' | 'year'): string => {
+    const formatSingleDate = (d: Date, fmt: typeof format) => {
+      switch (fmt) {
+        case 'year':
+          return d.getFullYear().toString();
+        case 'numeric':
+          return d.toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' });
+        case 'mmm-dd-yyyy': {
+          const month = d.toLocaleDateString('en-US', { month: 'short' });
+          const day = d.getDate().toString().padStart(2, '0');
+          const year = d.getFullYear();
+          return `${month} ${day}, ${year}`;
+        }
+        case 'short-month':
+          return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        default:
+          return d.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+      }
+    };
+
     if (!birth || !death) {
       switch (format) {
         case 'year': return '1945 – 2025';
         case 'numeric': return '01/01/1945 – 12/31/2025';
+        case 'mmm-dd-yyyy': return 'Jan 01, 1945 – Dec 31, 2025';
         case 'short-month': return 'Jan 1, 1945 – Dec 31, 2025';
         default: return 'January 1, 1945 – December 31, 2025';
       }
@@ -238,16 +257,7 @@ const Dashboard = () => {
     const birthD = new Date(birth);
     const deathD = new Date(death);
     
-    switch (format) {
-      case 'year':
-        return `${birthD.getFullYear()} – ${deathD.getFullYear()}`;
-      case 'numeric':
-        return `${birthD.toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' })} – ${deathD.toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' })}`;
-      case 'short-month':
-        return `${birthD.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })} – ${deathD.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`;
-      default:
-        return `${birthD.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })} – ${deathD.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}`;
-    }
+    return `${formatSingleDate(birthD, format)} – ${formatSingleDate(deathD, format)}`;
   };
 
   const handlePrayerSelect = (prayerId: string) => {
@@ -517,8 +527,7 @@ const Dashboard = () => {
     setDatesColor('#ffffffcc');
     setNameSize(18);
     setDatesSize(12);
-    setFrontDateFormat('full');
-    setBackDateFormat('full');
+    setDateFormat('full');
     setAdditionalText('');
     setAdditionalTextPosition({ x: 50, y: 70 });
     setAdditionalTextColor('#ffffff');
@@ -739,7 +748,7 @@ const Dashboard = () => {
                                     onWheel={(e) => handleTextWheel(e, 'dates')}
                                   >
                                     <span style={{ fontSize: `${datesSize}px`, color: datesColor }}>
-                                      {formatDates(birthDate, deathDate, frontDateFormat)}
+                                      {formatDates(birthDate, deathDate, dateFormat)}
                                     </span>
                                   </div>
                                 )}
@@ -928,13 +937,14 @@ const Dashboard = () => {
                                   onChange={(e) => setDeathDate(e.target.value)}
                                   className="bg-secondary border-border text-foreground"
                                 />
-                                <Select value={frontDateFormat} onValueChange={(v) => setFrontDateFormat(v as 'full' | 'short-month' | 'numeric' | 'year')}>
+                                <Select value={dateFormat} onValueChange={(v) => setDateFormat(v as 'full' | 'short-month' | 'mmm-dd-yyyy' | 'numeric' | 'year')}>
                                   <SelectTrigger className="bg-secondary border-border text-foreground">
-                                    <SelectValue placeholder="Front Format" />
+                                    <SelectValue placeholder="Date Format" />
                                   </SelectTrigger>
                                   <SelectContent>
                                     <SelectItem value="full">January 1, 2025</SelectItem>
                                     <SelectItem value="short-month">Jan 1, 2025</SelectItem>
+                                    <SelectItem value="mmm-dd-yyyy">Jan 01, 2025</SelectItem>
                                     <SelectItem value="numeric">01/01/2025</SelectItem>
                                     <SelectItem value="year">Years Only</SelectItem>
                                   </SelectContent>
@@ -1096,7 +1106,7 @@ const Dashboard = () => {
                                     </p>
                                     {showDatesOnBack && (
                                       <p className={`text-[10px] ${backBgImage || metalFinish === 'black' ? 'text-zinc-300' : 'text-zinc-600'}`}>
-                                        {formatDates(birthDate, deathDate, backDateFormat)}
+                                        {formatDates(birthDate, deathDate, dateFormat)}
                                       </p>
                                     )}
                                   </div>
@@ -1287,24 +1297,6 @@ const Dashboard = () => {
                             <p className="text-xs text-muted-foreground">Enter URL to generate QR code on card</p>
                           </div>
                           
-                          {/* Back Date Format */}
-                          {showDatesOnBack && (
-                            <div className="w-full max-w-md space-y-2">
-                              <Label className="text-muted-foreground">Back Date Display</Label>
-                              <Select value={backDateFormat} onValueChange={(v) => setBackDateFormat(v as 'full' | 'short-month' | 'numeric' | 'year')}>
-                                <SelectTrigger className="bg-secondary border-border text-foreground">
-                                  <SelectValue placeholder="Back Format" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  <SelectItem value="full">January 1, 2025</SelectItem>
-                                  <SelectItem value="short-month">Jan 1, 2025</SelectItem>
-                                  <SelectItem value="numeric">01/01/2025</SelectItem>
-                                  <SelectItem value="year">Years Only</SelectItem>
-                                </SelectContent>
-                              </Select>
-                            </div>
-                          )}
-                          
                           {/* Funeral Home Logo Toggle */}
                           {funeralHome?.logo_url && (
                             <label className="flex items-center gap-2 cursor-pointer">
@@ -1413,7 +1405,7 @@ const Dashboard = () => {
                       <div className="text-sm text-muted-foreground space-y-1">
                         <p><span className="font-medium text-foreground">Name:</span> {deceasedName || 'Not specified'}</p>
                         <p><span className="font-medium text-foreground">Dates:</span> {birthDate && deathDate 
-                          ? formatDates(birthDate, deathDate, frontDateFormat)
+                          ? formatDates(birthDate, deathDate, dateFormat)
                           : 'Not specified'}</p>
                       </div>
                     </div>
