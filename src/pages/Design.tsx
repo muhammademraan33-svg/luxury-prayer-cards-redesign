@@ -1176,7 +1176,8 @@ const Design = () => {
                                       fontSize: prayerTextSize === 'auto' 
                                         ? `clamp(8px, ${Math.max(9, 16 - backText.length / 40)}px, 16px)` 
                                         : `${prayerTextSize}px`,
-                                      textWrap: 'balance',
+                                      textWrap: 'pretty',
+                                      wordBreak: 'keep-all',
                                       fontWeight: prayerBold ? 'bold' : 'normal',
                                     }}
                                   >
