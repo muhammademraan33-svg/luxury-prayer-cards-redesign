@@ -1673,7 +1673,7 @@ const Design = () => {
                             </label>
                           </div>
                           <Input
-                            placeholder="https://memorial-page.com"
+                            placeholder="https://example.com"
                             value={qrUrl}
                             onChange={(e) => setQrUrl(e.target.value)}
                             className="bg-slate-700 border-slate-600 text-white"
@@ -2171,7 +2171,7 @@ const Design = () => {
                     </div>
 
                     <div className="bg-slate-800/50 rounded-lg p-4 mt-4">
-                      <h5 className="text-white font-medium mb-2">Memorial Details</h5>
+                      <h5 className="text-white font-medium mb-2">Card Details</h5>
                       <p className="text-slate-300">
                         <span className="text-slate-400">Name:</span> {deceasedName}
                       </p>
