@@ -99,6 +99,12 @@ const Design = () => {
   const [backDatesPosition, setBackDatesPosition] = useState({ x: 50, y: 18 });
   const [backDatesAlign, setBackDatesAlign] = useState<'left' | 'center' | 'right'>('center');
   
+  // Back name styling
+  const [backNameSize, setBackNameSize] = useState(16);
+  const [backNameColor, setBackNameColor] = useState('#18181b');
+  const [backNameBold, setBackNameBold] = useState(true);
+  const [showNameOnBack, setShowNameOnBack] = useState(true);
+  
   // Bold options
   const [nameBold, setNameBold] = useState(true);
   const [datesBold, setDatesBold] = useState(false);
@@ -1210,15 +1216,18 @@ const Design = () => {
                                       {inLovingMemoryText}
                                     </p>
                                   )}
-                                  <p 
-                                    className={`${orientation === 'portrait' ? 'text-base' : 'text-sm'} font-serif mb-0.5 whitespace-pre text-center`}
-                                    style={{ 
-                                      color: backBgImage || metalFinish === 'black' ? '#ffffff' : '#18181b',
-                                      fontWeight: nameBold ? 'bold' : 'normal'
-                                    }}
-                                  >
-                                    {deceasedName || 'Name Here'}
-                                  </p>
+                                  {showNameOnBack && (
+                                    <p 
+                                      className="font-serif mb-0.5 whitespace-pre text-center"
+                                      style={{ 
+                                        fontSize: `${backNameSize}px`,
+                                        color: backNameColor,
+                                        fontWeight: backNameBold ? 'bold' : 'normal'
+                                      }}
+                                    >
+                                      {deceasedName || 'Name Here'}
+                                    </p>
+                                  )}
                                   
                                   {/* Dates - now in flow, not absolute */}
                                   {showDatesOnBack && (
@@ -1310,6 +1319,68 @@ const Design = () => {
                               </div>
                             </div>
                           </div>
+                        </div>
+
+                        {/* Name on Back Controls */}
+                        <div className="w-full max-w-md space-y-3 p-3 bg-slate-700/30 rounded-lg">
+                          <div className="flex items-center justify-between">
+                            <Label className="text-white text-sm font-medium">Name on Back</Label>
+                            <label className="flex items-center gap-2 cursor-pointer">
+                              <input 
+                                type="checkbox" 
+                                checked={showNameOnBack} 
+                                onChange={(e) => setShowNameOnBack(e.target.checked)}
+                                className="accent-amber-600"
+                              />
+                              <span className="text-slate-400 text-xs">Show</span>
+                            </label>
+                          </div>
+                          {showNameOnBack && (
+                            <div className="flex items-center gap-3 flex-wrap">
+                              <div className="flex items-center gap-2">
+                                <Label className="text-slate-400 text-xs">Color</Label>
+                                <input
+                                  type="color"
+                                  value={backNameColor}
+                                  onChange={(e) => setBackNameColor(e.target.value)}
+                                  className="w-7 h-7 rounded border border-slate-600 cursor-pointer"
+                                />
+                              </div>
+                              <div className="flex items-center gap-1">
+                                <Label className="text-slate-400 text-xs">Size</Label>
+                                <Button
+                                  type="button"
+                                  variant="outline"
+                                  size="icon"
+                                  className="h-6 w-6 border-slate-600"
+                                  onClick={() => setBackNameSize(Math.max(8, backNameSize - 2))}
+                                >
+                                  <span className="text-xs">−</span>
+                                </Button>
+                                <span className="text-xs text-white bg-slate-700 px-2 py-1 rounded min-w-[40px] text-center">
+                                  {backNameSize}px
+                                </span>
+                                <Button
+                                  type="button"
+                                  variant="outline"
+                                  size="icon"
+                                  className="h-6 w-6 border-slate-600"
+                                  onClick={() => setBackNameSize(Math.min(36, backNameSize + 2))}
+                                >
+                                  <span className="text-xs">+</span>
+                                </Button>
+                              </div>
+                              <Button
+                                type="button"
+                                variant={backNameBold ? 'default' : 'outline'}
+                                size="sm"
+                                className={`h-7 px-3 text-xs font-bold ${backNameBold ? 'bg-amber-600 text-white' : 'border-slate-600 text-slate-300'}`}
+                                onClick={() => setBackNameBold(!backNameBold)}
+                              >
+                                B
+                              </Button>
+                            </div>
+                          )}
                         </div>
 
                         {/* Dates on Back Controls */}
