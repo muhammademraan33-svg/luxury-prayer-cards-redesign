@@ -8,8 +8,19 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Sparkles, Plus, QrCode, LogOut, Loader2, ExternalLink, Trash2, Truck, Zap, ArrowLeft, ArrowRight, Upload, ImageIcon, RotateCcw, RectangleHorizontal, RectangleVertical } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Sparkles, Plus, QrCode, LogOut, Loader2, ExternalLink, Trash2, Truck, Zap, ArrowLeft, ArrowRight, Upload, ImageIcon, RotateCcw, RectangleHorizontal, RectangleVertical, Type } from 'lucide-react';
 import { toast } from 'sonner';
+
+const FONT_OPTIONS = [
+  { value: 'Playfair Display', name: 'Playfair Display' },
+  { value: 'Cormorant Garamond', name: 'Cormorant Garamond' },
+  { value: 'Great Vibes', name: 'Great Vibes' },
+  { value: 'Dancing Script', name: 'Dancing Script' },
+  { value: 'Allura', name: 'Allura' },
+  { value: 'Sacramento', name: 'Sacramento' },
+  { value: 'Montserrat', name: 'Montserrat' },
+];
 
 interface FuneralHome {
   id: string;
@@ -72,14 +83,57 @@ const Dashboard = () => {
   const [uploadingFront, setUploadingFront] = useState(false);
   const [uploadingBack, setUploadingBack] = useState(false);
   const [backText, setBackText] = useState('The Lord is my shepherd; I shall not want.');
-
+  
+  // Front card text state
+  const [showNameOnFront, setShowNameOnFront] = useState(true);
+  const [showDatesOnFront, setShowDatesOnFront] = useState(true);
+  const [nameFont, setNameFont] = useState('Playfair Display');
+  const [datesFont, setDatesFont] = useState('Cormorant Garamond');
+  const [namePosition, setNamePosition] = useState({ x: 50, y: 85 }); // percentage
+  const [datesPosition, setDatesPosition] = useState({ x: 50, y: 92 }); // percentage
+  const [draggingText, setDraggingText] = useState<'name' | 'dates' | null>(null);
+  const textDragStartRef = useRef<{ x: number; y: number; posX: number; posY: number } | null>(null);
   const frontInputRef = useRef<HTMLInputElement>(null);
   const backInputRef = useRef<HTMLInputElement>(null);
   const photoInputRef = useRef<HTMLInputElement>(null);
   const photoContainerRef = useRef<HTMLDivElement>(null);
+  const cardPreviewRef = useRef<HTMLDivElement>(null);
   const panStartRef = useRef<{ x: number; y: number; panX: number; panY: number } | null>(null);
   const pinchStartRef = useRef<{ distance: number; scale: number } | null>(null);
   const pointerCacheRef = useRef<Map<number, PointerEvent>>(new Map());
+
+  // Text drag handlers
+  const handleTextPointerDown = (e: React.PointerEvent, textType: 'name' | 'dates') => {
+    e.stopPropagation();
+    e.preventDefault();
+    setDraggingText(textType);
+    const currentPos = textType === 'name' ? namePosition : datesPosition;
+    textDragStartRef.current = { x: e.clientX, y: e.clientY, posX: currentPos.x, posY: currentPos.y };
+    (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+  };
+
+  const handleTextPointerMove = (e: React.PointerEvent) => {
+    if (!draggingText || !textDragStartRef.current || !cardPreviewRef.current) return;
+    
+    const rect = cardPreviewRef.current.getBoundingClientRect();
+    const dx = ((e.clientX - textDragStartRef.current.x) / rect.width) * 100;
+    const dy = ((e.clientY - textDragStartRef.current.y) / rect.height) * 100;
+    
+    const newX = Math.max(10, Math.min(90, textDragStartRef.current.posX + dx));
+    const newY = Math.max(5, Math.min(95, textDragStartRef.current.posY + dy));
+    
+    if (draggingText === 'name') {
+      setNamePosition({ x: newX, y: newY });
+    } else {
+      setDatesPosition({ x: newX, y: newY });
+    }
+  };
+
+  const handleTextPointerUp = (e: React.PointerEvent) => {
+    setDraggingText(null);
+    textDragStartRef.current = null;
+    (e.currentTarget as HTMLElement).releasePointerCapture(e.pointerId);
+  };
 
   const getDistance = (p1: PointerEvent, p2: PointerEvent) => {
     return Math.hypot(p1.clientX - p2.clientX, p1.clientY - p2.clientY);
@@ -307,6 +361,12 @@ const Dashboard = () => {
     setPhotoPanX(0);
     setPhotoPanY(0);
     setBackText('The Lord is my shepherd; I shall not want.');
+    setShowNameOnFront(true);
+    setShowDatesOnFront(true);
+    setNameFont('Playfair Display');
+    setDatesFont('Cormorant Garamond');
+    setNamePosition({ x: 50, y: 85 });
+    setDatesPosition({ x: 50, y: 92 });
   };
 
   const handleDeleteOrder = async (orderId: string) => {
@@ -438,13 +498,16 @@ const Dashboard = () => {
                       {/* Front Card - Photo Only */}
                       <TabsContent value="front" className="mt-4">
                         <div className="flex flex-col items-center gap-4">
-                          {/* Card Preview - Full Photo with gesture controls */}
-                          <div className={`${cardClass} rounded-2xl overflow-hidden shadow-2xl relative`}>
+                          {/* Card Preview - Full Photo with gesture controls and text overlay */}
+                          <div 
+                            ref={cardPreviewRef}
+                            className={`${cardClass} rounded-2xl overflow-hidden shadow-2xl relative`}
+                          >
                             <div className={`absolute inset-0 bg-gradient-to-br ${currentFinish.gradient} p-1`}>
                               <div 
                                 ref={photoContainerRef}
-                                className="w-full h-full rounded-xl overflow-hidden bg-muted flex items-center justify-center touch-none"
-                                style={{ cursor: deceasedPhoto ? (isPanning ? 'grabbing' : 'grab') : 'default' }}
+                                className="w-full h-full rounded-xl overflow-hidden bg-muted flex items-center justify-center touch-none relative"
+                                style={{ cursor: deceasedPhoto && !draggingText ? (isPanning ? 'grabbing' : 'grab') : 'default' }}
                                 onPointerDown={handlePhotoPointerDown}
                                 onPointerMove={handlePhotoPointerMove}
                                 onPointerUp={handlePhotoPointerUp}
@@ -466,6 +529,54 @@ const Dashboard = () => {
                                   <div className="text-center p-4">
                                     <ImageIcon className="h-12 w-12 text-muted-foreground mx-auto mb-2" />
                                     <p className="text-muted-foreground text-sm">Upload photo</p>
+                                  </div>
+                                )}
+                                
+                                {/* Text Overlay - Name */}
+                                {showNameOnFront && (
+                                  <div
+                                    className="absolute touch-none select-none px-2 py-1 rounded transition-shadow"
+                                    style={{
+                                      left: `${namePosition.x}%`,
+                                      top: `${namePosition.y}%`,
+                                      transform: 'translate(-50%, -50%)',
+                                      fontFamily: nameFont,
+                                      cursor: draggingText === 'name' ? 'grabbing' : 'grab',
+                                      textShadow: '0 2px 4px rgba(0,0,0,0.5)',
+                                      boxShadow: draggingText === 'name' ? '0 0 0 2px hsl(var(--primary))' : 'none',
+                                    }}
+                                    onPointerDown={(e) => handleTextPointerDown(e, 'name')}
+                                    onPointerMove={handleTextPointerMove}
+                                    onPointerUp={handleTextPointerUp}
+                                    onPointerCancel={handleTextPointerUp}
+                                  >
+                                    <span className="text-white font-medium" style={{ fontSize: orientation === 'portrait' ? '14px' : '12px' }}>
+                                      {deceasedName || 'Name Here'}
+                                    </span>
+                                  </div>
+                                )}
+                                
+                                {/* Text Overlay - Dates */}
+                                {showDatesOnFront && (
+                                  <div
+                                    className="absolute touch-none select-none px-2 py-1 rounded transition-shadow"
+                                    style={{
+                                      left: `${datesPosition.x}%`,
+                                      top: `${datesPosition.y}%`,
+                                      transform: 'translate(-50%, -50%)',
+                                      fontFamily: datesFont,
+                                      cursor: draggingText === 'dates' ? 'grabbing' : 'grab',
+                                      textShadow: '0 2px 4px rgba(0,0,0,0.5)',
+                                      boxShadow: draggingText === 'dates' ? '0 0 0 2px hsl(var(--primary))' : 'none',
+                                    }}
+                                    onPointerDown={(e) => handleTextPointerDown(e, 'dates')}
+                                    onPointerMove={handleTextPointerMove}
+                                    onPointerUp={handleTextPointerUp}
+                                    onPointerCancel={handleTextPointerUp}
+                                  >
+                                    <span className="text-white/90" style={{ fontSize: orientation === 'portrait' ? '10px' : '9px' }}>
+                                      {birthDate && deathDate ? `${birthDate} – ${deathDate}` : '1945 – 2025'}
+                                    </span>
                                   </div>
                                 )}
                               </div>
@@ -525,9 +636,104 @@ const Dashboard = () => {
 
                           {deceasedPhoto && (
                             <p className="text-muted-foreground text-xs text-center bg-accent/50 px-3 py-2 rounded-lg">
-                              📱 Drag to pan • Pinch or scroll to zoom
+                              📱 Drag photo to pan • Pinch/scroll to zoom • Drag text to reposition
                             </p>
                           )}
+
+                          {/* Text Controls */}
+                          <div className="w-full space-y-4 border-t border-border pt-4">
+                            <div className="flex items-center gap-2 mb-2">
+                              <Type className="h-4 w-4 text-muted-foreground" />
+                              <Label className="text-muted-foreground font-medium">Front Card Text</Label>
+                            </div>
+                            
+                            {/* Name Input & Font */}
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                              <div>
+                                <Label className="text-muted-foreground text-sm">Name</Label>
+                                <Input
+                                  placeholder="John David Smith"
+                                  value={deceasedName}
+                                  onChange={(e) => setDeceasedName(e.target.value)}
+                                  className="bg-secondary border-border text-foreground"
+                                />
+                              </div>
+                              <div>
+                                <Label className="text-muted-foreground text-sm">Name Font</Label>
+                                <Select value={nameFont} onValueChange={setNameFont}>
+                                  <SelectTrigger className="bg-secondary border-border text-foreground">
+                                    <SelectValue />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    {FONT_OPTIONS.map((font) => (
+                                      <SelectItem key={font.value} value={font.value} style={{ fontFamily: font.value }}>
+                                        {font.name}
+                                      </SelectItem>
+                                    ))}
+                                  </SelectContent>
+                                </Select>
+                              </div>
+                            </div>
+
+                            {/* Dates Input & Font */}
+                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                              <div>
+                                <Label className="text-muted-foreground text-sm">Birth Date</Label>
+                                <Input
+                                  type="date"
+                                  value={birthDate}
+                                  onChange={(e) => setBirthDate(e.target.value)}
+                                  className="bg-secondary border-border text-foreground"
+                                />
+                              </div>
+                              <div>
+                                <Label className="text-muted-foreground text-sm">Death Date</Label>
+                                <Input
+                                  type="date"
+                                  value={deathDate}
+                                  onChange={(e) => setDeathDate(e.target.value)}
+                                  className="bg-secondary border-border text-foreground"
+                                />
+                              </div>
+                              <div>
+                                <Label className="text-muted-foreground text-sm">Dates Font</Label>
+                                <Select value={datesFont} onValueChange={setDatesFont}>
+                                  <SelectTrigger className="bg-secondary border-border text-foreground">
+                                    <SelectValue />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    {FONT_OPTIONS.map((font) => (
+                                      <SelectItem key={font.value} value={font.value} style={{ fontFamily: font.value }}>
+                                        {font.name}
+                                      </SelectItem>
+                                    ))}
+                                  </SelectContent>
+                                </Select>
+                              </div>
+                            </div>
+
+                            {/* Toggle visibility */}
+                            <div className="flex gap-4 text-sm">
+                              <label className="flex items-center gap-2 cursor-pointer">
+                                <input 
+                                  type="checkbox" 
+                                  checked={showNameOnFront} 
+                                  onChange={(e) => setShowNameOnFront(e.target.checked)}
+                                  className="accent-primary"
+                                />
+                                <span className="text-muted-foreground">Show name</span>
+                              </label>
+                              <label className="flex items-center gap-2 cursor-pointer">
+                                <input 
+                                  type="checkbox" 
+                                  checked={showDatesOnFront} 
+                                  onChange={(e) => setShowDatesOnFront(e.target.checked)}
+                                  className="accent-primary"
+                                />
+                                <span className="text-muted-foreground">Show dates</span>
+                              </label>
+                            </div>
+                          </div>
 
                           <p className="text-muted-foreground text-xs text-center">The photo fills the entire front of the card with a metal border frame</p>
                         </div>
@@ -690,41 +896,18 @@ const Dashboard = () => {
                   </div>
                 )}
 
-                {/* Step 2: Memorial Details */}
+                {/* Step 2: Order Details */}
                 {step === 2 && (
                   <div className="space-y-4">
-                    <div>
-                      <Label htmlFor="deceased-name" className="text-muted-foreground">Name of Deceased *</Label>
-                      <Input
-                        id="deceased-name"
-                        placeholder="John David Smith"
-                        value={deceasedName}
-                        onChange={(e) => setDeceasedName(e.target.value)}
-                        className="bg-secondary border-border text-foreground"
-                      />
-                    </div>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <Label htmlFor="birth-date" className="text-muted-foreground">Birth Date</Label>
-                        <Input
-                          id="birth-date"
-                          type="date"
-                          value={birthDate}
-                          onChange={(e) => setBirthDate(e.target.value)}
-                          className="bg-secondary border-border text-foreground"
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor="death-date" className="text-muted-foreground">Death Date</Label>
-                        <Input
-                          id="death-date"
-                          type="date"
-                          value={deathDate}
-                          onChange={(e) => setDeathDate(e.target.value)}
-                          className="bg-secondary border-border text-foreground"
-                        />
+                    {/* Summary of design */}
+                    <div className="bg-secondary/50 rounded-lg p-4">
+                      <h4 className="text-foreground font-medium mb-2">Memorial Details</h4>
+                      <div className="text-sm text-muted-foreground space-y-1">
+                        <p><span className="font-medium text-foreground">Name:</span> {deceasedName || 'Not specified'}</p>
+                        <p><span className="font-medium text-foreground">Dates:</span> {birthDate && deathDate ? `${birthDate} – ${deathDate}` : 'Not specified'}</p>
                       </div>
                     </div>
+
                     <div>
                       <Label htmlFor="quantity" className="text-muted-foreground">Quantity of Cards</Label>
                       <Input
@@ -747,7 +930,8 @@ const Dashboard = () => {
                         type="button" 
                         onClick={() => {
                           if (!deceasedName.trim()) {
-                            toast.error('Please enter the name of the deceased');
+                            toast.error('Please enter the name in the card design');
+                            setStep(1);
                             return;
                           }
                           setStep(3);
