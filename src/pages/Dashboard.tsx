@@ -65,6 +65,9 @@ const Dashboard = () => {
   const [backBgImage, setBackBgImage] = useState<string | null>(null);
   const [deceasedPhoto, setDeceasedPhoto] = useState<string | null>(null);
   const [photoZoom, setPhotoZoom] = useState(1);
+  const [photoPanX, setPhotoPanX] = useState(0);
+  const [photoPanY, setPhotoPanY] = useState(0);
+  const [isPanning, setIsPanning] = useState(false);
   const [uploadingPhoto, setUploadingPhoto] = useState(false);
   const [uploadingFront, setUploadingFront] = useState(false);
   const [uploadingBack, setUploadingBack] = useState(false);
@@ -73,6 +76,74 @@ const Dashboard = () => {
   const frontInputRef = useRef<HTMLInputElement>(null);
   const backInputRef = useRef<HTMLInputElement>(null);
   const photoInputRef = useRef<HTMLInputElement>(null);
+  const photoContainerRef = useRef<HTMLDivElement>(null);
+  const panStartRef = useRef<{ x: number; y: number; panX: number; panY: number } | null>(null);
+  const pinchStartRef = useRef<{ distance: number; scale: number } | null>(null);
+  const pointerCacheRef = useRef<Map<number, PointerEvent>>(new Map());
+
+  const getDistance = (p1: PointerEvent, p2: PointerEvent) => {
+    return Math.hypot(p1.clientX - p2.clientX, p1.clientY - p2.clientY);
+  };
+
+  const handlePhotoPointerDown = (e: React.PointerEvent) => {
+    if (!deceasedPhoto) return;
+    e.preventDefault();
+    pointerCacheRef.current.set(e.pointerId, e.nativeEvent);
+    (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+
+    if (pointerCacheRef.current.size === 1) {
+      setIsPanning(true);
+      panStartRef.current = { x: e.clientX, y: e.clientY, panX: photoPanX, panY: photoPanY };
+    } else if (pointerCacheRef.current.size === 2) {
+      const pointers = Array.from(pointerCacheRef.current.values());
+      pinchStartRef.current = {
+        distance: getDistance(pointers[0], pointers[1]),
+        scale: photoZoom,
+      };
+    }
+  };
+
+  const handlePhotoPointerMove = (e: React.PointerEvent) => {
+    if (!deceasedPhoto) return;
+    pointerCacheRef.current.set(e.pointerId, e.nativeEvent);
+
+    if (pointerCacheRef.current.size === 2 && pinchStartRef.current) {
+      const pointers = Array.from(pointerCacheRef.current.values());
+      const currentDistance = getDistance(pointers[0], pointers[1]);
+      const scaleChange = currentDistance / pinchStartRef.current.distance;
+      const newScale = Math.max(1, Math.min(3, pinchStartRef.current.scale * scaleChange));
+      setPhotoZoom(newScale);
+    } else if (pointerCacheRef.current.size === 1 && panStartRef.current && isPanning) {
+      const dx = e.clientX - panStartRef.current.x;
+      const dy = e.clientY - panStartRef.current.y;
+      const maxPan = (photoZoom - 1) * 50;
+      const newPanX = Math.max(-maxPan, Math.min(maxPan, panStartRef.current.panX + dx));
+      const newPanY = Math.max(-maxPan, Math.min(maxPan, panStartRef.current.panY + dy));
+      setPhotoPanX(newPanX);
+      setPhotoPanY(newPanY);
+    }
+  };
+
+  const handlePhotoPointerUp = (e: React.PointerEvent) => {
+    pointerCacheRef.current.delete(e.pointerId);
+    (e.currentTarget as HTMLElement).releasePointerCapture(e.pointerId);
+
+    if (pointerCacheRef.current.size < 2) {
+      pinchStartRef.current = null;
+    }
+    if (pointerCacheRef.current.size === 0) {
+      setIsPanning(false);
+      panStartRef.current = null;
+    }
+  };
+
+  const handlePhotoWheel = (e: React.WheelEvent) => {
+    if (!deceasedPhoto) return;
+    e.preventDefault();
+    const delta = -e.deltaY * 0.002;
+    const newScale = Math.max(1, Math.min(3, photoZoom + delta));
+    setPhotoZoom(newScale);
+  };
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
@@ -233,6 +304,8 @@ const Dashboard = () => {
     setBackBgImage(null);
     setDeceasedPhoto(null);
     setPhotoZoom(1);
+    setPhotoPanX(0);
+    setPhotoPanY(0);
     setBackText('The Lord is my shepherd; I shall not want.');
   };
 
@@ -365,17 +438,29 @@ const Dashboard = () => {
                       {/* Front Card - Photo Only */}
                       <TabsContent value="front" className="mt-4">
                         <div className="flex flex-col items-center gap-4">
-                          {/* Card Preview - Full Photo */}
+                          {/* Card Preview - Full Photo with gesture controls */}
                           <div className={`${cardClass} rounded-2xl overflow-hidden shadow-2xl relative`}>
                             <div className={`absolute inset-0 bg-gradient-to-br ${currentFinish.gradient} p-1`}>
-                              <div className="w-full h-full rounded-xl overflow-hidden bg-muted flex items-center justify-center">
+                              <div 
+                                ref={photoContainerRef}
+                                className="w-full h-full rounded-xl overflow-hidden bg-muted flex items-center justify-center touch-none"
+                                style={{ cursor: deceasedPhoto ? (isPanning ? 'grabbing' : 'grab') : 'default' }}
+                                onPointerDown={handlePhotoPointerDown}
+                                onPointerMove={handlePhotoPointerMove}
+                                onPointerUp={handlePhotoPointerUp}
+                                onPointerCancel={handlePhotoPointerUp}
+                                onWheel={handlePhotoWheel}
+                              >
                                 {deceasedPhoto ? (
                                   <img
                                     src={deceasedPhoto}
                                     alt="Deceased"
                                     draggable={false}
-                                    className="w-full h-full object-cover transition-transform duration-200 ease-out"
-                                    style={{ transform: `scale(${photoZoom})`, transformOrigin: 'center' }}
+                                    className="w-full h-full object-cover pointer-events-none select-none"
+                                    style={{ 
+                                      transform: `scale(${photoZoom}) translate(${photoPanX / photoZoom}px, ${photoPanY / photoZoom}px)`,
+                                      transformOrigin: 'center',
+                                    }}
                                   />
                                 ) : (
                                   <div className="text-center p-4">
@@ -407,36 +492,41 @@ const Dashboard = () => {
                               {deceasedPhoto ? 'Change Photo' : 'Upload Photo'}
                             </Button>
                             {deceasedPhoto && (
-                              <Button
-                                type="button"
-                                variant="outline"
-                                onClick={() => {
-                                  setDeceasedPhoto(null);
-                                  setPhotoZoom(1);
-                                }}
-                                className="border-destructive/50 text-destructive hover:bg-destructive/10"
-                              >
-                                <Trash2 className="h-4 w-4" />
-                              </Button>
+                              <>
+                                <Button
+                                  type="button"
+                                  variant="outline"
+                                  onClick={() => {
+                                    setPhotoZoom(1);
+                                    setPhotoPanX(0);
+                                    setPhotoPanY(0);
+                                  }}
+                                  className="border-border text-foreground hover:bg-accent"
+                                >
+                                  <RotateCcw className="h-4 w-4 mr-1" />
+                                  Reset
+                                </Button>
+                                <Button
+                                  type="button"
+                                  variant="outline"
+                                  onClick={() => {
+                                    setDeceasedPhoto(null);
+                                    setPhotoZoom(1);
+                                    setPhotoPanX(0);
+                                    setPhotoPanY(0);
+                                  }}
+                                  className="border-destructive/50 text-destructive hover:bg-destructive/10"
+                                >
+                                  <Trash2 className="h-4 w-4" />
+                                </Button>
+                              </>
                             )}
                           </div>
 
                           {deceasedPhoto && (
-                            <div className="w-full max-w-md">
-                              <div className="flex items-center justify-between mb-2">
-                                <Label className="text-muted-foreground">Photo zoom</Label>
-                                <span className="text-xs text-muted-foreground">{Math.round(photoZoom * 100)}%</span>
-                              </div>
-                              <input
-                                type="range"
-                                min={1}
-                                max={2.5}
-                                step={0.05}
-                                value={photoZoom}
-                                onChange={(e) => setPhotoZoom(parseFloat(e.target.value))}
-                                className="w-full accent-primary"
-                              />
-                            </div>
+                            <p className="text-muted-foreground text-xs text-center bg-accent/50 px-3 py-2 rounded-lg">
+                              📱 Drag to pan • Pinch or scroll to zoom
+                            </p>
                           )}
 
                           <p className="text-muted-foreground text-xs text-center">The photo fills the entire front of the card with a metal border frame</p>
