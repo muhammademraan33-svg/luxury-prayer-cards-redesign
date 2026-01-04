@@ -905,9 +905,27 @@ const Dashboard = () => {
                                     className="w-8 h-8 rounded border border-border cursor-pointer"
                                   />
                                 </div>
-                                <div className="flex items-center gap-2">
+                                <div className="flex items-center gap-1">
                                   <Label className="text-muted-foreground text-xs">Size</Label>
-                                  <span className="text-xs text-foreground bg-secondary px-2 py-1 rounded">{Math.round(nameSize)}px</span>
+                                  <Button
+                                    type="button"
+                                    variant="outline"
+                                    size="icon"
+                                    className="h-6 w-6 border-border"
+                                    onClick={() => setNameSize(Math.max(8, nameSize - 2))}
+                                  >
+                                    <span className="text-xs">−</span>
+                                  </Button>
+                                  <span className="text-xs text-foreground bg-secondary px-2 py-1 rounded min-w-[40px] text-center">{Math.round(nameSize)}px</span>
+                                  <Button
+                                    type="button"
+                                    variant="outline"
+                                    size="icon"
+                                    className="h-6 w-6 border-border"
+                                    onClick={() => setNameSize(Math.min(48, nameSize + 2))}
+                                  >
+                                    <span className="text-xs">+</span>
+                                  </Button>
                                 </div>
                                 <label className="flex items-center gap-2 cursor-pointer ml-auto">
                                   <input 
@@ -972,9 +990,27 @@ const Dashboard = () => {
                                     className="w-8 h-8 rounded border border-border cursor-pointer"
                                   />
                                 </div>
-                                <div className="flex items-center gap-2">
+                                <div className="flex items-center gap-1">
                                   <Label className="text-muted-foreground text-xs">Size</Label>
-                                  <span className="text-xs text-foreground bg-secondary px-2 py-1 rounded">{Math.round(datesSize)}px</span>
+                                  <Button
+                                    type="button"
+                                    variant="outline"
+                                    size="icon"
+                                    className="h-6 w-6 border-border"
+                                    onClick={() => setDatesSize(Math.max(8, datesSize - 2))}
+                                  >
+                                    <span className="text-xs">−</span>
+                                  </Button>
+                                  <span className="text-xs text-foreground bg-secondary px-2 py-1 rounded min-w-[40px] text-center">{Math.round(datesSize)}px</span>
+                                  <Button
+                                    type="button"
+                                    variant="outline"
+                                    size="icon"
+                                    className="h-6 w-6 border-border"
+                                    onClick={() => setDatesSize(Math.min(48, datesSize + 2))}
+                                  >
+                                    <span className="text-xs">+</span>
+                                  </Button>
                                 </div>
                                 <div className="flex items-center gap-4 ml-auto">
                                   <label className="flex items-center gap-2 cursor-pointer">
@@ -1043,7 +1079,27 @@ const Dashboard = () => {
                                         onChange={(e) => setAdditionalTextColor(e.target.value)}
                                         className="w-8 h-8 rounded border border-border cursor-pointer"
                                       />
-                                      <span className="text-xs text-foreground bg-secondary px-2 py-1 rounded">{Math.round(additionalTextSize)}px</span>
+                                      <div className="flex items-center gap-1">
+                                        <Button
+                                          type="button"
+                                          variant="outline"
+                                          size="icon"
+                                          className="h-6 w-6 border-border"
+                                          onClick={() => setAdditionalTextSize(Math.max(8, additionalTextSize - 2))}
+                                        >
+                                          <span className="text-xs">−</span>
+                                        </Button>
+                                        <span className="text-xs text-foreground bg-secondary px-2 py-1 rounded min-w-[40px] text-center">{Math.round(additionalTextSize)}px</span>
+                                        <Button
+                                          type="button"
+                                          variant="outline"
+                                          size="icon"
+                                          className="h-6 w-6 border-border"
+                                          onClick={() => setAdditionalTextSize(Math.min(48, additionalTextSize + 2))}
+                                        >
+                                          <span className="text-xs">+</span>
+                                        </Button>
+                                      </div>
                                     </div>
                                   </div>
                                 </>
