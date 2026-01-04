@@ -108,7 +108,8 @@ const Dashboard = () => {
   const [datesColor, setDatesColor] = useState('#ffffffcc');
   const [nameSize, setNameSize] = useState(18); // pixels
   const [datesSize, setDatesSize] = useState(12); // pixels
-  const [dateFormat, setDateFormat] = useState<'full' | 'short-month' | 'mmm-dd-yyyy' | 'numeric' | 'year'>('full'); // shared date format for front and back
+  const [frontDateFormat, setFrontDateFormat] = useState<'full' | 'short-month' | 'mmm-dd-yyyy' | 'numeric' | 'year'>('full');
+  const [backDateFormat, setBackDateFormat] = useState<'full' | 'short-month' | 'mmm-dd-yyyy' | 'numeric' | 'year'>('full');
   const [additionalText, setAdditionalText] = useState('');
   const [additionalTextPosition, setAdditionalTextPosition] = useState({ x: 50, y: 70 });
   const [additionalTextColor, setAdditionalTextColor] = useState('#ffffff');
@@ -527,7 +528,8 @@ const Dashboard = () => {
     setDatesColor('#ffffffcc');
     setNameSize(18);
     setDatesSize(12);
-    setDateFormat('full');
+    setFrontDateFormat('full');
+    setBackDateFormat('full');
     setAdditionalText('');
     setAdditionalTextPosition({ x: 50, y: 70 });
     setAdditionalTextColor('#ffffff');
@@ -748,7 +750,7 @@ const Dashboard = () => {
                                     onWheel={(e) => handleTextWheel(e, 'dates')}
                                   >
                                     <span style={{ fontSize: `${datesSize}px`, color: datesColor }}>
-                                      {formatDates(birthDate, deathDate, dateFormat)}
+                                      {formatDates(birthDate, deathDate, frontDateFormat)}
                                     </span>
                                   </div>
                                 )}
@@ -942,7 +944,7 @@ const Dashboard = () => {
                             {/* Dates Controls */}
                             <div className="space-y-2 p-3 bg-secondary/30 rounded-lg">
                               <Label className="text-foreground text-sm font-medium">Dates</Label>
-                              <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
+                              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                                 <Input
                                   type="date"
                                   value={birthDate}
@@ -955,18 +957,6 @@ const Dashboard = () => {
                                   onChange={(e) => setDeathDate(e.target.value)}
                                   className="bg-secondary border-border text-foreground"
                                 />
-                                <Select value={dateFormat} onValueChange={(v) => setDateFormat(v as 'full' | 'short-month' | 'mmm-dd-yyyy' | 'numeric' | 'year')}>
-                                  <SelectTrigger className="bg-secondary border-border text-foreground">
-                                    <SelectValue placeholder="Date Format" />
-                                  </SelectTrigger>
-                                  <SelectContent>
-                                    <SelectItem value="full">January 1, 2025</SelectItem>
-                                    <SelectItem value="short-month">Jan 1, 2025</SelectItem>
-                                    <SelectItem value="mmm-dd-yyyy">Jan 01, 2025</SelectItem>
-                                    <SelectItem value="numeric">01/01/2025</SelectItem>
-                                    <SelectItem value="year">Years Only</SelectItem>
-                                  </SelectContent>
-                                </Select>
                                 <Select value={datesFont} onValueChange={setDatesFont}>
                                   <SelectTrigger className="bg-secondary border-border text-foreground">
                                     <SelectValue placeholder="Font" />
@@ -1012,8 +1002,12 @@ const Dashboard = () => {
                                     <span className="text-xs">+</span>
                                   </Button>
                                 </div>
-                                <div className="flex items-center gap-4 ml-auto">
-                                  <label className="flex items-center gap-2 cursor-pointer">
+                              </div>
+                              
+                              {/* Front/Back with date format selectors */}
+                              <div className="flex flex-col gap-3 pt-2 border-t border-border/50">
+                                <div className="flex items-center gap-2">
+                                  <label className="flex items-center gap-2 cursor-pointer min-w-[70px]">
                                     <input 
                                       type="checkbox" 
                                       checked={showDatesOnFront} 
@@ -1022,7 +1016,25 @@ const Dashboard = () => {
                                     />
                                     <span className="text-muted-foreground text-xs">Front</span>
                                   </label>
-                                  <label className="flex items-center gap-2 cursor-pointer">
+                                  <Select 
+                                    value={frontDateFormat} 
+                                    onValueChange={(v) => setFrontDateFormat(v as 'full' | 'short-month' | 'mmm-dd-yyyy' | 'numeric' | 'year')}
+                                    disabled={!showDatesOnFront}
+                                  >
+                                    <SelectTrigger className="bg-secondary border-border text-foreground h-8 text-xs flex-1">
+                                      <SelectValue placeholder="Date Format" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                      <SelectItem value="full">January 1, 2025</SelectItem>
+                                      <SelectItem value="short-month">Jan 1, 2025</SelectItem>
+                                      <SelectItem value="mmm-dd-yyyy">Jan 01, 2025</SelectItem>
+                                      <SelectItem value="numeric">01/01/2025</SelectItem>
+                                      <SelectItem value="year">Years Only</SelectItem>
+                                    </SelectContent>
+                                  </Select>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  <label className="flex items-center gap-2 cursor-pointer min-w-[70px]">
                                     <input 
                                       type="checkbox" 
                                       checked={showDatesOnBack} 
@@ -1031,6 +1043,22 @@ const Dashboard = () => {
                                     />
                                     <span className="text-muted-foreground text-xs">Back</span>
                                   </label>
+                                  <Select 
+                                    value={backDateFormat} 
+                                    onValueChange={(v) => setBackDateFormat(v as 'full' | 'short-month' | 'mmm-dd-yyyy' | 'numeric' | 'year')}
+                                    disabled={!showDatesOnBack}
+                                  >
+                                    <SelectTrigger className="bg-secondary border-border text-foreground h-8 text-xs flex-1">
+                                      <SelectValue placeholder="Date Format" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                      <SelectItem value="full">January 1, 2025</SelectItem>
+                                      <SelectItem value="short-month">Jan 1, 2025</SelectItem>
+                                      <SelectItem value="mmm-dd-yyyy">Jan 01, 2025</SelectItem>
+                                      <SelectItem value="numeric">01/01/2025</SelectItem>
+                                      <SelectItem value="year">Years Only</SelectItem>
+                                    </SelectContent>
+                                  </Select>
                                 </div>
                               </div>
                             </div>
@@ -1162,7 +1190,7 @@ const Dashboard = () => {
                                     </p>
                                     {showDatesOnBack && (
                                       <p className={`text-[10px] ${backBgImage || metalFinish === 'black' ? 'text-zinc-300' : 'text-zinc-600'}`}>
-                                        {formatDates(birthDate, deathDate, dateFormat)}
+                                        {formatDates(birthDate, deathDate, backDateFormat)}
                                       </p>
                                     )}
                                   </div>
@@ -1461,7 +1489,7 @@ const Dashboard = () => {
                       <div className="text-sm text-muted-foreground space-y-1">
                         <p><span className="font-medium text-foreground">Name:</span> {deceasedName || 'Not specified'}</p>
                         <p><span className="font-medium text-foreground">Dates:</span> {birthDate && deathDate 
-                          ? formatDates(birthDate, deathDate, dateFormat)
+                          ? formatDates(birthDate, deathDate, frontDateFormat)
                           : 'Not specified'}</p>
                       </div>
                     </div>
