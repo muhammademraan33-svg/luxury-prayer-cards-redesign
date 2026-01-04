@@ -108,29 +108,39 @@ const Index = () => {
                     </div>
                   </div>
 
-                  {/* Back - Info, Prayer, QR */}
+                  {/* Back - Info, Prayer, Funeral Home Logo */}
                   <div 
                     className={`absolute inset-0 rounded-2xl bg-gradient-to-br ${currentFinish.gradient} shadow-2xl p-5`}
                     style={{ backfaceVisibility: 'hidden', transform: 'rotateY(180deg)' }}
                   >
                     <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-transparent to-black/30 rounded-2xl"></div>
                     <div className="relative z-10 h-full flex flex-col justify-between text-center">
-                      {/* Top - Name & Dates */}
-                      <div>
-                        <p className={`text-[10px] uppercase tracking-[0.2em] mb-2 ${selectedFinish === 'black' ? 'text-slate-300' : 'text-slate-600'}`}>
+                      {/* Top - Funeral Home Logo */}
+                      <div className="flex flex-col items-center">
+                        <div className={`w-12 h-12 rounded-full flex items-center justify-center mb-1 ${selectedFinish === 'black' ? 'bg-white/10' : 'bg-slate-800/10'}`}>
+                          <Building2 className={`h-6 w-6 ${selectedFinish === 'black' ? 'text-white' : 'text-slate-700'}`} />
+                        </div>
+                        <p className={`text-[9px] uppercase tracking-wider font-medium ${selectedFinish === 'black' ? 'text-slate-300' : 'text-slate-600'}`}>
+                          Grace Memorial Chapel
+                        </p>
+                      </div>
+
+                      {/* Name & Dates */}
+                      <div className="mt-2">
+                        <p className={`text-[10px] uppercase tracking-[0.2em] mb-1 ${selectedFinish === 'black' ? 'text-slate-400' : 'text-slate-500'}`}>
                           In Loving Memory
                         </p>
-                        <p className={`text-xl font-serif ${selectedFinish === 'black' ? 'text-white' : 'text-slate-800'}`}>
+                        <p className={`text-lg font-serif ${selectedFinish === 'black' ? 'text-white' : 'text-slate-800'}`}>
                           Margaret Rose Johnson
                         </p>
-                        <p className={`text-sm mt-1 ${selectedFinish === 'black' ? 'text-slate-300' : 'text-slate-600'}`}>
+                        <p className={`text-xs mt-0.5 ${selectedFinish === 'black' ? 'text-slate-300' : 'text-slate-600'}`}>
                           June 12, 1942 – January 2, 2025
                         </p>
                       </div>
 
                       {/* Middle - Prayer */}
-                      <div className="flex-1 flex items-center justify-center py-4">
-                        <p className={`text-sm leading-relaxed font-serif italic ${selectedFinish === 'black' ? 'text-slate-200' : 'text-slate-700'}`}>
+                      <div className="flex-1 flex items-center justify-center py-3">
+                        <p className={`text-[11px] leading-relaxed font-serif italic ${selectedFinish === 'black' ? 'text-slate-200' : 'text-slate-700'}`}>
                           The Lord is my shepherd;<br />
                           I shall not want.<br />
                           He maketh me to lie down<br />
@@ -140,13 +150,18 @@ const Index = () => {
                         </p>
                       </div>
 
-                      {/* Bottom - QR Code */}
+                      {/* Bottom - QR Code Upsell */}
                       <div className="flex flex-col items-center">
-                        <div className="w-16 h-16 bg-white rounded-lg flex items-center justify-center shadow-md mb-2">
-                          <QrCode className="h-12 w-12 text-slate-800" />
+                        <div className="relative">
+                          <div className="w-12 h-12 bg-white/80 rounded-lg flex items-center justify-center shadow-md border-2 border-dashed border-amber-400/60">
+                            <QrCode className="h-8 w-8 text-amber-600/70" />
+                          </div>
+                          <div className="absolute -top-1 -right-1 bg-amber-500 text-white text-[6px] font-bold px-1.5 py-0.5 rounded-full uppercase">
+                            Pro
+                          </div>
                         </div>
-                        <p className={`text-[9px] ${selectedFinish === 'black' ? 'text-slate-400' : 'text-slate-500'}`}>
-                          Scan to share memories
+                        <p className={`text-[8px] mt-1 ${selectedFinish === 'black' ? 'text-amber-300' : 'text-amber-600'} font-medium`}>
+                          + Living Memorial Page
                         </p>
                       </div>
                     </div>
