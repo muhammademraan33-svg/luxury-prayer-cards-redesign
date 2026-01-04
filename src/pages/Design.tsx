@@ -1202,153 +1202,136 @@ const Design = () => {
                             <div 
                               className="relative z-10 w-full h-full p-3"
                             >
-                                <div className="h-full grid grid-rows-[1fr_4fr_1fr] text-center">
-                                  {/* Header Section - reserved top 1/6 */}
-                                  <div className="flex flex-col items-center justify-center overflow-hidden px-1">
-                                    {/* Funeral Home Logo - Top (above In Loving Memory) */}
-                                    {funeralHomeLogo && funeralHomeLogoPosition === 'top' && (
-                                      <div className="flex justify-center mb-1">
-                                        <img
-                                          src={funeralHomeLogo}
-                                          alt="Funeral Home Logo"
-                                          className="object-contain"
-                                          style={{ height: `${funeralHomeLogoSize}px`, maxWidth: '70%' }}
-                                        />
-                                      </div>
-                                    )}
-
-                                    {showInLovingMemory && (
-                                      <p
-                                        className="uppercase tracking-[0.12em] mb-0.5"
-                                        style={{
-                                          fontSize: `${inLovingMemorySize}px`,
-                                          color: inLovingMemoryColor,
-                                          fontWeight: inLovingMemoryBold ? 'bold' : 'normal',
-                                          fontFamily: inLovingMemoryFont,
-                                        }}
-                                      >
-                                        {inLovingMemoryText}
-                                      </p>
-                                    )}
-
-                                    {showNameOnBack && (
-                                      <p
-                                        className="mb-0.5 whitespace-pre text-center"
-                                        style={{
-                                          fontSize: `${backNameSize}px`,
-                                          color: backNameColor,
-                                          fontWeight: backNameBold ? 'bold' : 'normal',
-                                          fontFamily: backNameFont,
-                                        }}
-                                      >
-                                        {deceasedName || 'Name Here'}
-                                      </p>
-                                    )}
-
-                                    {/* Dates */}
-                                    {showDatesOnBack && (
-                                      <div
-                                        className="touch-none select-none px-1 rounded mb-1"
-                                        style={{
-                                          cursor:
-                                            draggingText === 'backDates' || resizingText === 'backDates'
-                                              ? 'grabbing'
-                                              : 'grab',
-                                          boxShadow:
-                                            draggingText === 'backDates' || resizingText === 'backDates'
-                                              ? '0 0 0 2px #d97706'
-                                              : 'none',
-                                          textAlign: backDatesAlign,
-                                        }}
-                                        onPointerDown={(e) => handleTextPointerDown(e, 'backDates')}
-                                        onPointerMove={handleTextPointerMove}
-                                        onPointerUp={handleTextPointerUp}
-                                        onPointerCancel={handleTextPointerUp}
-                                        onWheel={(e) => handleTextWheel(e, 'backDates')}
-                                      >
-                                        <span
-                                          style={{
-                                            fontSize: backDatesSize === 'auto' ? '9px' : `${backDatesSize}px`,
-                                            color: backDatesColor,
-                                            fontWeight: datesBold ? 'bold' : 'normal',
-                                          }}
-                                        >
-                                          {formatDates(birthDate, deathDate, backDateFormat)}
-                                        </span>
-                                      </div>
-                                    )}
-                                  </div>
-
-                                  {/* Prayer - reserved middle 2/3 (never overlaps QR/logo) */}
-                                  <div
-                                    ref={prayerContainerRef}
-                                    className="flex items-center justify-center py-1 px-1 overflow-hidden min-h-0"
-                                  >
-                                    <p
-                                      ref={prayerTextRef}
-                                      className={`leading-snug font-serif italic ${backBgImage || metalFinish === 'black' ? 'text-zinc-200' : 'text-zinc-700'} whitespace-pre-line text-center`}
-                                      style={{
-                                        fontSize:
-                                          prayerTextSize === 'auto'
-                                            ? `${autoPrayerFontSize}px`
-                                            : `${prayerTextSize}px`,
-                                        lineHeight: prayerTextSize === 'auto' ? 1.15 : 1.3,
-                                        textWrap: 'pretty',
-                                        wordBreak: 'keep-all',
-                                        fontWeight: prayerBold ? 'bold' : 'normal',
-                                        maxHeight: '100%',
-                                        overflow: 'hidden',
+                              <div className="h-full flex flex-col text-center">
+                                {/* Header Section - Logo, In Loving Memory, Name, Dates */}
+                                <div className="flex flex-col items-center shrink-0">
+                                  {/* Funeral Home Logo - Top (above In Loving Memory) */}
+                                  {funeralHomeLogo && funeralHomeLogoPosition === 'top' && (
+                                    <div className="flex justify-center mb-1">
+                                      <img 
+                                        src={funeralHomeLogo} 
+                                        alt="Funeral Home Logo" 
+                                        className="object-contain"
+                                        style={{ height: `${funeralHomeLogoSize}px`, maxWidth: '70%' }}
+                                      />
+                                    </div>
+                                  )}
+                                  
+                                  {showInLovingMemory && (
+                                    <p 
+                                      className="uppercase tracking-[0.12em] mb-0.5"
+                                      style={{ 
+                                        fontSize: `${inLovingMemorySize}px`,
+                                        color: inLovingMemoryColor,
+                                        fontWeight: inLovingMemoryBold ? 'bold' : 'normal',
+                                        fontFamily: inLovingMemoryFont,
                                       }}
                                     >
-                                      {preventOrphans(backText)}
+                                      {inLovingMemoryText}
                                     </p>
-                                  </div>
+                                  )}
+                                  {showNameOnBack && (
+                                    <p 
+                                      className="mb-0.5 whitespace-pre text-center"
+                                      style={{ 
+                                        fontSize: `${backNameSize}px`,
+                                        color: backNameColor,
+                                        fontWeight: backNameBold ? 'bold' : 'normal',
+                                        fontFamily: backNameFont
+                                      }}
+                                    >
+                                      {deceasedName || 'Name Here'}
+                                    </p>
+                                  )}
+                                  
+                                  {/* Dates - now in flow, not absolute */}
+                                  {showDatesOnBack && (
+                                    <div
+                                      className="touch-none select-none px-1 rounded mb-1"
+                                      style={{
+                                        cursor: draggingText === 'backDates' || resizingText === 'backDates' ? 'grabbing' : 'grab',
+                                        boxShadow: (draggingText === 'backDates' || resizingText === 'backDates') ? '0 0 0 2px #d97706' : 'none',
+                                        textAlign: backDatesAlign,
+                                      }}
+                                      onPointerDown={(e) => handleTextPointerDown(e, 'backDates')}
+                                      onPointerMove={handleTextPointerMove}
+                                      onPointerUp={handleTextPointerUp}
+                                      onPointerCancel={handleTextPointerUp}
+                                      onWheel={(e) => handleTextWheel(e, 'backDates')}
+                                    >
+                                      <span style={{ 
+                                        fontSize: backDatesSize === 'auto' ? '9px' : `${backDatesSize}px`,
+                                        color: backDatesColor,
+                                        fontWeight: datesBold ? 'bold' : 'normal'
+                                      }}>
+                                        {formatDates(birthDate, deathDate, backDateFormat)}
+                                      </span>
+                                    </div>
+                                  )}
+                                </div>
 
-                                  {/* Footer - reserved bottom 1/6 */}
-                                  <div className="flex flex-col items-center justify-center overflow-hidden px-1">
-                                    {/* Funeral Home Logo - Bottom (when no QR) */}
-                                    {funeralHomeLogo && funeralHomeLogoPosition === 'bottom' && !showQrCode && (
-                                      <div className="flex justify-center mt-1">
-                                        <img
-                                          src={funeralHomeLogo}
-                                          alt="Funeral Home Logo"
-                                          className="object-contain"
-                                          style={{ height: `${funeralHomeLogoSize}px`, maxWidth: '70%' }}
+                                {/* Prayer - takes remaining space with proper overflow handling */}
+                                <div ref={prayerContainerRef} className="flex-1 flex items-center justify-center py-1 px-1 overflow-hidden min-h-0">
+                                  <p 
+                                    ref={prayerTextRef}
+                                    className={`leading-snug font-serif italic ${backBgImage || metalFinish === 'black' ? 'text-zinc-200' : 'text-zinc-700'} whitespace-pre-line text-center`}
+                                    style={{
+                                      fontSize: prayerTextSize === 'auto' 
+                                        ? `${autoPrayerFontSize}px`
+                                        : `${prayerTextSize}px`,
+                                      lineHeight: prayerTextSize === 'auto' ? 1.15 : 1.3,
+                                      textWrap: 'pretty',
+                                      wordBreak: 'keep-all',
+                                      fontWeight: prayerBold ? 'bold' : 'normal',
+                                      maxHeight: '100%',
+                                      overflow: 'hidden',
+                                    }}
+                                  >
+                                    {preventOrphans(backText)}
+                                  </p>
+                                </div>
+
+                                {/* Footer Section - Logo and/or QR Code */}
+                                <div className="shrink-0 flex flex-col items-center">
+                                  {/* Funeral Home Logo - Bottom (when no QR) */}
+                                  {funeralHomeLogo && funeralHomeLogoPosition === 'bottom' && !showQrCode && (
+                                    <div className="flex justify-center mt-1">
+                                      <img 
+                                        src={funeralHomeLogo} 
+                                        alt="Funeral Home Logo" 
+                                        className="object-contain"
+                                        style={{ height: `${funeralHomeLogoSize}px`, maxWidth: '70%' }}
+                                      />
+                                    </div>
+                                  )}
+
+                                  {/* QR Code */}
+                                  {showQrCode && qrUrl && (
+                                    <div className="flex flex-col items-center">
+                                      <div className={`${orientation === 'portrait' ? 'w-12 h-12' : 'w-8 h-8'} bg-white rounded-lg flex items-center justify-center shadow-md p-1`}>
+                                        <QRCodeSVG 
+                                          value={qrUrl} 
+                                          size={orientation === 'portrait' ? 40 : 28}
+                                          level="M"
+                                          includeMargin={false}
                                         />
                                       </div>
-                                    )}
-
-                                    {/* QR Code */}
-                                    {showQrCode && qrUrl && (
-                                      <div className="flex flex-col items-center">
-                                        <div
-                                          className={`${orientation === 'portrait' ? 'w-12 h-12' : 'w-8 h-8'} bg-white rounded-lg flex items-center justify-center shadow-md p-1`}
-                                        >
-                                          <QRCodeSVG
-                                            value={qrUrl}
-                                            size={orientation === 'portrait' ? 40 : 28}
-                                            level="M"
-                                            includeMargin={false}
-                                          />
-                                        </div>
-                                        <p
-                                          className={`text-[6px] mt-0.5 ${backBgImage || metalFinish === 'black' ? 'text-zinc-400' : 'text-zinc-600'}`}
-                                        >
-                                          Scan to visit
-                                        </p>
-                                        {/* Logo below QR if position is bottom */}
-                                        {funeralHomeLogo && funeralHomeLogoPosition === 'bottom' && (
-                                          <img
-                                            src={funeralHomeLogo}
-                                            alt="Funeral Home Logo"
-                                            className="object-contain mt-1"
-                                            style={{ height: `${funeralHomeLogoSize}px`, maxWidth: '70%' }}
-                                          />
-                                        )}
-                                      </div>
-                                    )}
-                                  </div>
+                                      <p className={`text-[6px] mt-0.5 ${backBgImage || metalFinish === 'black' ? 'text-zinc-400' : 'text-zinc-600'}`}>
+                                        Scan to visit
+                                      </p>
+                                      {/* Logo below QR if position is bottom */}
+                                      {funeralHomeLogo && funeralHomeLogoPosition === 'bottom' && (
+                                        <img 
+                                          src={funeralHomeLogo} 
+                                          alt="Funeral Home Logo" 
+                                          className="object-contain mt-1"
+                                          style={{ height: `${funeralHomeLogoSize}px`, maxWidth: '70%' }}
+                                        />
+                                      )}
+                                    </div>
+                                  )}
                                 </div>
+                              </div>
                             </div>
                           </div>
                         </div>
