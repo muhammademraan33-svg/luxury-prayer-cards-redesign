@@ -10,6 +10,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Sparkles, Plus, QrCode, LogOut, Loader2, ExternalLink, Trash2, Truck, Zap, ArrowLeft, ArrowRight, Upload, ImageIcon, RotateCcw, RectangleHorizontal, RectangleVertical, Type, Book } from 'lucide-react';
+import { QRCodeSVG } from 'qrcode.react';
 import { Textarea } from '@/components/ui/textarea';
 import { prayerTemplates, getTraditionLabel } from '@/data/prayerTemplates';
 import { toast } from 'sonner';
@@ -78,6 +79,7 @@ const Dashboard = () => {
   const [epitaphSize, setEpitaphSize] = useState(11);
   const [epitaphFont, setEpitaphFont] = useState('Great Vibes');
   const [qrUrl, setQrUrl] = useState('');
+  const [showQrCode, setShowQrCode] = useState(true);
   const [showFuneralLogo, setShowFuneralLogo] = useState(true);
   const [orientation, setOrientation] = useState<Orientation>('portrait');
   const [cardSide, setCardSide] = useState<CardSide>('front');
@@ -485,6 +487,7 @@ const Dashboard = () => {
     setEpitaphSize(11);
     setEpitaphFont('Great Vibes');
     setQrUrl('');
+    setShowQrCode(true);
     setShowFuneralLogo(true);
     setOrientation('portrait');
     setCardSide('front');
@@ -1098,14 +1101,21 @@ const Dashboard = () => {
                                   </div>
 
                                   {/* Bottom - QR Code */}
-                                  <div className="flex flex-col items-center">
-                                    <div className={`${orientation === 'portrait' ? 'w-10 h-10' : 'w-7 h-7'} bg-white rounded-lg flex items-center justify-center shadow-md`}>
-                                      <QrCode className={`${orientation === 'portrait' ? 'h-7 w-7' : 'h-4 w-4'} text-foreground`} />
+                                  {showQrCode && qrUrl && (
+                                    <div className="flex flex-col items-center">
+                                      <div className={`${orientation === 'portrait' ? 'w-12 h-12' : 'w-8 h-8'} bg-white rounded-lg flex items-center justify-center shadow-md p-1`}>
+                                        <QRCodeSVG 
+                                          value={qrUrl} 
+                                          size={orientation === 'portrait' ? 40 : 28}
+                                          level="M"
+                                          includeMargin={false}
+                                        />
+                                      </div>
+                                      <p className={`text-[6px] mt-0.5 ${backBgImage || metalFinish === 'black' ? 'text-zinc-400' : 'text-zinc-600'}`}>
+                                        Scan to visit
+                                      </p>
                                     </div>
-                                    <p className={`text-[6px] mt-0.5 ${backBgImage || metalFinish === 'black' ? 'text-zinc-400' : 'text-zinc-600'}`}>
-                                      {qrUrl ? 'Visit memorial page' : 'Scan to share memories'}
-                                    </p>
-                                  </div>
+                                  )}
                                 </div>
                               </div>
                             </div>
@@ -1244,14 +1254,26 @@ const Dashboard = () => {
                           
                           {/* QR Code URL */}
                           <div className="w-full max-w-md space-y-2">
-                            <Label className="text-muted-foreground">QR Code Link (funeral home URL)</Label>
+                            <div className="flex items-center justify-between">
+                              <Label className="text-muted-foreground">QR Code Link (optional)</Label>
+                              <label className="flex items-center gap-2 cursor-pointer">
+                                <input 
+                                  type="checkbox" 
+                                  checked={showQrCode} 
+                                  onChange={(e) => setShowQrCode(e.target.checked)}
+                                  className="accent-primary"
+                                />
+                                <span className="text-muted-foreground text-xs">Show QR</span>
+                              </label>
+                            </div>
                             <Input
                               placeholder="https://yourfuneralhome.com"
                               value={qrUrl}
                               onChange={(e) => setQrUrl(e.target.value)}
                               className="bg-secondary border-border text-foreground"
+                              disabled={!showQrCode}
                             />
-                            <p className="text-xs text-muted-foreground">Leave empty to use default memorial page</p>
+                            <p className="text-xs text-muted-foreground">Enter URL to generate QR code on card</p>
                           </div>
                           
                           {/* Funeral Home Logo Toggle */}
