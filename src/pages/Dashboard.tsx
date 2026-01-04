@@ -1065,22 +1065,42 @@ const Dashboard = () => {
                           <div className="w-full max-w-md space-y-3">
                             <div className="flex items-center gap-2">
                               <Book className="h-4 w-4 text-muted-foreground" />
-                              <Label className="text-muted-foreground">Select Prayer or Scripture</Label>
+                              <Label className="text-muted-foreground">Quick Select Prayer</Label>
                             </div>
                             
-                            <Select value={selectedPrayerId} onValueChange={handlePrayerSelect}>
-                              <SelectTrigger className="bg-secondary border-border text-foreground">
-                                <SelectValue placeholder="Choose a prayer..." />
-                              </SelectTrigger>
-                              <SelectContent className="max-h-64">
-                                <SelectItem value="custom">✏️ Custom Text</SelectItem>
-                                {prayerTemplates.map((prayer) => (
-                                  <SelectItem key={prayer.id} value={prayer.id}>
-                                    {prayer.name} <span className="text-muted-foreground text-xs">({getTraditionLabel(prayer.tradition)})</span>
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
+                            <div className="flex flex-wrap gap-2">
+                              {[
+                                { id: 'psalm-23', label: 'Psalm 23' },
+                                { id: 'serenity-prayer', label: 'Serenity Prayer' },
+                                { id: 'lords-prayer', label: "Lord's Prayer" },
+                                { id: 'irish-blessing', label: 'Irish Blessing' },
+                                { id: 'remember-me', label: 'Remember Me' },
+                              ].map((prayer) => (
+                                <Button
+                                  key={prayer.id}
+                                  type="button"
+                                  variant={selectedPrayerId === prayer.id ? 'default' : 'outline'}
+                                  size="sm"
+                                  onClick={() => handlePrayerSelect(prayer.id)}
+                                  className={selectedPrayerId === prayer.id 
+                                    ? 'bg-primary text-primary-foreground' 
+                                    : 'border-border text-foreground hover:bg-accent'}
+                                >
+                                  {prayer.label}
+                                </Button>
+                              ))}
+                              <Button
+                                type="button"
+                                variant={selectedPrayerId === 'custom' ? 'default' : 'outline'}
+                                size="sm"
+                                onClick={() => setSelectedPrayerId('custom')}
+                                className={selectedPrayerId === 'custom' 
+                                  ? 'bg-primary text-primary-foreground' 
+                                  : 'border-border text-foreground hover:bg-accent'}
+                              >
+                                ✏️ Custom
+                              </Button>
+                            </div>
                             
                             <Textarea
                               id="back-text"
