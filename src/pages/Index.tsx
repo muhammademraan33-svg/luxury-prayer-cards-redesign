@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { QrCode, MessageSquare, Building2, Shield, RotateCcw } from 'lucide-react';
 import eternityLogo from '@/assets/eternity-cards-logo.png';
+import memorialPortrait from '@/assets/memorial-portrait.jpg';
 
 type MetalFinish = 'silver' | 'gold' | 'black' | 'rose-gold';
 
@@ -78,22 +79,31 @@ const Index = () => {
                     transform: showBack ? 'rotateY(180deg)' : 'rotateY(0deg)'
                   }}
                 >
-                  {/* Front - Photo */}
+                  {/* Front - Photo with Name Overlay */}
                   <div 
-                    className={`absolute inset-0 rounded-2xl overflow-hidden shadow-2xl border-4 border-gradient-to-br ${currentFinish.gradient}`}
+                    className={`absolute inset-0 rounded-2xl overflow-hidden shadow-2xl`}
                     style={{ backfaceVisibility: 'hidden' }}
                   >
                     <div className={`absolute inset-0 bg-gradient-to-br ${currentFinish.gradient} p-1`}>
-                      <div className="w-full h-full rounded-xl overflow-hidden">
+                      <div className="w-full h-full rounded-xl overflow-hidden relative">
                         <img 
-                          src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=600&fit=crop&crop=face" 
+                          src={memorialPortrait} 
                           alt="Memorial" 
                           className="w-full h-full object-cover"
                         />
+                        {/* Name & Dates Overlay */}
+                        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent pt-12 pb-4 px-3">
+                          <p className="text-white font-serif text-lg text-center leading-tight">
+                            Margaret Rose Johnson
+                          </p>
+                          <p className="text-white/80 text-sm text-center mt-1">
+                            1942 – 2025
+                          </p>
+                        </div>
                       </div>
                     </div>
                     {/* Subtle overlay hint */}
-                    <div className="absolute bottom-3 left-0 right-0 text-center">
+                    <div className="absolute bottom-14 left-0 right-0 text-center">
                       <span className="text-white/70 text-xs bg-black/30 px-3 py-1 rounded-full">Tap to flip</span>
                     </div>
                   </div>
@@ -111,10 +121,10 @@ const Index = () => {
                           In Loving Memory
                         </p>
                         <p className={`text-xl font-serif ${selectedFinish === 'black' ? 'text-white' : 'text-slate-800'}`}>
-                          John David Smith
+                          Margaret Rose Johnson
                         </p>
                         <p className={`text-sm mt-1 ${selectedFinish === 'black' ? 'text-slate-300' : 'text-slate-600'}`}>
-                          March 15, 1945 – January 2, 2025
+                          June 12, 1942 – January 2, 2025
                         </p>
                       </div>
 
