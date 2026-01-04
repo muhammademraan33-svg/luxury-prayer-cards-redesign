@@ -204,19 +204,29 @@ export const ElementRenderer = ({
   };
 
   const renderImage = (el: ImageElement) => {
+    const scale = el.scale || 1;
     return (
-      <img
-        src={el.src}
-        alt="Card element"
+      <div
         style={{
           ...baseStyle,
-          objectFit: 'cover',
+          overflow: 'hidden',
           borderRadius: el.borderRadius,
         }}
         onPointerDown={onPointerDown}
         className={isSelected ? 'ring-2 ring-primary ring-offset-2' : ''}
-        draggable={false}
-      />
+      >
+        <img
+          src={el.src}
+          alt="Card element"
+          style={{
+            width: `${scale * 100}%`,
+            height: `${scale * 100}%`,
+            objectFit: 'cover',
+            transform: `translate(${(1 - scale) * 50}%, ${(1 - scale) * 50}%)`,
+          }}
+          draggable={false}
+        />
+      </div>
     );
   };
 
