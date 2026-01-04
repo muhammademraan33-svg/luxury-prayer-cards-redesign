@@ -6,100 +6,100 @@
 
 @layer base {
   :root {
-    /* Solemn, respectful light palette - soft warm grays with muted gold accents */
-    --background: 30 10% 96%;
-    --foreground: 220 15% 20%;
+    /* Peaceful memorial palette - soft ivory with deep slate and muted lavender */
+    --background: 240 10% 97%;
+    --foreground: 240 20% 18%;
 
-    --card: 30 8% 98%;
-    --card-foreground: 220 15% 20%;
+    --card: 240 8% 99%;
+    --card-foreground: 240 20% 18%;
 
-    --popover: 30 8% 98%;
-    --popover-foreground: 220 15% 20%;
+    --popover: 240 8% 99%;
+    --popover-foreground: 240 20% 18%;
 
-    --primary: 35 30% 45%;
-    --primary-foreground: 30 10% 98%;
+    --primary: 250 25% 35%;
+    --primary-foreground: 240 10% 98%;
 
-    --secondary: 220 10% 92%;
-    --secondary-foreground: 220 15% 25%;
+    --secondary: 240 12% 92%;
+    --secondary-foreground: 240 20% 25%;
 
-    --muted: 30 8% 90%;
-    --muted-foreground: 220 8% 45%;
+    --muted: 240 8% 92%;
+    --muted-foreground: 240 10% 45%;
 
-    --accent: 35 20% 90%;
-    --accent-foreground: 35 30% 35%;
-
-    --destructive: 0 65% 50%;
-    --destructive-foreground: 0 0% 100%;
-
-    --border: 220 12% 85%;
-    --input: 220 12% 85%;
-    --ring: 35 30% 45%;
-
-    --radius: 0.75rem;
-
-    /* Custom design tokens */
-    --canvas-bg: 30 10% 93%;
-    --toolbar-bg: 30 8% 98%;
-    --card-shadow: 0 8px 32px -8px hsl(220 20% 20% / 0.12);
-    --card-shadow-lg: 0 16px 48px -12px hsl(220 20% 20% / 0.18);
-    --metal-shimmer: linear-gradient(135deg, 
-      hsl(35 20% 78%) 0%, 
-      hsl(35 25% 85%) 25%, 
-      hsl(35 20% 75%) 50%, 
-      hsl(35 25% 85%) 75%, 
-      hsl(35 20% 78%) 100%);
-
-    --sidebar-background: 30 8% 97%;
-    --sidebar-foreground: 220 15% 25%;
-    --sidebar-primary: 35 30% 45%;
-    --sidebar-primary-foreground: 30 10% 98%;
-    --sidebar-accent: 30 8% 94%;
-    --sidebar-accent-foreground: 220 15% 20%;
-    --sidebar-border: 220 12% 88%;
-    --sidebar-ring: 35 30% 45%;
-  }
-
-  .dark {
-    /* Solemn, respectful dark palette - deep charcoal with warm muted gold */
-    --background: 220 15% 12%;
-    --foreground: 30 10% 92%;
-
-    --card: 220 14% 16%;
-    --card-foreground: 30 10% 92%;
-
-    --popover: 220 14% 16%;
-    --popover-foreground: 30 10% 92%;
-
-    --primary: 35 35% 55%;
-    --primary-foreground: 220 15% 12%;
-
-    --secondary: 220 12% 22%;
-    --secondary-foreground: 30 8% 85%;
-
-    --muted: 220 12% 20%;
-    --muted-foreground: 30 6% 55%;
-
-    --accent: 35 25% 25%;
-    --accent-foreground: 35 35% 75%;
+    --accent: 270 15% 92%;
+    --accent-foreground: 250 25% 30%;
 
     --destructive: 0 55% 45%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 220 12% 25%;
-    --input: 220 12% 25%;
-    --ring: 35 35% 55%;
+    --border: 240 12% 88%;
+    --input: 240 12% 88%;
+    --ring: 250 25% 35%;
 
-    --canvas-bg: 220 14% 14%;
-    --toolbar-bg: 220 14% 16%;
+    --radius: 0.75rem;
 
-    --sidebar-background: 220 15% 13%;
-    --sidebar-foreground: 30 8% 90%;
-    --sidebar-primary: 35 35% 55%;
-    --sidebar-primary-foreground: 220 15% 12%;
-    --sidebar-accent: 220 12% 20%;
-    --sidebar-accent-foreground: 30 8% 90%;
-    --sidebar-border: 220 12% 22%;
-    --sidebar-ring: 35 35% 55%;
+    /* Custom design tokens */
+    --canvas-bg: 240 10% 94%;
+    --toolbar-bg: 240 8% 99%;
+    --card-shadow: 0 8px 32px -8px hsl(250 30% 20% / 0.1);
+    --card-shadow-lg: 0 16px 48px -12px hsl(250 30% 20% / 0.15);
+    --metal-shimmer: linear-gradient(135deg, 
+      hsl(240 8% 82%) 0%, 
+      hsl(240 10% 90%) 25%, 
+      hsl(240 8% 80%) 50%, 
+      hsl(240 10% 90%) 75%, 
+      hsl(240 8% 82%) 100%);
+
+    --sidebar-background: 240 10% 98%;
+    --sidebar-foreground: 240 20% 20%;
+    --sidebar-primary: 250 25% 35%;
+    --sidebar-primary-foreground: 240 10% 98%;
+    --sidebar-accent: 270 12% 94%;
+    --sidebar-accent-foreground: 240 20% 18%;
+    --sidebar-border: 240 12% 90%;
+    --sidebar-ring: 250 25% 35%;
+  }
+
+  .dark {
+    /* Peaceful memorial dark palette - deep charcoal with muted lavender */
+    --background: 240 18% 10%;
+    --foreground: 240 8% 92%;
+
+    --card: 240 16% 14%;
+    --card-foreground: 240 8% 92%;
+
+    --popover: 240 16% 14%;
+    --popover-foreground: 240 8% 92%;
+
+    --primary: 260 30% 65%;
+    --primary-foreground: 240 18% 10%;
+
+    --secondary: 240 14% 20%;
+    --secondary-foreground: 240 8% 88%;
+
+    --muted: 240 14% 18%;
+    --muted-foreground: 240 8% 55%;
+
+    --accent: 270 20% 22%;
+    --accent-foreground: 270 25% 78%;
+
+    --destructive: 0 50% 40%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 240 14% 22%;
+    --input: 240 14% 22%;
+    --ring: 260 30% 65%;
+
+    --canvas-bg: 240 16% 12%;
+    --toolbar-bg: 240 16% 14%;
+
+    --sidebar-background: 240 18% 11%;
+    --sidebar-foreground: 240 8% 90%;
+    --sidebar-primary: 260 30% 65%;
+    --sidebar-primary-foreground: 240 18% 10%;
+    --sidebar-accent: 270 15% 18%;
+    --sidebar-accent-foreground: 240 8% 90%;
+    --sidebar-border: 240 14% 20%;
+    --sidebar-ring: 260 30% 65%;
   }
 }
 
