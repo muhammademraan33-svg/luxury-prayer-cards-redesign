@@ -112,7 +112,7 @@ const Auth = () => {
           <CardHeader className="text-center">
             <div className="flex items-center justify-center gap-2 mb-2">
               <Heart className="h-8 w-8 text-rose-600" />
-              <span className="text-xl font-semibold text-slate-800">Eternity Cards</span>
+              <span className="text-xl font-semibold text-slate-800">Metal Prayer Cards</span>
             </div>
             <CardTitle>Reset Password</CardTitle>
             <CardDescription>Enter your email to receive a password reset link</CardDescription>
@@ -155,7 +155,7 @@ const Auth = () => {
         <CardHeader className="text-center">
           <div className="flex items-center justify-center gap-2 mb-2">
             <Heart className="h-8 w-8 text-rose-600" />
-            <span className="text-xl font-semibold text-slate-800">Eternity Cards</span>
+            <span className="text-xl font-semibold text-slate-800">Metal Prayer Cards</span>
           </div>
           <CardTitle>Funeral Home Portal</CardTitle>
           <CardDescription>Login or create an account to manage prayer card orders</CardDescription>

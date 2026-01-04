@@ -323,7 +323,7 @@ const Memorial = () => {
       <footer className="border-t bg-white py-6 mt-auto">
         <div className="container mx-auto px-4 text-center text-slate-500 text-sm">
           <p>Memorial page provided by {memorial.funeral_homes.name}</p>
-          <p className="mt-1">Powered by Eternity Cards</p>
+          <p className="mt-1">Powered by Metal Prayer Cards</p>
         </div>
       </footer>
     </div>

@@ -561,7 +561,7 @@ const Dashboard = () => {
               <Sparkles className="h-5 w-5 text-primary-foreground" />
             </div>
             <div>
-              <span className="text-xl font-semibold text-foreground">Eternity Cards</span>
+              <span className="text-xl font-semibold text-foreground">Metal Prayer Cards</span>
               {funeralHome && (
                 <p className="text-sm text-muted-foreground">{funeralHome.name}</p>
               )}
