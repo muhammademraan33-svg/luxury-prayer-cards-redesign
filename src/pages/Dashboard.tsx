@@ -92,6 +92,7 @@ const Dashboard = () => {
   const [uploadingFront, setUploadingFront] = useState(false);
   const [uploadingBack, setUploadingBack] = useState(false);
   const [backText, setBackText] = useState('The Lord is my shepherd; I shall not want.');
+  const [prayerTextSize, setPrayerTextSize] = useState(12); // default prayer text size
   
   // Front card text state
   const [showNameOnFront, setShowNameOnFront] = useState(true);
@@ -500,6 +501,7 @@ const Dashboard = () => {
     setAdditionalTextFont('Cormorant Garamond');
     setShowAdditionalText(false);
     setSelectedPrayerId('custom');
+    setPrayerTextSize(12);
   };
 
   const handleDeleteOrder = async (orderId: string) => {
@@ -1011,77 +1013,70 @@ const Dashboard = () => {
                         <div className="flex flex-col items-center gap-4">
                           {/* Card Preview */}
                           <div 
-                            className={`${cardClass} rounded-2xl shadow-2xl p-4 relative overflow-hidden`}
-                            style={backBgImage ? { 
-                              backgroundImage: `url(${backBgImage})`, 
-                              backgroundSize: 'cover', 
-                              backgroundPosition: 'center' 
-                            } : {
-                              background: `
-                                linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(245,245,245,0.95) 100%),
-                                repeating-linear-gradient(
-                                  45deg,
-                                  transparent,
-                                  transparent 20px,
-                                  rgba(180,180,180,0.03) 20px,
-                                  rgba(180,180,180,0.03) 40px
-                                ),
-                                repeating-linear-gradient(
-                                  -45deg,
-                                  transparent,
-                                  transparent 30px,
-                                  rgba(160,160,160,0.04) 30px,
-                                  rgba(160,160,160,0.04) 60px
-                                ),
-                                radial-gradient(ellipse at 20% 30%, rgba(200,195,190,0.15) 0%, transparent 50%),
-                                radial-gradient(ellipse at 80% 70%, rgba(190,185,180,0.12) 0%, transparent 50%),
-                                radial-gradient(ellipse at 50% 50%, rgba(210,205,200,0.08) 0%, transparent 70%)
-                              `
-                            }}
+                            className={`${cardClass} rounded-2xl shadow-2xl relative overflow-hidden`}
                           >
-                            {backBgImage && (
-                              <div className="absolute inset-0 bg-black/40"></div>
-                            )}
-                            <div className="relative z-10 h-full flex flex-col justify-between text-center">
-                              {/* Top - Funeral Home Logo */}
-                              {showFuneralLogo && funeralHome?.logo_url && (
-                                <div className="absolute top-2 left-2">
-                                  <img 
-                                    src={funeralHome.logo_url} 
-                                    alt={funeralHome.name}
-                                    className="h-6 w-auto object-contain opacity-70"
-                                  />
-                                </div>
-                              )}
-                              
-                              {/* Top - Name & Dates */}
-                              <div>
-                                <p className={`text-[9px] uppercase tracking-[0.15em] mb-1 ${backBgImage ? 'text-zinc-300' : 'text-muted-foreground'}`}>
-                                  In Loving Memory
-                                </p>
-                                <p className={`${orientation === 'portrait' ? 'text-lg' : 'text-base'} font-serif ${backBgImage ? 'text-white' : 'text-foreground'}`}>
-                                  {deceasedName || 'Name Here'}
-                                </p>
-                                <p className={`text-xs ${backBgImage ? 'text-zinc-300' : 'text-muted-foreground'}`}>
-                                  {formatDates(birthDate, deathDate)}
-                                </p>
-                              </div>
+                            {/* Metal frame border */}
+                            <div className={`absolute inset-0 bg-gradient-to-br ${currentFinish.gradient} p-1 rounded-2xl`}>
+                              <div 
+                                className="w-full h-full rounded-xl overflow-hidden p-3"
+                                style={backBgImage ? { 
+                                  backgroundImage: `url(${backBgImage})`, 
+                                  backgroundSize: 'cover', 
+                                  backgroundPosition: 'center' 
+                                } : {
+                                  background: `
+                                    linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(250,250,250,0.98) 100%)
+                                  `
+                                }}
+                              >
+                                {backBgImage && (
+                                  <div className="absolute inset-0 bg-black/40 rounded-xl"></div>
+                                )}
+                                <div className="relative z-10 h-full flex flex-col justify-between text-center">
+                                  {/* Top - Funeral Home Logo */}
+                                  {showFuneralLogo && funeralHome?.logo_url && (
+                                    <div className="absolute top-1 left-1">
+                                      <img 
+                                        src={funeralHome.logo_url} 
+                                        alt={funeralHome.name}
+                                        className="h-5 w-auto object-contain opacity-70"
+                                      />
+                                    </div>
+                                  )}
+                                  
+                                  {/* Top - Name & Dates */}
+                                  <div>
+                                    <p className={`text-[8px] uppercase tracking-[0.12em] mb-0.5 ${backBgImage ? 'text-zinc-300' : 'text-muted-foreground'}`}>
+                                      In Loving Memory
+                                    </p>
+                                    <p className={`${orientation === 'portrait' ? 'text-base' : 'text-sm'} font-serif ${backBgImage ? 'text-white' : 'text-foreground'}`}>
+                                      {deceasedName || 'Name Here'}
+                                    </p>
+                                    <p className={`text-[10px] ${backBgImage ? 'text-zinc-300' : 'text-muted-foreground'}`}>
+                                      {formatDates(birthDate, deathDate)}
+                                    </p>
+                                  </div>
 
-                              {/* Middle - Prayer */}
-                              <div className="flex-1 flex items-center justify-center py-2 px-2">
-                                <p className={`${orientation === 'portrait' ? 'text-[10px]' : 'text-[8px]'} leading-relaxed font-serif italic ${backBgImage ? 'text-zinc-200' : 'text-muted-foreground'} whitespace-pre-line`}>
-                                  {backText}
-                                </p>
-                              </div>
+                                  {/* Middle - Prayer */}
+                                  <div className="flex-1 flex items-center justify-center py-1 px-1 overflow-hidden">
+                                    <p 
+                                      className={`leading-relaxed font-serif italic ${backBgImage ? 'text-zinc-200' : 'text-muted-foreground'} whitespace-pre-line text-center`}
+                                      style={{ fontSize: `${prayerTextSize}px` }}
+                                    >
+                                      {backText}
+                                    </p>
+                                  </div>
 
-                              {/* Bottom - QR Code */}
-                              <div className="flex flex-col items-center">
-                                <div className={`${orientation === 'portrait' ? 'w-12 h-12' : 'w-8 h-8'} bg-white rounded-lg flex items-center justify-center shadow-md`}>
-                                  <QrCode className={`${orientation === 'portrait' ? 'h-8 w-8' : 'h-5 w-5'} text-foreground`} />
+                                  {/* Bottom - QR Code */}
+                                  <div className="flex flex-col items-center">
+                                    <div className={`${orientation === 'portrait' ? 'w-10 h-10' : 'w-7 h-7'} bg-white rounded-lg flex items-center justify-center shadow-md`}>
+                                      <QrCode className={`${orientation === 'portrait' ? 'h-7 w-7' : 'h-4 w-4'} text-foreground`} />
+                                    </div>
+                                    <p className={`text-[6px] mt-0.5 ${backBgImage ? 'text-zinc-400' : 'text-muted-foreground'}`}>
+                                      {qrUrl ? 'Visit memorial page' : 'Scan to share memories'}
+                                    </p>
+                                  </div>
                                 </div>
-                                <p className={`text-[7px] mt-1 ${backBgImage ? 'text-zinc-400' : 'text-muted-foreground'}`}>
-                                  {qrUrl ? 'Visit memorial page' : 'Scan to share memories'}
-                                </p>
                               </div>
                             </div>
                           </div>
@@ -1167,9 +1162,54 @@ const Dashboard = () => {
                                 setBackText(e.target.value);
                                 setSelectedPrayerId('custom');
                               }}
-                              className="bg-secondary border-border text-foreground min-h-[100px]"
-                              rows={4}
+                              className="bg-secondary border-border text-foreground min-h-[80px]"
+                              rows={3}
                             />
+                            
+                            {/* Prayer Text Size Control */}
+                            <div className="flex items-center gap-3 flex-wrap">
+                              <Label className="text-muted-foreground text-xs">Text Size:</Label>
+                              <div className="flex items-center gap-2">
+                                <input
+                                  type="range"
+                                  min="8"
+                                  max="16"
+                                  value={prayerTextSize}
+                                  onChange={(e) => setPrayerTextSize(parseInt(e.target.value))}
+                                  className="w-24 accent-primary"
+                                />
+                                <span className="text-xs text-foreground bg-secondary px-2 py-1 rounded">{prayerTextSize}px</span>
+                              </div>
+                              <div className="flex gap-1 ml-auto">
+                                <Button
+                                  type="button"
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => setPrayerTextSize(10)}
+                                  className={`text-xs px-2 py-1 h-7 ${prayerTextSize === 10 ? 'bg-primary text-primary-foreground' : ''}`}
+                                >
+                                  Small
+                                </Button>
+                                <Button
+                                  type="button"
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => setPrayerTextSize(12)}
+                                  className={`text-xs px-2 py-1 h-7 ${prayerTextSize === 12 ? 'bg-primary text-primary-foreground' : ''}`}
+                                >
+                                  Medium
+                                </Button>
+                                <Button
+                                  type="button"
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => setPrayerTextSize(14)}
+                                  className={`text-xs px-2 py-1 h-7 ${prayerTextSize === 14 ? 'bg-primary text-primary-foreground' : ''}`}
+                                >
+                                  Large
+                                </Button>
+                              </div>
+                            </div>
                           </div>
                           
                           {/* QR Code URL */}
