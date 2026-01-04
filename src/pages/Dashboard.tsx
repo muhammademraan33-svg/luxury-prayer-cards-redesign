@@ -28,7 +28,7 @@ interface MemorialOrder {
   created_at: string;
 }
 
-type MetalFinish = 'silver' | 'gold' | 'black' | 'rose-gold';
+type MetalFinish = 'silver' | 'gold' | 'black' | 'white' | 'marble';
 type Orientation = 'landscape' | 'portrait';
 type CardSide = 'front' | 'back';
 
@@ -36,7 +36,8 @@ const METAL_FINISHES: { id: MetalFinish; name: string; gradient: string }[] = [
   { id: 'silver', name: 'Brushed Silver', gradient: 'from-zinc-400 via-zinc-300 to-zinc-500' },
   { id: 'gold', name: 'Polished Gold', gradient: 'from-yellow-600 via-yellow-500 to-yellow-700' },
   { id: 'black', name: 'Matte Black', gradient: 'from-zinc-800 via-zinc-700 to-zinc-900' },
-  { id: 'rose-gold', name: 'Rose Gold', gradient: 'from-rose-400 via-rose-300 to-rose-500' },
+  { id: 'white', name: 'Pearl White', gradient: 'from-gray-100 via-white to-gray-200' },
+  { id: 'marble', name: 'Silver Marble', gradient: 'from-gray-300 via-slate-100 to-gray-400' },
 ];
 
 const BASE_PRICE_PER_CARD = 8;
