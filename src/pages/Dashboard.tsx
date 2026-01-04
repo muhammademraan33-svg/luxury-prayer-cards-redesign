@@ -72,6 +72,13 @@ const Dashboard = () => {
   const [metalFinish, setMetalFinish] = useState<MetalFinish>('silver');
   const [shipping, setShipping] = useState<'standard' | 'express'>('standard');
   const [epitaph, setEpitaph] = useState('Forever in our hearts');
+  const [showEpitaph, setShowEpitaph] = useState(true);
+  const [epitaphPosition, setEpitaphPosition] = useState({ x: 50, y: 50 });
+  const [epitaphColor, setEpitaphColor] = useState('#ffffff');
+  const [epitaphSize, setEpitaphSize] = useState(11);
+  const [epitaphFont, setEpitaphFont] = useState('Great Vibes');
+  const [qrUrl, setQrUrl] = useState('');
+  const [showFuneralLogo, setShowFuneralLogo] = useState(true);
   const [orientation, setOrientation] = useState<Orientation>('portrait');
   const [cardSide, setCardSide] = useState<CardSide>('front');
   const [frontBgImage, setFrontBgImage] = useState<string | null>(null);
@@ -105,8 +112,8 @@ const Dashboard = () => {
   const [additionalTextFont, setAdditionalTextFont] = useState('Cormorant Garamond');
   const [showAdditionalText, setShowAdditionalText] = useState(false);
   const [selectedPrayerId, setSelectedPrayerId] = useState<string>('custom');
-  const [draggingText, setDraggingText] = useState<'name' | 'dates' | 'additional' | null>(null);
-  const [resizingText, setResizingText] = useState<'name' | 'dates' | 'additional' | null>(null);
+  const [draggingText, setDraggingText] = useState<'name' | 'dates' | 'additional' | 'epitaph' | null>(null);
+  const [resizingText, setResizingText] = useState<'name' | 'dates' | 'additional' | 'epitaph' | null>(null);
   const textDragStartRef = useRef<{ x: number; y: number; posX: number; posY: number } | null>(null);
   const textPinchStartRef = useRef<{ distance: number; size: number } | null>(null);
   const textPointerCacheRef = useRef<Map<number, PointerEvent>>(new Map());
@@ -120,7 +127,7 @@ const Dashboard = () => {
   const pointerCacheRef = useRef<Map<number, PointerEvent>>(new Map());
 
   // Text drag handlers
-  const handleTextPointerDown = (e: React.PointerEvent, textType: 'name' | 'dates' | 'additional') => {
+  const handleTextPointerDown = (e: React.PointerEvent, textType: 'name' | 'dates' | 'additional' | 'epitaph') => {
     e.stopPropagation();
     e.preventDefault();
     textPointerCacheRef.current.set(e.pointerId, e.nativeEvent);
@@ -128,12 +135,12 @@ const Dashboard = () => {
 
     if (textPointerCacheRef.current.size === 1) {
       setDraggingText(textType);
-      const currentPos = textType === 'name' ? namePosition : textType === 'dates' ? datesPosition : additionalTextPosition;
+      const currentPos = textType === 'name' ? namePosition : textType === 'dates' ? datesPosition : textType === 'epitaph' ? epitaphPosition : additionalTextPosition;
       textDragStartRef.current = { x: e.clientX, y: e.clientY, posX: currentPos.x, posY: currentPos.y };
     } else if (textPointerCacheRef.current.size === 2) {
       setResizingText(textType);
       const pointers = Array.from(textPointerCacheRef.current.values());
-      const currentSize = textType === 'name' ? nameSize : textType === 'dates' ? datesSize : additionalTextSize;
+      const currentSize = textType === 'name' ? nameSize : textType === 'dates' ? datesSize : textType === 'epitaph' ? epitaphSize : additionalTextSize;
       textPinchStartRef.current = {
         distance: getDistance(pointers[0], pointers[1]),
         size: currentSize,
@@ -154,6 +161,8 @@ const Dashboard = () => {
         setNameSize(newSize);
       } else if (resizingText === 'dates') {
         setDatesSize(newSize);
+      } else if (resizingText === 'epitaph') {
+        setEpitaphSize(newSize);
       } else {
         setAdditionalTextSize(newSize);
       }
@@ -174,6 +183,8 @@ const Dashboard = () => {
       setNamePosition({ x: newX, y: newY });
     } else if (draggingText === 'dates') {
       setDatesPosition({ x: newX, y: newY });
+    } else if (draggingText === 'epitaph') {
+      setEpitaphPosition({ x: newX, y: newY });
     } else {
       setAdditionalTextPosition({ x: newX, y: newY });
     }
@@ -193,16 +204,18 @@ const Dashboard = () => {
     }
   };
 
-  const handleTextWheel = (e: React.WheelEvent, textType: 'name' | 'dates' | 'additional') => {
+  const handleTextWheel = (e: React.WheelEvent, textType: 'name' | 'dates' | 'additional' | 'epitaph') => {
     e.preventDefault();
     e.stopPropagation();
     const delta = -e.deltaY * 0.05;
-    const currentSize = textType === 'name' ? nameSize : textType === 'dates' ? datesSize : additionalTextSize;
+    const currentSize = textType === 'name' ? nameSize : textType === 'dates' ? datesSize : textType === 'epitaph' ? epitaphSize : additionalTextSize;
     const newSize = Math.max(8, Math.min(48, currentSize + delta));
     if (textType === 'name') {
       setNameSize(newSize);
     } else if (textType === 'dates') {
       setDatesSize(newSize);
+    } else if (textType === 'epitaph') {
+      setEpitaphSize(newSize);
     } else {
       setAdditionalTextSize(newSize);
     }
@@ -453,6 +466,13 @@ const Dashboard = () => {
     setMetalFinish('silver');
     setShipping('standard');
     setEpitaph('Forever in our hearts');
+    setShowEpitaph(true);
+    setEpitaphPosition({ x: 50, y: 50 });
+    setEpitaphColor('#ffffff');
+    setEpitaphSize(11);
+    setEpitaphFont('Great Vibes');
+    setQrUrl('');
+    setShowFuneralLogo(true);
     setOrientation('portrait');
     setCardSide('front');
     setFrontBgImage(null);
@@ -719,6 +739,32 @@ const Dashboard = () => {
                                   >
                                     <span style={{ fontSize: `${additionalTextSize}px`, color: additionalTextColor, whiteSpace: 'pre-wrap', textAlign: 'center', display: 'block' }}>
                                       {additionalText || 'Your text here'}
+                                    </span>
+                                  </div>
+                                )}
+                                
+                                {/* Text Overlay - Epitaph */}
+                                {showEpitaph && (
+                                  <div
+                                    className="absolute touch-none select-none px-2 py-1 rounded transition-shadow"
+                                    style={{
+                                      left: `${epitaphPosition.x}%`,
+                                      top: `${epitaphPosition.y}%`,
+                                      transform: 'translate(-50%, -50%)',
+                                      fontFamily: epitaphFont,
+                                      cursor: draggingText === 'epitaph' || resizingText === 'epitaph' ? 'grabbing' : 'grab',
+                                      textShadow: '0 2px 4px rgba(0,0,0,0.5)',
+                                      boxShadow: (draggingText === 'epitaph' || resizingText === 'epitaph') ? '0 0 0 2px hsl(var(--primary))' : 'none',
+                                      maxWidth: '80%',
+                                    }}
+                                    onPointerDown={(e) => handleTextPointerDown(e, 'epitaph')}
+                                    onPointerMove={handleTextPointerMove}
+                                    onPointerUp={handleTextPointerUp}
+                                    onPointerCancel={handleTextPointerUp}
+                                    onWheel={(e) => handleTextWheel(e, 'epitaph')}
+                                  >
+                                    <span className="italic" style={{ fontSize: `${epitaphSize}px`, color: epitaphColor, whiteSpace: 'pre-wrap', textAlign: 'center', display: 'block' }}>
+                                      {epitaph || 'Forever in our hearts'}
                                     </span>
                                   </div>
                                 )}
@@ -997,6 +1043,17 @@ const Dashboard = () => {
                               <div className="absolute inset-0 bg-black/40"></div>
                             )}
                             <div className="relative z-10 h-full flex flex-col justify-between text-center">
+                              {/* Top - Funeral Home Logo */}
+                              {showFuneralLogo && funeralHome?.logo_url && (
+                                <div className="absolute top-2 left-2">
+                                  <img 
+                                    src={funeralHome.logo_url} 
+                                    alt={funeralHome.name}
+                                    className="h-6 w-auto object-contain opacity-70"
+                                  />
+                                </div>
+                              )}
+                              
                               {/* Top - Name & Dates */}
                               <div>
                                 <p className={`text-[9px] uppercase tracking-[0.15em] mb-1 ${backBgImage ? 'text-zinc-300' : 'text-muted-foreground'}`}>
@@ -1011,19 +1068,19 @@ const Dashboard = () => {
                               </div>
 
                               {/* Middle - Prayer */}
-                              <div className="flex-1 flex items-center justify-center py-2">
-                                <p className={`${orientation === 'portrait' ? 'text-sm' : 'text-xs'} leading-relaxed font-serif italic ${backBgImage ? 'text-zinc-200' : 'text-muted-foreground'}`}>
+                              <div className="flex-1 flex items-center justify-center py-2 px-2">
+                                <p className={`${orientation === 'portrait' ? 'text-[10px]' : 'text-[8px]'} leading-relaxed font-serif italic ${backBgImage ? 'text-zinc-200' : 'text-muted-foreground'} whitespace-pre-line`}>
                                   {backText}
                                 </p>
                               </div>
 
                               {/* Bottom - QR Code */}
                               <div className="flex flex-col items-center">
-                                <div className={`${orientation === 'portrait' ? 'w-14 h-14' : 'w-10 h-10'} bg-white rounded-lg flex items-center justify-center shadow-md`}>
-                                  <QrCode className={`${orientation === 'portrait' ? 'h-10 w-10' : 'h-7 w-7'} text-foreground`} />
+                                <div className={`${orientation === 'portrait' ? 'w-12 h-12' : 'w-8 h-8'} bg-white rounded-lg flex items-center justify-center shadow-md`}>
+                                  <QrCode className={`${orientation === 'portrait' ? 'h-8 w-8' : 'h-5 w-5'} text-foreground`} />
                                 </div>
-                                <p className={`text-[8px] mt-1 ${backBgImage ? 'text-zinc-400' : 'text-muted-foreground'}`}>
-                                  Scan to share memories
+                                <p className={`text-[7px] mt-1 ${backBgImage ? 'text-zinc-400' : 'text-muted-foreground'}`}>
+                                  {qrUrl ? 'Visit memorial page' : 'Scan to share memories'}
                                 </p>
                               </div>
                             </div>
@@ -1114,6 +1171,31 @@ const Dashboard = () => {
                               rows={4}
                             />
                           </div>
+                          
+                          {/* QR Code URL */}
+                          <div className="w-full max-w-md space-y-2">
+                            <Label className="text-muted-foreground">QR Code Link (funeral home URL)</Label>
+                            <Input
+                              placeholder="https://yourfuneralhome.com"
+                              value={qrUrl}
+                              onChange={(e) => setQrUrl(e.target.value)}
+                              className="bg-secondary border-border text-foreground"
+                            />
+                            <p className="text-xs text-muted-foreground">Leave empty to use default memorial page</p>
+                          </div>
+                          
+                          {/* Funeral Home Logo Toggle */}
+                          {funeralHome?.logo_url && (
+                            <label className="flex items-center gap-2 cursor-pointer">
+                              <input 
+                                type="checkbox" 
+                                checked={showFuneralLogo} 
+                                onChange={(e) => setShowFuneralLogo(e.target.checked)}
+                                className="accent-primary"
+                              />
+                              <span className="text-muted-foreground text-sm">Show funeral home logo on back</span>
+                            </label>
+                          )}
                         </div>
                       </TabsContent>
                     </Tabs>
@@ -1140,17 +1222,59 @@ const Dashboard = () => {
                       </div>
                     </div>
 
-                    {/* Epitaph */}
-                    <div>
-                      <Label htmlFor="epitaph" className="text-muted-foreground">Front Epitaph / Quote</Label>
-                      <Input
-                        id="epitaph"
-                        placeholder="Forever in our hearts"
-                        value={epitaph}
-                        onChange={(e) => setEpitaph(e.target.value)}
-                        className="bg-secondary border-border text-foreground"
-                        maxLength={50}
-                      />
+                    {/* Epitaph Controls */}
+                    <div className="space-y-2 p-3 bg-secondary/30 rounded-lg">
+                      <div className="flex items-center justify-between">
+                        <Label className="text-foreground text-sm font-medium">Front Quote/Epitaph</Label>
+                        <label className="flex items-center gap-2 cursor-pointer">
+                          <input 
+                            type="checkbox" 
+                            checked={showEpitaph} 
+                            onChange={(e) => setShowEpitaph(e.target.checked)}
+                            className="accent-primary"
+                          />
+                          <span className="text-muted-foreground text-xs">Show</span>
+                        </label>
+                      </div>
+                      {showEpitaph && (
+                        <>
+                          <Input
+                            id="epitaph"
+                            placeholder="Forever in our hearts"
+                            value={epitaph}
+                            onChange={(e) => setEpitaph(e.target.value)}
+                            className="bg-secondary border-border text-foreground"
+                            maxLength={50}
+                          />
+                          <div className="flex items-center gap-3 flex-wrap">
+                            <Select value={epitaphFont} onValueChange={setEpitaphFont}>
+                              <SelectTrigger className="bg-secondary border-border text-foreground w-40">
+                                <SelectValue placeholder="Font" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {FONT_OPTIONS.map((font) => (
+                                  <SelectItem key={font.value} value={font.value} style={{ fontFamily: font.value }}>
+                                    {font.name}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                            <div className="flex items-center gap-2">
+                              <Label className="text-muted-foreground text-xs">Color</Label>
+                              <input
+                                type="color"
+                                value={epitaphColor}
+                                onChange={(e) => setEpitaphColor(e.target.value)}
+                                className="w-8 h-8 rounded border border-border cursor-pointer"
+                              />
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <Label className="text-muted-foreground text-xs">Size</Label>
+                              <span className="text-xs text-foreground bg-secondary px-2 py-1 rounded">{Math.round(epitaphSize)}px</span>
+                            </div>
+                          </div>
+                        </>
+                      )}
                     </div>
 
                     <Button type="button" onClick={() => setStep(2)} className="w-full bg-primary hover:bg-primary/90 text-primary-foreground">
