@@ -1100,23 +1100,22 @@ const Design = () => {
                             )}
                             <div 
                               className="relative z-10 w-full h-full p-3"
-                              style={{ paddingTop: funeralHomeLogo && funeralHomeLogoPosition === 'top' ? `${Math.max(12, funeralHomeLogoSize + 16)}px` : '12px' }}
                             >
                               <div className="h-full flex flex-col justify-between text-center relative">
-                                {/* Funeral Home Logo - Top */}
-                                {funeralHomeLogo && funeralHomeLogoPosition === 'top' && (
-                                  <div className="absolute top-0 left-0 right-0 flex justify-center" style={{ marginTop: `-${funeralHomeLogoSize / 2 + 4}px` }}>
-                                    <img 
-                                      src={funeralHomeLogo} 
-                                      alt="Funeral Home Logo" 
-                                      className="object-contain"
-                                      style={{ height: `${funeralHomeLogoSize}px`, maxWidth: '70%' }}
-                                    />
-                                  </div>
-                                )}
-                                
-                                {/* Name & Dates */}
-                                <div>
+                                {/* Name & Dates Section - with logo at top if selected */}
+                                <div className="flex flex-col items-center">
+                                  {/* Funeral Home Logo - Top (above In Loving Memory) */}
+                                  {funeralHomeLogo && funeralHomeLogoPosition === 'top' && (
+                                    <div className="flex justify-center mb-1">
+                                      <img 
+                                        src={funeralHomeLogo} 
+                                        alt="Funeral Home Logo" 
+                                        className="object-contain"
+                                        style={{ height: `${funeralHomeLogoSize}px`, maxWidth: '70%' }}
+                                      />
+                                    </div>
+                                  )}
+                                  
                                   {showInLovingMemory && (
                                     <p 
                                       className="uppercase tracking-[0.12em] mb-0.5"
