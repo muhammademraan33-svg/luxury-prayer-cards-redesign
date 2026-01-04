@@ -28,14 +28,14 @@ const Index = () => {
           <span className="text-foreground/80 text-sm">Premium Metal Prayer Cards</span>
         </div>
         <h1 className="text-4xl md:text-6xl font-bold text-foreground mb-6 leading-tight">
-          Metal Prayer Cards<br />
+          The Prayer Card<br />
           <span className="text-primary">
-            Built to Last Eternity
+            Reimagined
           </span>
         </h1>
         <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-10">
-          Elegant metal prayer cards with embedded QR codes linking to any website you choose.
-          Perfect for funeral homes seeking quality keepsakes.
+          Your final memory should be one that will last eternity. Our indestructible prayer cards are luxury, 
+          timeless, and easily fit in a wallet or pocket—and will never bend.
         </p>
         <Link to="/design">
           <Button size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold text-lg px-10 py-6 shadow-lg">
