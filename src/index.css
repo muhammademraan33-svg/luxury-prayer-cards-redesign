@@ -6,100 +6,100 @@
 
 @layer base {
   :root {
-    /* Peaceful memorial palette - soft ivory with deep slate and muted lavender */
-    --background: 240 10% 97%;
-    --foreground: 240 20% 18%;
+    /* Earthy memorial palette - warm cream with deep forest greens */
+    --background: 60 20% 95%;
+    --foreground: 150 30% 15%;
 
-    --card: 240 8% 99%;
-    --card-foreground: 240 20% 18%;
+    --card: 60 15% 97%;
+    --card-foreground: 150 30% 15%;
 
-    --popover: 240 8% 99%;
-    --popover-foreground: 240 20% 18%;
+    --popover: 60 15% 97%;
+    --popover-foreground: 150 30% 15%;
 
-    --primary: 250 25% 35%;
-    --primary-foreground: 240 10% 98%;
+    --primary: 155 40% 25%;
+    --primary-foreground: 60 20% 95%;
 
-    --secondary: 240 12% 92%;
-    --secondary-foreground: 240 20% 25%;
+    --secondary: 60 15% 90%;
+    --secondary-foreground: 150 35% 20%;
 
-    --muted: 240 8% 92%;
-    --muted-foreground: 240 10% 45%;
+    --muted: 60 12% 88%;
+    --muted-foreground: 150 20% 35%;
 
-    --accent: 270 15% 92%;
-    --accent-foreground: 250 25% 30%;
+    --accent: 150 25% 88%;
+    --accent-foreground: 155 40% 20%;
 
     --destructive: 0 55% 45%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 240 12% 88%;
-    --input: 240 12% 88%;
-    --ring: 250 25% 35%;
+    --border: 150 15% 80%;
+    --input: 150 15% 80%;
+    --ring: 155 40% 25%;
 
     --radius: 0.75rem;
 
     /* Custom design tokens */
-    --canvas-bg: 240 10% 94%;
-    --toolbar-bg: 240 8% 99%;
-    --card-shadow: 0 8px 32px -8px hsl(250 30% 20% / 0.1);
-    --card-shadow-lg: 0 16px 48px -12px hsl(250 30% 20% / 0.15);
+    --canvas-bg: 60 15% 92%;
+    --toolbar-bg: 60 15% 97%;
+    --card-shadow: 0 8px 32px -8px hsl(150 30% 20% / 0.12);
+    --card-shadow-lg: 0 16px 48px -12px hsl(150 30% 20% / 0.18);
     --metal-shimmer: linear-gradient(135deg, 
-      hsl(240 8% 82%) 0%, 
-      hsl(240 10% 90%) 25%, 
-      hsl(240 8% 80%) 50%, 
-      hsl(240 10% 90%) 75%, 
-      hsl(240 8% 82%) 100%);
+      hsl(60 10% 85%) 0%, 
+      hsl(60 12% 92%) 25%, 
+      hsl(60 10% 83%) 50%, 
+      hsl(60 12% 92%) 75%, 
+      hsl(60 10% 85%) 100%);
 
-    --sidebar-background: 240 10% 98%;
-    --sidebar-foreground: 240 20% 20%;
-    --sidebar-primary: 250 25% 35%;
-    --sidebar-primary-foreground: 240 10% 98%;
-    --sidebar-accent: 270 12% 94%;
-    --sidebar-accent-foreground: 240 20% 18%;
-    --sidebar-border: 240 12% 90%;
-    --sidebar-ring: 250 25% 35%;
+    --sidebar-background: 60 18% 96%;
+    --sidebar-foreground: 150 30% 18%;
+    --sidebar-primary: 155 40% 25%;
+    --sidebar-primary-foreground: 60 20% 95%;
+    --sidebar-accent: 150 20% 90%;
+    --sidebar-accent-foreground: 150 30% 15%;
+    --sidebar-border: 150 15% 85%;
+    --sidebar-ring: 155 40% 25%;
   }
 
   .dark {
-    /* Peaceful memorial dark palette - deep charcoal with muted lavender */
-    --background: 240 18% 10%;
-    --foreground: 240 8% 92%;
+    /* Earthy memorial dark palette - deep forest with warm cream accents */
+    --background: 155 35% 10%;
+    --foreground: 60 15% 92%;
 
-    --card: 240 16% 14%;
-    --card-foreground: 240 8% 92%;
+    --card: 155 30% 14%;
+    --card-foreground: 60 15% 92%;
 
-    --popover: 240 16% 14%;
-    --popover-foreground: 240 8% 92%;
+    --popover: 155 30% 14%;
+    --popover-foreground: 60 15% 92%;
 
-    --primary: 260 30% 65%;
-    --primary-foreground: 240 18% 10%;
+    --primary: 60 25% 80%;
+    --primary-foreground: 155 35% 12%;
 
-    --secondary: 240 14% 20%;
-    --secondary-foreground: 240 8% 88%;
+    --secondary: 155 25% 18%;
+    --secondary-foreground: 60 12% 88%;
 
-    --muted: 240 14% 18%;
-    --muted-foreground: 240 8% 55%;
+    --muted: 155 25% 16%;
+    --muted-foreground: 60 10% 60%;
 
-    --accent: 270 20% 22%;
-    --accent-foreground: 270 25% 78%;
+    --accent: 150 30% 20%;
+    --accent-foreground: 60 20% 85%;
 
     --destructive: 0 50% 40%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 240 14% 22%;
-    --input: 240 14% 22%;
-    --ring: 260 30% 65%;
+    --border: 155 25% 22%;
+    --input: 155 25% 22%;
+    --ring: 60 25% 80%;
 
-    --canvas-bg: 240 16% 12%;
-    --toolbar-bg: 240 16% 14%;
+    --canvas-bg: 155 32% 12%;
+    --toolbar-bg: 155 30% 14%;
 
-    --sidebar-background: 240 18% 11%;
-    --sidebar-foreground: 240 8% 90%;
-    --sidebar-primary: 260 30% 65%;
-    --sidebar-primary-foreground: 240 18% 10%;
-    --sidebar-accent: 270 15% 18%;
-    --sidebar-accent-foreground: 240 8% 90%;
-    --sidebar-border: 240 14% 20%;
-    --sidebar-ring: 260 30% 65%;
+    --sidebar-background: 155 35% 11%;
+    --sidebar-foreground: 60 12% 90%;
+    --sidebar-primary: 60 25% 80%;
+    --sidebar-primary-foreground: 155 35% 12%;
+    --sidebar-accent: 150 25% 18%;
+    --sidebar-accent-foreground: 60 12% 90%;
+    --sidebar-border: 155 25% 20%;
+    --sidebar-ring: 60 25% 80%;
   }
 }
 
