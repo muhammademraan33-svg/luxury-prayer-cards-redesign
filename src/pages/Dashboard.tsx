@@ -9,7 +9,9 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Sparkles, Plus, QrCode, LogOut, Loader2, ExternalLink, Trash2, Truck, Zap, ArrowLeft, ArrowRight, Upload, ImageIcon, RotateCcw, RectangleHorizontal, RectangleVertical, Type } from 'lucide-react';
+import { Sparkles, Plus, QrCode, LogOut, Loader2, ExternalLink, Trash2, Truck, Zap, ArrowLeft, ArrowRight, Upload, ImageIcon, RotateCcw, RectangleHorizontal, RectangleVertical, Type, Book } from 'lucide-react';
+import { Textarea } from '@/components/ui/textarea';
+import { prayerTemplates, getTraditionLabel } from '@/data/prayerTemplates';
 import { toast } from 'sonner';
 
 const FONT_OPTIONS = [
@@ -95,8 +97,16 @@ const Dashboard = () => {
   const [datesColor, setDatesColor] = useState('#ffffffcc');
   const [nameSize, setNameSize] = useState(18); // pixels
   const [datesSize, setDatesSize] = useState(12); // pixels
-  const [draggingText, setDraggingText] = useState<'name' | 'dates' | null>(null);
-  const [resizingText, setResizingText] = useState<'name' | 'dates' | null>(null);
+  const [dateFormat, setDateFormat] = useState<'full' | 'short' | 'year'>('full'); // date format
+  const [additionalText, setAdditionalText] = useState('');
+  const [additionalTextPosition, setAdditionalTextPosition] = useState({ x: 50, y: 70 });
+  const [additionalTextColor, setAdditionalTextColor] = useState('#ffffff');
+  const [additionalTextSize, setAdditionalTextSize] = useState(10);
+  const [additionalTextFont, setAdditionalTextFont] = useState('Cormorant Garamond');
+  const [showAdditionalText, setShowAdditionalText] = useState(false);
+  const [selectedPrayerId, setSelectedPrayerId] = useState<string>('custom');
+  const [draggingText, setDraggingText] = useState<'name' | 'dates' | 'additional' | null>(null);
+  const [resizingText, setResizingText] = useState<'name' | 'dates' | 'additional' | null>(null);
   const textDragStartRef = useRef<{ x: number; y: number; posX: number; posY: number } | null>(null);
   const textPinchStartRef = useRef<{ distance: number; size: number } | null>(null);
   const textPointerCacheRef = useRef<Map<number, PointerEvent>>(new Map());
@@ -110,7 +120,7 @@ const Dashboard = () => {
   const pointerCacheRef = useRef<Map<number, PointerEvent>>(new Map());
 
   // Text drag handlers
-  const handleTextPointerDown = (e: React.PointerEvent, textType: 'name' | 'dates') => {
+  const handleTextPointerDown = (e: React.PointerEvent, textType: 'name' | 'dates' | 'additional') => {
     e.stopPropagation();
     e.preventDefault();
     textPointerCacheRef.current.set(e.pointerId, e.nativeEvent);
@@ -118,12 +128,12 @@ const Dashboard = () => {
 
     if (textPointerCacheRef.current.size === 1) {
       setDraggingText(textType);
-      const currentPos = textType === 'name' ? namePosition : datesPosition;
+      const currentPos = textType === 'name' ? namePosition : textType === 'dates' ? datesPosition : additionalTextPosition;
       textDragStartRef.current = { x: e.clientX, y: e.clientY, posX: currentPos.x, posY: currentPos.y };
     } else if (textPointerCacheRef.current.size === 2) {
       setResizingText(textType);
       const pointers = Array.from(textPointerCacheRef.current.values());
-      const currentSize = textType === 'name' ? nameSize : datesSize;
+      const currentSize = textType === 'name' ? nameSize : textType === 'dates' ? datesSize : additionalTextSize;
       textPinchStartRef.current = {
         distance: getDistance(pointers[0], pointers[1]),
         size: currentSize,
@@ -142,8 +152,10 @@ const Dashboard = () => {
       const newSize = Math.max(8, Math.min(48, textPinchStartRef.current.size * scaleChange));
       if (resizingText === 'name') {
         setNameSize(newSize);
-      } else {
+      } else if (resizingText === 'dates') {
         setDatesSize(newSize);
+      } else {
+        setAdditionalTextSize(newSize);
       }
       return;
     }
@@ -160,8 +172,10 @@ const Dashboard = () => {
     
     if (draggingText === 'name') {
       setNamePosition({ x: newX, y: newY });
-    } else {
+    } else if (draggingText === 'dates') {
       setDatesPosition({ x: newX, y: newY });
+    } else {
+      setAdditionalTextPosition({ x: newX, y: newY });
     }
   };
 
@@ -179,16 +193,46 @@ const Dashboard = () => {
     }
   };
 
-  const handleTextWheel = (e: React.WheelEvent, textType: 'name' | 'dates') => {
+  const handleTextWheel = (e: React.WheelEvent, textType: 'name' | 'dates' | 'additional') => {
     e.preventDefault();
     e.stopPropagation();
     const delta = -e.deltaY * 0.05;
-    const currentSize = textType === 'name' ? nameSize : datesSize;
+    const currentSize = textType === 'name' ? nameSize : textType === 'dates' ? datesSize : additionalTextSize;
     const newSize = Math.max(8, Math.min(48, currentSize + delta));
     if (textType === 'name') {
       setNameSize(newSize);
-    } else {
+    } else if (textType === 'dates') {
       setDatesSize(newSize);
+    } else {
+      setAdditionalTextSize(newSize);
+    }
+  };
+
+  const formatDates = (birth: string, death: string): string => {
+    if (!birth || !death) {
+      return dateFormat === 'year' ? '1945 – 2025' : dateFormat === 'short' ? '01/01/1945 – 12/31/2025' : 'January 1, 1945 – December 31, 2025';
+    }
+    const birthD = new Date(birth);
+    const deathD = new Date(death);
+    
+    if (dateFormat === 'year') {
+      return `${birthD.getFullYear()} – ${deathD.getFullYear()}`;
+    } else if (dateFormat === 'short') {
+      return `${birthD.toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' })} – ${deathD.toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' })}`;
+    } else {
+      return `${birthD.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })} – ${deathD.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}`;
+    }
+  };
+
+  const handlePrayerSelect = (prayerId: string) => {
+    setSelectedPrayerId(prayerId);
+    if (prayerId === 'custom') {
+      // Keep current backText for custom
+    } else {
+      const prayer = prayerTemplates.find(p => p.id === prayerId);
+      if (prayer) {
+        setBackText(prayer.text);
+      }
     }
   };
 
@@ -428,6 +472,14 @@ const Dashboard = () => {
     setDatesColor('#ffffffcc');
     setNameSize(18);
     setDatesSize(12);
+    setDateFormat('full');
+    setAdditionalText('');
+    setAdditionalTextPosition({ x: 50, y: 70 });
+    setAdditionalTextColor('#ffffff');
+    setAdditionalTextSize(10);
+    setAdditionalTextFont('Cormorant Garamond');
+    setShowAdditionalText(false);
+    setSelectedPrayerId('custom');
   };
 
   const handleDeleteOrder = async (orderId: string) => {
@@ -640,9 +692,33 @@ const Dashboard = () => {
                                     onWheel={(e) => handleTextWheel(e, 'dates')}
                                   >
                                     <span style={{ fontSize: `${datesSize}px`, color: datesColor }}>
-                                      {birthDate && deathDate 
-                                        ? `${new Date(birthDate).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })} – ${new Date(deathDate).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}`
-                                        : 'January 1, 1945 – December 31, 2025'}
+                                      {formatDates(birthDate, deathDate)}
+                                    </span>
+                                  </div>
+                                )}
+                                
+                                {/* Text Overlay - Additional Text */}
+                                {showAdditionalText && (
+                                  <div
+                                    className="absolute touch-none select-none px-2 py-1 rounded transition-shadow"
+                                    style={{
+                                      left: `${additionalTextPosition.x}%`,
+                                      top: `${additionalTextPosition.y}%`,
+                                      transform: 'translate(-50%, -50%)',
+                                      fontFamily: additionalTextFont,
+                                      cursor: draggingText === 'additional' || resizingText === 'additional' ? 'grabbing' : 'grab',
+                                      textShadow: '0 2px 4px rgba(0,0,0,0.5)',
+                                      boxShadow: (draggingText === 'additional' || resizingText === 'additional') ? '0 0 0 2px hsl(var(--primary))' : 'none',
+                                      maxWidth: '80%',
+                                    }}
+                                    onPointerDown={(e) => handleTextPointerDown(e, 'additional')}
+                                    onPointerMove={handleTextPointerMove}
+                                    onPointerUp={handleTextPointerUp}
+                                    onPointerCancel={handleTextPointerUp}
+                                    onWheel={(e) => handleTextWheel(e, 'additional')}
+                                  >
+                                    <span style={{ fontSize: `${additionalTextSize}px`, color: additionalTextColor, whiteSpace: 'pre-wrap', textAlign: 'center', display: 'block' }}>
+                                      {additionalText || 'Your text here'}
                                     </span>
                                   </div>
                                 )}
@@ -766,7 +842,7 @@ const Dashboard = () => {
                             {/* Dates Controls */}
                             <div className="space-y-2 p-3 bg-secondary/30 rounded-lg">
                               <Label className="text-foreground text-sm font-medium">Dates</Label>
-                              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                              <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
                                 <Input
                                   type="date"
                                   value={birthDate}
@@ -779,6 +855,16 @@ const Dashboard = () => {
                                   onChange={(e) => setDeathDate(e.target.value)}
                                   className="bg-secondary border-border text-foreground"
                                 />
+                                <Select value={dateFormat} onValueChange={(v) => setDateFormat(v as 'full' | 'short' | 'year')}>
+                                  <SelectTrigger className="bg-secondary border-border text-foreground">
+                                    <SelectValue placeholder="Format" />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="full">Jan 1, 2025</SelectItem>
+                                    <SelectItem value="short">01/01/2025</SelectItem>
+                                    <SelectItem value="year">Years Only</SelectItem>
+                                  </SelectContent>
+                                </Select>
                                 <Select value={datesFont} onValueChange={setDatesFont}>
                                   <SelectTrigger className="bg-secondary border-border text-foreground">
                                     <SelectValue placeholder="Font" />
@@ -816,6 +902,57 @@ const Dashboard = () => {
                                   <span className="text-muted-foreground text-xs">Show</span>
                                 </label>
                               </div>
+                            </div>
+                            
+                            {/* Additional Text Controls */}
+                            <div className="space-y-2 p-3 bg-secondary/30 rounded-lg">
+                              <div className="flex items-center justify-between">
+                                <Label className="text-foreground text-sm font-medium">Additional Text</Label>
+                                <label className="flex items-center gap-2 cursor-pointer">
+                                  <input 
+                                    type="checkbox" 
+                                    checked={showAdditionalText} 
+                                    onChange={(e) => setShowAdditionalText(e.target.checked)}
+                                    className="accent-primary"
+                                  />
+                                  <span className="text-muted-foreground text-xs">Show</span>
+                                </label>
+                              </div>
+                              {showAdditionalText && (
+                                <>
+                                  <Textarea
+                                    placeholder="Forever in our hearts..."
+                                    value={additionalText}
+                                    onChange={(e) => setAdditionalText(e.target.value)}
+                                    className="bg-secondary border-border text-foreground min-h-[60px]"
+                                    rows={2}
+                                  />
+                                  <div className="grid grid-cols-2 gap-3">
+                                    <Select value={additionalTextFont} onValueChange={setAdditionalTextFont}>
+                                      <SelectTrigger className="bg-secondary border-border text-foreground">
+                                        <SelectValue placeholder="Font" />
+                                      </SelectTrigger>
+                                      <SelectContent>
+                                        {FONT_OPTIONS.map((font) => (
+                                          <SelectItem key={font.value} value={font.value} style={{ fontFamily: font.value }}>
+                                            {font.name}
+                                          </SelectItem>
+                                        ))}
+                                      </SelectContent>
+                                    </Select>
+                                    <div className="flex items-center gap-2">
+                                      <Label className="text-muted-foreground text-xs">Color</Label>
+                                      <input
+                                        type="color"
+                                        value={additionalTextColor}
+                                        onChange={(e) => setAdditionalTextColor(e.target.value)}
+                                        className="w-8 h-8 rounded border border-border cursor-pointer"
+                                      />
+                                      <span className="text-xs text-foreground bg-secondary px-2 py-1 rounded">{Math.round(additionalTextSize)}px</span>
+                                    </div>
+                                  </div>
+                                </>
+                              )}
                             </div>
                           </div>
 
@@ -869,9 +1006,7 @@ const Dashboard = () => {
                                   {deceasedName || 'Name Here'}
                                 </p>
                                 <p className={`text-xs ${backBgImage ? 'text-zinc-300' : 'text-muted-foreground'}`}>
-                                  {birthDate && deathDate 
-                                    ? `${new Date(birthDate).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })} – ${new Date(deathDate).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}`
-                                    : 'January 1, 1945 – December 31, 2025'}
+                                  {formatDates(birthDate, deathDate)}
                                 </p>
                               </div>
 
@@ -926,15 +1061,37 @@ const Dashboard = () => {
                             )}
                           </div>
 
-                          {/* Back Text */}
-                          <div className="w-full max-w-md">
-                            <Label htmlFor="back-text" className="text-muted-foreground">Prayer or Scripture</Label>
-                            <Input
+                          {/* Prayer Selection */}
+                          <div className="w-full max-w-md space-y-3">
+                            <div className="flex items-center gap-2">
+                              <Book className="h-4 w-4 text-muted-foreground" />
+                              <Label className="text-muted-foreground">Select Prayer or Scripture</Label>
+                            </div>
+                            
+                            <Select value={selectedPrayerId} onValueChange={handlePrayerSelect}>
+                              <SelectTrigger className="bg-secondary border-border text-foreground">
+                                <SelectValue placeholder="Choose a prayer..." />
+                              </SelectTrigger>
+                              <SelectContent className="max-h-64">
+                                <SelectItem value="custom">✏️ Custom Text</SelectItem>
+                                {prayerTemplates.map((prayer) => (
+                                  <SelectItem key={prayer.id} value={prayer.id}>
+                                    {prayer.name} <span className="text-muted-foreground text-xs">({getTraditionLabel(prayer.tradition)})</span>
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                            
+                            <Textarea
                               id="back-text"
                               placeholder="The Lord is my shepherd..."
                               value={backText}
-                              onChange={(e) => setBackText(e.target.value)}
-                              className="bg-secondary border-border text-foreground"
+                              onChange={(e) => {
+                                setBackText(e.target.value);
+                                setSelectedPrayerId('custom');
+                              }}
+                              className="bg-secondary border-border text-foreground min-h-[100px]"
+                              rows={4}
                             />
                           </div>
                         </div>
@@ -991,7 +1148,7 @@ const Dashboard = () => {
                       <div className="text-sm text-muted-foreground space-y-1">
                         <p><span className="font-medium text-foreground">Name:</span> {deceasedName || 'Not specified'}</p>
                         <p><span className="font-medium text-foreground">Dates:</span> {birthDate && deathDate 
-                          ? `${new Date(birthDate).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })} – ${new Date(deathDate).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}`
+                          ? formatDates(birthDate, deathDate)
                           : 'Not specified'}</p>
                       </div>
                     </div>
