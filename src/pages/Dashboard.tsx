@@ -282,7 +282,7 @@ const Dashboard = () => {
               )}
             </div>
           </div>
-          <Button variant="ghost" onClick={handleLogout} className="text-slate-300 hover:text-white">
+          <Button variant="ghost" onClick={handleLogout} className="text-amber-200 hover:text-white hover:bg-slate-800">
             <LogOut className="h-4 w-4 mr-2" />
             Logout
           </Button>
@@ -328,7 +328,7 @@ const Dashboard = () => {
                         onClick={() => setOrientation('landscape')}
                         className={orientation === 'landscape' 
                           ? 'bg-amber-500 hover:bg-amber-600 text-slate-900' 
-                          : 'border-slate-600 text-slate-300'}
+                          : 'border-amber-500/50 text-amber-200 hover:bg-amber-500/20'}
                       >
                         <RectangleHorizontal className="h-4 w-4 mr-2" />
                         Landscape
@@ -339,7 +339,7 @@ const Dashboard = () => {
                         onClick={() => setOrientation('portrait')}
                         className={orientation === 'portrait' 
                           ? 'bg-amber-500 hover:bg-amber-600 text-slate-900' 
-                          : 'border-slate-600 text-slate-300'}
+                          : 'border-amber-500/50 text-amber-200 hover:bg-amber-500/20'}
                       >
                         <RectangleVertical className="h-4 w-4 mr-2" />
                         Portrait
@@ -390,7 +390,7 @@ const Dashboard = () => {
                               variant="outline"
                               onClick={() => photoInputRef.current?.click()}
                               disabled={uploadingPhoto}
-                              className="border-amber-600/50 text-amber-300 hover:bg-amber-600/20"
+                              className="border-amber-500 text-amber-200 hover:bg-amber-500/20"
                             >
                               {uploadingPhoto ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <ImageIcon className="h-4 w-4 mr-2" />}
                               {deceasedPhoto ? 'Change Photo' : 'Upload Photo'}
@@ -400,7 +400,7 @@ const Dashboard = () => {
                                 type="button"
                                 variant="outline"
                                 onClick={() => setDeceasedPhoto(null)}
-                                className="border-slate-600 text-slate-300 hover:bg-slate-700"
+                                className="border-red-500/50 text-red-300 hover:bg-red-500/20"
                               >
                                 <Trash2 className="h-4 w-4" />
                               </Button>
@@ -471,7 +471,7 @@ const Dashboard = () => {
                               variant="outline"
                               onClick={() => backInputRef.current?.click()}
                               disabled={uploadingBack}
-                              className="border-slate-600 text-slate-300 hover:bg-slate-700"
+                              className="border-amber-500/50 text-amber-200 hover:bg-amber-500/20"
                             >
                               {uploadingBack ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Upload className="h-4 w-4 mr-2" />}
                               {backBgImage ? 'Change Background' : 'Upload Background'}
@@ -481,7 +481,7 @@ const Dashboard = () => {
                                 type="button"
                                 variant="outline"
                                 onClick={() => setBackBgImage(null)}
-                                className="border-slate-600 text-slate-300 hover:bg-slate-700"
+                                className="border-amber-500/50 text-amber-200 hover:bg-amber-500/20"
                               >
                                 <RotateCcw className="h-4 w-4 mr-2" />
                                 Use Metal
@@ -595,7 +595,7 @@ const Dashboard = () => {
                     </div>
 
                     <div className="flex gap-3 pt-2">
-                      <Button type="button" variant="outline" onClick={() => setStep(1)} className="flex-1 border-slate-600 text-slate-300 hover:bg-slate-700">
+                      <Button type="button" variant="outline" onClick={() => setStep(1)} className="flex-1 border-amber-500/50 text-amber-200 hover:bg-amber-500/20">
                         <ArrowLeft className="h-4 w-4 mr-2" /> Back
                       </Button>
                       <Button 
@@ -675,7 +675,7 @@ const Dashboard = () => {
                     </div>
 
                     <div className="flex gap-3">
-                      <Button type="button" variant="outline" onClick={() => setStep(2)} className="flex-1 border-slate-600 text-slate-300 hover:bg-slate-700">
+                      <Button type="button" variant="outline" onClick={() => setStep(2)} className="flex-1 border-amber-500/50 text-amber-200 hover:bg-amber-500/20">
                         <ArrowLeft className="h-4 w-4 mr-2" /> Back
                       </Button>
                       <Button type="submit" className="flex-1 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-slate-900 font-semibold" disabled={creating}>
@@ -752,7 +752,7 @@ const Dashboard = () => {
                           navigator.clipboard.writeText(getMemorialUrl(order.qr_code));
                           toast.success('Memorial link copied!');
                         }}
-                        className="border-slate-600 text-slate-300 hover:bg-slate-700"
+                        className="border-amber-500/50 text-amber-200 hover:bg-amber-500/20"
                       >
                         <QrCode className="h-4 w-4 mr-2" />
                         Copy Link
@@ -761,7 +761,7 @@ const Dashboard = () => {
                         variant="outline"
                         size="sm"
                         onClick={() => window.open(getMemorialUrl(order.qr_code), '_blank')}
-                        className="border-slate-600 text-slate-300 hover:bg-slate-700"
+                        className="border-amber-500/50 text-amber-200 hover:bg-amber-500/20"
                       >
                         <ExternalLink className="h-4 w-4 mr-2" />
                         View Memorial
