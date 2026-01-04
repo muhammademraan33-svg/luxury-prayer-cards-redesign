@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useLayoutEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -67,6 +67,7 @@ const Design = () => {
   const [backBgImage, setBackBgImage] = useState<string | null>(null);
   const [backText, setBackText] = useState('The Lord is my shepherd; I shall not want.');
   const [prayerTextSize, setPrayerTextSize] = useState<number | 'auto'>(16);
+  const [autoPrayerFontSize, setAutoPrayerFontSize] = useState(16);
   
   // Front card text state
   const [showNameOnFront, setShowNameOnFront] = useState(true);
@@ -136,6 +137,8 @@ const Design = () => {
   
   const photoContainerRef = useRef<HTMLDivElement>(null);
   const cardPreviewRef = useRef<HTMLDivElement>(null);
+  const prayerContainerRef = useRef<HTMLDivElement>(null);
+  const prayerTextRef = useRef<HTMLParagraphElement>(null);
   const panStartRef = useRef<{ x: number; y: number; panX: number; panY: number } | null>(null);
   const pinchStartRef = useRef<{ distance: number; scale: number } | null>(null);
   const pointerCacheRef = useRef<Map<number, PointerEvent>>(new Map());
@@ -313,6 +316,67 @@ const Design = () => {
       return [...words.slice(0, -2), lastTwo].join(' ');
     }).join('\n');
   };
+
+  // Auto-fit prayer text so it never gets cut off in the preview
+  useLayoutEffect(() => {
+    if (prayerTextSize !== 'auto') return;
+    if (cardSide !== 'back') return;
+
+    const container = prayerContainerRef.current;
+    const textEl = prayerTextRef.current;
+    if (!container || !textEl) return;
+
+    // Wait until layout is stable for this paint.
+    const raf = requestAnimationFrame(() => {
+      const minPx = 7;
+      const maxPx = 18;
+
+      const fits = (px: number) => {
+        textEl.style.fontSize = `${px}px`;
+        textEl.style.lineHeight = '1.15';
+        // Trigger layout
+        const heightOk = textEl.scrollHeight <= container.clientHeight;
+        const widthOk = textEl.scrollWidth <= container.clientWidth;
+        return heightOk && widthOk;
+      };
+
+      let best = minPx;
+      if (fits(maxPx)) {
+        best = maxPx;
+      } else {
+        let lo = minPx;
+        let hi = maxPx;
+        while (lo <= hi) {
+          const mid = Math.floor((lo + hi) / 2);
+          if (fits(mid)) {
+            best = mid;
+            lo = mid + 1;
+          } else {
+            hi = mid - 1;
+          }
+        }
+      }
+
+      setAutoPrayerFontSize(prev => (prev === best ? prev : best));
+    });
+
+    return () => cancelAnimationFrame(raf);
+  }, [
+    prayerTextSize,
+    backText,
+    prayerBold,
+    cardSide,
+    orientation,
+    showQrCode,
+    qrUrl,
+    showDatesOnBack,
+    showInLovingMemory,
+    inLovingMemoryText,
+    inLovingMemorySize,
+    funeralHomeLogo,
+    funeralHomeLogoPosition,
+    funeralHomeLogoSize,
+  ]);
 
   const handlePrayerSelect = (prayerId: string) => {
     setSelectedPrayerId(prayerId);
@@ -1180,13 +1244,15 @@ const Design = () => {
                                 </div>
 
                                 {/* Prayer - takes remaining space with proper overflow handling */}
-                                <div className="flex-1 flex items-center justify-center py-1 px-1 overflow-hidden min-h-0">
+                                <div ref={prayerContainerRef} className="flex-1 flex items-center justify-center py-1 px-1 overflow-hidden min-h-0">
                                   <p 
+                                    ref={prayerTextRef}
                                     className={`leading-snug font-serif italic ${backBgImage || metalFinish === 'black' ? 'text-zinc-200' : 'text-zinc-700'} whitespace-pre-line text-center`}
                                     style={{
                                       fontSize: prayerTextSize === 'auto' 
-                                        ? `clamp(8px, ${Math.max(9, 16 - backText.length / 40)}px, 16px)` 
+                                        ? `${autoPrayerFontSize}px`
                                         : `${prayerTextSize}px`,
+                                      lineHeight: prayerTextSize === 'auto' ? 1.15 : undefined,
                                       textWrap: 'pretty',
                                       wordBreak: 'keep-all',
                                       fontWeight: prayerBold ? 'bold' : 'normal',
