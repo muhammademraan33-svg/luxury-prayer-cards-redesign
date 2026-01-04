@@ -1777,7 +1777,7 @@ const Design = () => {
                           {/* Prayer Text Size Control */}
                           <div className="flex items-center gap-3 flex-wrap">
                             <Label className="text-slate-400 text-xs">Text Size:</Label>
-                            <div className="flex gap-1">
+                            <div className="flex items-center gap-1">
                               <Button
                                 type="button"
                                 variant="outline"
@@ -1791,28 +1791,31 @@ const Design = () => {
                                 type="button"
                                 variant="outline"
                                 size="sm"
-                                onClick={() => setPrayerTextSize(10)}
-                                className={`text-xs px-2 py-1 h-7 ${prayerTextSize === 10 ? 'bg-amber-600 !text-white border-amber-600' : 'border-slate-600 text-slate-300'}`}
+                                onClick={() => {
+                                  const current = prayerTextSize === 'auto' ? autoPrayerFontSize : prayerTextSize;
+                                  const newSize = Math.max(6, current - 1);
+                                  setPrayerTextSize(newSize);
+                                }}
+                                className="h-7 w-7 p-0 border-slate-600 text-slate-300 hover:bg-slate-700"
                               >
-                                Small
+                                −
                               </Button>
+                              <span className="text-slate-300 text-xs w-8 text-center">
+                                {prayerTextSize === 'auto' ? autoPrayerFontSize : prayerTextSize}px
+                              </span>
                               <Button
                                 type="button"
                                 variant="outline"
                                 size="sm"
-                                onClick={() => setPrayerTextSize(12)}
-                                className={`text-xs px-2 py-1 h-7 ${prayerTextSize === 12 ? 'bg-amber-600 !text-white border-amber-600' : 'border-slate-600 text-slate-300'}`}
+                                onClick={() => {
+                                  const current = prayerTextSize === 'auto' ? autoPrayerFontSize : prayerTextSize;
+                                  const maxAllowed = autoPrayerFontSize; // Can't exceed what fits
+                                  const newSize = Math.min(maxAllowed, current + 1);
+                                  setPrayerTextSize(newSize);
+                                }}
+                                className="h-7 w-7 p-0 border-slate-600 text-slate-300 hover:bg-slate-700"
                               >
-                                Medium
-                              </Button>
-                              <Button
-                                type="button"
-                                variant="outline"
-                                size="sm"
-                                onClick={() => setPrayerTextSize(14)}
-                                className={`text-xs px-2 py-1 h-7 ${prayerTextSize === 14 ? 'bg-amber-600 !text-white border-amber-600' : 'border-slate-600 text-slate-300'}`}
-                              >
-                                Large
+                                +
                               </Button>
                               <Button
                                 type="button"
