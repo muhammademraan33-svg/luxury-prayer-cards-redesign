@@ -72,12 +72,7 @@ const Dashboard = () => {
   const [quantity, setQuantity] = useState('50');
   const [metalFinish, setMetalFinish] = useState<MetalFinish>('silver');
   const [shipping, setShipping] = useState<'standard' | 'express'>('standard');
-  const [epitaph, setEpitaph] = useState('Forever in our hearts');
-  const [showEpitaph, setShowEpitaph] = useState(true);
-  const [epitaphPosition, setEpitaphPosition] = useState({ x: 50, y: 50 });
-  const [epitaphColor, setEpitaphColor] = useState('#ffffff');
-  const [epitaphSize, setEpitaphSize] = useState(11);
-  const [epitaphFont, setEpitaphFont] = useState('Great Vibes');
+  // Epitaph removed (use Additional Text instead)
   const [qrUrl, setQrUrl] = useState('');
   const [showQrCode, setShowQrCode] = useState(true);
   const [showFuneralLogo, setShowFuneralLogo] = useState(true);
@@ -119,8 +114,8 @@ const Dashboard = () => {
   const [additionalTextFont, setAdditionalTextFont] = useState('Cormorant Garamond');
   const [showAdditionalText, setShowAdditionalText] = useState(false);
   const [selectedPrayerId, setSelectedPrayerId] = useState<string>('custom');
-  const [draggingText, setDraggingText] = useState<'name' | 'dates' | 'additional' | 'epitaph' | null>(null);
-  const [resizingText, setResizingText] = useState<'name' | 'dates' | 'additional' | 'epitaph' | null>(null);
+  const [draggingText, setDraggingText] = useState<'name' | 'dates' | 'additional' | null>(null);
+  const [resizingText, setResizingText] = useState<'name' | 'dates' | 'additional' | null>(null);
   const textDragStartRef = useRef<{ x: number; y: number; posX: number; posY: number } | null>(null);
   const textPinchStartRef = useRef<{ distance: number; size: number } | null>(null);
   const textPointerCacheRef = useRef<Map<number, PointerEvent>>(new Map());
@@ -134,7 +129,7 @@ const Dashboard = () => {
   const pointerCacheRef = useRef<Map<number, PointerEvent>>(new Map());
 
   // Text drag handlers
-  const handleTextPointerDown = (e: React.PointerEvent, textType: 'name' | 'dates' | 'additional' | 'epitaph') => {
+  const handleTextPointerDown = (e: React.PointerEvent, textType: 'name' | 'dates' | 'additional') => {
     e.stopPropagation();
     e.preventDefault();
     textPointerCacheRef.current.set(e.pointerId, e.nativeEvent);
@@ -142,12 +137,20 @@ const Dashboard = () => {
 
     if (textPointerCacheRef.current.size === 1) {
       setDraggingText(textType);
-      const currentPos = textType === 'name' ? namePosition : textType === 'dates' ? datesPosition : textType === 'epitaph' ? epitaphPosition : additionalTextPosition;
+      const currentPos = textType === 'name' ? namePosition : textType === 'dates' ? datesPosition : additionalTextPosition;
       textDragStartRef.current = { x: e.clientX, y: e.clientY, posX: currentPos.x, posY: currentPos.y };
     } else if (textPointerCacheRef.current.size === 2) {
       setResizingText(textType);
       const pointers = Array.from(textPointerCacheRef.current.values());
-      const currentSize = textType === 'name' ? nameSize : textType === 'dates' ? (typeof frontDatesSize === 'number' ? frontDatesSize : 12) : textType === 'epitaph' ? epitaphSize : additionalTextSize;
+      const currentSize =
+        textType === 'name'
+          ? nameSize
+          : textType === 'dates'
+            ? typeof frontDatesSize === 'number'
+              ? frontDatesSize
+              : 12
+            : additionalTextSize;
+
       textPinchStartRef.current = {
         distance: getDistance(pointers[0], pointers[1]),
         size: currentSize,
@@ -168,8 +171,6 @@ const Dashboard = () => {
         setNameSize(newSize);
       } else if (resizingText === 'dates') {
         setFrontDatesSize(newSize);
-      } else if (resizingText === 'epitaph') {
-        setEpitaphSize(newSize);
       } else {
         setAdditionalTextSize(newSize);
       }
@@ -178,20 +179,18 @@ const Dashboard = () => {
 
     // Drag to move
     if (!draggingText || !textDragStartRef.current || !cardPreviewRef.current) return;
-    
+
     const rect = cardPreviewRef.current.getBoundingClientRect();
     const dx = ((e.clientX - textDragStartRef.current.x) / rect.width) * 100;
     const dy = ((e.clientY - textDragStartRef.current.y) / rect.height) * 100;
-    
+
     const newX = Math.max(10, Math.min(90, textDragStartRef.current.posX + dx));
     const newY = Math.max(5, Math.min(95, textDragStartRef.current.posY + dy));
-    
+
     if (draggingText === 'name') {
       setNamePosition({ x: newX, y: newY });
     } else if (draggingText === 'dates') {
       setDatesPosition({ x: newX, y: newY });
-    } else if (draggingText === 'epitaph') {
-      setEpitaphPosition({ x: newX, y: newY });
     } else {
       setAdditionalTextPosition({ x: newX, y: newY });
     }
@@ -211,18 +210,24 @@ const Dashboard = () => {
     }
   };
 
-  const handleTextWheel = (e: React.WheelEvent, textType: 'name' | 'dates' | 'additional' | 'epitaph') => {
+  const handleTextWheel = (e: React.WheelEvent, textType: 'name' | 'dates' | 'additional') => {
     e.preventDefault();
     e.stopPropagation();
     const delta = -e.deltaY * 0.05;
-    const currentSize = textType === 'name' ? nameSize : textType === 'dates' ? (typeof frontDatesSize === 'number' ? frontDatesSize : 12) : textType === 'epitaph' ? epitaphSize : additionalTextSize;
+    const currentSize =
+      textType === 'name'
+        ? nameSize
+        : textType === 'dates'
+          ? typeof frontDatesSize === 'number'
+            ? frontDatesSize
+            : 12
+          : additionalTextSize;
+
     const newSize = Math.max(8, Math.min(48, currentSize + delta));
     if (textType === 'name') {
       setNameSize(newSize);
     } else if (textType === 'dates') {
       setFrontDatesSize(newSize);
-    } else if (textType === 'epitaph') {
-      setEpitaphSize(newSize);
     } else {
       setAdditionalTextSize(newSize);
     }
@@ -279,6 +284,19 @@ const Dashboard = () => {
     return Math.hypot(p1.clientX - p2.clientX, p1.clientY - p2.clientY);
   };
 
+  const clampPhotoPan = (panX: number, panY: number, scale: number) => {
+    const el = photoContainerRef.current;
+    if (!el) return { panX, panY };
+    const rect = el.getBoundingClientRect();
+    const maxX = Math.max(0, (scale - 1) * rect.width * 0.5);
+    const maxY = Math.max(0, (scale - 1) * rect.height * 0.5);
+
+    return {
+      panX: Math.max(-maxX, Math.min(maxX, panX)),
+      panY: Math.max(-maxY, Math.min(maxY, panY)),
+    };
+  };
+
   const handlePhotoPointerDown = (e: React.PointerEvent) => {
     if (!deceasedPhoto) return;
     // Don't start photo panning if we're interacting with text
@@ -312,14 +330,18 @@ const Dashboard = () => {
       const scaleChange = currentDistance / pinchStartRef.current.distance;
       const newScale = Math.max(1, Math.min(3, pinchStartRef.current.scale * scaleChange));
       setPhotoZoom(newScale);
+      const clamped = clampPhotoPan(photoPanX, photoPanY, newScale);
+      setPhotoPanX(clamped.panX);
+      setPhotoPanY(clamped.panY);
     } else if (pointerCacheRef.current.size === 1 && panStartRef.current && isPanning) {
       const dx = e.clientX - panStartRef.current.x;
       const dy = e.clientY - panStartRef.current.y;
-      const maxPan = (photoZoom - 1) * 50;
-      const newPanX = Math.max(-maxPan, Math.min(maxPan, panStartRef.current.panX + dx));
-      const newPanY = Math.max(-maxPan, Math.min(maxPan, panStartRef.current.panY + dy));
-      setPhotoPanX(newPanX);
-      setPhotoPanY(newPanY);
+
+      const nextPanX = panStartRef.current.panX + dx;
+      const nextPanY = panStartRef.current.panY + dy;
+      const clamped = clampPhotoPan(nextPanX, nextPanY, photoZoom);
+      setPhotoPanX(clamped.panX);
+      setPhotoPanY(clamped.panY);
     }
   };
 
@@ -348,6 +370,9 @@ const Dashboard = () => {
     const delta = -e.deltaY * 0.002;
     const newScale = Math.max(1, Math.min(3, photoZoom + delta));
     setPhotoZoom(newScale);
+    const clamped = clampPhotoPan(photoPanX, photoPanY, newScale);
+    setPhotoPanX(clamped.panX);
+    setPhotoPanY(clamped.panY);
   };
 
   useEffect(() => {
@@ -502,12 +527,6 @@ const Dashboard = () => {
     setQuantity('50');
     setMetalFinish('silver');
     setShipping('standard');
-    setEpitaph('Forever in our hearts');
-    setShowEpitaph(true);
-    setEpitaphPosition({ x: 50, y: 50 });
-    setEpitaphColor('#ffffff');
-    setEpitaphSize(11);
-    setEpitaphFont('Great Vibes');
     setQrUrl('');
     setShowQrCode(true);
     setShowFuneralLogo(true);
@@ -695,9 +714,10 @@ const Dashboard = () => {
                                     alt="Deceased"
                                     draggable={false}
                                     className="w-full h-full object-cover pointer-events-none select-none"
-                                    style={{ 
-                                      transform: `scale(${photoZoom}) translate(${photoPanX / photoZoom}px, ${photoPanY / photoZoom}px)`,
+                                    style={{
+                                      transform: `translate(${photoPanX}px, ${photoPanY}px) scale(${photoZoom})`,
                                       transformOrigin: 'center',
+                                      willChange: 'transform',
                                     }}
                                   />
                                 ) : (
@@ -1452,60 +1472,6 @@ const Dashboard = () => {
                       </div>
                     </div>
 
-                    {/* Epitaph Controls */}
-                    <div className="space-y-2 p-3 bg-secondary/30 rounded-lg">
-                      <div className="flex items-center justify-between">
-                        <Label className="text-foreground text-sm font-medium">Front Quote/Epitaph</Label>
-                        <label className="flex items-center gap-2 cursor-pointer">
-                          <input 
-                            type="checkbox" 
-                            checked={showEpitaph} 
-                            onChange={(e) => setShowEpitaph(e.target.checked)}
-                            className="accent-primary"
-                          />
-                          <span className="text-muted-foreground text-xs">Show</span>
-                        </label>
-                      </div>
-                      {showEpitaph && (
-                        <>
-                          <Input
-                            id="epitaph"
-                            placeholder="Forever in our hearts"
-                            value={epitaph}
-                            onChange={(e) => setEpitaph(e.target.value)}
-                            className="bg-secondary border-border text-foreground"
-                            maxLength={50}
-                          />
-                          <div className="flex items-center gap-3 flex-wrap">
-                            <Select value={epitaphFont} onValueChange={setEpitaphFont}>
-                              <SelectTrigger className="bg-secondary border-border text-foreground w-40">
-                                <SelectValue placeholder="Font" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                {FONT_OPTIONS.map((font) => (
-                                  <SelectItem key={font.value} value={font.value} style={{ fontFamily: font.value }}>
-                                    {font.name}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                            <div className="flex items-center gap-2">
-                              <Label className="text-muted-foreground text-xs">Color</Label>
-                              <input
-                                type="color"
-                                value={epitaphColor}
-                                onChange={(e) => setEpitaphColor(e.target.value)}
-                                className="w-8 h-8 rounded border border-border cursor-pointer"
-                              />
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <Label className="text-muted-foreground text-xs">Size</Label>
-                              <span className="text-xs text-foreground bg-secondary px-2 py-1 rounded">{Math.round(epitaphSize)}px</span>
-                            </div>
-                          </div>
-                        </>
-                      )}
-                    </div>
 
                     <Button type="button" onClick={() => setStep(2)} className="w-full bg-primary hover:bg-primary/90 text-primary-foreground">
                       Continue <ArrowRight className="h-4 w-4 ml-2" />
