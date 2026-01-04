@@ -94,7 +94,7 @@ const Dashboard = () => {
   const [uploadingFront, setUploadingFront] = useState(false);
   const [uploadingBack, setUploadingBack] = useState(false);
   const [backText, setBackText] = useState('The Lord is my shepherd; I shall not want.');
-  const [prayerTextSize, setPrayerTextSize] = useState(12); // default prayer text size
+  const [prayerTextSize, setPrayerTextSize] = useState<number | 'auto'>('auto'); // default auto-fit
   
   // Front card text state
   const [showNameOnFront, setShowNameOnFront] = useState(true);
@@ -526,7 +526,7 @@ const Dashboard = () => {
     setAdditionalTextFont('Cormorant Garamond');
     setShowAdditionalText(false);
     setSelectedPrayerId('custom');
-    setPrayerTextSize(12);
+    setPrayerTextSize('auto');
   };
 
   const handleDeleteOrder = async (orderId: string) => {
@@ -695,7 +695,7 @@ const Dashboard = () => {
                                 {/* Text Overlay - Name */}
                                 {showNameOnFront && (
                                   <div
-                                    className="absolute touch-none select-none px-2 py-1 rounded transition-shadow"
+                                    className="absolute touch-none select-none px-2 py-1 rounded"
                                     style={{
                                       left: `${namePosition.x}%`,
                                       top: `${namePosition.y}%`,
@@ -721,7 +721,7 @@ const Dashboard = () => {
                                 {/* Text Overlay - Dates */}
                                 {showDatesOnFront && (
                                   <div
-                                    className="absolute touch-none select-none px-2 py-1 rounded transition-shadow"
+                                    className="absolute touch-none select-none px-2 py-1 rounded"
                                     style={{
                                       left: `${datesPosition.x}%`,
                                       top: `${datesPosition.y}%`,
@@ -747,7 +747,7 @@ const Dashboard = () => {
                                 {/* Text Overlay - Additional Text */}
                                 {showAdditionalText && (
                                   <div
-                                    className="absolute touch-none select-none px-2 py-1 rounded transition-shadow"
+                                    className="absolute touch-none select-none px-2 py-1 rounded"
                                     style={{
                                       left: `${additionalTextPosition.x}%`,
                                       top: `${additionalTextPosition.y}%`,
@@ -773,7 +773,7 @@ const Dashboard = () => {
                                 {/* Text Overlay - Epitaph */}
                                 {showEpitaph && (
                                   <div
-                                    className="absolute touch-none select-none px-2 py-1 rounded transition-shadow"
+                                    className="absolute touch-none select-none px-2 py-1 rounded"
                                     style={{
                                       left: `${epitaphPosition.x}%`,
                                       top: `${epitaphPosition.y}%`,
@@ -1105,7 +1105,9 @@ const Dashboard = () => {
                                   <div className="flex-1 flex items-center justify-center py-1 px-1 overflow-hidden">
                                     <p 
                                       className={`leading-relaxed font-serif italic ${backBgImage || metalFinish === 'black' ? 'text-zinc-200' : 'text-zinc-700'} whitespace-pre-line text-center`}
-                                      style={{ fontSize: `${prayerTextSize}px` }}
+                                      style={prayerTextSize === 'auto' ? {
+                                        fontSize: `clamp(7px, ${Math.max(7, 14 - backText.length / 30)}px, 14px)`,
+                                      } : { fontSize: `${prayerTextSize}px` }}
                                     >
                                       {backText}
                                     </p>
@@ -1220,18 +1222,16 @@ const Dashboard = () => {
                             {/* Prayer Text Size Control */}
                             <div className="flex items-center gap-3 flex-wrap">
                               <Label className="text-muted-foreground text-xs">Text Size:</Label>
-                              <div className="flex items-center gap-2">
-                                <input
-                                  type="range"
-                                  min="8"
-                                  max="16"
-                                  value={prayerTextSize}
-                                  onChange={(e) => setPrayerTextSize(parseInt(e.target.value))}
-                                  className="w-24 accent-primary"
-                                />
-                                <span className="text-xs text-foreground bg-secondary px-2 py-1 rounded">{prayerTextSize}px</span>
-                              </div>
-                              <div className="flex gap-1 ml-auto">
+                              <div className="flex gap-1">
+                                <Button
+                                  type="button"
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => setPrayerTextSize('auto')}
+                                  className={`text-xs px-2 py-1 h-7 ${prayerTextSize === 'auto' ? 'bg-primary text-primary-foreground' : ''}`}
+                                >
+                                  Auto
+                                </Button>
                                 <Button
                                   type="button"
                                   variant="outline"
