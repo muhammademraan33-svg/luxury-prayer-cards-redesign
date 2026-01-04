@@ -992,76 +992,78 @@ const Design = () => {
                               </div>
                             </div>
 
-                            {/* Back Dates Row */}
-                            <div className="flex flex-wrap items-center gap-2">
-                              <label className="flex items-center gap-2 cursor-pointer min-w-[60px]">
-                                <input 
-                                  type="checkbox" 
-                                  checked={showDatesOnBack} 
-                                  onChange={(e) => setShowDatesOnBack(e.target.checked)}
-                                  className="accent-amber-600"
+                            {/* Back Dates Row - only show when viewing back side */}
+                            {cardSide === 'back' && (
+                              <div className="flex flex-wrap items-center gap-2">
+                                <label className="flex items-center gap-2 cursor-pointer min-w-[60px]">
+                                  <input 
+                                    type="checkbox" 
+                                    checked={showDatesOnBack} 
+                                    onChange={(e) => setShowDatesOnBack(e.target.checked)}
+                                    className="accent-amber-600"
+                                  />
+                                  <span className="text-slate-400 text-xs font-medium">Back</span>
+                                </label>
+                                <Select 
+                                  value={backDateFormat} 
+                                  onValueChange={(v) => setBackDateFormat(v as 'full' | 'short-month' | 'mmm-dd-yyyy' | 'numeric' | 'year')}
+                                  disabled={!showDatesOnBack}
+                                >
+                                  <SelectTrigger className="bg-slate-700 border-slate-600 text-white h-7 text-xs w-[130px]">
+                                    <SelectValue placeholder="Format" />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="full">January 1, 2025</SelectItem>
+                                    <SelectItem value="short-month">Jan 1, 2025</SelectItem>
+                                    <SelectItem value="mmm-dd-yyyy">Jan 01, 2025</SelectItem>
+                                    <SelectItem value="numeric">01/01/2025</SelectItem>
+                                    <SelectItem value="year">Years Only</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                                <input
+                                  type="color"
+                                  value={backDatesColor.replace('cc', '')}
+                                  onChange={(e) => setBackDatesColor(e.target.value)}
+                                  className="w-7 h-7 rounded border border-slate-600 cursor-pointer"
+                                  disabled={!showDatesOnBack}
                                 />
-                                <span className="text-slate-400 text-xs font-medium">Back</span>
-                              </label>
-                              <Select 
-                                value={backDateFormat} 
-                                onValueChange={(v) => setBackDateFormat(v as 'full' | 'short-month' | 'mmm-dd-yyyy' | 'numeric' | 'year')}
-                                disabled={!showDatesOnBack}
-                              >
-                                <SelectTrigger className="bg-slate-700 border-slate-600 text-white h-7 text-xs w-[130px]">
-                                  <SelectValue placeholder="Format" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  <SelectItem value="full">January 1, 2025</SelectItem>
-                                  <SelectItem value="short-month">Jan 1, 2025</SelectItem>
-                                  <SelectItem value="mmm-dd-yyyy">Jan 01, 2025</SelectItem>
-                                  <SelectItem value="numeric">01/01/2025</SelectItem>
-                                  <SelectItem value="year">Years Only</SelectItem>
-                                </SelectContent>
-                              </Select>
-                              <input
-                                type="color"
-                                value={backDatesColor.replace('cc', '')}
-                                onChange={(e) => setBackDatesColor(e.target.value)}
-                                className="w-7 h-7 rounded border border-slate-600 cursor-pointer"
-                                disabled={!showDatesOnBack}
-                              />
-                              <div className="flex items-center gap-1">
-                                <Button
-                                  type="button"
-                                  variant={backDatesSize === 'auto' ? 'default' : 'outline'}
-                                  size="sm"
-                                  className={`h-7 px-2 text-xs ${backDatesSize === 'auto' ? 'bg-amber-600' : 'border-slate-600'}`}
-                                  onClick={() => setBackDatesSize('auto')}
-                                  disabled={!showDatesOnBack}
-                                >
-                                  Auto
-                                </Button>
-                                <Button
-                                  type="button"
-                                  variant="outline"
-                                  size="icon"
-                                  className="h-6 w-6 border-slate-600"
-                                  onClick={() => setBackDatesSize(typeof backDatesSize === 'number' ? Math.max(8, backDatesSize - 2) : 10)}
-                                  disabled={!showDatesOnBack}
-                                >
-                                  <span className="text-xs">−</span>
-                                </Button>
-                                <span className="text-xs text-white bg-slate-700 px-1 py-0.5 rounded min-w-[35px] text-center">
-                                  {backDatesSize === 'auto' ? 'auto' : `${backDatesSize}px`}
-                                </span>
-                                <Button
-                                  type="button"
-                                  variant="outline"
-                                  size="icon"
-                                  className="h-6 w-6 border-slate-600"
-                                  onClick={() => setBackDatesSize(typeof backDatesSize === 'number' ? Math.min(48, backDatesSize + 2) : 14)}
-                                  disabled={!showDatesOnBack}
-                                >
-                                  <span className="text-xs">+</span>
-                                </Button>
+                                <div className="flex items-center gap-1">
+                                  <Button
+                                    type="button"
+                                    variant={backDatesSize === 'auto' ? 'default' : 'outline'}
+                                    size="sm"
+                                    className={`h-7 px-2 text-xs ${backDatesSize === 'auto' ? 'bg-amber-600' : 'border-slate-600'}`}
+                                    onClick={() => setBackDatesSize('auto')}
+                                    disabled={!showDatesOnBack}
+                                  >
+                                    Auto
+                                  </Button>
+                                  <Button
+                                    type="button"
+                                    variant="outline"
+                                    size="icon"
+                                    className="h-6 w-6 border-slate-600"
+                                    onClick={() => setBackDatesSize(typeof backDatesSize === 'number' ? Math.max(8, backDatesSize - 2) : 10)}
+                                    disabled={!showDatesOnBack}
+                                  >
+                                    <span className="text-xs">−</span>
+                                  </Button>
+                                  <span className="text-xs text-white bg-slate-700 px-1 py-0.5 rounded min-w-[35px] text-center">
+                                    {backDatesSize === 'auto' ? 'auto' : `${backDatesSize}px`}
+                                  </span>
+                                  <Button
+                                    type="button"
+                                    variant="outline"
+                                    size="icon"
+                                    className="h-6 w-6 border-slate-600"
+                                    onClick={() => setBackDatesSize(typeof backDatesSize === 'number' ? Math.min(48, backDatesSize + 2) : 14)}
+                                    disabled={!showDatesOnBack}
+                                  >
+                                    <span className="text-xs">+</span>
+                                  </Button>
+                                </div>
                               </div>
-                            </div>
+                            )}
                           </div>
                           
                           {/* Additional Text Controls */}
