@@ -58,7 +58,7 @@ const Dashboard = () => {
   const [metalFinish, setMetalFinish] = useState<MetalFinish>('silver');
   const [shipping, setShipping] = useState<'standard' | 'express'>('standard');
   const [epitaph, setEpitaph] = useState('Forever in our hearts');
-  const [orientation, setOrientation] = useState<Orientation>('landscape');
+  const [orientation, setOrientation] = useState<Orientation>('portrait');
   const [cardSide, setCardSide] = useState<CardSide>('front');
   const [frontBgImage, setFrontBgImage] = useState<string | null>(null);
   const [backBgImage, setBackBgImage] = useState<string | null>(null);
