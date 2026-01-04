@@ -55,7 +55,6 @@ const Design = () => {
   const [metalFinish, setMetalFinish] = useState<MetalFinish>('silver');
   const [shipping, setShipping] = useState<ShippingType>('express');
   const [additionalSets, setAdditionalSets] = useState(0);
-  const [additionalPhotos, setAdditionalPhotos] = useState(0);
   const [qrUrl, setQrUrl] = useState('');
   const [showQrCode, setShowQrCode] = useState(true);
   const [orientation, setOrientation] = useState<Orientation>('portrait');
@@ -116,14 +115,15 @@ const Design = () => {
   const [funeralHomeLogoPosition, setFuneralHomeLogoPosition] = useState<'top' | 'bottom'>('bottom');
   const [funeralHomeLogoSize, setFuneralHomeLogoSize] = useState(40);
   
-  // Easel photo state
-  const [easelPhoto, setEaselPhoto] = useState<string | null>(null);
+  // Easel photo state - supports multiple photos (2 included, can add more)
+  const [easelPhotos, setEaselPhotos] = useState<string[]>([]);
   const [easelPhotoSize, setEaselPhotoSize] = useState<EaselPhotoSize>('16x20');
   const [easelPhotoText, setEaselPhotoText] = useState('');
   const [easelPhotoTextPosition, setEaselPhotoTextPosition] = useState<'top' | 'bottom'>('bottom');
   const [easelPhotoTextColor, setEaselPhotoTextColor] = useState('#ffffff');
   const [easelPhotoTextSize, setEaselPhotoTextSize] = useState(24);
   const [showEaselPhotoText, setShowEaselPhotoText] = useState(true);
+  const easelPhotosInputRef = useRef<HTMLInputElement>(null);
   
   const textDragStartRef = useRef<{ x: number; y: number; posX: number; posY: number } | null>(null);
   const textPinchStartRef = useRef<{ distance: number; size: number } | null>(null);
@@ -131,7 +131,7 @@ const Design = () => {
   const photoInputRef = useRef<HTMLInputElement>(null);
   const backInputRef = useRef<HTMLInputElement>(null);
   const logoInputRef = useRef<HTMLInputElement>(null);
-  const easelPhotoInputRef = useRef<HTMLInputElement>(null);
+  
   const photoContainerRef = useRef<HTMLDivElement>(null);
   const cardPreviewRef = useRef<HTMLDivElement>(null);
   const panStartRef = useRef<{ x: number; y: number; panX: number; panY: number } | null>(null);
@@ -407,7 +407,7 @@ const Design = () => {
     setPhotoPanY(clamped.panY);
   };
 
-  const handleImageUpload = (file: File, type: 'photo' | 'back' | 'logo' | 'easel') => {
+  const handleImageUpload = (file: File, type: 'photo' | 'back' | 'logo') => {
     if (!file) return;
 
     const previewUrl = URL.createObjectURL(file);
@@ -420,19 +420,37 @@ const Design = () => {
       setBackBgImage(previewUrl);
     } else if (type === 'logo') {
       setFuneralHomeLogo(previewUrl);
-    } else if (type === 'easel') {
-      setEaselPhoto(previewUrl);
     }
     toast.success('Image uploaded!');
+  };
+
+  const handleEaselPhotosUpload = (files: FileList | null) => {
+    if (!files) return;
+    
+    const newPhotos: string[] = [];
+    Array.from(files).forEach(file => {
+      const previewUrl = URL.createObjectURL(file);
+      newPhotos.push(previewUrl);
+    });
+    
+    setEaselPhotos(prev => [...prev, ...newPhotos]);
+    toast.success(`${newPhotos.length} photo${newPhotos.length > 1 ? 's' : ''} added!`);
+  };
+
+  const removeEaselPhoto = (index: number) => {
+    setEaselPhotos(prev => prev.filter((_, i) => i !== index));
   };
 
   const calculatePrice = () => {
     let total = EXPRESS_PACK_PRICE;
     total += additionalSets * ADDITIONAL_SET_PRICE;
-    total += additionalPhotos * ADDITIONAL_PHOTO_PRICE;
-    // Add 18x24 upsell if selected
+    // Additional photos beyond the 2 included
+    const extraPhotos = Math.max(0, easelPhotos.length - 2);
+    total += extraPhotos * ADDITIONAL_PHOTO_PRICE;
+    // Add 18x24 upsell if selected - applies to all easel photos
+    const totalEaselPhotos = Math.max(2, easelPhotos.length);
     if (easelPhotoSize === '18x24') {
-      total += EASEL_18X24_UPSELL * 2; // For both included easel photos
+      total += EASEL_18X24_UPSELL * totalEaselPhotos;
     }
     if (shipping === 'overnight') {
       total *= 2; // 100% upcharge
@@ -1553,92 +1571,139 @@ const Design = () => {
                   <div className="border-t border-slate-700 pt-6">
                     <div className="flex items-center gap-2 mb-4">
                       <ImageIcon className="h-5 w-5 text-amber-400" />
-                      <Label className="text-white font-semibold text-lg">Easel Photo (Included)</Label>
+                      <Label className="text-white font-semibold text-lg">Easel Photos (2 Included)</Label>
                     </div>
                     
                     <p className="text-slate-400 text-sm mb-4">
-                      Upload the photo for your 2 included easel display photos. Choose size and add optional text overlay.
+                      Upload 2 different photos for your included easel displays. You can add more to create a collage or display multiple memories.
                     </p>
 
-                    {/* Easel Photo Preview */}
-                    <div className="flex flex-col items-center gap-4 mb-4">
-                      <div 
-                        className="relative rounded-lg overflow-hidden shadow-xl bg-slate-800 border border-slate-600"
-                        style={{ 
-                          width: easelPhotoSize === '16x20' ? '160px' : '180px',
-                          height: easelPhotoSize === '16x20' ? '200px' : '240px',
-                        }}
-                      >
-                        {easelPhoto ? (
+                    {/* Easel Photos Grid */}
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-4">
+                      {/* Uploaded Photos */}
+                      {easelPhotos.map((photo, index) => (
+                        <div 
+                          key={index}
+                          className="relative rounded-lg overflow-hidden shadow-lg bg-slate-800 border border-slate-600 group"
+                          style={{ 
+                            aspectRatio: easelPhotoSize === '16x20' ? '16/20' : '18/24',
+                          }}
+                        >
                           <img 
-                            src={easelPhoto} 
-                            alt="Easel photo preview" 
+                            src={photo} 
+                            alt={`Easel photo ${index + 1}`} 
                             className="w-full h-full object-cover"
                           />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center">
-                            <div className="text-center p-2">
-                              <ImageIcon className="h-8 w-8 text-slate-500 mx-auto mb-1" />
-                              <p className="text-slate-500 text-xs">Upload photo</p>
-                            </div>
-                          </div>
-                        )}
-                        
-                        {/* Text Overlay */}
-                        {showEaselPhotoText && easelPhotoText && (
-                          <div 
-                            className={`absolute left-0 right-0 px-2 py-1 bg-black/50 text-center ${
-                              easelPhotoTextPosition === 'top' ? 'top-0' : 'bottom-0'
-                            }`}
-                          >
-                            <p 
-                              style={{ 
-                                color: easelPhotoTextColor,
-                                fontSize: `${Math.max(8, easelPhotoTextSize / 3)}px`,
-                              }}
-                              className="font-serif"
+                          
+                          {/* Text Overlay */}
+                          {showEaselPhotoText && easelPhotoText && (
+                            <div 
+                              className={`absolute left-0 right-0 px-2 py-1 bg-black/50 text-center ${
+                                easelPhotoTextPosition === 'top' ? 'top-0' : 'bottom-0'
+                              }`}
                             >
-                              {easelPhotoText}
-                            </p>
+                              <p 
+                                style={{ 
+                                  color: easelPhotoTextColor,
+                                  fontSize: `${Math.max(6, easelPhotoTextSize / 4)}px`,
+                                }}
+                                className="font-serif truncate"
+                              >
+                                {easelPhotoText}
+                              </p>
+                            </div>
+                          )}
+                          
+                          {/* Photo Number Badge */}
+                          <div className="absolute top-1 left-1 bg-slate-900/80 text-white text-[10px] px-1.5 py-0.5 rounded">
+                            #{index + 1} {index < 2 ? '✓' : '+$27'}
                           </div>
-                        )}
-                        
-                        {/* Size Label */}
-                        <div className="absolute top-1 right-1 bg-amber-600/90 text-white text-[8px] px-1 py-0.5 rounded">
-                          {easelPhotoSize}
+                          
+                          {/* Size Label */}
+                          <div className="absolute top-1 right-1 bg-amber-600/90 text-white text-[8px] px-1 py-0.5 rounded">
+                            {easelPhotoSize}
+                          </div>
+                          
+                          {/* Remove Button */}
+                          <button
+                            type="button"
+                            onClick={() => removeEaselPhoto(index)}
+                            className="absolute bottom-1 right-1 bg-rose-600/90 text-white p-1 rounded opacity-0 group-hover:opacity-100 transition-opacity"
+                          >
+                            <Trash2 className="h-3 w-3" />
+                          </button>
                         </div>
-                      </div>
+                      ))}
+                      
+                      {/* Add Photo Placeholder(s) */}
+                      {easelPhotos.length < 2 && Array.from({ length: 2 - easelPhotos.length }).map((_, i) => (
+                        <button
+                          key={`placeholder-${i}`}
+                          type="button"
+                          onClick={() => easelPhotosInputRef.current?.click()}
+                          className="rounded-lg border-2 border-dashed border-slate-600 hover:border-amber-500 transition-colors flex flex-col items-center justify-center p-4 bg-slate-800/50"
+                          style={{ 
+                            aspectRatio: easelPhotoSize === '16x20' ? '16/20' : '18/24',
+                          }}
+                        >
+                          <ImageIcon className="h-6 w-6 text-slate-500 mb-1" />
+                          <p className="text-slate-500 text-xs">Photo {easelPhotos.length + i + 1}</p>
+                          <p className="text-amber-400 text-[10px]">Included</p>
+                        </button>
+                      ))}
+                      
+                      {/* Add More Button */}
+                      {easelPhotos.length >= 2 && (
+                        <button
+                          type="button"
+                          onClick={() => easelPhotosInputRef.current?.click()}
+                          className="rounded-lg border-2 border-dashed border-slate-600 hover:border-amber-500 transition-colors flex flex-col items-center justify-center p-4 bg-slate-800/50"
+                          style={{ 
+                            aspectRatio: easelPhotoSize === '16x20' ? '16/20' : '18/24',
+                          }}
+                        >
+                          <ImageIcon className="h-6 w-6 text-slate-500 mb-1" />
+                          <p className="text-slate-500 text-xs">Add More</p>
+                          <p className="text-amber-400 text-[10px]">+$27 each</p>
+                        </button>
+                      )}
+                    </div>
 
-                      {/* Upload Button */}
-                      <input
-                        ref={easelPhotoInputRef}
-                        type="file"
-                        accept="image/*"
-                        className="hidden"
-                        onChange={(e) => e.target.files?.[0] && handleImageUpload(e.target.files[0], 'easel')}
-                      />
-                      <div className="flex gap-2">
+                    {/* Upload Button */}
+                    <input
+                      ref={easelPhotosInputRef}
+                      type="file"
+                      accept="image/*"
+                      multiple
+                      className="hidden"
+                      onChange={(e) => handleEaselPhotosUpload(e.target.files)}
+                    />
+                    <div className="flex gap-2 justify-center mb-4">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => easelPhotosInputRef.current?.click()}
+                        className="border-amber-600/50 text-amber-400 hover:bg-amber-600/20"
+                      >
+                        <ImageIcon className="h-4 w-4 mr-2" />
+                        {easelPhotos.length === 0 ? 'Upload Photos' : 'Add More Photos'}
+                      </Button>
+                      {easelPhotos.length > 0 && (
                         <Button
                           type="button"
                           variant="outline"
-                          onClick={() => easelPhotoInputRef.current?.click()}
-                          className="border-amber-600/50 text-amber-400 hover:bg-amber-600/20"
+                          onClick={() => setEaselPhotos([])}
+                          className="border-rose-600/50 text-rose-400 hover:bg-rose-600/20"
                         >
-                          <ImageIcon className="h-4 w-4 mr-2" />
-                          {easelPhoto ? 'Change Photo' : 'Upload Photo'}
+                          <Trash2 className="h-4 w-4 mr-1" />
+                          Clear All
                         </Button>
-                        {easelPhoto && (
-                          <Button
-                            type="button"
-                            variant="outline"
-                            onClick={() => setEaselPhoto(null)}
-                            className="border-rose-600/50 text-rose-400 hover:bg-rose-600/20"
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        )}
-                      </div>
+                      )}
                     </div>
+                    
+                    <p className="text-slate-500 text-xs text-center mb-4">
+                      💡 First 2 photos are included • Additional photos are $27 each
+                    </p>
 
                     {/* Size Selection */}
                     <div className="space-y-3 p-4 bg-slate-700/30 rounded-lg mb-4">
@@ -1788,8 +1853,8 @@ const Design = () => {
                       </li>
                       <li className="flex items-center gap-2">
                         <span className="text-amber-400">✓</span>
-                        2 Easel Photos ({easelPhotoSize})
-                        {easelPhotoSize === '18x24' && <span className="text-amber-400 text-xs">+$20</span>}
+                        2 Easel Photos ({easelPhotoSize}) - Can upload different images
+                        {easelPhotoSize === '18x24' && <span className="text-amber-400 text-xs ml-1">+${EASEL_18X24_UPSELL * 2}</span>}
                       </li>
                       <li className="flex items-center gap-2">
                         <span className="text-amber-400">✓</span>
@@ -1831,32 +1896,19 @@ const Design = () => {
                       </div>
                     </div>
 
-                    {/* Additional Photos */}
-                    <div className="flex items-center justify-between p-4 bg-slate-700/30 rounded-lg">
-                      <div>
-                        <p className="text-white font-medium">Additional Easel Photos</p>
-                        <p className="text-slate-400 text-sm">${ADDITIONAL_PHOTO_PRICE} per photo</p>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Button
-                          type="button"
-                          variant="outline"
-                          size="icon"
-                          onClick={() => setAdditionalPhotos(Math.max(0, additionalPhotos - 1))}
-                          className="h-8 w-8 border-slate-600"
-                        >
-                          −
-                        </Button>
-                        <span className="text-white w-8 text-center">{additionalPhotos}</span>
-                        <Button
-                          type="button"
-                          variant="outline"
-                          size="icon"
-                          onClick={() => setAdditionalPhotos(additionalPhotos + 1)}
-                          className="h-8 w-8 border-slate-600"
-                        >
-                          +
-                        </Button>
+                    {/* Additional Photos Info */}
+                    <div className="p-4 bg-slate-700/30 rounded-lg">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-white font-medium">Additional Easel Photos</p>
+                          <p className="text-slate-400 text-sm">Add more photos in Step 1 (${ADDITIONAL_PHOTO_PRICE} each beyond 2 included)</p>
+                        </div>
+                        <div className="text-right">
+                          <span className="text-white font-medium">{Math.max(0, easelPhotos.length - 2)} extra</span>
+                          {easelPhotos.length > 2 && (
+                            <p className="text-amber-400 text-sm">+${(easelPhotos.length - 2) * ADDITIONAL_PHOTO_PRICE}</p>
+                          )}
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -1951,15 +2003,15 @@ const Design = () => {
                       
                       {easelPhotoSize === '18x24' && (
                         <div className="flex justify-between">
-                          <span className="text-slate-300">18×24 Easel Photo Upgrade × 2</span>
-                          <span className="text-white">${EASEL_18X24_UPSELL * 2}</span>
+                          <span className="text-slate-300">18×24 Easel Photo Upgrade × {Math.max(2, easelPhotos.length)}</span>
+                          <span className="text-white">${EASEL_18X24_UPSELL * Math.max(2, easelPhotos.length)}</span>
                         </div>
                       )}
                       
-                      {additionalPhotos > 0 && (
+                      {easelPhotos.length > 2 && (
                         <div className="flex justify-between">
-                          <span className="text-slate-300">Additional Easel Photos × {additionalPhotos}</span>
-                          <span className="text-white">${additionalPhotos * ADDITIONAL_PHOTO_PRICE}</span>
+                          <span className="text-slate-300">Additional Easel Photos × {easelPhotos.length - 2}</span>
+                          <span className="text-white">${(easelPhotos.length - 2) * ADDITIONAL_PHOTO_PRICE}</span>
                         </div>
                       )}
                       
@@ -1998,7 +2050,7 @@ const Design = () => {
                         <span className="text-slate-400">Total Cards:</span> {55 + (additionalSets * 55)}
                       </p>
                       <p className="text-slate-300">
-                        <span className="text-slate-400">Easel Photos:</span> {2 + additionalPhotos} ({easelPhotoSize})
+                        <span className="text-slate-400">Easel Photos:</span> {Math.max(2, easelPhotos.length)} ({easelPhotoSize})
                       </p>
                       {easelPhotoText && (
                         <p className="text-slate-300">
