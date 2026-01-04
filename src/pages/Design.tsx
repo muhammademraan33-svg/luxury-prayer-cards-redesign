@@ -601,7 +601,7 @@ const Design = () => {
                       variant={orientation === 'landscape' ? 'default' : 'outline'}
                       onClick={() => setOrientation('landscape')}
                       className={orientation === 'landscape' 
-                        ? 'bg-amber-600 hover:bg-amber-700 text-white' 
+                        ? 'bg-amber-600 hover:bg-amber-700 !text-white' 
                         : 'border-slate-600 text-slate-300 hover:bg-slate-700'}
                     >
                       <RectangleHorizontal className="h-4 w-4 mr-2" />
@@ -612,7 +612,7 @@ const Design = () => {
                       variant={orientation === 'portrait' ? 'default' : 'outline'}
                       onClick={() => setOrientation('portrait')}
                       className={orientation === 'portrait' 
-                        ? 'bg-amber-600 hover:bg-amber-700 text-white' 
+                        ? 'bg-amber-600 hover:bg-amber-700 !text-white' 
                         : 'border-slate-600 text-slate-300 hover:bg-slate-700'}
                     >
                       <RectangleVertical className="h-4 w-4 mr-2" />
@@ -670,30 +670,39 @@ const Design = () => {
                               )}
                               
                               {/* Text Overlay - Name */}
-                              {showNameOnFront && (
-                                <div
-                                  className="absolute touch-none select-none px-2 py-1 rounded"
-                                  style={{
-                                    left: `${namePosition.x}%`,
-                                    top: `${namePosition.y}%`,
-                                    transform: 'translate(-50%, -50%)',
-                                    fontFamily: nameFont,
-                                    cursor: draggingText === 'name' || resizingText === 'name' ? 'grabbing' : 'grab',
-                                    textShadow: '0 2px 4px rgba(0,0,0,0.5)',
-                                    boxShadow: (draggingText === 'name' || resizingText === 'name') ? '0 0 0 2px #d97706' : 'none',
-                                    whiteSpace: 'nowrap',
-                                  }}
-                                  onPointerDown={(e) => handleTextPointerDown(e, 'name')}
-                                  onPointerMove={handleTextPointerMove}
-                                  onPointerUp={handleTextPointerUp}
-                                  onPointerCancel={handleTextPointerUp}
-                                  onWheel={(e) => handleTextWheel(e, 'name')}
-                                >
-                                  <span style={{ fontSize: `${nameSize}px`, color: nameColor, fontWeight: nameBold ? 'bold' : 'normal', whiteSpace: 'pre', textAlign: 'center' }}>
-                                    {deceasedName || 'Name Here'}
-                                  </span>
-                                </div>
-                              )}
+                              {showNameOnFront && (() => {
+                                // Calculate line count and offset Y position for multi-line names
+                                const nameText = deceasedName || 'Name Here';
+                                const lineCount = nameText.split('\n').length;
+                                // Offset by ~3% per additional line to keep name above dates
+                                const lineOffset = (lineCount - 1) * 3;
+                                const adjustedY = namePosition.y - lineOffset;
+                                
+                                return (
+                                  <div
+                                    className="absolute touch-none select-none px-2 py-1 rounded"
+                                    style={{
+                                      left: `${namePosition.x}%`,
+                                      top: `${adjustedY}%`,
+                                      transform: 'translate(-50%, -50%)',
+                                      fontFamily: nameFont,
+                                      cursor: draggingText === 'name' || resizingText === 'name' ? 'grabbing' : 'grab',
+                                      textShadow: '0 2px 4px rgba(0,0,0,0.5)',
+                                      boxShadow: (draggingText === 'name' || resizingText === 'name') ? '0 0 0 2px #d97706' : 'none',
+                                      whiteSpace: 'nowrap',
+                                    }}
+                                    onPointerDown={(e) => handleTextPointerDown(e, 'name')}
+                                    onPointerMove={handleTextPointerMove}
+                                    onPointerUp={handleTextPointerUp}
+                                    onPointerCancel={handleTextPointerUp}
+                                    onWheel={(e) => handleTextWheel(e, 'name')}
+                                  >
+                                    <span style={{ fontSize: `${nameSize}px`, color: nameColor, fontWeight: nameBold ? 'bold' : 'normal', whiteSpace: 'pre', textAlign: 'center' }}>
+                                      {nameText}
+                                    </span>
+                                  </div>
+                                );
+                              })()}
                               
                               {/* Text Overlay - Dates */}
                               {showDatesOnFront && (
