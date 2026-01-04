@@ -243,6 +243,12 @@ export const EditorCanvas = ({
             isSelected={selectedId === element.id}
             isDragging={draggingId === element.id}
             onPointerDown={(e) => handleElementPointerDown(e, element.id)}
+            onImagePanZoom={(id, updates) => {
+              const updatedElements = elements.map((el) =>
+                el.id === id ? { ...el, ...updates } : el
+              );
+              onElementsUpdate(updatedElements);
+            }}
           />
         ))}
 

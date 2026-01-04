@@ -250,22 +250,12 @@ export const PropertiesPanel = ({
               />
             </div>
 
-            {/* Zoom for images */}
+            {/* Hint for images */}
             {selectedElement.type === 'image' && (
-              <div className="space-y-2">
-                <div className="flex justify-between">
-                  <Label>Zoom</Label>
-                  <span className="text-xs text-muted-foreground">
-                    {Math.round(((selectedElement as any).scale || 1) * 100)}%
-                  </span>
-                </div>
-                <Slider
-                  value={[((selectedElement as any).scale || 1) * 100]}
-                  onValueChange={([value]) => onElementUpdate(selectedElement.id, { scale: value / 100 } as any)}
-                  min={50}
-                  max={300}
-                  step={5}
-                />
+              <div className="p-3 bg-muted/50 rounded-lg text-sm text-muted-foreground">
+                <p className="font-medium mb-1">📱 Gesture Controls</p>
+                <p>• Drag inside image to pan</p>
+                <p>• Pinch or scroll to zoom</p>
               </div>
             )}
 
