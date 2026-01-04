@@ -682,7 +682,7 @@ const Design = () => {
                                   onPointerCancel={handleTextPointerUp}
                                   onWheel={(e) => handleTextWheel(e, 'name')}
                                 >
-                                  <span style={{ fontSize: `${nameSize}px`, color: nameColor, fontWeight: nameBold ? 'bold' : 'normal', whiteSpace: 'pre-line', textAlign: 'center' }}>
+                                  <span style={{ fontSize: `${nameSize}px`, color: nameColor, fontWeight: nameBold ? 'bold' : 'normal', whiteSpace: 'pre', textAlign: 'center' }}>
                                     {deceasedName || 'Name Here'}
                                   </span>
                                 </div>
@@ -1211,7 +1211,7 @@ const Design = () => {
                                     </p>
                                   )}
                                   <p 
-                                    className={`${orientation === 'portrait' ? 'text-base' : 'text-sm'} font-serif mb-0.5 whitespace-pre-line text-center`}
+                                    className={`${orientation === 'portrait' ? 'text-base' : 'text-sm'} font-serif mb-0.5 whitespace-pre text-center`}
                                     style={{ 
                                       color: backBgImage || metalFinish === 'black' ? '#ffffff' : '#18181b',
                                       fontWeight: nameBold ? 'bold' : 'normal'
