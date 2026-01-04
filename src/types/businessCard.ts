@@ -1,13 +1,15 @@
 import { CardElement } from './cardElements';
 
-// Background textures for premium metal cards
+// Background textures for premium metal cards - designed for metal printing
 export type BackgroundTexture = 
   | 'marble-white' 
+  | 'marble-grey'
   | 'marble-black' 
   | 'brushed-gold' 
   | 'brushed-silver' 
   | 'brushed-black' 
   | 'brushed-rose-gold'
+  | 'pearl-white'
   | 'solid-black'
   | 'solid-white'
   | 'custom-photo';
@@ -17,15 +19,21 @@ export interface BackgroundStyle {
   customImage?: string;
 }
 
+// Luxury metal finishes optimized for metal printing with realistic reflections
 export const backgroundTextures: { value: BackgroundTexture; name: string; preview: string }[] = [
-  { value: 'brushed-gold', name: 'Brushed Gold', preview: 'linear-gradient(135deg, #d4af37 0%, #f5d77a 25%, #c9a227 50%, #f5d77a 75%, #d4af37 100%)' },
-  { value: 'brushed-silver', name: 'Brushed Silver', preview: 'linear-gradient(135deg, #c0c0c0 0%, #e8e8e8 25%, #a8a8a8 50%, #e8e8e8 75%, #c0c0c0 100%)' },
-  { value: 'brushed-black', name: 'Brushed Black', preview: 'linear-gradient(135deg, #1a1a1a 0%, #3a3a3a 25%, #0a0a0a 50%, #3a3a3a 75%, #1a1a1a 100%)' },
-  { value: 'brushed-rose-gold', name: 'Rose Gold', preview: 'linear-gradient(135deg, #b76e79 0%, #e8c4c4 25%, #c9a0a0 50%, #e8c4c4 75%, #b76e79 100%)' },
-  { value: 'marble-white', name: 'White Marble', preview: 'linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 30%, #f8f8f8 60%, #ececec 100%)' },
-  { value: 'marble-black', name: 'Black Marble', preview: 'linear-gradient(135deg, #1a1a2e 0%, #2d2d44 30%, #1a1a2e 60%, #3d3d5c 100%)' },
-  { value: 'solid-black', name: 'Solid Black', preview: '#0a0a0a' },
-  { value: 'solid-white', name: 'Solid White', preview: '#fefefe' },
+  // Premium metals with champagne/warm tones
+  { value: 'brushed-gold', name: 'Champagne Gold', preview: 'linear-gradient(135deg, #c5a870 0%, #e8d5b0 15%, #b8965a 35%, #e2cb9a 55%, #a8854d 75%, #d4be8a 90%, #c5a870 100%)' },
+  { value: 'brushed-silver', name: 'Platinum Silver', preview: 'linear-gradient(135deg, #b8c0c8 0%, #e8ecef 15%, #9ca5af 35%, #dce1e6 55%, #8d969f 75%, #cdd3d9 90%, #b8c0c8 100%)' },
+  { value: 'brushed-rose-gold', name: 'Rose Gold', preview: 'linear-gradient(135deg, #c4a484 0%, #e8d0c0 15%, #b08d6a 35%, #dfc5b5 55%, #9c7856 75%, #d4b8a4 90%, #c4a484 100%)' },
+  { value: 'brushed-black', name: 'Gunmetal Black', preview: 'linear-gradient(135deg, #2c2c2c 0%, #4a4a4a 15%, #1a1a1a 35%, #3d3d3d 55%, #0f0f0f 75%, #333333 90%, #2c2c2c 100%)' },
+  // Marble finishes with veining effect
+  { value: 'marble-white', name: 'Carrara White', preview: 'linear-gradient(125deg, #fafafa 0%, #f0f0f0 20%, #e8e8e8 35%, #f5f5f5 50%, #e0e0e0 65%, #f8f8f8 80%, #ececec 100%)' },
+  { value: 'marble-grey', name: 'Grey Marble', preview: 'linear-gradient(125deg, #a8a8a8 0%, #c5c5c5 20%, #8f8f8f 35%, #b8b8b8 50%, #9a9a9a 65%, #d0d0d0 80%, #a0a0a0 100%)' },
+  { value: 'marble-black', name: 'Nero Marble', preview: 'linear-gradient(125deg, #1a1a1a 0%, #2e2e2e 20%, #0f0f0f 35%, #252525 50%, #1c1c1c 65%, #383838 80%, #141414 100%)' },
+  // Solid finishes with subtle metallic sheen
+  { value: 'pearl-white', name: 'Pearl White', preview: 'linear-gradient(135deg, #f8f8f8 0%, #ffffff 25%, #f0f0f0 50%, #fafafa 75%, #f5f5f5 100%)' },
+  { value: 'solid-black', name: 'Matte Black', preview: 'linear-gradient(135deg, #0a0a0a 0%, #151515 50%, #0a0a0a 100%)' },
+  { value: 'solid-white', name: 'Matte White', preview: 'linear-gradient(135deg, #fefefe 0%, #f5f5f5 50%, #fefefe 100%)' },
 ];
 
 export interface TextElementStyle {

@@ -61,11 +61,32 @@ export const EditorCanvas = ({
     const texture = backgroundTextures.find((t) => t.value === sideData.background.texture);
     if (texture) {
       const base: React.CSSProperties = { background: texture.preview };
+      const textureName = sideData.background.texture;
 
-      if (sideData.background.texture.startsWith('brushed')) {
+      // Brushed metal effect - fine horizontal lines
+      if (textureName.startsWith('brushed')) {
         return {
           ...base,
-          backgroundImage: `${texture.preview}, repeating-linear-gradient(90deg, transparent, transparent 1px, rgba(255,255,255,0.03) 1px, rgba(255,255,255,0.03) 2px)`,
+          backgroundImage: `
+            ${texture.preview},
+            repeating-linear-gradient(90deg, transparent 0px, transparent 1px, rgba(255,255,255,0.02) 1px, rgba(255,255,255,0.02) 2px),
+            repeating-linear-gradient(90deg, transparent 0px, transparent 3px, rgba(0,0,0,0.01) 3px, rgba(0,0,0,0.01) 4px)
+          `,
+        };
+      }
+
+      // Marble effect - subtle veining pattern
+      if (textureName.startsWith('marble')) {
+        const isLight = textureName === 'marble-white' || textureName === 'marble-grey';
+        const veinColor = isLight ? 'rgba(180,180,180,0.15)' : 'rgba(60,60,60,0.2)';
+        return {
+          ...base,
+          backgroundImage: `
+            ${texture.preview},
+            radial-gradient(ellipse 80% 40% at 20% 30%, ${veinColor} 0%, transparent 50%),
+            radial-gradient(ellipse 60% 30% at 70% 60%, ${veinColor} 0%, transparent 40%),
+            radial-gradient(ellipse 40% 60% at 40% 80%, ${veinColor} 0%, transparent 35%)
+          `,
         };
       }
 
@@ -322,12 +343,14 @@ export const EditorCanvas = ({
           />
         )}
 
-        {/* Metallic shine effect */}
+        {/* Realistic metallic shine effect for metal printing */}
         <div
           className="absolute inset-0 pointer-events-none rounded-sm"
           style={{
-            background:
-              'linear-gradient(135deg, rgba(255,255,255,0.1) 0%, transparent 50%, rgba(0,0,0,0.05) 100%)',
+            background: `
+              linear-gradient(135deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.05) 25%, transparent 50%, rgba(0,0,0,0.03) 75%, rgba(0,0,0,0.08) 100%),
+              radial-gradient(ellipse 80% 50% at 30% 20%, rgba(255,255,255,0.08) 0%, transparent 50%)
+            `,
           }}
         />
       </div>
