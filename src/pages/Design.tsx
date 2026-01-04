@@ -1398,7 +1398,7 @@ const Design = () => {
                                   type="button"
                                   variant={backNameBold ? 'default' : 'outline'}
                                   size="sm"
-                                  className={`h-7 px-3 text-xs font-bold ${backNameBold ? 'bg-amber-600 text-white' : 'border-slate-600 text-slate-300'}`}
+                                  className={`h-7 px-3 text-xs font-bold ${backNameBold ? 'bg-amber-600 !text-white' : 'border-slate-600 text-slate-300'}`}
                                   onClick={() => setBackNameBold(!backNameBold)}
                                 >
                                   B
@@ -1465,7 +1465,7 @@ const Design = () => {
                                     variant="outline"
                                     size="sm"
                                     onClick={() => setBackDatesSize('auto')}
-                                    className={`h-6 px-2 text-xs ${backDatesSize === 'auto' ? 'bg-amber-600 text-white border-amber-600' : 'border-slate-600 text-slate-300'}`}
+                                    className={`h-6 px-2 text-xs ${backDatesSize === 'auto' ? 'bg-amber-600 !text-white border-amber-600' : 'border-slate-600 text-slate-300'}`}
                                   >
                                     Auto
                                   </Button>
@@ -1478,7 +1478,7 @@ const Design = () => {
                                     type="button"
                                     variant={backDatesAlign === 'left' ? 'default' : 'outline'}
                                     size="sm"
-                                    className={`h-7 px-3 text-xs ${backDatesAlign === 'left' ? 'bg-amber-600 text-white' : 'border-slate-600 text-slate-300'}`}
+                                    className={`h-7 px-3 text-xs ${backDatesAlign === 'left' ? 'bg-amber-600 !text-white' : 'border-slate-600 text-slate-300'}`}
                                     onClick={() => { setBackDatesAlign('left'); setBackDatesPosition(prev => ({ ...prev, x: 15 })); }}
                                   >
                                     Left
@@ -1487,7 +1487,7 @@ const Design = () => {
                                     type="button"
                                     variant={backDatesAlign === 'center' ? 'default' : 'outline'}
                                     size="sm"
-                                    className={`h-7 px-3 text-xs ${backDatesAlign === 'center' ? 'bg-amber-600 text-white' : 'border-slate-600 text-slate-300'}`}
+                                    className={`h-7 px-3 text-xs ${backDatesAlign === 'center' ? 'bg-amber-600 !text-white' : 'border-slate-600 text-slate-300'}`}
                                     onClick={() => { setBackDatesAlign('center'); setBackDatesPosition(prev => ({ ...prev, x: 50 })); }}
                                   >
                                     Center
@@ -1496,7 +1496,7 @@ const Design = () => {
                                     type="button"
                                     variant={backDatesAlign === 'right' ? 'default' : 'outline'}
                                     size="sm"
-                                    className={`h-7 px-3 text-xs ${backDatesAlign === 'right' ? 'bg-amber-600 text-white' : 'border-slate-600 text-slate-300'}`}
+                                    className={`h-7 px-3 text-xs ${backDatesAlign === 'right' ? 'bg-amber-600 !text-white' : 'border-slate-600 text-slate-300'}`}
                                     onClick={() => { setBackDatesAlign('right'); setBackDatesPosition(prev => ({ ...prev, x: 85 })); }}
                                   >
                                     Right
