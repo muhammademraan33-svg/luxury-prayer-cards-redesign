@@ -32,32 +32,32 @@ const Index = () => {
         <div className="relative z-10">
           <div className="inline-flex items-center gap-2 bg-primary/10 border border-primary/30 rounded-full px-5 py-2.5 mb-8">
             <Shield className="h-4 w-4 text-primary" />
-            <span className="text-foreground/80 text-sm font-medium">Trusted by 10,000+ Families Nationwide</span>
+            <span className="text-foreground/80 text-sm font-medium tracking-wide">Trusted by Over 10,000 Families</span>
           </div>
           <h1 className="text-5xl md:text-7xl font-bold text-foreground mb-8 leading-tight tracking-tight">
-            The Prayer Card<br />
+            A Legacy Crafted<br />
             <span className="text-primary">
-              Reimagined
+              in Metal
             </span>
           </h1>
-          <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto mb-4 leading-relaxed">
-            We understand how hard it is to lose a loved one.
+          <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto mb-4 leading-relaxed font-light">
+            In life's most difficult moments, we believe in offering grace.
           </p>
-        <p className="text-lg text-foreground/70 max-w-2xl mx-auto mb-12">
-          It was our goal to make this time a little less stressful while creating final memories that will last 
-          eternity. Simply upload your photo and we include 2 easel-sized photo boards—saving you a trip to Staples 
-          and hundreds of dollars, taking one less thing off your plate during this difficult time.
-        </p>
+          <p className="text-lg text-foreground/70 max-w-2xl mx-auto mb-12 leading-relaxed">
+            Our heirloom-quality metal prayer cards transform cherished memories into timeless keepsakes. 
+            Simply upload your photograph—we handle the rest, including two complimentary easel portraits, 
+            delivered to your door within 48 hours.
+          </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link to="/design">
               <Button size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold text-lg px-12 py-7 shadow-xl hover:shadow-2xl transition-all">
-                Start Designing Now
+                Begin Your Design
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
             </Link>
             <a href="#how-it-works">
               <Button size="lg" variant="outline" className="text-lg px-10 py-7 border-2">
-                See How It Works
+                Discover the Process
               </Button>
             </a>
           </div>
@@ -67,19 +67,19 @@ const Index = () => {
             <div className="flex flex-wrap items-center justify-center gap-8 md:gap-16 text-muted-foreground">
               <div className="flex items-center gap-2">
                 <CheckCircle2 className="h-5 w-5 text-primary" />
-                <span className="text-sm font-medium">2-Day Delivery</span>
+                <span className="text-sm font-medium tracking-wide">48-Hour Delivery</span>
               </div>
               <div className="flex items-center gap-2">
                 <CheckCircle2 className="h-5 w-5 text-primary" />
-                <span className="text-sm font-medium">Premium Metal Quality</span>
+                <span className="text-sm font-medium tracking-wide">Heirloom Quality</span>
               </div>
               <div className="flex items-center gap-2">
                 <CheckCircle2 className="h-5 w-5 text-primary" />
-                <span className="text-sm font-medium">Lifetime Guarantee</span>
+                <span className="text-sm font-medium tracking-wide">Forever Guarantee</span>
               </div>
               <div className="flex items-center gap-2">
                 <CheckCircle2 className="h-5 w-5 text-primary" />
-                <span className="text-sm font-medium">Photo Boards Included</span>
+                <span className="text-sm font-medium tracking-wide">Easel Portraits Included</span>
               </div>
             </div>
           </div>
@@ -90,10 +90,10 @@ const Index = () => {
       <section id="how-it-works" className="py-24 bg-card/50 border-y border-border">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
-            <span className="text-primary font-semibold text-sm uppercase tracking-widest mb-4 block">Simple Process</span>
-            <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-6">How It Works</h2>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Creating a beautiful memorial has never been easier. Three simple steps to honor your loved one.
+            <span className="text-primary font-semibold text-sm uppercase tracking-[0.2em] mb-4 block">The Experience</span>
+            <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-6">Effortless Elegance</h2>
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto font-light">
+              Three thoughtful steps to honor a life beautifully lived.
             </p>
           </div>
           
@@ -107,9 +107,9 @@ const Index = () => {
                 <div className="absolute -top-3 -right-3 w-8 h-8 bg-primary text-primary-foreground rounded-full flex items-center justify-center font-bold text-sm shadow-lg">1</div>
                 <PenTool className="h-10 w-10 text-primary" />
               </div>
-              <h3 className="text-2xl font-bold text-foreground mb-4">Design</h3>
-              <p className="text-muted-foreground leading-relaxed">
-                Use our intuitive editor to create a personalized prayer card. Upload photos, add prayers, and customize every detail.
+              <h3 className="text-2xl font-bold text-foreground mb-4">Curate</h3>
+              <p className="text-muted-foreground leading-relaxed font-light">
+                Upload a treasured photograph and personalize every detail—from prayers to finishes—using our intuitive design studio.
               </p>
             </div>
             
@@ -119,9 +119,9 @@ const Index = () => {
                 <div className="absolute -top-3 -right-3 w-8 h-8 bg-primary text-primary-foreground rounded-full flex items-center justify-center font-bold text-sm shadow-lg">2</div>
                 <Send className="h-10 w-10 text-primary" />
               </div>
-              <h3 className="text-2xl font-bold text-foreground mb-4">Order</h3>
-              <p className="text-muted-foreground leading-relaxed">
-                Review your design and place your order. Our team begins production immediately with our premium metal printing process.
+              <h3 className="text-2xl font-bold text-foreground mb-4">Craft</h3>
+              <p className="text-muted-foreground leading-relaxed font-light">
+                Our artisans begin production immediately, precision-printing your design onto enduring metal with museum-grade techniques.
               </p>
             </div>
             
@@ -131,9 +131,9 @@ const Index = () => {
                 <div className="absolute -top-3 -right-3 w-8 h-8 bg-primary text-primary-foreground rounded-full flex items-center justify-center font-bold text-sm shadow-lg">3</div>
                 <Heart className="h-10 w-10 text-primary" />
               </div>
-              <h3 className="text-2xl font-bold text-foreground mb-4">Receive</h3>
-              <p className="text-muted-foreground leading-relaxed">
-                Your cards arrive within 2 days, beautifully packaged with your 2 complimentary easel-sized photo boards.
+              <h3 className="text-2xl font-bold text-foreground mb-4">Cherish</h3>
+              <p className="text-muted-foreground leading-relaxed font-light">
+                Within 48 hours, receive your heirloom cards and complimentary easel portraits—elegantly packaged and ready to share.
               </p>
             </div>
           </div>
@@ -144,10 +144,10 @@ const Index = () => {
       <section id="testimonials" className="py-24">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
-            <span className="text-primary font-semibold text-sm uppercase tracking-widest mb-4 block">Testimonials</span>
-            <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-6">Trusted by Families Everywhere</h2>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Hear from families who chose to honor their loved ones with our premium memorial cards.
+            <span className="text-primary font-semibold text-sm uppercase tracking-[0.2em] mb-4 block">Stories</span>
+            <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-6">Families We've Served</h2>
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto font-light">
+              Honoring legacies, one family at a time.
             </p>
           </div>
           
@@ -161,8 +161,8 @@ const Index = () => {
                     <Star key={i} className="h-5 w-5 fill-primary text-primary" />
                   ))}
                 </div>
-                <p className="text-foreground/80 leading-relaxed mb-6 text-lg">
-                  "During the hardest time of our lives, this service was a blessing. The cards were absolutely beautiful and arrived right on time. The quality exceeded our expectations."
+                <p className="text-foreground/80 leading-relaxed mb-6 text-lg italic font-light">
+                  "In our darkest hour, this was a light. The cards arrived flawlessly—every guest held onto theirs. These aren't keepsakes; they're heirlooms."
                 </p>
                 <div className="flex items-center gap-4">
                   <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
@@ -170,7 +170,7 @@ const Index = () => {
                   </div>
                   <div>
                     <p className="font-semibold text-foreground">Sarah Mitchell</p>
-                    <p className="text-muted-foreground text-sm">Chicago, IL</p>
+                    <p className="text-muted-foreground text-sm">Chicago, Illinois</p>
                   </div>
                 </div>
               </CardContent>
@@ -185,8 +185,8 @@ const Index = () => {
                     <Star key={i} className="h-5 w-5 fill-primary text-primary" />
                   ))}
                 </div>
-                <p className="text-foreground/80 leading-relaxed mb-6 text-lg">
-                  "The metal prayer cards are stunning. Everyone at the service commented on how special and unique they were. A truly lasting memorial for my father."
+                <p className="text-foreground/80 leading-relaxed mb-6 text-lg italic font-light">
+                  "The craftsmanship is extraordinary. When I presented these to my family, there wasn't a dry eye. A truly dignified tribute to my father's legacy."
                 </p>
                 <div className="flex items-center gap-4">
                   <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
@@ -194,7 +194,7 @@ const Index = () => {
                   </div>
                   <div>
                     <p className="font-semibold text-foreground">James Rodriguez</p>
-                    <p className="text-muted-foreground text-sm">Houston, TX</p>
+                    <p className="text-muted-foreground text-sm">Houston, Texas</p>
                   </div>
                 </div>
               </CardContent>
@@ -209,8 +209,8 @@ const Index = () => {
                     <Star key={i} className="h-5 w-5 fill-primary text-primary" />
                   ))}
                 </div>
-                <p className="text-foreground/80 leading-relaxed mb-6 text-lg">
-                  "The QR code feature is incredible. Family members from around the world can now share memories. This company truly understands what families need."
+                <p className="text-foreground/80 leading-relaxed mb-6 text-lg italic font-light">
+                  "The QR feature connects our family across continents. My grandmother's memory now lives in every pocket, every wallet. Timeless."
                 </p>
                 <div className="flex items-center gap-4">
                   <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
@@ -218,7 +218,7 @@ const Index = () => {
                   </div>
                   <div>
                     <p className="font-semibold text-foreground">Maria Thompson</p>
-                    <p className="text-muted-foreground text-sm">Phoenix, AZ</p>
+                    <p className="text-muted-foreground text-sm">Phoenix, Arizona</p>
                   </div>
                 </div>
               </CardContent>
@@ -228,20 +228,20 @@ const Index = () => {
           {/* Stats */}
           <div className="mt-20 grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto">
             <div className="text-center">
-              <p className="text-4xl md:text-5xl font-bold text-primary mb-2">10K+</p>
-              <p className="text-muted-foreground font-medium">Families Served</p>
+              <p className="text-4xl md:text-5xl font-bold text-primary mb-2">10,000+</p>
+              <p className="text-muted-foreground font-medium tracking-wide">Families Honored</p>
             </div>
             <div className="text-center">
               <p className="text-4xl md:text-5xl font-bold text-primary mb-2">98%</p>
-              <p className="text-muted-foreground font-medium">Satisfaction Rate</p>
+              <p className="text-muted-foreground font-medium tracking-wide">Would Recommend</p>
             </div>
             <div className="text-center">
-              <p className="text-4xl md:text-5xl font-bold text-primary mb-2">2 Day</p>
-              <p className="text-muted-foreground font-medium">Avg. Delivery</p>
+              <p className="text-4xl md:text-5xl font-bold text-primary mb-2">48hr</p>
+              <p className="text-muted-foreground font-medium tracking-wide">Delivery Promise</p>
             </div>
             <div className="text-center">
-              <p className="text-4xl md:text-5xl font-bold text-primary mb-2">4.9★</p>
-              <p className="text-muted-foreground font-medium">Customer Rating</p>
+              <p className="text-4xl md:text-5xl font-bold text-primary mb-2">4.9</p>
+              <p className="text-muted-foreground font-medium tracking-wide">Client Rating</p>
             </div>
           </div>
         </div>
@@ -250,60 +250,60 @@ const Index = () => {
       {/* Pricing Section */}
       <section className="container mx-auto px-4 py-24" id="pricing">
         <div className="text-center mb-16">
-          <span className="text-primary font-semibold text-sm uppercase tracking-widest mb-4 block">Pricing</span>
-          <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-6">Simple, Transparent Pricing</h2>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Premium metal prayer cards delivered fast. No hidden fees.
+          <span className="text-primary font-semibold text-sm uppercase tracking-[0.2em] mb-4 block">Investment</span>
+          <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-6">Transparent Pricing</h2>
+          <p className="text-xl text-muted-foreground max-w-2xl mx-auto font-light">
+            Exceptional quality, delivered with care. No hidden fees.
           </p>
         </div>
 
         <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
           {/* Express Pack */}
           <Card className="bg-primary/10 border-primary/30 relative overflow-hidden hover:shadow-xl transition-all duration-300">
-            <div className="absolute top-4 right-4 bg-primary text-primary-foreground text-xs font-bold px-3 py-1 rounded-full">
-              BEST VALUE
+            <div className="absolute top-4 right-4 bg-primary text-primary-foreground text-xs font-bold px-3 py-1 rounded-full tracking-wide">
+              SIGNATURE COLLECTION
             </div>
             <CardContent className="p-8">
               <div className="flex items-center gap-3 mb-4">
                 <Package className="h-8 w-8 text-primary" />
-                <h3 className="text-2xl font-bold text-foreground">2-Day Express Pack</h3>
+                <h3 className="text-2xl font-bold text-foreground">Express Heirloom Set</h3>
               </div>
               <div className="mb-6">
                 <div className="flex items-baseline gap-2">
                   <span className="text-5xl font-bold text-foreground">$127</span>
                   <span className="text-muted-foreground line-through">$250</span>
                 </div>
-                <p className="text-primary font-medium mt-1">Save $123!</p>
+                <p className="text-primary font-medium mt-1">Limited Time Offer</p>
               </div>
               <ul className="space-y-3 text-foreground/80 mb-8">
                 <li className="flex items-center gap-2">
                   <div className="w-5 h-5 rounded-full bg-primary/20 flex items-center justify-center">
                     <span className="text-primary text-xs">✓</span>
                   </div>
-                  55 Premium Metal Prayer Cards
+                  55 Metal Prayer Cards
                 </li>
                 <li className="flex items-center gap-2">
                   <div className="w-5 h-5 rounded-full bg-primary/20 flex items-center justify-center">
                     <span className="text-primary text-xs">✓</span>
                   </div>
-                  2 Easel Size Photos Included
+                  2 Easel Portraits Included
                 </li>
                 <li className="flex items-center gap-2">
                   <div className="w-5 h-5 rounded-full bg-primary/20 flex items-center justify-center">
                     <span className="text-primary text-xs">✓</span>
                   </div>
-                  2-Day Express Delivery
+                  48-Hour Priority Delivery
                 </li>
                 <li className="flex items-center gap-2">
                   <div className="w-5 h-5 rounded-full bg-primary/20 flex items-center justify-center">
                     <span className="text-primary text-xs">✓</span>
                   </div>
-                  Custom QR Code Link
+                  Custom Memorial QR Link
                 </li>
               </ul>
               <Link to="/design" className="block">
                 <Button size="lg" className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold text-lg py-6">
-                  Order Now
+                  Begin Your Design
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
               </Link>
@@ -315,14 +315,14 @@ const Index = () => {
             <CardContent className="p-8">
               <h3 className="text-2xl font-bold text-foreground mb-6 flex items-center gap-3">
                 <Truck className="h-8 w-8 text-muted-foreground" />
-                Add-Ons
+                Enhancements
               </h3>
               <div className="space-y-6">
                 <div className="border-b border-border pb-6">
                   <div className="flex justify-between items-start mb-2">
                     <div>
-                      <p className="text-foreground font-semibold">Additional Set of 55 Cards</p>
-                      <p className="text-muted-foreground text-sm">Same design, more cards</p>
+                      <p className="text-foreground font-semibold">Additional 55-Card Set</p>
+                      <p className="text-muted-foreground text-sm">Same exquisite design</p>
                     </div>
                     <span className="text-2xl font-bold text-foreground">$110</span>
                   </div>
@@ -330,8 +330,8 @@ const Index = () => {
                 <div className="border-b border-border pb-6">
                   <div className="flex justify-between items-start mb-2">
                     <div>
-                      <p className="text-foreground font-semibold">Additional Easel Photos</p>
-                      <p className="text-muted-foreground text-sm">Large display photos</p>
+                      <p className="text-foreground font-semibold">Extra Easel Portraits</p>
+                      <p className="text-muted-foreground text-sm">Gallery-ready display</p>
                     </div>
                     <span className="text-2xl font-bold text-foreground">$27</span>
                   </div>
@@ -339,12 +339,12 @@ const Index = () => {
                 <div className="bg-destructive/10 border border-destructive/30 rounded-lg p-4">
                   <div className="flex items-center gap-2 mb-2">
                     <Clock className="h-5 w-5 text-destructive" />
-                    <p className="text-destructive font-semibold">Overnight Rush</p>
+                    <p className="text-destructive font-semibold">Overnight Priority</p>
                   </div>
                   <p className="text-foreground/80 text-sm mb-2">
-                    Need it tomorrow? Orders placed before 12pm qualify for overnight delivery.
+                    For urgent needs—orders before noon ship same day.
                   </p>
-                  <p className="text-destructive font-bold">+100% Rush Fee</p>
+                  <p className="text-destructive font-bold">+100% Expedite Fee</p>
                 </div>
               </div>
             </CardContent>
@@ -359,24 +359,24 @@ const Index = () => {
             <div className="w-16 h-16 bg-primary/20 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform">
               <QrCode className="h-8 w-8 text-primary" />
             </div>
-            <h3 className="text-xl font-semibold text-foreground mb-3">Smart QR Integration</h3>
-            <p className="text-muted-foreground leading-relaxed">Each metal card features a unique QR code etched into the surface, linking to any website you choose.</p>
+            <h3 className="text-xl font-semibold text-foreground mb-3">Living Memorial</h3>
+            <p className="text-muted-foreground leading-relaxed font-light">Each card features a precision-etched QR code, connecting to a digital tribute that transcends generations.</p>
           </div>
           
           <div className="bg-card border border-border rounded-xl p-8 text-center hover:shadow-xl transition-all duration-300 group">
             <div className="w-16 h-16 bg-primary/20 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform">
               <MessageSquare className="h-8 w-8 text-primary" />
             </div>
-            <h3 className="text-xl font-semibold text-foreground mb-3">Premium Quality</h3>
-            <p className="text-muted-foreground leading-relaxed">Durable metal construction ensures these keepsakes last for generations to come.</p>
+            <h3 className="text-xl font-semibold text-foreground mb-3">Enduring Craft</h3>
+            <p className="text-muted-foreground leading-relaxed font-light">Archival-quality metal ensures these keepsakes remain pristine for generations to come.</p>
           </div>
           
           <div className="bg-card border border-border rounded-xl p-8 text-center hover:shadow-xl transition-all duration-300 group">
             <div className="w-16 h-16 bg-primary/20 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform">
               <Package className="h-8 w-8 text-primary" />
             </div>
-            <h3 className="text-xl font-semibold text-foreground mb-3">Fast Delivery</h3>
-            <p className="text-muted-foreground leading-relaxed">2-day express delivery standard. Overnight rush available for orders placed before 12pm.</p>
+            <h3 className="text-xl font-semibold text-foreground mb-3">Swift Delivery</h3>
+            <p className="text-muted-foreground leading-relaxed font-light">From design to doorstep in 48 hours. Because timing matters during life's most tender moments.</p>
           </div>
         </div>
       </section>
@@ -384,13 +384,13 @@ const Index = () => {
       {/* CTA */}
       <section className="bg-primary/10 py-24 mt-16 border-y border-primary/20">
         <div className="container mx-auto px-4 text-center">
-          <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-6">Ready to Create a Lasting Memorial?</h2>
-          <p className="text-xl text-muted-foreground mb-10 max-w-2xl mx-auto">
-            Design your custom metal prayer card in minutes. No account required.
+          <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-6">Honor Their Legacy</h2>
+          <p className="text-xl text-muted-foreground mb-10 max-w-2xl mx-auto font-light">
+            Create a timeless tribute in minutes. No account required.
           </p>
           <Link to="/design">
             <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90 font-semibold text-lg px-12 py-7 shadow-xl">
-              Start Designing Now
+              Begin Your Design
               <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
           </Link>
