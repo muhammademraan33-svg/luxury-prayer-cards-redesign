@@ -66,7 +66,7 @@ const Design = () => {
   const [isPanning, setIsPanning] = useState(false);
   const [backBgImage, setBackBgImage] = useState<string | null>(null);
   const [backText, setBackText] = useState('The Lord is my shepherd; I shall not want.');
-  const [prayerTextSize, setPrayerTextSize] = useState<number | 'auto'>('auto');
+  const [prayerTextSize, setPrayerTextSize] = useState<number | 'auto'>(14);
   
   // Front card text state
   const [showNameOnFront, setShowNameOnFront] = useState(true);
