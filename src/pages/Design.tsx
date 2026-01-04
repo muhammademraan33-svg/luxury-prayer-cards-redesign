@@ -1220,7 +1220,7 @@ const Design = () => {
                                           src={funeralHomeLogo} 
                                           alt="Funeral Home Logo" 
                                           className="object-contain mt-1"
-                                          style={{ height: `${Math.min(funeralHomeLogoSize, 25)}px`, maxWidth: '60%' }}
+                                          style={{ height: `${funeralHomeLogoSize}px`, maxWidth: '70%' }}
                                         />
                                       )}
                                     </div>
