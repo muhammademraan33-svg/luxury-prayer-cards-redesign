@@ -1018,10 +1018,13 @@ const Design = () => {
                                 {/* Prayer */}
                                 <div className="flex-1 flex items-center justify-center py-1 px-1 overflow-hidden">
                                   <p 
-                                    className={`leading-relaxed font-serif italic ${backBgImage || metalFinish === 'black' ? 'text-zinc-200' : 'text-zinc-700'} whitespace-pre-line text-center`}
-                                    style={prayerTextSize === 'auto' ? {
-                                      fontSize: `clamp(7px, ${Math.max(7, 14 - backText.length / 30)}px, 14px)`,
-                                    } : { fontSize: `${prayerTextSize}px` }}
+                                    className={`leading-snug font-serif italic ${backBgImage || metalFinish === 'black' ? 'text-zinc-200' : 'text-zinc-700'} whitespace-pre-line text-center`}
+                                    style={{
+                                      fontSize: prayerTextSize === 'auto' 
+                                        ? `clamp(8px, ${Math.max(9, 16 - backText.length / 40)}px, 16px)` 
+                                        : `${prayerTextSize}px`,
+                                      textWrap: 'balance',
+                                    }}
                                   >
                                     {backText}
                                   </p>
