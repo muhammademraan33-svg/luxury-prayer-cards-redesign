@@ -415,32 +415,54 @@ const Dashboard = () => {
                         <div className="flex flex-col items-center gap-4">
                           {/* Card Preview */}
                           <div 
-                            className={`${cardClass} rounded-2xl bg-gradient-to-br ${currentFinish.gradient} shadow-2xl p-4 relative overflow-hidden`}
-                            style={backBgImage ? { backgroundImage: `url(${backBgImage})`, backgroundSize: 'cover', backgroundPosition: 'center' } : {}}
+                            className={`${cardClass} rounded-2xl shadow-2xl p-4 relative overflow-hidden`}
+                            style={backBgImage ? { 
+                              backgroundImage: `url(${backBgImage})`, 
+                              backgroundSize: 'cover', 
+                              backgroundPosition: 'center' 
+                            } : {
+                              background: `
+                                linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(245,245,245,0.95) 100%),
+                                repeating-linear-gradient(
+                                  45deg,
+                                  transparent,
+                                  transparent 20px,
+                                  rgba(180,180,180,0.03) 20px,
+                                  rgba(180,180,180,0.03) 40px
+                                ),
+                                repeating-linear-gradient(
+                                  -45deg,
+                                  transparent,
+                                  transparent 30px,
+                                  rgba(160,160,160,0.04) 30px,
+                                  rgba(160,160,160,0.04) 60px
+                                ),
+                                radial-gradient(ellipse at 20% 30%, rgba(200,195,190,0.15) 0%, transparent 50%),
+                                radial-gradient(ellipse at 80% 70%, rgba(190,185,180,0.12) 0%, transparent 50%),
+                                radial-gradient(ellipse at 50% 50%, rgba(210,205,200,0.08) 0%, transparent 70%)
+                              `
+                            }}
                           >
-                            {!backBgImage && (
-                              <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-transparent to-black/30"></div>
-                            )}
                             {backBgImage && (
                               <div className="absolute inset-0 bg-black/40"></div>
                             )}
                             <div className="relative z-10 h-full flex flex-col justify-between text-center">
                               {/* Top - Name & Dates */}
                               <div>
-                                <p className={`text-[9px] uppercase tracking-[0.15em] mb-1 ${backBgImage || metalFinish === 'black' ? 'text-slate-300' : 'text-slate-600'}`}>
+                                <p className={`text-[9px] uppercase tracking-[0.15em] mb-1 ${backBgImage ? 'text-slate-300' : 'text-slate-500'}`}>
                                   In Loving Memory
                                 </p>
-                                <p className={`${orientation === 'portrait' ? 'text-lg' : 'text-base'} font-serif ${backBgImage || metalFinish === 'black' ? 'text-white' : 'text-slate-800'}`}>
+                                <p className={`${orientation === 'portrait' ? 'text-lg' : 'text-base'} font-serif ${backBgImage ? 'text-white' : 'text-slate-800'}`}>
                                   {deceasedName || 'Name Here'}
                                 </p>
-                                <p className={`text-xs ${backBgImage || metalFinish === 'black' ? 'text-slate-300' : 'text-slate-600'}`}>
+                                <p className={`text-xs ${backBgImage ? 'text-slate-300' : 'text-slate-500'}`}>
                                   {birthDate && deathDate ? `${birthDate} – ${deathDate}` : '1945 – 2025'}
                                 </p>
                               </div>
 
                               {/* Middle - Prayer */}
                               <div className="flex-1 flex items-center justify-center py-2">
-                                <p className={`${orientation === 'portrait' ? 'text-sm' : 'text-xs'} leading-relaxed font-serif italic ${backBgImage || metalFinish === 'black' ? 'text-slate-200' : 'text-slate-700'}`}>
+                                <p className={`${orientation === 'portrait' ? 'text-sm' : 'text-xs'} leading-relaxed font-serif italic ${backBgImage ? 'text-slate-200' : 'text-slate-600'}`}>
                                   {backText}
                                 </p>
                               </div>
@@ -450,7 +472,7 @@ const Dashboard = () => {
                                 <div className={`${orientation === 'portrait' ? 'w-14 h-14' : 'w-10 h-10'} bg-white rounded-lg flex items-center justify-center shadow-md`}>
                                   <QrCode className={`${orientation === 'portrait' ? 'h-10 w-10' : 'h-7 w-7'} text-slate-800`} />
                                 </div>
-                                <p className={`text-[8px] mt-1 ${backBgImage || metalFinish === 'black' ? 'text-slate-400' : 'text-slate-500'}`}>
+                                <p className={`text-[8px] mt-1 ${backBgImage ? 'text-slate-400' : 'text-slate-500'}`}>
                                   Scan to share memories
                                 </p>
                               </div>
