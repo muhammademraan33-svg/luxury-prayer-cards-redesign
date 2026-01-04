@@ -94,8 +94,9 @@ const Design = () => {
   const [draggingText, setDraggingText] = useState<'name' | 'dates' | 'additional' | 'backDates' | null>(null);
   const [resizingText, setResizingText] = useState<'name' | 'dates' | 'additional' | 'backDates' | null>(null);
   
-  // Back card dates position
-  const [backDatesPosition, setBackDatesPosition] = useState({ x: 50, y: 25 });
+  // Back card dates position - default to middle horizontal alignment
+  const [backDatesPosition, setBackDatesPosition] = useState({ x: 50, y: 18 });
+  const [backDatesAlign, setBackDatesAlign] = useState<'left' | 'center' | 'right'>('center');
   
   // Bold options
   const [nameBold, setNameBold] = useState(false);
@@ -1225,11 +1226,119 @@ const Design = () => {
                           </div>
                         </div>
 
-                        {showDatesOnBack && (
-                          <p className="text-slate-400 text-xs text-center bg-slate-700/50 px-3 py-2 rounded-lg">
-                            📱 Drag dates to reposition • Scroll/pinch on dates to resize
-                          </p>
-                        )}
+                        {/* Dates on Back Controls */}
+                        <div className="w-full max-w-md space-y-3 p-3 bg-slate-700/30 rounded-lg">
+                          <div className="flex items-center justify-between">
+                            <Label className="text-white text-sm font-medium">Dates on Back</Label>
+                            <label className="flex items-center gap-2 cursor-pointer">
+                              <input 
+                                type="checkbox" 
+                                checked={showDatesOnBack} 
+                                onChange={(e) => setShowDatesOnBack(e.target.checked)}
+                                className="accent-amber-600"
+                              />
+                              <span className="text-slate-400 text-xs">Show</span>
+                            </label>
+                          </div>
+                          {showDatesOnBack && (
+                            <>
+                              <p className="text-slate-400 text-xs">
+                                📱 Drag dates to reposition • Scroll/pinch to resize
+                              </p>
+                              <div className="flex items-center gap-3 flex-wrap">
+                                <div className="flex items-center gap-2">
+                                  <Label className="text-slate-400 text-xs">Color</Label>
+                                  <input
+                                    type="color"
+                                    value={backDatesColor}
+                                    onChange={(e) => setBackDatesColor(e.target.value)}
+                                    className="w-7 h-7 rounded border border-slate-600 cursor-pointer"
+                                  />
+                                </div>
+                                <div className="flex items-center gap-1">
+                                  <Label className="text-slate-400 text-xs">Size</Label>
+                                  <Button
+                                    type="button"
+                                    variant="outline"
+                                    size="icon"
+                                    className="h-6 w-6 border-slate-600"
+                                    onClick={() => setBackDatesSize(typeof backDatesSize === 'number' ? Math.max(6, backDatesSize - 1) : 9)}
+                                  >
+                                    <span className="text-xs">−</span>
+                                  </Button>
+                                  <span className="text-xs text-white bg-slate-700 px-2 py-1 rounded min-w-[40px] text-center">
+                                    {backDatesSize === 'auto' ? 'Auto' : `${backDatesSize}px`}
+                                  </span>
+                                  <Button
+                                    type="button"
+                                    variant="outline"
+                                    size="icon"
+                                    className="h-6 w-6 border-slate-600"
+                                    onClick={() => setBackDatesSize(typeof backDatesSize === 'number' ? Math.min(18, backDatesSize + 1) : 11)}
+                                  >
+                                    <span className="text-xs">+</span>
+                                  </Button>
+                                  <Button
+                                    type="button"
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => setBackDatesSize('auto')}
+                                    className={`h-6 px-2 text-xs ${backDatesSize === 'auto' ? 'bg-amber-600 text-white border-amber-600' : 'border-slate-600 text-slate-300'}`}
+                                  >
+                                    Auto
+                                  </Button>
+                                </div>
+                              </div>
+                              <div className="flex items-center gap-3 flex-wrap">
+                                <Label className="text-slate-400 text-xs">Align</Label>
+                                <div className="flex gap-1">
+                                  <Button
+                                    type="button"
+                                    variant={backDatesAlign === 'left' ? 'default' : 'outline'}
+                                    size="sm"
+                                    className={`h-7 px-3 text-xs ${backDatesAlign === 'left' ? 'bg-amber-600 text-white' : 'border-slate-600 text-slate-300'}`}
+                                    onClick={() => { setBackDatesAlign('left'); setBackDatesPosition(prev => ({ ...prev, x: 15 })); }}
+                                  >
+                                    Left
+                                  </Button>
+                                  <Button
+                                    type="button"
+                                    variant={backDatesAlign === 'center' ? 'default' : 'outline'}
+                                    size="sm"
+                                    className={`h-7 px-3 text-xs ${backDatesAlign === 'center' ? 'bg-amber-600 text-white' : 'border-slate-600 text-slate-300'}`}
+                                    onClick={() => { setBackDatesAlign('center'); setBackDatesPosition(prev => ({ ...prev, x: 50 })); }}
+                                  >
+                                    Center
+                                  </Button>
+                                  <Button
+                                    type="button"
+                                    variant={backDatesAlign === 'right' ? 'default' : 'outline'}
+                                    size="sm"
+                                    className={`h-7 px-3 text-xs ${backDatesAlign === 'right' ? 'bg-amber-600 text-white' : 'border-slate-600 text-slate-300'}`}
+                                    onClick={() => { setBackDatesAlign('right'); setBackDatesPosition(prev => ({ ...prev, x: 85 })); }}
+                                  >
+                                    Right
+                                  </Button>
+                                </div>
+                              </div>
+                              <div className="flex items-center gap-3 flex-wrap">
+                                <Label className="text-slate-400 text-xs">Format</Label>
+                                <Select value={backDateFormat} onValueChange={(v) => setBackDateFormat(v as any)}>
+                                  <SelectTrigger className="h-7 w-[140px] bg-slate-700 border-slate-600 text-white text-xs">
+                                    <SelectValue />
+                                  </SelectTrigger>
+                                  <SelectContent className="bg-slate-800 border-slate-600">
+                                    <SelectItem value="full" className="text-white text-xs">Full (January 1)</SelectItem>
+                                    <SelectItem value="short-month" className="text-white text-xs">Short (Jan 1)</SelectItem>
+                                    <SelectItem value="mmm-dd-yyyy" className="text-white text-xs">MMM DD, YYYY</SelectItem>
+                                    <SelectItem value="numeric" className="text-white text-xs">Numeric</SelectItem>
+                                    <SelectItem value="year" className="text-white text-xs">Year Only</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                              </div>
+                            </>
+                          )}
+                        </div>
 
                         {/* Upload Back Background */}
                         <input
