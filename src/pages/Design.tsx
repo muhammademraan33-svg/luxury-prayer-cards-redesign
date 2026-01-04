@@ -38,9 +38,12 @@ const METAL_FINISHES: { id: MetalFinish; name: string; gradient: string }[] = [
 ];
 
 // Pricing constants
-const EXPRESS_PACK_PRICE = 127; // 55 cards + 2 easel photos
+const EXPRESS_PACK_PRICE = 127; // 55 cards + 2 easel photos (16x20)
 const ADDITIONAL_SET_PRICE = 110; // Additional 55 cards
 const ADDITIONAL_PHOTO_PRICE = 27; // Additional easel photo
+const EASEL_18X24_UPSELL = 10; // Upgrade from 16x20 to 18x24
+
+type EaselPhotoSize = '16x20' | '18x24';
 
 const Design = () => {
   const [step, setStep] = useState(1);
@@ -113,12 +116,22 @@ const Design = () => {
   const [funeralHomeLogoPosition, setFuneralHomeLogoPosition] = useState<'top' | 'bottom'>('bottom');
   const [funeralHomeLogoSize, setFuneralHomeLogoSize] = useState(40);
   
+  // Easel photo state
+  const [easelPhoto, setEaselPhoto] = useState<string | null>(null);
+  const [easelPhotoSize, setEaselPhotoSize] = useState<EaselPhotoSize>('16x20');
+  const [easelPhotoText, setEaselPhotoText] = useState('');
+  const [easelPhotoTextPosition, setEaselPhotoTextPosition] = useState<'top' | 'bottom'>('bottom');
+  const [easelPhotoTextColor, setEaselPhotoTextColor] = useState('#ffffff');
+  const [easelPhotoTextSize, setEaselPhotoTextSize] = useState(24);
+  const [showEaselPhotoText, setShowEaselPhotoText] = useState(true);
+  
   const textDragStartRef = useRef<{ x: number; y: number; posX: number; posY: number } | null>(null);
   const textPinchStartRef = useRef<{ distance: number; size: number } | null>(null);
   const textPointerCacheRef = useRef<Map<number, PointerEvent>>(new Map());
   const photoInputRef = useRef<HTMLInputElement>(null);
   const backInputRef = useRef<HTMLInputElement>(null);
   const logoInputRef = useRef<HTMLInputElement>(null);
+  const easelPhotoInputRef = useRef<HTMLInputElement>(null);
   const photoContainerRef = useRef<HTMLDivElement>(null);
   const cardPreviewRef = useRef<HTMLDivElement>(null);
   const panStartRef = useRef<{ x: number; y: number; panX: number; panY: number } | null>(null);
@@ -394,7 +407,7 @@ const Design = () => {
     setPhotoPanY(clamped.panY);
   };
 
-  const handleImageUpload = (file: File, type: 'photo' | 'back' | 'logo') => {
+  const handleImageUpload = (file: File, type: 'photo' | 'back' | 'logo' | 'easel') => {
     if (!file) return;
 
     const previewUrl = URL.createObjectURL(file);
@@ -407,6 +420,8 @@ const Design = () => {
       setBackBgImage(previewUrl);
     } else if (type === 'logo') {
       setFuneralHomeLogo(previewUrl);
+    } else if (type === 'easel') {
+      setEaselPhoto(previewUrl);
     }
     toast.success('Image uploaded!');
   };
@@ -415,6 +430,10 @@ const Design = () => {
     let total = EXPRESS_PACK_PRICE;
     total += additionalSets * ADDITIONAL_SET_PRICE;
     total += additionalPhotos * ADDITIONAL_PHOTO_PRICE;
+    // Add 18x24 upsell if selected
+    if (easelPhotoSize === '18x24') {
+      total += EASEL_18X24_UPSELL * 2; // For both included easel photos
+    }
     if (shipping === 'overnight') {
       total *= 2; // 100% upcharge
     }
@@ -1530,6 +1549,211 @@ const Design = () => {
                     </div>
                   </div>
 
+                  {/* Easel Photo Upload Section */}
+                  <div className="border-t border-slate-700 pt-6">
+                    <div className="flex items-center gap-2 mb-4">
+                      <ImageIcon className="h-5 w-5 text-amber-400" />
+                      <Label className="text-white font-semibold text-lg">Easel Photo (Included)</Label>
+                    </div>
+                    
+                    <p className="text-slate-400 text-sm mb-4">
+                      Upload the photo for your 2 included easel display photos. Choose size and add optional text overlay.
+                    </p>
+
+                    {/* Easel Photo Preview */}
+                    <div className="flex flex-col items-center gap-4 mb-4">
+                      <div 
+                        className="relative rounded-lg overflow-hidden shadow-xl bg-slate-800 border border-slate-600"
+                        style={{ 
+                          width: easelPhotoSize === '16x20' ? '160px' : '180px',
+                          height: easelPhotoSize === '16x20' ? '200px' : '240px',
+                        }}
+                      >
+                        {easelPhoto ? (
+                          <img 
+                            src={easelPhoto} 
+                            alt="Easel photo preview" 
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center">
+                            <div className="text-center p-2">
+                              <ImageIcon className="h-8 w-8 text-slate-500 mx-auto mb-1" />
+                              <p className="text-slate-500 text-xs">Upload photo</p>
+                            </div>
+                          </div>
+                        )}
+                        
+                        {/* Text Overlay */}
+                        {showEaselPhotoText && easelPhotoText && (
+                          <div 
+                            className={`absolute left-0 right-0 px-2 py-1 bg-black/50 text-center ${
+                              easelPhotoTextPosition === 'top' ? 'top-0' : 'bottom-0'
+                            }`}
+                          >
+                            <p 
+                              style={{ 
+                                color: easelPhotoTextColor,
+                                fontSize: `${Math.max(8, easelPhotoTextSize / 3)}px`,
+                              }}
+                              className="font-serif"
+                            >
+                              {easelPhotoText}
+                            </p>
+                          </div>
+                        )}
+                        
+                        {/* Size Label */}
+                        <div className="absolute top-1 right-1 bg-amber-600/90 text-white text-[8px] px-1 py-0.5 rounded">
+                          {easelPhotoSize}
+                        </div>
+                      </div>
+
+                      {/* Upload Button */}
+                      <input
+                        ref={easelPhotoInputRef}
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={(e) => e.target.files?.[0] && handleImageUpload(e.target.files[0], 'easel')}
+                      />
+                      <div className="flex gap-2">
+                        <Button
+                          type="button"
+                          variant="outline"
+                          onClick={() => easelPhotoInputRef.current?.click()}
+                          className="border-amber-600/50 text-amber-400 hover:bg-amber-600/20"
+                        >
+                          <ImageIcon className="h-4 w-4 mr-2" />
+                          {easelPhoto ? 'Change Photo' : 'Upload Photo'}
+                        </Button>
+                        {easelPhoto && (
+                          <Button
+                            type="button"
+                            variant="outline"
+                            onClick={() => setEaselPhoto(null)}
+                            className="border-rose-600/50 text-rose-400 hover:bg-rose-600/20"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Size Selection */}
+                    <div className="space-y-3 p-4 bg-slate-700/30 rounded-lg mb-4">
+                      <Label className="text-white text-sm font-medium">Easel Photo Size</Label>
+                      <div className="grid grid-cols-2 gap-3">
+                        <button
+                          type="button"
+                          onClick={() => setEaselPhotoSize('16x20')}
+                          className={`p-3 rounded-lg border-2 transition-all text-center ${
+                            easelPhotoSize === '16x20' 
+                              ? 'border-amber-500 bg-amber-600/20' 
+                              : 'border-slate-600 hover:border-slate-500'
+                          }`}
+                        >
+                          <p className="text-white font-medium">16" × 20"</p>
+                          <p className="text-amber-400 text-sm">Included</p>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setEaselPhotoSize('18x24')}
+                          className={`p-3 rounded-lg border-2 transition-all text-center ${
+                            easelPhotoSize === '18x24' 
+                              ? 'border-amber-500 bg-amber-600/20' 
+                              : 'border-slate-600 hover:border-slate-500'
+                          }`}
+                        >
+                          <p className="text-white font-medium">18" × 24"</p>
+                          <p className="text-amber-400 text-sm">+$10 each</p>
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Text Overlay Controls */}
+                    <div className="space-y-3 p-4 bg-slate-700/30 rounded-lg">
+                      <div className="flex items-center justify-between">
+                        <Label className="text-white text-sm font-medium">Text Overlay</Label>
+                        <label className="flex items-center gap-2 cursor-pointer">
+                          <input 
+                            type="checkbox" 
+                            checked={showEaselPhotoText} 
+                            onChange={(e) => setShowEaselPhotoText(e.target.checked)}
+                            className="accent-amber-600"
+                          />
+                          <span className="text-slate-400 text-xs">Show</span>
+                        </label>
+                      </div>
+                      {showEaselPhotoText && (
+                        <>
+                          <Input
+                            placeholder="Name or memorial text..."
+                            value={easelPhotoText}
+                            onChange={(e) => setEaselPhotoText(e.target.value)}
+                            className="bg-slate-700 border-slate-600 text-white"
+                          />
+                          <div className="flex flex-wrap items-center gap-3">
+                            <div className="flex items-center gap-2">
+                              <Label className="text-slate-400 text-xs">Position</Label>
+                              <div className="flex gap-1">
+                                <Button
+                                  type="button"
+                                  variant={easelPhotoTextPosition === 'top' ? 'default' : 'outline'}
+                                  size="sm"
+                                  className={`h-7 px-2 text-xs ${easelPhotoTextPosition === 'top' ? 'bg-amber-600' : 'border-slate-600'}`}
+                                  onClick={() => setEaselPhotoTextPosition('top')}
+                                >
+                                  Top
+                                </Button>
+                                <Button
+                                  type="button"
+                                  variant={easelPhotoTextPosition === 'bottom' ? 'default' : 'outline'}
+                                  size="sm"
+                                  className={`h-7 px-2 text-xs ${easelPhotoTextPosition === 'bottom' ? 'bg-amber-600' : 'border-slate-600'}`}
+                                  onClick={() => setEaselPhotoTextPosition('bottom')}
+                                >
+                                  Bottom
+                                </Button>
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <Label className="text-slate-400 text-xs">Color</Label>
+                              <input
+                                type="color"
+                                value={easelPhotoTextColor}
+                                onChange={(e) => setEaselPhotoTextColor(e.target.value)}
+                                className="w-7 h-7 rounded border border-slate-600 cursor-pointer"
+                              />
+                            </div>
+                            <div className="flex items-center gap-1">
+                              <Label className="text-slate-400 text-xs">Size</Label>
+                              <Button
+                                type="button"
+                                variant="outline"
+                                size="icon"
+                                className="h-6 w-6 border-slate-600"
+                                onClick={() => setEaselPhotoTextSize(Math.max(12, easelPhotoTextSize - 2))}
+                              >
+                                <span className="text-xs">−</span>
+                              </Button>
+                              <span className="text-xs text-white bg-slate-700 px-2 py-1 rounded min-w-[40px] text-center">{easelPhotoTextSize}px</span>
+                              <Button
+                                type="button"
+                                variant="outline"
+                                size="icon"
+                                className="h-6 w-6 border-slate-600"
+                                onClick={() => setEaselPhotoTextSize(Math.min(48, easelPhotoTextSize + 2))}
+                              >
+                                <span className="text-xs">+</span>
+                              </Button>
+                            </div>
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  </div>
+
                   <Button 
                     type="button" 
                     onClick={() => setStep(2)} 
@@ -1564,7 +1788,8 @@ const Design = () => {
                       </li>
                       <li className="flex items-center gap-2">
                         <span className="text-amber-400">✓</span>
-                        2 Easel Size Photos Included
+                        2 Easel Photos ({easelPhotoSize})
+                        {easelPhotoSize === '18x24' && <span className="text-amber-400 text-xs">+$20</span>}
                       </li>
                       <li className="flex items-center gap-2">
                         <span className="text-amber-400">✓</span>
@@ -1724,6 +1949,13 @@ const Design = () => {
                         </div>
                       )}
                       
+                      {easelPhotoSize === '18x24' && (
+                        <div className="flex justify-between">
+                          <span className="text-slate-300">18×24 Easel Photo Upgrade × 2</span>
+                          <span className="text-white">${EASEL_18X24_UPSELL * 2}</span>
+                        </div>
+                      )}
+                      
                       {additionalPhotos > 0 && (
                         <div className="flex justify-between">
                           <span className="text-slate-300">Additional Easel Photos × {additionalPhotos}</span>
@@ -1766,8 +1998,13 @@ const Design = () => {
                         <span className="text-slate-400">Total Cards:</span> {55 + (additionalSets * 55)}
                       </p>
                       <p className="text-slate-300">
-                        <span className="text-slate-400">Easel Photos:</span> {2 + additionalPhotos}
+                        <span className="text-slate-400">Easel Photos:</span> {2 + additionalPhotos} ({easelPhotoSize})
                       </p>
+                      {easelPhotoText && (
+                        <p className="text-slate-300">
+                          <span className="text-slate-400">Easel Text:</span> {easelPhotoText}
+                        </p>
+                      )}
                     </div>
                   </div>
 
