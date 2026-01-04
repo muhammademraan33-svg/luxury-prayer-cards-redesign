@@ -44,6 +44,7 @@ export interface ImageElement extends BaseElement {
   type: 'image';
   src: string;
   borderRadius: number;
+  scale: number;
 }
 
 export type CardElement = ShapeElement | IconElement | StickerElement | LineElement | ImageElement;
@@ -204,4 +205,5 @@ export const createImageElement = (src: string, x: number, y: number): ImageElem
   rotation: 0,
   opacity: 1,
   borderRadius: 0,
+  scale: 1,
 });
