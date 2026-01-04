@@ -72,7 +72,7 @@ const Design = () => {
   const [showNameOnFront, setShowNameOnFront] = useState(true);
   const [showDatesOnFront, setShowDatesOnFront] = useState(true);
   const [showDatesOnBack, setShowDatesOnBack] = useState(true);
-  const [nameFont, setNameFont] = useState('Playfair Display');
+  const [nameFont, setNameFont] = useState('Great Vibes');
   const [datesFont, setDatesFont] = useState('Cormorant Garamond');
   const [namePosition, setNamePosition] = useState({ x: 50, y: 85 });
   const [datesPosition, setDatesPosition] = useState({ x: 50, y: 92 });
