@@ -100,7 +100,7 @@ const Design = () => {
   const [backDatesAlign, setBackDatesAlign] = useState<'left' | 'center' | 'right'>('center');
   
   // Bold options
-  const [nameBold, setNameBold] = useState(false);
+  const [nameBold, setNameBold] = useState(true);
   const [datesBold, setDatesBold] = useState(false);
   const [additionalTextBold, setAdditionalTextBold] = useState(false);
   const [inLovingMemoryBold, setInLovingMemoryBold] = useState(false);
