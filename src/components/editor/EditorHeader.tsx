@@ -42,7 +42,7 @@ export const EditorHeader = ({
     <header className="h-14 border-b border-border bg-card flex items-center justify-between px-4 shrink-0">
       {/* Left section - Logo */}
       <div className="flex items-center gap-3">
-        <img src={logo} alt="Eternity Cards" className="h-8" />
+        <img src={logo} alt="Metal Prayer Cards" className="h-8" />
         <div className="h-6 w-px bg-border hidden sm:block" />
         <div className="hidden sm:flex items-center gap-1">
           <Button 

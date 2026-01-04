@@ -26,7 +26,7 @@ const Index = () => {
       <header className="border-b border-amber-900/30 bg-slate-900/80 backdrop-blur-sm sticky top-0 z-50">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <img src={eternityLogo} alt="Eternity Cards" className="h-12 w-auto" />
+            <img src={eternityLogo} alt="Metal Prayer Cards" className="h-12 w-auto" />
           </div>
           <Link to="/auth">
             <Button variant="outline" className="border-amber-600/50 text-amber-100 hover:bg-amber-600/20">
@@ -284,7 +284,7 @@ const Index = () => {
       {/* Footer */}
       <footer className="border-t border-slate-800 py-8">
         <div className="container mx-auto px-4 text-center text-slate-500">
-          <p>© 2025 Eternity Cards. eternitycards.co</p>
+          <p>© 2025 Metal Prayer Cards. metalprayercards.com</p>
         </div>
       </footer>
     </div>
