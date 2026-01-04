@@ -1267,7 +1267,7 @@ const Design = () => {
                                 </div>
 
                                 {/* Prayer - takes remaining space with proper overflow handling */}
-                                <div ref={prayerContainerRef} className="flex-1 flex items-center justify-center py-1 px-1 overflow-hidden min-h-0">
+                                <div ref={prayerContainerRef} className="flex-1 flex items-center justify-center py-1 px-1 min-h-0">
                                   <p 
                                     ref={prayerTextRef}
                                     className={`leading-snug font-serif italic ${backBgImage || metalFinish === 'black' ? 'text-zinc-200' : 'text-zinc-700'} whitespace-pre-line text-center`}
@@ -1279,8 +1279,6 @@ const Design = () => {
                                       textWrap: 'pretty',
                                       wordBreak: 'keep-all',
                                       fontWeight: prayerBold ? 'bold' : 'normal',
-                                      maxHeight: '100%',
-                                      overflow: 'hidden',
                                     }}
                                   >
                                     {preventOrphans(backText)}
@@ -1752,7 +1750,7 @@ const Design = () => {
                               size="sm"
                               onClick={() => setSelectedPrayerId('custom')}
                               className={selectedPrayerId === 'custom' 
-                                ? 'bg-amber-600 text-white' 
+                                ? 'bg-amber-600 !text-white' 
                                 : 'border-slate-600 text-slate-300 hover:bg-slate-700'}
                             >
                               ✏️ Custom
@@ -1779,7 +1777,7 @@ const Design = () => {
                                 variant="outline"
                                 size="sm"
                                 onClick={() => setPrayerTextSize('auto')}
-                                className={`text-xs px-2 py-1 h-7 ${prayerTextSize === 'auto' ? 'bg-amber-600 text-white border-amber-600' : 'border-slate-600 text-slate-300'}`}
+                                className={`text-xs px-2 py-1 h-7 ${prayerTextSize === 'auto' ? 'bg-amber-600 !text-white border-amber-600' : 'border-slate-600 text-slate-300'}`}
                               >
                                 Auto
                               </Button>
@@ -1788,7 +1786,7 @@ const Design = () => {
                                 variant="outline"
                                 size="sm"
                                 onClick={() => setPrayerTextSize(10)}
-                                className={`text-xs px-2 py-1 h-7 ${prayerTextSize === 10 ? 'bg-amber-600 text-white border-amber-600' : 'border-slate-600 text-slate-300'}`}
+                                className={`text-xs px-2 py-1 h-7 ${prayerTextSize === 10 ? 'bg-amber-600 !text-white border-amber-600' : 'border-slate-600 text-slate-300'}`}
                               >
                                 Small
                               </Button>
@@ -1797,7 +1795,7 @@ const Design = () => {
                                 variant="outline"
                                 size="sm"
                                 onClick={() => setPrayerTextSize(12)}
-                                className={`text-xs px-2 py-1 h-7 ${prayerTextSize === 12 ? 'bg-amber-600 text-white border-amber-600' : 'border-slate-600 text-slate-300'}`}
+                                className={`text-xs px-2 py-1 h-7 ${prayerTextSize === 12 ? 'bg-amber-600 !text-white border-amber-600' : 'border-slate-600 text-slate-300'}`}
                               >
                                 Medium
                               </Button>
@@ -1806,7 +1804,7 @@ const Design = () => {
                                 variant="outline"
                                 size="sm"
                                 onClick={() => setPrayerTextSize(14)}
-                                className={`text-xs px-2 py-1 h-7 ${prayerTextSize === 14 ? 'bg-amber-600 text-white border-amber-600' : 'border-slate-600 text-slate-300'}`}
+                                className={`text-xs px-2 py-1 h-7 ${prayerTextSize === 14 ? 'bg-amber-600 !text-white border-amber-600' : 'border-slate-600 text-slate-300'}`}
                               >
                                 Large
                               </Button>
@@ -1814,7 +1812,7 @@ const Design = () => {
                                 type="button"
                                 variant={prayerBold ? 'default' : 'outline'}
                                 size="sm"
-                                className={`h-7 px-3 text-xs font-bold ${prayerBold ? 'bg-amber-600 text-white' : 'border-slate-600 text-slate-300'}`}
+                                className={`h-7 px-3 text-xs font-bold ${prayerBold ? 'bg-amber-600 !text-white' : 'border-slate-600 text-slate-300'}`}
                                 onClick={() => setPrayerBold(!prayerBold)}
                               >
                                 B
