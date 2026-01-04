@@ -605,6 +605,7 @@ const Dashboard = () => {
                                       cursor: draggingText === 'name' || resizingText === 'name' ? 'grabbing' : 'grab',
                                       textShadow: '0 2px 4px rgba(0,0,0,0.5)',
                                       boxShadow: (draggingText === 'name' || resizingText === 'name') ? '0 0 0 2px hsl(var(--primary))' : 'none',
+                                      whiteSpace: 'nowrap',
                                     }}
                                     onPointerDown={(e) => handleTextPointerDown(e, 'name')}
                                     onPointerMove={handleTextPointerMove}
@@ -630,6 +631,7 @@ const Dashboard = () => {
                                       cursor: draggingText === 'dates' || resizingText === 'dates' ? 'grabbing' : 'grab',
                                       textShadow: '0 2px 4px rgba(0,0,0,0.5)',
                                       boxShadow: (draggingText === 'dates' || resizingText === 'dates') ? '0 0 0 2px hsl(var(--primary))' : 'none',
+                                      whiteSpace: 'nowrap',
                                     }}
                                     onPointerDown={(e) => handleTextPointerDown(e, 'dates')}
                                     onPointerMove={handleTextPointerMove}
@@ -638,7 +640,9 @@ const Dashboard = () => {
                                     onWheel={(e) => handleTextWheel(e, 'dates')}
                                   >
                                     <span style={{ fontSize: `${datesSize}px`, color: datesColor }}>
-                                      {birthDate && deathDate ? `${birthDate} – ${deathDate}` : '1945 – 2025'}
+                                      {birthDate && deathDate 
+                                        ? `${new Date(birthDate).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })} – ${new Date(deathDate).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}`
+                                        : 'January 1, 1945 – December 31, 2025'}
                                     </span>
                                   </div>
                                 )}
@@ -865,7 +869,9 @@ const Dashboard = () => {
                                   {deceasedName || 'Name Here'}
                                 </p>
                                 <p className={`text-xs ${backBgImage ? 'text-zinc-300' : 'text-muted-foreground'}`}>
-                                  {birthDate && deathDate ? `${birthDate} – ${deathDate}` : '1945 – 2025'}
+                                  {birthDate && deathDate 
+                                    ? `${new Date(birthDate).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })} – ${new Date(deathDate).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}`
+                                    : 'January 1, 1945 – December 31, 2025'}
                                 </p>
                               </div>
 
@@ -984,7 +990,9 @@ const Dashboard = () => {
                       <h4 className="text-foreground font-medium mb-2">Memorial Details</h4>
                       <div className="text-sm text-muted-foreground space-y-1">
                         <p><span className="font-medium text-foreground">Name:</span> {deceasedName || 'Not specified'}</p>
-                        <p><span className="font-medium text-foreground">Dates:</span> {birthDate && deathDate ? `${birthDate} – ${deathDate}` : 'Not specified'}</p>
+                        <p><span className="font-medium text-foreground">Dates:</span> {birthDate && deathDate 
+                          ? `${new Date(birthDate).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })} – ${new Date(deathDate).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}`
+                          : 'Not specified'}</p>
                       </div>
                     </div>
 
