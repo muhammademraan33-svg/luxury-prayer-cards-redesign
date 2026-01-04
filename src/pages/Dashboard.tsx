@@ -63,6 +63,7 @@ const Dashboard = () => {
   const [frontBgImage, setFrontBgImage] = useState<string | null>(null);
   const [backBgImage, setBackBgImage] = useState<string | null>(null);
   const [deceasedPhoto, setDeceasedPhoto] = useState<string | null>(null);
+  const [photoZoom, setPhotoZoom] = useState(1);
   const [uploadingPhoto, setUploadingPhoto] = useState(false);
   const [uploadingFront, setUploadingFront] = useState(false);
   const [uploadingBack, setUploadingBack] = useState(false);
@@ -140,12 +141,12 @@ const Dashboard = () => {
 
   const handleImageUpload = async (file: File, type: 'front' | 'back' | 'photo') => {
     if (!file) return;
-    
+
     const setUploading = type === 'front' ? setUploadingFront : type === 'back' ? setUploadingBack : setUploadingPhoto;
     const setImage = type === 'front' ? setFrontBgImage : type === 'back' ? setBackBgImage : setDeceasedPhoto;
-    
+
     setUploading(true);
-    
+
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
@@ -164,6 +165,8 @@ const Dashboard = () => {
         .getPublicUrl(fileName);
 
       setImage(publicUrl);
+      if (type === 'photo') setPhotoZoom(1);
+
       const labels = { front: 'Front background', back: 'Back background', photo: 'Photo' };
       toast.success(`${labels[type]} uploaded!`);
     } catch (error) {
@@ -223,11 +226,12 @@ const Dashboard = () => {
     setMetalFinish('silver');
     setShipping('standard');
     setEpitaph('Forever in our hearts');
-    setOrientation('landscape');
+    setOrientation('portrait');
     setCardSide('front');
     setFrontBgImage(null);
     setBackBgImage(null);
     setDeceasedPhoto(null);
+    setPhotoZoom(1);
     setBackText('The Lord is my shepherd; I shall not want.');
   };
 
@@ -365,7 +369,13 @@ const Dashboard = () => {
                             <div className={`absolute inset-0 bg-gradient-to-br ${currentFinish.gradient} p-1`}>
                               <div className="w-full h-full rounded-xl overflow-hidden bg-slate-700 flex items-center justify-center">
                                 {deceasedPhoto ? (
-                                  <img src={deceasedPhoto} alt="Deceased" className="w-full h-full object-cover" />
+                                  <img
+                                    src={deceasedPhoto}
+                                    alt="Deceased"
+                                    draggable={false}
+                                    className="w-full h-full object-cover transition-transform duration-200 ease-out"
+                                    style={{ transform: `scale(${photoZoom})`, transformOrigin: 'center' }}
+                                  />
                                 ) : (
                                   <div className="text-center p-4">
                                     <ImageIcon className="h-12 w-12 text-slate-500 mx-auto mb-2" />
@@ -399,13 +409,35 @@ const Dashboard = () => {
                               <Button
                                 type="button"
                                 variant="outline"
-                                onClick={() => setDeceasedPhoto(null)}
+                                onClick={() => {
+                                  setDeceasedPhoto(null);
+                                  setPhotoZoom(1);
+                                }}
                                 className="border-red-500/50 text-red-300 hover:bg-red-500/20"
                               >
                                 <Trash2 className="h-4 w-4" />
                               </Button>
                             )}
                           </div>
+
+                          {deceasedPhoto && (
+                            <div className="w-full max-w-md">
+                              <div className="flex items-center justify-between mb-2">
+                                <Label className="text-slate-300">Photo zoom</Label>
+                                <span className="text-xs text-slate-400">{Math.round(photoZoom * 100)}%</span>
+                              </div>
+                              <input
+                                type="range"
+                                min={1}
+                                max={2.5}
+                                step={0.05}
+                                value={photoZoom}
+                                onChange={(e) => setPhotoZoom(parseFloat(e.target.value))}
+                                className="w-full accent-amber-500"
+                              />
+                            </div>
+                          )}
+
                           <p className="text-slate-500 text-xs text-center">The photo fills the entire front of the card with a metal border frame</p>
                         </div>
                       </TabsContent>
