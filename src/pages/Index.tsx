@@ -43,11 +43,11 @@ const Index = () => {
           <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto mb-4 leading-relaxed">
             We understand how hard it is to lose a loved one.
           </p>
-          <p className="text-lg text-foreground/70 max-w-2xl mx-auto mb-12">
-            It was our goal to make this time a little less stressful while creating final memories that will last 
-            eternity—saving you time with 2 easel-sized photo boards included, taking one less thing off your plate 
-            during this difficult time.
-          </p>
+        <p className="text-lg text-foreground/70 max-w-2xl mx-auto mb-12">
+          It was our goal to make this time a little less stressful while creating final memories that will last 
+          eternity. Simply upload your photo and we include 2 easel-sized photo boards—saving you a trip to Staples 
+          and hundreds of dollars, taking one less thing off your plate during this difficult time.
+        </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link to="/design">
               <Button size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold text-lg px-12 py-7 shadow-xl hover:shadow-2xl transition-all">
