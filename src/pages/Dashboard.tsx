@@ -97,6 +97,7 @@ const Dashboard = () => {
   // Front card text state
   const [showNameOnFront, setShowNameOnFront] = useState(true);
   const [showDatesOnFront, setShowDatesOnFront] = useState(true);
+  const [showDatesOnBack, setShowDatesOnBack] = useState(true);
   const [nameFont, setNameFont] = useState('Playfair Display');
   const [datesFont, setDatesFont] = useState('Cormorant Garamond');
   const [namePosition, setNamePosition] = useState({ x: 50, y: 85 }); // percentage
@@ -951,15 +952,26 @@ const Dashboard = () => {
                                   <Label className="text-muted-foreground text-xs">Size</Label>
                                   <span className="text-xs text-foreground bg-secondary px-2 py-1 rounded">{Math.round(datesSize)}px</span>
                                 </div>
-                                <label className="flex items-center gap-2 cursor-pointer ml-auto">
-                                  <input 
-                                    type="checkbox" 
-                                    checked={showDatesOnFront} 
-                                    onChange={(e) => setShowDatesOnFront(e.target.checked)}
-                                    className="accent-primary"
-                                  />
-                                  <span className="text-muted-foreground text-xs">Show</span>
-                                </label>
+                                <div className="flex items-center gap-4 ml-auto">
+                                  <label className="flex items-center gap-2 cursor-pointer">
+                                    <input 
+                                      type="checkbox" 
+                                      checked={showDatesOnFront} 
+                                      onChange={(e) => setShowDatesOnFront(e.target.checked)}
+                                      className="accent-primary"
+                                    />
+                                    <span className="text-muted-foreground text-xs">Front</span>
+                                  </label>
+                                  <label className="flex items-center gap-2 cursor-pointer">
+                                    <input 
+                                      type="checkbox" 
+                                      checked={showDatesOnBack} 
+                                      onChange={(e) => setShowDatesOnBack(e.target.checked)}
+                                      className="accent-primary"
+                                    />
+                                    <span className="text-muted-foreground text-xs">Back</span>
+                                  </label>
+                                </div>
                               </div>
                             </div>
                             
@@ -1026,24 +1038,29 @@ const Dashboard = () => {
                           <div 
                             className={`${cardClass} rounded-2xl shadow-2xl relative overflow-hidden`}
                           >
-                            {/* Metal frame border */}
-                            <div className={`absolute inset-0 bg-gradient-to-br ${currentFinish.gradient} p-1 rounded-2xl`}>
-                              <div 
-                                className="w-full h-full rounded-xl overflow-hidden p-3"
-                                style={backBgImage ? { 
-                                  backgroundImage: `url(${backBgImage})`, 
-                                  backgroundSize: 'cover', 
-                                  backgroundPosition: 'center' 
-                                } : {
-                                  background: `
-                                    linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(250,250,250,0.98) 100%)
-                                  `
-                                }}
-                              >
-                                {backBgImage && (
-                                  <div className="absolute inset-0 bg-black/40 rounded-xl"></div>
-                                )}
-                                <div className="relative z-10 h-full flex flex-col justify-between text-center">
+                            {/* Full metal background or custom image */}
+                            <div 
+                              className={`absolute inset-0 rounded-2xl ${!backBgImage ? `bg-gradient-to-br ${currentFinish.gradient}` : ''}`}
+                              style={backBgImage ? { 
+                                backgroundImage: `url(${backBgImage})`, 
+                                backgroundSize: 'cover', 
+                                backgroundPosition: 'center' 
+                              } : undefined}
+                            >
+                              {backBgImage && (
+                                <div className="absolute inset-0 bg-black/40 rounded-2xl"></div>
+                              )}
+                              {/* Brushed metal effect overlay */}
+                              {!backBgImage && (
+                                <div 
+                                  className="absolute inset-0 opacity-20 rounded-2xl"
+                                  style={{
+                                    backgroundImage: 'repeating-linear-gradient(90deg, transparent, transparent 1px, rgba(255,255,255,0.1) 1px, rgba(255,255,255,0.1) 2px)',
+                                  }}
+                                />
+                              )}
+                              <div className="relative z-10 w-full h-full p-3">
+                                <div className="h-full flex flex-col justify-between text-center">
                                   {/* Top - Funeral Home Logo */}
                                   {showFuneralLogo && funeralHome?.logo_url && (
                                     <div className="absolute top-1 left-1">
@@ -1057,21 +1074,23 @@ const Dashboard = () => {
                                   
                                   {/* Top - Name & Dates */}
                                   <div>
-                                    <p className={`text-[8px] uppercase tracking-[0.12em] mb-0.5 ${backBgImage ? 'text-zinc-300' : 'text-muted-foreground'}`}>
+                                    <p className={`text-[8px] uppercase tracking-[0.12em] mb-0.5 ${backBgImage || metalFinish === 'black' ? 'text-zinc-300' : 'text-zinc-700'}`}>
                                       In Loving Memory
                                     </p>
-                                    <p className={`${orientation === 'portrait' ? 'text-base' : 'text-sm'} font-serif ${backBgImage ? 'text-white' : 'text-foreground'}`}>
+                                    <p className={`${orientation === 'portrait' ? 'text-base' : 'text-sm'} font-serif ${backBgImage || metalFinish === 'black' ? 'text-white' : 'text-zinc-900'}`}>
                                       {deceasedName || 'Name Here'}
                                     </p>
-                                    <p className={`text-[10px] ${backBgImage ? 'text-zinc-300' : 'text-muted-foreground'}`}>
-                                      {formatDates(birthDate, deathDate)}
-                                    </p>
+                                    {showDatesOnBack && (
+                                      <p className={`text-[10px] ${backBgImage || metalFinish === 'black' ? 'text-zinc-300' : 'text-zinc-600'}`}>
+                                        {formatDates(birthDate, deathDate)}
+                                      </p>
+                                    )}
                                   </div>
 
                                   {/* Middle - Prayer */}
                                   <div className="flex-1 flex items-center justify-center py-1 px-1 overflow-hidden">
                                     <p 
-                                      className={`leading-relaxed font-serif italic ${backBgImage ? 'text-zinc-200' : 'text-muted-foreground'} whitespace-pre-line text-center`}
+                                      className={`leading-relaxed font-serif italic ${backBgImage || metalFinish === 'black' ? 'text-zinc-200' : 'text-zinc-700'} whitespace-pre-line text-center`}
                                       style={{ fontSize: `${prayerTextSize}px` }}
                                     >
                                       {backText}
@@ -1083,7 +1102,7 @@ const Dashboard = () => {
                                     <div className={`${orientation === 'portrait' ? 'w-10 h-10' : 'w-7 h-7'} bg-white rounded-lg flex items-center justify-center shadow-md`}>
                                       <QrCode className={`${orientation === 'portrait' ? 'h-7 w-7' : 'h-4 w-4'} text-foreground`} />
                                     </div>
-                                    <p className={`text-[6px] mt-0.5 ${backBgImage ? 'text-zinc-400' : 'text-muted-foreground'}`}>
+                                    <p className={`text-[6px] mt-0.5 ${backBgImage || metalFinish === 'black' ? 'text-zinc-400' : 'text-zinc-600'}`}>
                                       {qrUrl ? 'Visit memorial page' : 'Scan to share memories'}
                                     </p>
                                   </div>
