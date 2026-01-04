@@ -256,7 +256,10 @@ const Dashboard = () => {
 
   const handlePhotoPointerDown = (e: React.PointerEvent) => {
     if (!deceasedPhoto) return;
+    // Don't start photo panning if we're interacting with text
+    if (draggingText || resizingText) return;
     e.preventDefault();
+    e.stopPropagation();
     pointerCacheRef.current.set(e.pointerId, e.nativeEvent);
     (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
 
@@ -274,6 +277,8 @@ const Dashboard = () => {
 
   const handlePhotoPointerMove = (e: React.PointerEvent) => {
     if (!deceasedPhoto) return;
+    // Don't handle photo move if text is being dragged
+    if (draggingText || resizingText) return;
     pointerCacheRef.current.set(e.pointerId, e.nativeEvent);
 
     if (pointerCacheRef.current.size === 2 && pinchStartRef.current) {
@@ -294,8 +299,14 @@ const Dashboard = () => {
   };
 
   const handlePhotoPointerUp = (e: React.PointerEvent) => {
+    // Don't handle if text dragging is active
+    if (draggingText || resizingText) return;
     pointerCacheRef.current.delete(e.pointerId);
-    (e.currentTarget as HTMLElement).releasePointerCapture(e.pointerId);
+    try {
+      (e.currentTarget as HTMLElement).releasePointerCapture(e.pointerId);
+    } catch (err) {
+      // Pointer capture may already be released
+    }
 
     if (pointerCacheRef.current.size < 2) {
       pinchStartRef.current = null;
