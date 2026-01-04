@@ -33,9 +33,14 @@ const Index = () => {
             Reimagined
           </span>
         </h1>
-        <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-10">
-          Your final memory should be one that will last eternity. Our indestructible prayer cards are luxury, 
-          timeless, and easily fit in a wallet or pocket—and will never bend.
+        <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-6">
+          We understand how hard it is to lose a loved one.
+        </p>
+        <p className="text-lg text-foreground/70 max-w-2xl mx-auto mb-10">
+          It was our goal to make this time a little less stressful while creating final memories that will last 
+          eternity—saving you time with 2 easel-sized photo boards included, taking one less thing off your plate 
+          during this difficult time. Our indestructible prayer cards are luxury, timeless, and easily fit in a 
+          wallet or pocket.
         </p>
         <Link to="/design">
           <Button size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold text-lg px-10 py-6 shadow-lg">
