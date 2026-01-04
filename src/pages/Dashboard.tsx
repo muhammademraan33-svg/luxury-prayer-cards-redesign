@@ -91,8 +91,15 @@ const Dashboard = () => {
   const [datesFont, setDatesFont] = useState('Cormorant Garamond');
   const [namePosition, setNamePosition] = useState({ x: 50, y: 85 }); // percentage
   const [datesPosition, setDatesPosition] = useState({ x: 50, y: 92 }); // percentage
+  const [nameColor, setNameColor] = useState('#ffffff');
+  const [datesColor, setDatesColor] = useState('#ffffffcc');
+  const [nameSize, setNameSize] = useState(18); // pixels
+  const [datesSize, setDatesSize] = useState(12); // pixels
   const [draggingText, setDraggingText] = useState<'name' | 'dates' | null>(null);
+  const [resizingText, setResizingText] = useState<'name' | 'dates' | null>(null);
   const textDragStartRef = useRef<{ x: number; y: number; posX: number; posY: number } | null>(null);
+  const textPinchStartRef = useRef<{ distance: number; size: number } | null>(null);
+  const textPointerCacheRef = useRef<Map<number, PointerEvent>>(new Map());
   const frontInputRef = useRef<HTMLInputElement>(null);
   const backInputRef = useRef<HTMLInputElement>(null);
   const photoInputRef = useRef<HTMLInputElement>(null);
@@ -106,13 +113,42 @@ const Dashboard = () => {
   const handleTextPointerDown = (e: React.PointerEvent, textType: 'name' | 'dates') => {
     e.stopPropagation();
     e.preventDefault();
-    setDraggingText(textType);
-    const currentPos = textType === 'name' ? namePosition : datesPosition;
-    textDragStartRef.current = { x: e.clientX, y: e.clientY, posX: currentPos.x, posY: currentPos.y };
+    textPointerCacheRef.current.set(e.pointerId, e.nativeEvent);
     (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+
+    if (textPointerCacheRef.current.size === 1) {
+      setDraggingText(textType);
+      const currentPos = textType === 'name' ? namePosition : datesPosition;
+      textDragStartRef.current = { x: e.clientX, y: e.clientY, posX: currentPos.x, posY: currentPos.y };
+    } else if (textPointerCacheRef.current.size === 2) {
+      setResizingText(textType);
+      const pointers = Array.from(textPointerCacheRef.current.values());
+      const currentSize = textType === 'name' ? nameSize : datesSize;
+      textPinchStartRef.current = {
+        distance: getDistance(pointers[0], pointers[1]),
+        size: currentSize,
+      };
+    }
   };
 
   const handleTextPointerMove = (e: React.PointerEvent) => {
+    textPointerCacheRef.current.set(e.pointerId, e.nativeEvent);
+
+    // Pinch to resize
+    if (textPointerCacheRef.current.size === 2 && textPinchStartRef.current && resizingText) {
+      const pointers = Array.from(textPointerCacheRef.current.values());
+      const currentDistance = getDistance(pointers[0], pointers[1]);
+      const scaleChange = currentDistance / textPinchStartRef.current.distance;
+      const newSize = Math.max(8, Math.min(48, textPinchStartRef.current.size * scaleChange));
+      if (resizingText === 'name') {
+        setNameSize(newSize);
+      } else {
+        setDatesSize(newSize);
+      }
+      return;
+    }
+
+    // Drag to move
     if (!draggingText || !textDragStartRef.current || !cardPreviewRef.current) return;
     
     const rect = cardPreviewRef.current.getBoundingClientRect();
@@ -130,9 +166,30 @@ const Dashboard = () => {
   };
 
   const handleTextPointerUp = (e: React.PointerEvent) => {
-    setDraggingText(null);
-    textDragStartRef.current = null;
+    textPointerCacheRef.current.delete(e.pointerId);
     (e.currentTarget as HTMLElement).releasePointerCapture(e.pointerId);
+
+    if (textPointerCacheRef.current.size < 2) {
+      textPinchStartRef.current = null;
+      setResizingText(null);
+    }
+    if (textPointerCacheRef.current.size === 0) {
+      setDraggingText(null);
+      textDragStartRef.current = null;
+    }
+  };
+
+  const handleTextWheel = (e: React.WheelEvent, textType: 'name' | 'dates') => {
+    e.preventDefault();
+    e.stopPropagation();
+    const delta = -e.deltaY * 0.05;
+    const currentSize = textType === 'name' ? nameSize : datesSize;
+    const newSize = Math.max(8, Math.min(48, currentSize + delta));
+    if (textType === 'name') {
+      setNameSize(newSize);
+    } else {
+      setDatesSize(newSize);
+    }
   };
 
   const getDistance = (p1: PointerEvent, p2: PointerEvent) => {
@@ -367,6 +424,10 @@ const Dashboard = () => {
     setDatesFont('Cormorant Garamond');
     setNamePosition({ x: 50, y: 85 });
     setDatesPosition({ x: 50, y: 92 });
+    setNameColor('#ffffff');
+    setDatesColor('#ffffffcc');
+    setNameSize(18);
+    setDatesSize(12);
   };
 
   const handleDeleteOrder = async (orderId: string) => {
@@ -541,16 +602,17 @@ const Dashboard = () => {
                                       top: `${namePosition.y}%`,
                                       transform: 'translate(-50%, -50%)',
                                       fontFamily: nameFont,
-                                      cursor: draggingText === 'name' ? 'grabbing' : 'grab',
+                                      cursor: draggingText === 'name' || resizingText === 'name' ? 'grabbing' : 'grab',
                                       textShadow: '0 2px 4px rgba(0,0,0,0.5)',
-                                      boxShadow: draggingText === 'name' ? '0 0 0 2px hsl(var(--primary))' : 'none',
+                                      boxShadow: (draggingText === 'name' || resizingText === 'name') ? '0 0 0 2px hsl(var(--primary))' : 'none',
                                     }}
                                     onPointerDown={(e) => handleTextPointerDown(e, 'name')}
                                     onPointerMove={handleTextPointerMove}
                                     onPointerUp={handleTextPointerUp}
                                     onPointerCancel={handleTextPointerUp}
+                                    onWheel={(e) => handleTextWheel(e, 'name')}
                                   >
-                                    <span className="text-white font-medium" style={{ fontSize: orientation === 'portrait' ? '14px' : '12px' }}>
+                                    <span className="font-medium" style={{ fontSize: `${nameSize}px`, color: nameColor }}>
                                       {deceasedName || 'Name Here'}
                                     </span>
                                   </div>
@@ -565,16 +627,17 @@ const Dashboard = () => {
                                       top: `${datesPosition.y}%`,
                                       transform: 'translate(-50%, -50%)',
                                       fontFamily: datesFont,
-                                      cursor: draggingText === 'dates' ? 'grabbing' : 'grab',
+                                      cursor: draggingText === 'dates' || resizingText === 'dates' ? 'grabbing' : 'grab',
                                       textShadow: '0 2px 4px rgba(0,0,0,0.5)',
-                                      boxShadow: draggingText === 'dates' ? '0 0 0 2px hsl(var(--primary))' : 'none',
+                                      boxShadow: (draggingText === 'dates' || resizingText === 'dates') ? '0 0 0 2px hsl(var(--primary))' : 'none',
                                     }}
                                     onPointerDown={(e) => handleTextPointerDown(e, 'dates')}
                                     onPointerMove={handleTextPointerMove}
                                     onPointerUp={handleTextPointerUp}
                                     onPointerCancel={handleTextPointerUp}
+                                    onWheel={(e) => handleTextWheel(e, 'dates')}
                                   >
-                                    <span className="text-white/90" style={{ fontSize: orientation === 'portrait' ? '10px' : '9px' }}>
+                                    <span style={{ fontSize: `${datesSize}px`, color: datesColor }}>
                                       {birthDate && deathDate ? `${birthDate} – ${deathDate}` : '1945 – 2025'}
                                     </span>
                                   </div>
@@ -636,7 +699,7 @@ const Dashboard = () => {
 
                           {deceasedPhoto && (
                             <p className="text-muted-foreground text-xs text-center bg-accent/50 px-3 py-2 rounded-lg">
-                              📱 Drag photo to pan • Pinch/scroll to zoom • Drag text to reposition
+                              📱 Drag to move • Pinch/scroll on text to resize
                             </p>
                           )}
 
@@ -647,22 +710,19 @@ const Dashboard = () => {
                               <Label className="text-muted-foreground font-medium">Front Card Text</Label>
                             </div>
                             
-                            {/* Name Input & Font */}
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                              <div>
-                                <Label className="text-muted-foreground text-sm">Name</Label>
+                            {/* Name Controls */}
+                            <div className="space-y-2 p-3 bg-secondary/30 rounded-lg">
+                              <Label className="text-foreground text-sm font-medium">Name</Label>
+                              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                 <Input
                                   placeholder="John David Smith"
                                   value={deceasedName}
                                   onChange={(e) => setDeceasedName(e.target.value)}
                                   className="bg-secondary border-border text-foreground"
                                 />
-                              </div>
-                              <div>
-                                <Label className="text-muted-foreground text-sm">Name Font</Label>
                                 <Select value={nameFont} onValueChange={setNameFont}>
                                   <SelectTrigger className="bg-secondary border-border text-foreground">
-                                    <SelectValue />
+                                    <SelectValue placeholder="Font" />
                                   </SelectTrigger>
                                   <SelectContent>
                                     {FONT_OPTIONS.map((font) => (
@@ -673,33 +733,51 @@ const Dashboard = () => {
                                   </SelectContent>
                                 </Select>
                               </div>
+                              <div className="flex items-center gap-3 flex-wrap">
+                                <div className="flex items-center gap-2">
+                                  <Label className="text-muted-foreground text-xs">Color</Label>
+                                  <input
+                                    type="color"
+                                    value={nameColor}
+                                    onChange={(e) => setNameColor(e.target.value)}
+                                    className="w-8 h-8 rounded border border-border cursor-pointer"
+                                  />
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  <Label className="text-muted-foreground text-xs">Size</Label>
+                                  <span className="text-xs text-foreground bg-secondary px-2 py-1 rounded">{Math.round(nameSize)}px</span>
+                                </div>
+                                <label className="flex items-center gap-2 cursor-pointer ml-auto">
+                                  <input 
+                                    type="checkbox" 
+                                    checked={showNameOnFront} 
+                                    onChange={(e) => setShowNameOnFront(e.target.checked)}
+                                    className="accent-primary"
+                                  />
+                                  <span className="text-muted-foreground text-xs">Show</span>
+                                </label>
+                              </div>
                             </div>
 
-                            {/* Dates Input & Font */}
-                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                              <div>
-                                <Label className="text-muted-foreground text-sm">Birth Date</Label>
+                            {/* Dates Controls */}
+                            <div className="space-y-2 p-3 bg-secondary/30 rounded-lg">
+                              <Label className="text-foreground text-sm font-medium">Dates</Label>
+                              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                                 <Input
                                   type="date"
                                   value={birthDate}
                                   onChange={(e) => setBirthDate(e.target.value)}
                                   className="bg-secondary border-border text-foreground"
                                 />
-                              </div>
-                              <div>
-                                <Label className="text-muted-foreground text-sm">Death Date</Label>
                                 <Input
                                   type="date"
                                   value={deathDate}
                                   onChange={(e) => setDeathDate(e.target.value)}
                                   className="bg-secondary border-border text-foreground"
                                 />
-                              </div>
-                              <div>
-                                <Label className="text-muted-foreground text-sm">Dates Font</Label>
                                 <Select value={datesFont} onValueChange={setDatesFont}>
                                   <SelectTrigger className="bg-secondary border-border text-foreground">
-                                    <SelectValue />
+                                    <SelectValue placeholder="Font" />
                                   </SelectTrigger>
                                   <SelectContent>
                                     {FONT_OPTIONS.map((font) => (
@@ -710,28 +788,30 @@ const Dashboard = () => {
                                   </SelectContent>
                                 </Select>
                               </div>
-                            </div>
-
-                            {/* Toggle visibility */}
-                            <div className="flex gap-4 text-sm">
-                              <label className="flex items-center gap-2 cursor-pointer">
-                                <input 
-                                  type="checkbox" 
-                                  checked={showNameOnFront} 
-                                  onChange={(e) => setShowNameOnFront(e.target.checked)}
-                                  className="accent-primary"
-                                />
-                                <span className="text-muted-foreground">Show name</span>
-                              </label>
-                              <label className="flex items-center gap-2 cursor-pointer">
-                                <input 
-                                  type="checkbox" 
-                                  checked={showDatesOnFront} 
-                                  onChange={(e) => setShowDatesOnFront(e.target.checked)}
-                                  className="accent-primary"
-                                />
-                                <span className="text-muted-foreground">Show dates</span>
-                              </label>
+                              <div className="flex items-center gap-3 flex-wrap">
+                                <div className="flex items-center gap-2">
+                                  <Label className="text-muted-foreground text-xs">Color</Label>
+                                  <input
+                                    type="color"
+                                    value={datesColor.replace('cc', '')}
+                                    onChange={(e) => setDatesColor(e.target.value)}
+                                    className="w-8 h-8 rounded border border-border cursor-pointer"
+                                  />
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  <Label className="text-muted-foreground text-xs">Size</Label>
+                                  <span className="text-xs text-foreground bg-secondary px-2 py-1 rounded">{Math.round(datesSize)}px</span>
+                                </div>
+                                <label className="flex items-center gap-2 cursor-pointer ml-auto">
+                                  <input 
+                                    type="checkbox" 
+                                    checked={showDatesOnFront} 
+                                    onChange={(e) => setShowDatesOnFront(e.target.checked)}
+                                    className="accent-primary"
+                                  />
+                                  <span className="text-muted-foreground text-xs">Show</span>
+                                </label>
+                              </div>
                             </div>
                           </div>
 
