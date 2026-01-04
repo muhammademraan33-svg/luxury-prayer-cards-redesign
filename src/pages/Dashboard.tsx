@@ -132,12 +132,18 @@ const Dashboard = () => {
   const handleTextPointerDown = (e: React.PointerEvent, textType: 'name' | 'dates' | 'additional') => {
     e.stopPropagation();
     e.preventDefault();
+
     textPointerCacheRef.current.set(e.pointerId, e.nativeEvent);
-    (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+    try {
+      (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+    } catch {
+      // Pointer capture may not be supported on some browsers
+    }
 
     if (textPointerCacheRef.current.size === 1) {
       setDraggingText(textType);
-      const currentPos = textType === 'name' ? namePosition : textType === 'dates' ? datesPosition : additionalTextPosition;
+      const currentPos =
+        textType === 'name' ? namePosition : textType === 'dates' ? datesPosition : additionalTextPosition;
       textDragStartRef.current = { x: e.clientX, y: e.clientY, posX: currentPos.x, posY: currentPos.y };
     } else if (textPointerCacheRef.current.size === 2) {
       setResizingText(textType);
@@ -198,7 +204,11 @@ const Dashboard = () => {
 
   const handleTextPointerUp = (e: React.PointerEvent) => {
     textPointerCacheRef.current.delete(e.pointerId);
-    (e.currentTarget as HTMLElement).releasePointerCapture(e.pointerId);
+    try {
+      (e.currentTarget as HTMLElement).releasePointerCapture(e.pointerId);
+    } catch {
+      // Pointer capture may already be released / unsupported
+    }
 
     if (textPointerCacheRef.current.size < 2) {
       textPinchStartRef.current = null;
@@ -299,12 +309,15 @@ const Dashboard = () => {
 
   const handlePhotoPointerDown = (e: React.PointerEvent) => {
     if (!deceasedPhoto) return;
-    // Don't start photo panning if we're interacting with text
-    if (draggingText || resizingText) return;
     e.preventDefault();
     e.stopPropagation();
+
     pointerCacheRef.current.set(e.pointerId, e.nativeEvent);
-    (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+    try {
+      (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+    } catch {
+      // Pointer capture may not be supported
+    }
 
     if (pointerCacheRef.current.size === 1) {
       setIsPanning(true);
@@ -320,8 +333,6 @@ const Dashboard = () => {
 
   const handlePhotoPointerMove = (e: React.PointerEvent) => {
     if (!deceasedPhoto) return;
-    // Don't handle photo move if text is being dragged
-    if (draggingText || resizingText) return;
     pointerCacheRef.current.set(e.pointerId, e.nativeEvent);
 
     if (pointerCacheRef.current.size === 2 && pinchStartRef.current) {
@@ -330,6 +341,7 @@ const Dashboard = () => {
       const scaleChange = currentDistance / pinchStartRef.current.distance;
       const newScale = Math.max(1, Math.min(3, pinchStartRef.current.scale * scaleChange));
       setPhotoZoom(newScale);
+
       const clamped = clampPhotoPan(photoPanX, photoPanY, newScale);
       setPhotoPanX(clamped.panX);
       setPhotoPanY(clamped.panY);
@@ -346,12 +358,10 @@ const Dashboard = () => {
   };
 
   const handlePhotoPointerUp = (e: React.PointerEvent) => {
-    // Don't handle if text dragging is active
-    if (draggingText || resizingText) return;
     pointerCacheRef.current.delete(e.pointerId);
     try {
       (e.currentTarget as HTMLElement).releasePointerCapture(e.pointerId);
-    } catch (err) {
+    } catch {
       // Pointer capture may already be released
     }
 
@@ -444,36 +454,46 @@ const Dashboard = () => {
   const handleImageUpload = async (file: File, type: 'front' | 'back' | 'photo') => {
     if (!file) return;
 
-    const setUploading = type === 'front' ? setUploadingFront : type === 'back' ? setUploadingBack : setUploadingPhoto;
+    const setUploading =
+      type === 'front' ? setUploadingFront : type === 'back' ? setUploadingBack : setUploadingPhoto;
     const setImage = type === 'front' ? setFrontBgImage : type === 'back' ? setBackBgImage : setDeceasedPhoto;
+
+    // Show an immediate local preview so the editor stays responsive even if upload fails.
+    const previewUrl = URL.createObjectURL(file);
+    setImage(previewUrl);
+    if (type === 'photo') {
+      setPhotoZoom(1);
+      setPhotoPanX(0);
+      setPhotoPanY(0);
+    }
 
     setUploading(true);
 
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
-      const fileExt = file.name.split('.').pop();
+      const fileExt = file.name.split('.').pop() || 'jpg';
       const fileName = `${user.id}/${Date.now()}-${type}.${fileExt}`;
 
-      const { error: uploadError } = await supabase.storage
-        .from('card-backgrounds')
-        .upload(fileName, file);
-
+      const { error: uploadError } = await supabase.storage.from('card-backgrounds').upload(fileName, file);
       if (uploadError) throw uploadError;
 
-      const { data: { publicUrl } } = supabase.storage
-        .from('card-backgrounds')
-        .getPublicUrl(fileName);
+      const {
+        data: { publicUrl },
+      } = supabase.storage.from('card-backgrounds').getPublicUrl(fileName);
 
+      // Replace preview with the hosted URL
       setImage(publicUrl);
-      if (type === 'photo') setPhotoZoom(1);
 
       const labels = { front: 'Front background', back: 'Back background', photo: 'Photo' };
       toast.success(`${labels[type]} uploaded!`);
     } catch (error) {
       console.error('Upload error:', error);
-      toast.error('Failed to upload image');
+      // Keep the local preview so the user can continue editing.
+      toast.error('Upload failed — showing local preview for now');
     } finally {
       setUploading(false);
     }
@@ -1130,7 +1150,7 @@ const Dashboard = () => {
                               {showAdditionalText && (
                                 <>
                                   <Textarea
-                                    placeholder="Forever in our hearts..."
+                                    placeholder="Additional text..."
                                     value={additionalText}
                                     onChange={(e) => setAdditionalText(e.target.value)}
                                     className="bg-secondary border-border text-foreground min-h-[60px]"
