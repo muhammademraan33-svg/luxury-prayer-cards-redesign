@@ -377,6 +377,10 @@ const Design = () => {
     showQrCode,
     qrUrl,
     showDatesOnBack,
+    showNameOnBack,
+    backNameSize,
+    backDatesSize,
+    backDatesPosition,
     showInLovingMemory,
     inLovingMemoryText,
     inLovingMemorySize,
@@ -1267,7 +1271,7 @@ const Design = () => {
                                 </div>
 
                                 {/* Prayer - takes remaining space with proper overflow handling */}
-                                <div ref={prayerContainerRef} className="flex-1 flex items-center justify-center py-1 px-1 min-h-0">
+                                <div ref={prayerContainerRef} className="flex-1 flex items-center justify-center py-1 px-1 overflow-hidden min-h-0">
                                   <p 
                                     ref={prayerTextRef}
                                     className={`leading-snug font-serif italic ${backBgImage || metalFinish === 'black' ? 'text-zinc-200' : 'text-zinc-700'} whitespace-pre-line text-center`}
@@ -1275,10 +1279,12 @@ const Design = () => {
                                       fontSize: prayerTextSize === 'auto' 
                                         ? `${autoPrayerFontSize}px`
                                         : `${prayerTextSize}px`,
-                                      lineHeight: prayerTextSize === 'auto' ? 1.15 : undefined,
+                                      lineHeight: prayerTextSize === 'auto' ? 1.15 : 1.3,
                                       textWrap: 'pretty',
                                       wordBreak: 'keep-all',
                                       fontWeight: prayerBold ? 'bold' : 'normal',
+                                      maxHeight: '100%',
+                                      overflow: 'hidden',
                                     }}
                                   >
                                     {preventOrphans(backText)}
