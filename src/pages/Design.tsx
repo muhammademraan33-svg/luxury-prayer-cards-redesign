@@ -749,17 +749,219 @@ const Design = () => {
                                 </SelectContent>
                               </Select>
                             </div>
-                            <div className="flex items-center gap-2 flex-wrap">
-                              <label className="flex items-center gap-2 cursor-pointer">
+                            
+                            {/* Front Dates Row */}
+                            <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-slate-600/50">
+                              <label className="flex items-center gap-2 cursor-pointer min-w-[60px]">
                                 <input 
                                   type="checkbox" 
                                   checked={showDatesOnFront} 
                                   onChange={(e) => setShowDatesOnFront(e.target.checked)}
                                   className="accent-amber-600"
                                 />
-                                <span className="text-slate-400 text-xs">Show on front</span>
+                                <span className="text-slate-400 text-xs font-medium">Front</span>
+                              </label>
+                              <Select 
+                                value={frontDateFormat} 
+                                onValueChange={(v) => setFrontDateFormat(v as 'full' | 'short-month' | 'mmm-dd-yyyy' | 'numeric' | 'year')}
+                                disabled={!showDatesOnFront}
+                              >
+                                <SelectTrigger className="bg-slate-700 border-slate-600 text-white h-7 text-xs w-[130px]">
+                                  <SelectValue placeholder="Format" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="full">January 1, 2025</SelectItem>
+                                  <SelectItem value="short-month">Jan 1, 2025</SelectItem>
+                                  <SelectItem value="mmm-dd-yyyy">Jan 01, 2025</SelectItem>
+                                  <SelectItem value="numeric">01/01/2025</SelectItem>
+                                  <SelectItem value="year">Years Only</SelectItem>
+                                </SelectContent>
+                              </Select>
+                              <input
+                                type="color"
+                                value={frontDatesColor.replace('cc', '')}
+                                onChange={(e) => setFrontDatesColor(e.target.value)}
+                                className="w-7 h-7 rounded border border-slate-600 cursor-pointer"
+                                disabled={!showDatesOnFront}
+                              />
+                              <div className="flex items-center gap-1">
+                                <Button
+                                  type="button"
+                                  variant={frontDatesSize === 'auto' ? 'default' : 'outline'}
+                                  size="sm"
+                                  className={`h-7 px-2 text-xs ${frontDatesSize === 'auto' ? 'bg-amber-600' : 'border-slate-600'}`}
+                                  onClick={() => setFrontDatesSize('auto')}
+                                  disabled={!showDatesOnFront}
+                                >
+                                  Auto
+                                </Button>
+                                <Button
+                                  type="button"
+                                  variant="outline"
+                                  size="icon"
+                                  className="h-6 w-6 border-slate-600"
+                                  onClick={() => setFrontDatesSize(typeof frontDatesSize === 'number' ? Math.max(8, frontDatesSize - 2) : 10)}
+                                  disabled={!showDatesOnFront}
+                                >
+                                  <span className="text-xs">−</span>
+                                </Button>
+                                <span className="text-xs text-white bg-slate-700 px-1 py-0.5 rounded min-w-[35px] text-center">
+                                  {frontDatesSize === 'auto' ? 'auto' : `${frontDatesSize}px`}
+                                </span>
+                                <Button
+                                  type="button"
+                                  variant="outline"
+                                  size="icon"
+                                  className="h-6 w-6 border-slate-600"
+                                  onClick={() => setFrontDatesSize(typeof frontDatesSize === 'number' ? Math.min(48, frontDatesSize + 2) : 14)}
+                                  disabled={!showDatesOnFront}
+                                >
+                                  <span className="text-xs">+</span>
+                                </Button>
+                              </div>
+                            </div>
+
+                            {/* Back Dates Row */}
+                            <div className="flex flex-wrap items-center gap-2">
+                              <label className="flex items-center gap-2 cursor-pointer min-w-[60px]">
+                                <input 
+                                  type="checkbox" 
+                                  checked={showDatesOnBack} 
+                                  onChange={(e) => setShowDatesOnBack(e.target.checked)}
+                                  className="accent-amber-600"
+                                />
+                                <span className="text-slate-400 text-xs font-medium">Back</span>
+                              </label>
+                              <Select 
+                                value={backDateFormat} 
+                                onValueChange={(v) => setBackDateFormat(v as 'full' | 'short-month' | 'mmm-dd-yyyy' | 'numeric' | 'year')}
+                                disabled={!showDatesOnBack}
+                              >
+                                <SelectTrigger className="bg-slate-700 border-slate-600 text-white h-7 text-xs w-[130px]">
+                                  <SelectValue placeholder="Format" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="full">January 1, 2025</SelectItem>
+                                  <SelectItem value="short-month">Jan 1, 2025</SelectItem>
+                                  <SelectItem value="mmm-dd-yyyy">Jan 01, 2025</SelectItem>
+                                  <SelectItem value="numeric">01/01/2025</SelectItem>
+                                  <SelectItem value="year">Years Only</SelectItem>
+                                </SelectContent>
+                              </Select>
+                              <input
+                                type="color"
+                                value={backDatesColor.replace('cc', '')}
+                                onChange={(e) => setBackDatesColor(e.target.value)}
+                                className="w-7 h-7 rounded border border-slate-600 cursor-pointer"
+                                disabled={!showDatesOnBack}
+                              />
+                              <div className="flex items-center gap-1">
+                                <Button
+                                  type="button"
+                                  variant={backDatesSize === 'auto' ? 'default' : 'outline'}
+                                  size="sm"
+                                  className={`h-7 px-2 text-xs ${backDatesSize === 'auto' ? 'bg-amber-600' : 'border-slate-600'}`}
+                                  onClick={() => setBackDatesSize('auto')}
+                                  disabled={!showDatesOnBack}
+                                >
+                                  Auto
+                                </Button>
+                                <Button
+                                  type="button"
+                                  variant="outline"
+                                  size="icon"
+                                  className="h-6 w-6 border-slate-600"
+                                  onClick={() => setBackDatesSize(typeof backDatesSize === 'number' ? Math.max(8, backDatesSize - 2) : 10)}
+                                  disabled={!showDatesOnBack}
+                                >
+                                  <span className="text-xs">−</span>
+                                </Button>
+                                <span className="text-xs text-white bg-slate-700 px-1 py-0.5 rounded min-w-[35px] text-center">
+                                  {backDatesSize === 'auto' ? 'auto' : `${backDatesSize}px`}
+                                </span>
+                                <Button
+                                  type="button"
+                                  variant="outline"
+                                  size="icon"
+                                  className="h-6 w-6 border-slate-600"
+                                  onClick={() => setBackDatesSize(typeof backDatesSize === 'number' ? Math.min(48, backDatesSize + 2) : 14)}
+                                  disabled={!showDatesOnBack}
+                                >
+                                  <span className="text-xs">+</span>
+                                </Button>
+                              </div>
+                            </div>
+                          </div>
+                          
+                          {/* Additional Text Controls */}
+                          <div className="space-y-2 p-3 bg-slate-700/30 rounded-lg">
+                            <div className="flex items-center justify-between">
+                              <Label className="text-white text-sm font-medium">Additional Text</Label>
+                              <label className="flex items-center gap-2 cursor-pointer">
+                                <input 
+                                  type="checkbox" 
+                                  checked={showAdditionalText} 
+                                  onChange={(e) => setShowAdditionalText(e.target.checked)}
+                                  className="accent-amber-600"
+                                />
+                                <span className="text-slate-400 text-xs">Show</span>
                               </label>
                             </div>
+                            {showAdditionalText && (
+                              <>
+                                <Textarea
+                                  placeholder="Additional text..."
+                                  value={additionalText}
+                                  onChange={(e) => setAdditionalText(e.target.value)}
+                                  className="bg-slate-700 border-slate-600 text-white min-h-[60px]"
+                                  rows={2}
+                                />
+                                <div className="grid grid-cols-2 gap-3">
+                                  <Select value={additionalTextFont} onValueChange={setAdditionalTextFont}>
+                                    <SelectTrigger className="bg-slate-700 border-slate-600 text-white">
+                                      <SelectValue placeholder="Font" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                      {FONT_OPTIONS.map((font) => (
+                                        <SelectItem key={font.value} value={font.value} style={{ fontFamily: font.value }}>
+                                          {font.name}
+                                        </SelectItem>
+                                      ))}
+                                    </SelectContent>
+                                  </Select>
+                                  <div className="flex items-center gap-2">
+                                    <Label className="text-slate-400 text-xs">Color</Label>
+                                    <input
+                                      type="color"
+                                      value={additionalTextColor}
+                                      onChange={(e) => setAdditionalTextColor(e.target.value)}
+                                      className="w-8 h-8 rounded border border-slate-600 cursor-pointer"
+                                    />
+                                    <div className="flex items-center gap-1">
+                                      <Button
+                                        type="button"
+                                        variant="outline"
+                                        size="icon"
+                                        className="h-6 w-6 border-slate-600"
+                                        onClick={() => setAdditionalTextSize(Math.max(8, additionalTextSize - 2))}
+                                      >
+                                        <span className="text-xs">−</span>
+                                      </Button>
+                                      <span className="text-xs text-white bg-slate-700 px-2 py-1 rounded min-w-[40px] text-center">{Math.round(additionalTextSize)}px</span>
+                                      <Button
+                                        type="button"
+                                        variant="outline"
+                                        size="icon"
+                                        className="h-6 w-6 border-slate-600"
+                                        onClick={() => setAdditionalTextSize(Math.min(48, additionalTextSize + 2))}
+                                      >
+                                        <span className="text-xs">+</span>
+                                      </Button>
+                                    </div>
+                                  </div>
+                                </div>
+                              </>
+                            )}
                           </div>
                         </div>
 
@@ -928,6 +1130,49 @@ const Design = () => {
                             className="bg-slate-700 border-slate-600 text-white min-h-[80px]"
                             rows={3}
                           />
+                          
+                          {/* Prayer Text Size Control */}
+                          <div className="flex items-center gap-3 flex-wrap">
+                            <Label className="text-slate-400 text-xs">Text Size:</Label>
+                            <div className="flex gap-1">
+                              <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                onClick={() => setPrayerTextSize('auto')}
+                                className={`text-xs px-2 py-1 h-7 ${prayerTextSize === 'auto' ? 'bg-amber-600 text-white border-amber-600' : 'border-slate-600 text-slate-300'}`}
+                              >
+                                Auto
+                              </Button>
+                              <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                onClick={() => setPrayerTextSize(10)}
+                                className={`text-xs px-2 py-1 h-7 ${prayerTextSize === 10 ? 'bg-amber-600 text-white border-amber-600' : 'border-slate-600 text-slate-300'}`}
+                              >
+                                Small
+                              </Button>
+                              <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                onClick={() => setPrayerTextSize(12)}
+                                className={`text-xs px-2 py-1 h-7 ${prayerTextSize === 12 ? 'bg-amber-600 text-white border-amber-600' : 'border-slate-600 text-slate-300'}`}
+                              >
+                                Medium
+                              </Button>
+                              <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                onClick={() => setPrayerTextSize(14)}
+                                className={`text-xs px-2 py-1 h-7 ${prayerTextSize === 14 ? 'bg-amber-600 text-white border-amber-600' : 'border-slate-600 text-slate-300'}`}
+                              >
+                                Large
+                              </Button>
+                            </div>
+                          </div>
                         </div>
                         
                         {/* QR Code URL */}
