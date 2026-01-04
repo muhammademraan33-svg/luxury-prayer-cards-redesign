@@ -66,7 +66,7 @@ const Design = () => {
   const [isPanning, setIsPanning] = useState(false);
   const [backBgImage, setBackBgImage] = useState<string | null>(null);
   const [backText, setBackText] = useState('The Lord is my shepherd; I shall not want.');
-  const [prayerTextSize, setPrayerTextSize] = useState<number | 'auto'>(16);
+  const [prayerTextSize, setPrayerTextSize] = useState<number | 'auto'>('auto');
   const [autoPrayerFontSize, setAutoPrayerFontSize] = useState(16);
   
   // Front card text state
@@ -324,9 +324,9 @@ const Design = () => {
     }).join('\n');
   };
 
-  // Auto-fit prayer text so it never gets cut off in the preview
+  // Compute the maximum prayer font size that fits the available space
+  // (space changes when QR/logo/header elements change)
   useLayoutEffect(() => {
-    if (prayerTextSize !== 'auto') return;
     if (cardSide !== 'back') return;
 
     const container = prayerContainerRef.current;
@@ -335,15 +335,16 @@ const Design = () => {
 
     // Wait until layout is stable for this paint.
     const raf = requestAnimationFrame(() => {
-      const minPx = 7;
-      const maxPx = 18;
+      const minPx = 3;
+      const maxPx = 22;
 
       const fits = (px: number) => {
         textEl.style.fontSize = `${px}px`;
-        textEl.style.lineHeight = '1.15';
+        textEl.style.lineHeight = px <= 8 ? '1.05' : '1.15';
+
         // Trigger layout
-        const heightOk = textEl.scrollHeight <= container.clientHeight;
-        const widthOk = textEl.scrollWidth <= container.clientWidth;
+        const heightOk = textEl.scrollHeight <= container.clientHeight + 1;
+        const widthOk = textEl.scrollWidth <= container.clientWidth + 1;
         return heightOk && widthOk;
       };
 
@@ -364,12 +365,11 @@ const Design = () => {
         }
       }
 
-      setAutoPrayerFontSize(prev => (prev === best ? prev : best));
+      setAutoPrayerFontSize((prev) => (prev === best ? prev : best));
     });
 
     return () => cancelAnimationFrame(raf);
   }, [
-    prayerTextSize,
     backText,
     prayerBold,
     cardSide,
@@ -1276,10 +1276,16 @@ const Design = () => {
                                     ref={prayerTextRef}
                                     className={`leading-snug font-serif italic ${backBgImage || metalFinish === 'black' ? 'text-zinc-200' : 'text-zinc-700'} whitespace-pre-line text-center`}
                                     style={{
-                                      fontSize: prayerTextSize === 'auto' 
-                                        ? `${autoPrayerFontSize}px`
-                                        : `${prayerTextSize}px`,
-                                      lineHeight: prayerTextSize === 'auto' ? 1.15 : 1.3,
+                                      fontSize: `${(
+                                        prayerTextSize === 'auto'
+                                          ? autoPrayerFontSize
+                                          : Math.min(prayerTextSize, autoPrayerFontSize)
+                                      )}px`,
+                                      lineHeight: (
+                                        (prayerTextSize === 'auto'
+                                          ? autoPrayerFontSize
+                                          : Math.min(prayerTextSize, autoPrayerFontSize)) <= 8
+                                      ) ? 1.05 : (prayerTextSize === 'auto' ? 1.15 : 1.3),
                                       textWrap: 'pretty',
                                       wordBreak: 'keep-all',
                                       fontWeight: prayerBold ? 'bold' : 'normal',
@@ -1792,8 +1798,11 @@ const Design = () => {
                                 variant="outline"
                                 size="sm"
                                 onClick={() => {
-                                  const current = prayerTextSize === 'auto' ? autoPrayerFontSize : prayerTextSize;
-                                  const newSize = Math.max(6, current - 1);
+                                  const current =
+                                    prayerTextSize === 'auto'
+                                      ? autoPrayerFontSize
+                                      : Math.min(prayerTextSize, autoPrayerFontSize);
+                                  const newSize = Math.max(3, current - 1);
                                   setPrayerTextSize(newSize);
                                 }}
                                 className="h-7 w-7 p-0 border-slate-600 text-slate-300 hover:bg-slate-700"
@@ -1801,14 +1810,19 @@ const Design = () => {
                                 −
                               </Button>
                               <span className="text-slate-300 text-xs w-8 text-center">
-                                {prayerTextSize === 'auto' ? autoPrayerFontSize : prayerTextSize}px
+                                {(prayerTextSize === 'auto'
+                                  ? autoPrayerFontSize
+                                  : Math.min(prayerTextSize, autoPrayerFontSize))}px
                               </span>
                               <Button
                                 type="button"
                                 variant="outline"
                                 size="sm"
                                 onClick={() => {
-                                  const current = prayerTextSize === 'auto' ? autoPrayerFontSize : prayerTextSize;
+                                  const current =
+                                    prayerTextSize === 'auto'
+                                      ? autoPrayerFontSize
+                                      : Math.min(prayerTextSize, autoPrayerFontSize);
                                   const maxAllowed = autoPrayerFontSize; // Can't exceed what fits
                                   const newSize = Math.min(maxAllowed, current + 1);
                                   setPrayerTextSize(newSize);
