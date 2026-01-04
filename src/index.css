@@ -6,98 +6,100 @@
 
 @layer base {
   :root {
-    --background: 210 20% 96%;
-    --foreground: 210 15% 20%;
+    /* Solemn, respectful light palette - soft warm grays with muted gold accents */
+    --background: 30 10% 96%;
+    --foreground: 220 15% 20%;
 
-    --card: 210 15% 98%;
-    --card-foreground: 210 15% 20%;
+    --card: 30 8% 98%;
+    --card-foreground: 220 15% 20%;
 
-    --popover: 210 15% 98%;
-    --popover-foreground: 210 15% 20%;
+    --popover: 30 8% 98%;
+    --popover-foreground: 220 15% 20%;
 
-    --primary: 32 35% 55%;
-    --primary-foreground: 210 15% 98%;
+    --primary: 35 30% 45%;
+    --primary-foreground: 30 10% 98%;
 
-    --secondary: 210 15% 92%;
-    --secondary-foreground: 210 15% 25%;
+    --secondary: 220 10% 92%;
+    --secondary-foreground: 220 15% 25%;
 
-    --muted: 210 12% 90%;
-    --muted-foreground: 210 10% 45%;
+    --muted: 30 8% 90%;
+    --muted-foreground: 220 8% 45%;
 
-    --accent: 32 25% 92%;
-    --accent-foreground: 32 35% 40%;
+    --accent: 35 20% 90%;
+    --accent-foreground: 35 30% 35%;
 
-    --destructive: 0 72% 51%;
+    --destructive: 0 65% 50%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 210 15% 85%;
-    --input: 210 15% 85%;
-    --ring: 32 35% 55%;
+    --border: 220 12% 85%;
+    --input: 220 12% 85%;
+    --ring: 35 30% 45%;
 
     --radius: 0.75rem;
 
     /* Custom design tokens */
-    --canvas-bg: 210 18% 93%;
-    --toolbar-bg: 210 15% 98%;
-    --card-shadow: 0 8px 32px -8px hsl(210 20% 20% / 0.12);
-    --card-shadow-lg: 0 16px 48px -12px hsl(210 20% 20% / 0.18);
+    --canvas-bg: 30 10% 93%;
+    --toolbar-bg: 30 8% 98%;
+    --card-shadow: 0 8px 32px -8px hsl(220 20% 20% / 0.12);
+    --card-shadow-lg: 0 16px 48px -12px hsl(220 20% 20% / 0.18);
     --metal-shimmer: linear-gradient(135deg, 
-      hsl(32 25% 78%) 0%, 
-      hsl(32 30% 85%) 25%, 
-      hsl(32 25% 75%) 50%, 
-      hsl(32 30% 85%) 75%, 
-      hsl(32 25% 78%) 100%);
+      hsl(35 20% 78%) 0%, 
+      hsl(35 25% 85%) 25%, 
+      hsl(35 20% 75%) 50%, 
+      hsl(35 25% 85%) 75%, 
+      hsl(35 20% 78%) 100%);
 
-    --sidebar-background: 210 15% 97%;
-    --sidebar-foreground: 210 15% 25%;
-    --sidebar-primary: 32 35% 55%;
-    --sidebar-primary-foreground: 210 15% 98%;
-    --sidebar-accent: 210 12% 94%;
-    --sidebar-accent-foreground: 210 15% 20%;
-    --sidebar-border: 210 15% 88%;
-    --sidebar-ring: 32 35% 55%;
+    --sidebar-background: 30 8% 97%;
+    --sidebar-foreground: 220 15% 25%;
+    --sidebar-primary: 35 30% 45%;
+    --sidebar-primary-foreground: 30 10% 98%;
+    --sidebar-accent: 30 8% 94%;
+    --sidebar-accent-foreground: 220 15% 20%;
+    --sidebar-border: 220 12% 88%;
+    --sidebar-ring: 35 30% 45%;
   }
 
   .dark {
-    --background: 210 20% 10%;
-    --foreground: 210 15% 92%;
+    /* Solemn, respectful dark palette - deep charcoal with warm muted gold */
+    --background: 220 15% 12%;
+    --foreground: 30 10% 92%;
 
-    --card: 210 18% 14%;
-    --card-foreground: 210 15% 92%;
+    --card: 220 14% 16%;
+    --card-foreground: 30 10% 92%;
 
-    --popover: 210 18% 14%;
-    --popover-foreground: 210 15% 92%;
+    --popover: 220 14% 16%;
+    --popover-foreground: 30 10% 92%;
 
-    --primary: 32 40% 60%;
-    --primary-foreground: 210 20% 10%;
+    --primary: 35 35% 55%;
+    --primary-foreground: 220 15% 12%;
 
-    --secondary: 210 15% 20%;
-    --secondary-foreground: 210 15% 88%;
+    --secondary: 220 12% 22%;
+    --secondary-foreground: 30 8% 85%;
 
-    --muted: 210 12% 18%;
-    --muted-foreground: 210 10% 55%;
+    --muted: 220 12% 20%;
+    --muted-foreground: 30 6% 55%;
 
-    --accent: 32 30% 22%;
-    --accent-foreground: 32 40% 75%;
+    --accent: 35 25% 25%;
+    --accent-foreground: 35 35% 75%;
 
-    --destructive: 0 62% 40%;
+    --destructive: 0 55% 45%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 210 15% 22%;
-    --input: 210 15% 22%;
-    --ring: 32 40% 60%;
+    --border: 220 12% 25%;
+    --input: 220 12% 25%;
+    --ring: 35 35% 55%;
 
-    --canvas-bg: 210 18% 12%;
-    --toolbar-bg: 210 18% 14%;
+    --canvas-bg: 220 14% 14%;
+    --toolbar-bg: 220 14% 16%;
 
-    --sidebar-background: 210 20% 12%;
-    --sidebar-foreground: 210 15% 90%;
-    --sidebar-primary: 32 40% 60%;
-    --sidebar-primary-foreground: 210 20% 10%;
-    --sidebar-accent: 210 15% 18%;
-    --sidebar-accent-foreground: 210 15% 90%;
-    --sidebar-border: 210 15% 20%;
-    --sidebar-ring: 32 40% 60%;
+    --sidebar-background: 220 15% 13%;
+    --sidebar-foreground: 30 8% 90%;
+    --sidebar-primary: 35 35% 55%;
+    --sidebar-primary-foreground: 220 15% 12%;
+    --sidebar-accent: 220 12% 20%;
+    --sidebar-accent-foreground: 30 8% 90%;
+    --sidebar-border: 220 12% 22%;
+    --sidebar-ring: 35 35% 55%;
   }
 }
 

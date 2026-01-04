@@ -33,10 +33,10 @@ type Orientation = 'landscape' | 'portrait';
 type CardSide = 'front' | 'back';
 
 const METAL_FINISHES: { id: MetalFinish; name: string; gradient: string }[] = [
-  { id: 'silver', name: 'Brushed Silver', gradient: 'from-slate-400 via-slate-300 to-slate-500' },
-  { id: 'gold', name: 'Polished Gold', gradient: 'from-amber-400 via-yellow-300 to-amber-500' },
-  { id: 'black', name: 'Matte Black', gradient: 'from-slate-800 via-slate-700 to-slate-900' },
-  { id: 'rose-gold', name: 'Rose Gold', gradient: 'from-rose-300 via-rose-200 to-rose-400' },
+  { id: 'silver', name: 'Brushed Silver', gradient: 'from-zinc-400 via-zinc-300 to-zinc-500' },
+  { id: 'gold', name: 'Polished Gold', gradient: 'from-yellow-600 via-yellow-500 to-yellow-700' },
+  { id: 'black', name: 'Matte Black', gradient: 'from-zinc-800 via-zinc-700 to-zinc-900' },
+  { id: 'rose-gold', name: 'Rose Gold', gradient: 'from-rose-400 via-rose-300 to-rose-500' },
 ];
 
 const BASE_PRICE_PER_CARD = 8;
@@ -264,29 +264,29 @@ const Dashboard = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-900 flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-amber-500" />
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-slate-900">
+    <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="border-b border-amber-900/30 bg-slate-900/80 backdrop-blur-sm sticky top-0 z-50">
+      <header className="border-b border-border bg-card/80 backdrop-blur-sm sticky top-0 z-50">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center">
-              <Sparkles className="h-5 w-5 text-slate-900" />
+            <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center">
+              <Sparkles className="h-5 w-5 text-primary-foreground" />
             </div>
             <div>
-              <span className="text-xl font-semibold text-amber-100">Eternity Cards</span>
+              <span className="text-xl font-semibold text-foreground">Eternity Cards</span>
               {funeralHome && (
-                <p className="text-sm text-slate-400">{funeralHome.name}</p>
+                <p className="text-sm text-muted-foreground">{funeralHome.name}</p>
               )}
             </div>
           </div>
-          <Button variant="ghost" onClick={handleLogout} className="text-amber-200 hover:text-white hover:bg-slate-800">
+          <Button variant="ghost" onClick={handleLogout} className="text-muted-foreground hover:text-foreground hover:bg-secondary">
             <LogOut className="h-4 w-4 mr-2" />
             Logout
           </Button>
@@ -297,25 +297,25 @@ const Dashboard = () => {
       <main className="container mx-auto px-4 py-8">
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="text-2xl font-bold text-white">Prayer Card Orders</h1>
-            <p className="text-slate-400">Create and manage memorial prayer cards</p>
+            <h1 className="text-2xl font-bold text-foreground">Prayer Card Orders</h1>
+            <p className="text-muted-foreground">Create and manage memorial prayer cards</p>
           </div>
 
           <Dialog open={dialogOpen} onOpenChange={(open) => { setDialogOpen(open); if (!open) resetForm(); }}>
             <DialogTrigger asChild>
-              <Button className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-slate-900 font-semibold">
+              <Button className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold">
                 <Plus className="h-4 w-4 mr-2" />
                 New Prayer Card
               </Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-3xl bg-slate-800 border-slate-700 text-white max-h-[90vh] overflow-y-auto">
+            <DialogContent className="sm:max-w-3xl bg-card border-border text-foreground max-h-[90vh] overflow-y-auto">
               <DialogHeader>
-                <DialogTitle className="text-amber-100">
+                <DialogTitle className="text-foreground">
                   {step === 1 && 'Design Your Metal Prayer Card'}
                   {step === 2 && 'Memorial Details'}
                   {step === 3 && 'Shipping & Review'}
                 </DialogTitle>
-                <DialogDescription className="text-slate-400">
+                <DialogDescription className="text-muted-foreground">
                   Step {step} of 3
                 </DialogDescription>
               </DialogHeader>
@@ -331,8 +331,8 @@ const Dashboard = () => {
                         variant={orientation === 'landscape' ? 'default' : 'outline'}
                         onClick={() => setOrientation('landscape')}
                         className={orientation === 'landscape' 
-                          ? 'bg-amber-500 hover:bg-amber-600 text-slate-900' 
-                          : 'border-amber-500/50 text-amber-200 hover:bg-amber-500/20'}
+                          ? 'bg-primary hover:bg-primary/90 text-primary-foreground' 
+                          : 'border-border text-muted-foreground hover:bg-accent hover:text-accent-foreground'}
                       >
                         <RectangleHorizontal className="h-4 w-4 mr-2" />
                         Landscape
@@ -342,8 +342,8 @@ const Dashboard = () => {
                         variant={orientation === 'portrait' ? 'default' : 'outline'}
                         onClick={() => setOrientation('portrait')}
                         className={orientation === 'portrait' 
-                          ? 'bg-amber-500 hover:bg-amber-600 text-slate-900' 
-                          : 'border-amber-500/50 text-amber-200 hover:bg-amber-500/20'}
+                          ? 'bg-primary hover:bg-primary/90 text-primary-foreground' 
+                          : 'border-border text-muted-foreground hover:bg-accent hover:text-accent-foreground'}
                       >
                         <RectangleVertical className="h-4 w-4 mr-2" />
                         Portrait
@@ -352,11 +352,11 @@ const Dashboard = () => {
 
                     {/* Front/Back Tabs */}
                     <Tabs value={cardSide} onValueChange={(v) => setCardSide(v as CardSide)} className="w-full">
-                      <TabsList className="grid w-full grid-cols-2 bg-slate-700">
-                        <TabsTrigger value="front" className="data-[state=active]:bg-amber-500 data-[state=active]:text-slate-900">
+                      <TabsList className="grid w-full grid-cols-2 bg-secondary">
+                        <TabsTrigger value="front" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
                           Front (Photo)
                         </TabsTrigger>
-                        <TabsTrigger value="back" className="data-[state=active]:bg-amber-500 data-[state=active]:text-slate-900">
+                        <TabsTrigger value="back" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
                           Back (Info + QR)
                         </TabsTrigger>
                       </TabsList>
@@ -367,7 +367,7 @@ const Dashboard = () => {
                           {/* Card Preview - Full Photo */}
                           <div className={`${cardClass} rounded-2xl overflow-hidden shadow-2xl relative`}>
                             <div className={`absolute inset-0 bg-gradient-to-br ${currentFinish.gradient} p-1`}>
-                              <div className="w-full h-full rounded-xl overflow-hidden bg-slate-700 flex items-center justify-center">
+                              <div className="w-full h-full rounded-xl overflow-hidden bg-muted flex items-center justify-center">
                                 {deceasedPhoto ? (
                                   <img
                                     src={deceasedPhoto}
@@ -378,8 +378,8 @@ const Dashboard = () => {
                                   />
                                 ) : (
                                   <div className="text-center p-4">
-                                    <ImageIcon className="h-12 w-12 text-slate-500 mx-auto mb-2" />
-                                    <p className="text-slate-400 text-sm">Upload photo</p>
+                                    <ImageIcon className="h-12 w-12 text-muted-foreground mx-auto mb-2" />
+                                    <p className="text-muted-foreground text-sm">Upload photo</p>
                                   </div>
                                 )}
                               </div>
@@ -400,7 +400,7 @@ const Dashboard = () => {
                               variant="outline"
                               onClick={() => photoInputRef.current?.click()}
                               disabled={uploadingPhoto}
-                              className="border-amber-500 text-amber-200 hover:bg-amber-500/20"
+                              className="border-primary/50 text-foreground hover:bg-accent"
                             >
                               {uploadingPhoto ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <ImageIcon className="h-4 w-4 mr-2" />}
                               {deceasedPhoto ? 'Change Photo' : 'Upload Photo'}
@@ -413,7 +413,7 @@ const Dashboard = () => {
                                   setDeceasedPhoto(null);
                                   setPhotoZoom(1);
                                 }}
-                                className="border-red-500/50 text-red-300 hover:bg-red-500/20"
+                                className="border-destructive/50 text-destructive hover:bg-destructive/10"
                               >
                                 <Trash2 className="h-4 w-4" />
                               </Button>
@@ -423,8 +423,8 @@ const Dashboard = () => {
                           {deceasedPhoto && (
                             <div className="w-full max-w-md">
                               <div className="flex items-center justify-between mb-2">
-                                <Label className="text-slate-300">Photo zoom</Label>
-                                <span className="text-xs text-slate-400">{Math.round(photoZoom * 100)}%</span>
+                                <Label className="text-muted-foreground">Photo zoom</Label>
+                                <span className="text-xs text-muted-foreground">{Math.round(photoZoom * 100)}%</span>
                               </div>
                               <input
                                 type="range"
@@ -433,12 +433,12 @@ const Dashboard = () => {
                                 step={0.05}
                                 value={photoZoom}
                                 onChange={(e) => setPhotoZoom(parseFloat(e.target.value))}
-                                className="w-full accent-amber-500"
+                                className="w-full accent-primary"
                               />
                             </div>
                           )}
 
-                          <p className="text-slate-500 text-xs text-center">The photo fills the entire front of the card with a metal border frame</p>
+                          <p className="text-muted-foreground text-xs text-center">The photo fills the entire front of the card with a metal border frame</p>
                         </div>
                       </TabsContent>
 
@@ -481,20 +481,20 @@ const Dashboard = () => {
                             <div className="relative z-10 h-full flex flex-col justify-between text-center">
                               {/* Top - Name & Dates */}
                               <div>
-                                <p className={`text-[9px] uppercase tracking-[0.15em] mb-1 ${backBgImage ? 'text-slate-300' : 'text-slate-500'}`}>
+                                <p className={`text-[9px] uppercase tracking-[0.15em] mb-1 ${backBgImage ? 'text-zinc-300' : 'text-muted-foreground'}`}>
                                   In Loving Memory
                                 </p>
-                                <p className={`${orientation === 'portrait' ? 'text-lg' : 'text-base'} font-serif ${backBgImage ? 'text-white' : 'text-slate-800'}`}>
+                                <p className={`${orientation === 'portrait' ? 'text-lg' : 'text-base'} font-serif ${backBgImage ? 'text-white' : 'text-foreground'}`}>
                                   {deceasedName || 'Name Here'}
                                 </p>
-                                <p className={`text-xs ${backBgImage ? 'text-slate-300' : 'text-slate-500'}`}>
+                                <p className={`text-xs ${backBgImage ? 'text-zinc-300' : 'text-muted-foreground'}`}>
                                   {birthDate && deathDate ? `${birthDate} – ${deathDate}` : '1945 – 2025'}
                                 </p>
                               </div>
 
                               {/* Middle - Prayer */}
                               <div className="flex-1 flex items-center justify-center py-2">
-                                <p className={`${orientation === 'portrait' ? 'text-sm' : 'text-xs'} leading-relaxed font-serif italic ${backBgImage ? 'text-slate-200' : 'text-slate-600'}`}>
+                                <p className={`${orientation === 'portrait' ? 'text-sm' : 'text-xs'} leading-relaxed font-serif italic ${backBgImage ? 'text-zinc-200' : 'text-muted-foreground'}`}>
                                   {backText}
                                 </p>
                               </div>
@@ -502,9 +502,9 @@ const Dashboard = () => {
                               {/* Bottom - QR Code */}
                               <div className="flex flex-col items-center">
                                 <div className={`${orientation === 'portrait' ? 'w-14 h-14' : 'w-10 h-10'} bg-white rounded-lg flex items-center justify-center shadow-md`}>
-                                  <QrCode className={`${orientation === 'portrait' ? 'h-10 w-10' : 'h-7 w-7'} text-slate-800`} />
+                                  <QrCode className={`${orientation === 'portrait' ? 'h-10 w-10' : 'h-7 w-7'} text-foreground`} />
                                 </div>
-                                <p className={`text-[8px] mt-1 ${backBgImage ? 'text-slate-400' : 'text-slate-500'}`}>
+                                <p className={`text-[8px] mt-1 ${backBgImage ? 'text-zinc-400' : 'text-muted-foreground'}`}>
                                   Scan to share memories
                                 </p>
                               </div>
@@ -525,7 +525,7 @@ const Dashboard = () => {
                               variant="outline"
                               onClick={() => backInputRef.current?.click()}
                               disabled={uploadingBack}
-                              className="border-amber-500/50 text-amber-200 hover:bg-amber-500/20"
+                              className="border-primary/50 text-foreground hover:bg-accent"
                             >
                               {uploadingBack ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Upload className="h-4 w-4 mr-2" />}
                               {backBgImage ? 'Change Background' : 'Upload Background'}
@@ -535,7 +535,7 @@ const Dashboard = () => {
                                 type="button"
                                 variant="outline"
                                 onClick={() => setBackBgImage(null)}
-                                className="border-amber-500/50 text-amber-200 hover:bg-amber-500/20"
+                                className="border-primary/50 text-foreground hover:bg-accent"
                               >
                                 <RotateCcw className="h-4 w-4 mr-2" />
                                 Use Metal
@@ -545,13 +545,13 @@ const Dashboard = () => {
 
                           {/* Back Text */}
                           <div className="w-full max-w-md">
-                            <Label htmlFor="back-text" className="text-slate-300">Prayer or Scripture</Label>
+                            <Label htmlFor="back-text" className="text-muted-foreground">Prayer or Scripture</Label>
                             <Input
                               id="back-text"
                               placeholder="The Lord is my shepherd..."
                               value={backText}
                               onChange={(e) => setBackText(e.target.value)}
-                              className="bg-slate-700 border-slate-600 text-white"
+                              className="bg-secondary border-border text-foreground"
                             />
                           </div>
                         </div>
@@ -560,7 +560,7 @@ const Dashboard = () => {
 
                     {/* Metal Finish Selection */}
                     <div>
-                      <Label className="text-slate-300 mb-3 block">Metal Finish (visible where no background image)</Label>
+                      <Label className="text-muted-foreground mb-3 block">Metal Finish (visible where no background image)</Label>
                       <div className="grid grid-cols-4 gap-3">
                         {METAL_FINISHES.map((finish) => (
                           <button
@@ -569,12 +569,12 @@ const Dashboard = () => {
                             onClick={() => setMetalFinish(finish.id)}
                             className={`p-3 rounded-lg border-2 transition-all ${
                               metalFinish === finish.id 
-                                ? 'border-amber-500 ring-2 ring-amber-500/30' 
-                                : 'border-slate-600 hover:border-slate-500'
+                                ? 'border-primary ring-2 ring-primary/30' 
+                                : 'border-border hover:border-muted-foreground'
                             }`}
                           >
                             <div className={`h-8 rounded bg-gradient-to-br ${finish.gradient} mb-2`}></div>
-                            <p className="text-xs text-slate-300">{finish.name}</p>
+                            <p className="text-xs text-muted-foreground">{finish.name}</p>
                           </button>
                         ))}
                       </div>
@@ -582,18 +582,18 @@ const Dashboard = () => {
 
                     {/* Epitaph */}
                     <div>
-                      <Label htmlFor="epitaph" className="text-slate-300">Front Epitaph / Quote</Label>
+                      <Label htmlFor="epitaph" className="text-muted-foreground">Front Epitaph / Quote</Label>
                       <Input
                         id="epitaph"
                         placeholder="Forever in our hearts"
                         value={epitaph}
                         onChange={(e) => setEpitaph(e.target.value)}
-                        className="bg-slate-700 border-slate-600 text-white"
+                        className="bg-secondary border-border text-foreground"
                         maxLength={50}
                       />
                     </div>
 
-                    <Button type="button" onClick={() => setStep(2)} className="w-full bg-amber-500 hover:bg-amber-600 text-slate-900">
+                    <Button type="button" onClick={() => setStep(2)} className="w-full bg-primary hover:bg-primary/90 text-primary-foreground">
                       Continue <ArrowRight className="h-4 w-4 ml-2" />
                     </Button>
                   </div>
@@ -603,39 +603,39 @@ const Dashboard = () => {
                 {step === 2 && (
                   <div className="space-y-4">
                     <div>
-                      <Label htmlFor="deceased-name" className="text-slate-300">Name of Deceased *</Label>
+                      <Label htmlFor="deceased-name" className="text-muted-foreground">Name of Deceased *</Label>
                       <Input
                         id="deceased-name"
                         placeholder="John David Smith"
                         value={deceasedName}
                         onChange={(e) => setDeceasedName(e.target.value)}
-                        className="bg-slate-700 border-slate-600 text-white"
+                        className="bg-secondary border-border text-foreground"
                       />
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <Label htmlFor="birth-date" className="text-slate-300">Birth Date</Label>
+                        <Label htmlFor="birth-date" className="text-muted-foreground">Birth Date</Label>
                         <Input
                           id="birth-date"
                           type="date"
                           value={birthDate}
                           onChange={(e) => setBirthDate(e.target.value)}
-                          className="bg-slate-700 border-slate-600 text-white"
+                          className="bg-secondary border-border text-foreground"
                         />
                       </div>
                       <div>
-                        <Label htmlFor="death-date" className="text-slate-300">Death Date</Label>
+                        <Label htmlFor="death-date" className="text-muted-foreground">Death Date</Label>
                         <Input
                           id="death-date"
                           type="date"
                           value={deathDate}
                           onChange={(e) => setDeathDate(e.target.value)}
-                          className="bg-slate-700 border-slate-600 text-white"
+                          className="bg-secondary border-border text-foreground"
                         />
                       </div>
                     </div>
                     <div>
-                      <Label htmlFor="quantity" className="text-slate-300">Quantity of Cards</Label>
+                      <Label htmlFor="quantity" className="text-muted-foreground">Quantity of Cards</Label>
                       <Input
                         id="quantity"
                         type="number"
@@ -643,13 +643,13 @@ const Dashboard = () => {
                         step="25"
                         value={quantity}
                         onChange={(e) => setQuantity(e.target.value)}
-                        className="bg-slate-700 border-slate-600 text-white"
+                        className="bg-secondary border-border text-foreground"
                       />
-                      <p className="text-xs text-slate-500 mt-1">Minimum 25 cards, increments of 25</p>
+                      <p className="text-xs text-muted-foreground mt-1">Minimum 25 cards, increments of 25</p>
                     </div>
 
                     <div className="flex gap-3 pt-2">
-                      <Button type="button" variant="outline" onClick={() => setStep(1)} className="flex-1 border-amber-500/50 text-amber-200 hover:bg-amber-500/20">
+                      <Button type="button" variant="outline" onClick={() => setStep(1)} className="flex-1 border-border text-foreground hover:bg-accent">
                         <ArrowLeft className="h-4 w-4 mr-2" /> Back
                       </Button>
                       <Button 
@@ -661,7 +661,7 @@ const Dashboard = () => {
                           }
                           setStep(3);
                         }} 
-                        className="flex-1 bg-amber-500 hover:bg-amber-600 text-slate-900"
+                        className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground"
                       >
                         Continue <ArrowRight className="h-4 w-4 ml-2" />
                       </Button>
@@ -674,65 +674,65 @@ const Dashboard = () => {
                   <div className="space-y-6">
                     {/* Shipping Options */}
                     <div>
-                      <Label className="text-slate-300 mb-3 block">Shipping Speed</Label>
+                      <Label className="text-muted-foreground mb-3 block">Shipping Speed</Label>
                       <RadioGroup value={shipping} onValueChange={(v) => setShipping(v as 'standard' | 'express')}>
                         <div className={`flex items-center justify-between p-4 rounded-lg border-2 cursor-pointer transition-all ${
-                          shipping === 'standard' ? 'border-amber-500 bg-amber-500/10' : 'border-slate-600 hover:border-slate-500'
+                          shipping === 'standard' ? 'border-primary bg-accent/50' : 'border-border hover:border-muted-foreground'
                         }`} onClick={() => setShipping('standard')}>
                           <div className="flex items-center gap-3">
-                            <RadioGroupItem value="standard" id="standard" className="border-slate-500" />
+                            <RadioGroupItem value="standard" id="standard" className="border-muted-foreground" />
                             <div>
-                              <Label htmlFor="standard" className="text-white font-medium cursor-pointer flex items-center gap-2">
+                              <Label htmlFor="standard" className="text-foreground font-medium cursor-pointer flex items-center gap-2">
                                 <Truck className="h-4 w-4" /> Standard Delivery
                               </Label>
-                              <p className="text-sm text-slate-400">2 business days</p>
+                              <p className="text-sm text-muted-foreground">2 business days</p>
                             </div>
                           </div>
-                          <p className="text-amber-400 font-semibold">${(parseInt(quantity) || 0) * BASE_PRICE_PER_CARD}</p>
+                          <p className="text-primary font-semibold">${(parseInt(quantity) || 0) * BASE_PRICE_PER_CARD}</p>
                         </div>
                         <div className={`flex items-center justify-between p-4 rounded-lg border-2 cursor-pointer transition-all mt-3 ${
-                          shipping === 'express' ? 'border-amber-500 bg-amber-500/10' : 'border-slate-600 hover:border-slate-500'
+                          shipping === 'express' ? 'border-primary bg-accent/50' : 'border-border hover:border-muted-foreground'
                         }`} onClick={() => setShipping('express')}>
                           <div className="flex items-center gap-3">
-                            <RadioGroupItem value="express" id="express" className="border-slate-500" />
+                            <RadioGroupItem value="express" id="express" className="border-muted-foreground" />
                             <div>
-                              <Label htmlFor="express" className="text-white font-medium cursor-pointer flex items-center gap-2">
-                                <Zap className="h-4 w-4 text-amber-400" /> Next Day Express
+                              <Label htmlFor="express" className="text-foreground font-medium cursor-pointer flex items-center gap-2">
+                                <Zap className="h-4 w-4 text-primary" /> Next Day Express
                               </Label>
-                              <p className="text-sm text-slate-400">Delivered tomorrow • 100% rush fee</p>
+                              <p className="text-sm text-muted-foreground">Delivered tomorrow • 100% rush fee</p>
                             </div>
                           </div>
-                          <p className="text-amber-400 font-semibold">${(parseInt(quantity) || 0) * BASE_PRICE_PER_CARD * 2}</p>
+                          <p className="text-primary font-semibold">${(parseInt(quantity) || 0) * BASE_PRICE_PER_CARD * 2}</p>
                         </div>
                       </RadioGroup>
                     </div>
 
                     {/* Order Summary */}
-                    <div className="bg-slate-700/50 rounded-lg p-4 space-y-2">
-                      <h4 className="text-amber-100 font-medium mb-3">Order Summary</h4>
+                    <div className="bg-secondary/50 rounded-lg p-4 space-y-2">
+                      <h4 className="text-foreground font-medium mb-3">Order Summary</h4>
                       <div className="flex justify-between text-sm">
-                        <span className="text-slate-400">{currentFinish.name} Metal Cards ({orientation})</span>
-                        <span className="text-white">×{quantity}</span>
+                        <span className="text-muted-foreground">{currentFinish.name} Metal Cards ({orientation})</span>
+                        <span className="text-foreground">×{quantity}</span>
                       </div>
                       <div className="flex justify-between text-sm">
-                        <span className="text-slate-400">For: {deceasedName}</span>
+                        <span className="text-muted-foreground">For: {deceasedName}</span>
                       </div>
                       <div className="flex justify-between text-sm">
-                        <span className="text-slate-400">Shipping</span>
-                        <span className="text-white">{shipping === 'express' ? 'Next Day' : '2 Days'}</span>
+                        <span className="text-muted-foreground">Shipping</span>
+                        <span className="text-foreground">{shipping === 'express' ? 'Next Day' : '2 Days'}</span>
                       </div>
-                      <div className="border-t border-slate-600 my-2"></div>
+                      <div className="border-t border-border my-2"></div>
                       <div className="flex justify-between font-semibold">
-                        <span className="text-white">Total</span>
-                        <span className="text-amber-400 text-lg">${calculatePrice()}</span>
+                        <span className="text-foreground">Total</span>
+                        <span className="text-primary text-lg">${calculatePrice()}</span>
                       </div>
                     </div>
 
                     <div className="flex gap-3">
-                      <Button type="button" variant="outline" onClick={() => setStep(2)} className="flex-1 border-amber-500/50 text-amber-200 hover:bg-amber-500/20">
+                      <Button type="button" variant="outline" onClick={() => setStep(2)} className="flex-1 border-border text-foreground hover:bg-accent">
                         <ArrowLeft className="h-4 w-4 mr-2" /> Back
                       </Button>
-                      <Button type="submit" className="flex-1 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-slate-900 font-semibold" disabled={creating}>
+                      <Button type="submit" className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold" disabled={creating}>
                         {creating ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
                         Place Order
                       </Button>
@@ -746,12 +746,12 @@ const Dashboard = () => {
 
         {/* Orders List */}
         {orders.length === 0 ? (
-          <Card className="text-center py-12 bg-slate-800 border-slate-700">
+          <Card className="text-center py-12 bg-card border-border">
             <CardContent>
-              <QrCode className="h-16 w-16 text-slate-600 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-white mb-2">No orders yet</h3>
-              <p className="text-slate-400 mb-4">Create your first prayer card order to get started.</p>
-              <Button onClick={() => setDialogOpen(true)} className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-slate-900">
+              <QrCode className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
+              <h3 className="text-lg font-medium text-foreground mb-2">No orders yet</h3>
+              <p className="text-muted-foreground mb-4">Create your first prayer card order to get started.</p>
+              <Button onClick={() => setDialogOpen(true)} className="bg-primary hover:bg-primary/90 text-primary-foreground">
                 <Plus className="h-4 w-4 mr-2" />
                 Create First Order
               </Button>
@@ -760,12 +760,12 @@ const Dashboard = () => {
         ) : (
           <div className="grid gap-4">
             {orders.map((order) => (
-              <Card key={order.id} className="bg-slate-800 border-slate-700">
+              <Card key={order.id} className="bg-card border-border">
                 <CardHeader className="pb-2">
                   <div className="flex items-start justify-between">
                     <div>
-                      <CardTitle className="text-lg text-white">{order.deceased_name}</CardTitle>
-                      <CardDescription className="text-slate-400">
+                      <CardTitle className="text-lg text-foreground">{order.deceased_name}</CardTitle>
+                      <CardDescription className="text-muted-foreground">
                         {order.birth_date && order.death_date
                           ? `${order.birth_date} – ${order.death_date}`
                           : order.death_date
@@ -776,8 +776,8 @@ const Dashboard = () => {
                     <div className="flex items-center gap-2">
                       <span className={`px-2 py-1 rounded-full text-xs font-medium ${
                         order.status === 'completed' 
-                          ? 'bg-green-900/50 text-green-400'
-                          : 'bg-amber-900/50 text-amber-400'
+                          ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
+                          : 'bg-accent text-accent-foreground'
                       }`}>
                         {order.status}
                       </span>
@@ -785,7 +785,7 @@ const Dashboard = () => {
                         variant="ghost"
                         size="icon"
                         onClick={() => handleDeleteOrder(order.id)}
-                        className="text-slate-500 hover:text-red-400"
+                        className="text-muted-foreground hover:text-destructive"
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>
@@ -794,7 +794,7 @@ const Dashboard = () => {
                 </CardHeader>
                 <CardContent>
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-4 text-sm text-slate-400">
+                    <div className="flex items-center gap-4 text-sm text-muted-foreground">
                       <span>Qty: {order.quantity} cards</span>
                       <span>Created: {new Date(order.created_at).toLocaleDateString()}</span>
                     </div>
@@ -806,7 +806,7 @@ const Dashboard = () => {
                           navigator.clipboard.writeText(getMemorialUrl(order.qr_code));
                           toast.success('Memorial link copied!');
                         }}
-                        className="border-amber-500/50 text-amber-200 hover:bg-amber-500/20"
+                        className="border-border text-foreground hover:bg-accent"
                       >
                         <QrCode className="h-4 w-4 mr-2" />
                         Copy Link
@@ -815,7 +815,7 @@ const Dashboard = () => {
                         variant="outline"
                         size="sm"
                         onClick={() => window.open(getMemorialUrl(order.qr_code), '_blank')}
-                        className="border-amber-500/50 text-amber-200 hover:bg-amber-500/20"
+                        className="border-border text-foreground hover:bg-accent"
                       >
                         <ExternalLink className="h-4 w-4 mr-2" />
                         View Memorial
