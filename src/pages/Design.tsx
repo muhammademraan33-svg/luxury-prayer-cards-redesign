@@ -89,8 +89,11 @@ const Design = () => {
   const [additionalTextFont, setAdditionalTextFont] = useState('Cormorant Garamond');
   const [showAdditionalText, setShowAdditionalText] = useState(false);
   const [selectedPrayerId, setSelectedPrayerId] = useState<string>('custom');
-  const [draggingText, setDraggingText] = useState<'name' | 'dates' | 'additional' | null>(null);
-  const [resizingText, setResizingText] = useState<'name' | 'dates' | 'additional' | null>(null);
+  const [draggingText, setDraggingText] = useState<'name' | 'dates' | 'additional' | 'backDates' | null>(null);
+  const [resizingText, setResizingText] = useState<'name' | 'dates' | 'additional' | 'backDates' | null>(null);
+  
+  // Back card dates position
+  const [backDatesPosition, setBackDatesPosition] = useState({ x: 50, y: 25 });
   
   // Bold options
   const [nameBold, setNameBold] = useState(false);
@@ -108,7 +111,7 @@ const Design = () => {
   // Funeral home logo
   const [funeralHomeLogo, setFuneralHomeLogo] = useState<string | null>(null);
   const [funeralHomeLogoPosition, setFuneralHomeLogoPosition] = useState<'top' | 'bottom'>('bottom');
-  const [funeralHomeLogoSize, setFuneralHomeLogoSize] = useState(30);
+  const [funeralHomeLogoSize, setFuneralHomeLogoSize] = useState(40);
   
   const textDragStartRef = useRef<{ x: number; y: number; posX: number; posY: number } | null>(null);
   const textPinchStartRef = useRef<{ distance: number; size: number } | null>(null);
@@ -123,7 +126,7 @@ const Design = () => {
   const pointerCacheRef = useRef<Map<number, PointerEvent>>(new Map());
 
   // Text drag handlers
-  const handleTextPointerDown = (e: React.PointerEvent, textType: 'name' | 'dates' | 'additional') => {
+  const handleTextPointerDown = (e: React.PointerEvent, textType: 'name' | 'dates' | 'additional' | 'backDates') => {
     e.stopPropagation();
     e.preventDefault();
 
@@ -137,7 +140,7 @@ const Design = () => {
     if (textPointerCacheRef.current.size === 1) {
       setDraggingText(textType);
       const currentPos =
-        textType === 'name' ? namePosition : textType === 'dates' ? datesPosition : additionalTextPosition;
+        textType === 'name' ? namePosition : textType === 'dates' ? datesPosition : textType === 'backDates' ? backDatesPosition : additionalTextPosition;
       textDragStartRef.current = { x: e.clientX, y: e.clientY, posX: currentPos.x, posY: currentPos.y };
     } else if (textPointerCacheRef.current.size === 2) {
       setResizingText(textType);
@@ -149,7 +152,11 @@ const Design = () => {
             ? typeof frontDatesSize === 'number'
               ? frontDatesSize
               : 12
-            : additionalTextSize;
+            : textType === 'backDates'
+              ? typeof backDatesSize === 'number'
+                ? backDatesSize
+                : 10
+              : additionalTextSize;
 
       textPinchStartRef.current = {
         distance: getDistance(pointers[0], pointers[1]),
@@ -170,6 +177,8 @@ const Design = () => {
         setNameSize(newSize);
       } else if (resizingText === 'dates') {
         setFrontDatesSize(newSize);
+      } else if (resizingText === 'backDates') {
+        setBackDatesSize(newSize);
       } else {
         setAdditionalTextSize(newSize);
       }
@@ -189,6 +198,8 @@ const Design = () => {
       setNamePosition({ x: newX, y: newY });
     } else if (draggingText === 'dates') {
       setDatesPosition({ x: newX, y: newY });
+    } else if (draggingText === 'backDates') {
+      setBackDatesPosition({ x: newX, y: newY });
     } else {
       setAdditionalTextPosition({ x: newX, y: newY });
     }
@@ -212,7 +223,7 @@ const Design = () => {
     }
   };
 
-  const handleTextWheel = (e: React.WheelEvent, textType: 'name' | 'dates' | 'additional') => {
+  const handleTextWheel = (e: React.WheelEvent, textType: 'name' | 'dates' | 'additional' | 'backDates') => {
     e.preventDefault();
     e.stopPropagation();
     const delta = -e.deltaY * 0.05;
@@ -223,13 +234,19 @@ const Design = () => {
           ? typeof frontDatesSize === 'number'
             ? frontDatesSize
             : 12
-          : additionalTextSize;
+          : textType === 'backDates'
+            ? typeof backDatesSize === 'number'
+              ? backDatesSize
+              : 10
+            : additionalTextSize;
 
     const newSize = Math.max(8, Math.min(48, currentSize + delta));
     if (textType === 'name') {
       setNameSize(newSize);
     } else if (textType === 'dates') {
       setFrontDatesSize(newSize);
+    } else if (textType === 'backDates') {
+      setBackDatesSize(newSize);
     } else {
       setAdditionalTextSize(newSize);
     }
@@ -1022,6 +1039,7 @@ const Design = () => {
                       <div className="flex flex-col items-center gap-4">
                         {/* Card Preview */}
                         <div 
+                          ref={cardPreviewRef}
                           className={`${cardClass} rounded-2xl shadow-2xl relative overflow-hidden`}
                         >
                           <div 
@@ -1043,16 +1061,19 @@ const Design = () => {
                                 }}
                               />
                             )}
-                            <div className="relative z-10 w-full h-full p-3">
-                              <div className="h-full flex flex-col justify-between text-center">
+                            <div 
+                              className="relative z-10 w-full h-full p-3"
+                              style={{ paddingTop: funeralHomeLogo && funeralHomeLogoPosition === 'top' ? `${Math.max(12, funeralHomeLogoSize + 16)}px` : '12px' }}
+                            >
+                              <div className="h-full flex flex-col justify-between text-center relative">
                                 {/* Funeral Home Logo - Top */}
                                 {funeralHomeLogo && funeralHomeLogoPosition === 'top' && (
-                                  <div className="flex justify-center mb-1">
+                                  <div className="absolute top-0 left-0 right-0 flex justify-center" style={{ marginTop: `-${funeralHomeLogoSize / 2 + 4}px` }}>
                                     <img 
                                       src={funeralHomeLogo} 
                                       alt="Funeral Home Logo" 
                                       className="object-contain"
-                                      style={{ height: `${funeralHomeLogoSize}px`, maxWidth: '60%' }}
+                                      style={{ height: `${funeralHomeLogoSize}px`, maxWidth: '70%' }}
                                     />
                                   </div>
                                 )}
@@ -1080,16 +1101,35 @@ const Design = () => {
                                   >
                                     {deceasedName || 'Name Here'}
                                   </p>
-                                  {showDatesOnBack && (
-                                    <p style={{ 
+                                </div>
+
+                                {/* Draggable Back Dates */}
+                                {showDatesOnBack && (
+                                  <div
+                                    className="absolute touch-none select-none px-2 py-1 rounded"
+                                    style={{
+                                      left: `${backDatesPosition.x}%`,
+                                      top: `${backDatesPosition.y}%`,
+                                      transform: 'translate(-50%, -50%)',
+                                      cursor: draggingText === 'backDates' || resizingText === 'backDates' ? 'grabbing' : 'grab',
+                                      boxShadow: (draggingText === 'backDates' || resizingText === 'backDates') ? '0 0 0 2px #d97706' : 'none',
+                                      whiteSpace: 'nowrap',
+                                    }}
+                                    onPointerDown={(e) => handleTextPointerDown(e, 'backDates')}
+                                    onPointerMove={handleTextPointerMove}
+                                    onPointerUp={handleTextPointerUp}
+                                    onPointerCancel={handleTextPointerUp}
+                                    onWheel={(e) => handleTextWheel(e, 'backDates')}
+                                  >
+                                    <span style={{ 
                                       fontSize: backDatesSize === 'auto' ? '10px' : `${backDatesSize}px`,
                                       color: backDatesColor,
                                       fontWeight: datesBold ? 'bold' : 'normal'
                                     }}>
                                       {formatDates(birthDate, deathDate, backDateFormat)}
-                                    </p>
-                                  )}
-                                </div>
+                                    </span>
+                                  </div>
+                                )}
 
                                 {/* Prayer */}
                                 <div className="flex-1 flex items-center justify-center py-1 px-1 overflow-hidden">
@@ -1114,7 +1154,7 @@ const Design = () => {
                                       src={funeralHomeLogo} 
                                       alt="Funeral Home Logo" 
                                       className="object-contain"
-                                      style={{ height: `${funeralHomeLogoSize}px`, maxWidth: '60%' }}
+                                      style={{ height: `${funeralHomeLogoSize}px`, maxWidth: '70%' }}
                                     />
                                   </div>
                                 )}
@@ -1139,7 +1179,7 @@ const Design = () => {
                                         src={funeralHomeLogo} 
                                         alt="Funeral Home Logo" 
                                         className="object-contain mt-1"
-                                        style={{ height: `${Math.min(funeralHomeLogoSize, 20)}px`, maxWidth: '50%' }}
+                                        style={{ height: `${Math.min(funeralHomeLogoSize, 25)}px`, maxWidth: '60%' }}
                                       />
                                     )}
                                   </div>
@@ -1148,6 +1188,12 @@ const Design = () => {
                             </div>
                           </div>
                         </div>
+
+                        {showDatesOnBack && (
+                          <p className="text-slate-400 text-xs text-center bg-slate-700/50 px-3 py-2 rounded-lg">
+                            📱 Drag dates to reposition • Scroll/pinch on dates to resize
+                          </p>
+                        )}
 
                         {/* Upload Back Background */}
                         <input
@@ -1311,7 +1357,7 @@ const Design = () => {
                                   variant="outline"
                                   size="icon"
                                   className="h-6 w-6 border-slate-600"
-                                  onClick={() => setFuneralHomeLogoSize(Math.max(15, funeralHomeLogoSize - 5))}
+                                  onClick={() => setFuneralHomeLogoSize(Math.max(20, funeralHomeLogoSize - 5))}
                                 >
                                   <span className="text-xs">−</span>
                                 </Button>
@@ -1321,7 +1367,7 @@ const Design = () => {
                                   variant="outline"
                                   size="icon"
                                   className="h-6 w-6 border-slate-600"
-                                  onClick={() => setFuneralHomeLogoSize(Math.min(60, funeralHomeLogoSize + 5))}
+                                  onClick={() => setFuneralHomeLogoSize(Math.min(80, funeralHomeLogoSize + 5))}
                                 >
                                   <span className="text-xs">+</span>
                                 </Button>
