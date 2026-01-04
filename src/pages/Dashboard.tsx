@@ -105,9 +105,11 @@ const Dashboard = () => {
   const [namePosition, setNamePosition] = useState({ x: 50, y: 85 }); // percentage
   const [datesPosition, setDatesPosition] = useState({ x: 50, y: 92 }); // percentage
   const [nameColor, setNameColor] = useState('#ffffff');
-  const [datesColor, setDatesColor] = useState('#ffffffcc');
+  const [frontDatesColor, setFrontDatesColor] = useState('#ffffffcc');
+  const [backDatesColor, setBackDatesColor] = useState('#666666');
   const [nameSize, setNameSize] = useState(18); // pixels
-  const [datesSize, setDatesSize] = useState(12); // pixels
+  const [frontDatesSize, setFrontDatesSize] = useState<number | 'auto'>('auto');
+  const [backDatesSize, setBackDatesSize] = useState<number | 'auto'>('auto');
   const [frontDateFormat, setFrontDateFormat] = useState<'full' | 'short-month' | 'mmm-dd-yyyy' | 'numeric' | 'year'>('full');
   const [backDateFormat, setBackDateFormat] = useState<'full' | 'short-month' | 'mmm-dd-yyyy' | 'numeric' | 'year'>('full');
   const [additionalText, setAdditionalText] = useState('');
@@ -145,7 +147,7 @@ const Dashboard = () => {
     } else if (textPointerCacheRef.current.size === 2) {
       setResizingText(textType);
       const pointers = Array.from(textPointerCacheRef.current.values());
-      const currentSize = textType === 'name' ? nameSize : textType === 'dates' ? datesSize : textType === 'epitaph' ? epitaphSize : additionalTextSize;
+      const currentSize = textType === 'name' ? nameSize : textType === 'dates' ? (typeof frontDatesSize === 'number' ? frontDatesSize : 12) : textType === 'epitaph' ? epitaphSize : additionalTextSize;
       textPinchStartRef.current = {
         distance: getDistance(pointers[0], pointers[1]),
         size: currentSize,
@@ -165,7 +167,7 @@ const Dashboard = () => {
       if (resizingText === 'name') {
         setNameSize(newSize);
       } else if (resizingText === 'dates') {
-        setDatesSize(newSize);
+        setFrontDatesSize(newSize);
       } else if (resizingText === 'epitaph') {
         setEpitaphSize(newSize);
       } else {
@@ -213,12 +215,12 @@ const Dashboard = () => {
     e.preventDefault();
     e.stopPropagation();
     const delta = -e.deltaY * 0.05;
-    const currentSize = textType === 'name' ? nameSize : textType === 'dates' ? datesSize : textType === 'epitaph' ? epitaphSize : additionalTextSize;
+    const currentSize = textType === 'name' ? nameSize : textType === 'dates' ? (typeof frontDatesSize === 'number' ? frontDatesSize : 12) : textType === 'epitaph' ? epitaphSize : additionalTextSize;
     const newSize = Math.max(8, Math.min(48, currentSize + delta));
     if (textType === 'name') {
       setNameSize(newSize);
     } else if (textType === 'dates') {
-      setDatesSize(newSize);
+      setFrontDatesSize(newSize);
     } else if (textType === 'epitaph') {
       setEpitaphSize(newSize);
     } else {
@@ -525,9 +527,11 @@ const Dashboard = () => {
     setNamePosition({ x: 50, y: 85 });
     setDatesPosition({ x: 50, y: 92 });
     setNameColor('#ffffff');
-    setDatesColor('#ffffffcc');
+    setFrontDatesColor('#ffffffcc');
+    setBackDatesColor('#666666');
     setNameSize(18);
-    setDatesSize(12);
+    setFrontDatesSize('auto');
+    setBackDatesSize('auto');
     setFrontDateFormat('full');
     setBackDateFormat('full');
     setAdditionalText('');
@@ -749,7 +753,7 @@ const Dashboard = () => {
                                     onPointerCancel={handleTextPointerUp}
                                     onWheel={(e) => handleTextWheel(e, 'dates')}
                                   >
-                                    <span style={{ fontSize: `${datesSize}px`, color: datesColor }}>
+                                    <span style={{ fontSize: frontDatesSize === 'auto' ? '12px' : `${frontDatesSize}px`, color: frontDatesColor }}>
                                       {formatDates(birthDate, deathDate, frontDateFormat)}
                                     </span>
                                   </div>
@@ -781,31 +785,6 @@ const Dashboard = () => {
                                   </div>
                                 )}
                                 
-                                {/* Text Overlay - Epitaph */}
-                                {showEpitaph && (
-                                  <div
-                                    className="absolute touch-none select-none px-2 py-1 rounded"
-                                    style={{
-                                      left: `${epitaphPosition.x}%`,
-                                      top: `${epitaphPosition.y}%`,
-                                      transform: 'translate(-50%, -50%)',
-                                      fontFamily: epitaphFont,
-                                      cursor: draggingText === 'epitaph' || resizingText === 'epitaph' ? 'grabbing' : 'grab',
-                                      textShadow: '0 2px 4px rgba(0,0,0,0.5)',
-                                      boxShadow: (draggingText === 'epitaph' || resizingText === 'epitaph') ? '0 0 0 2px hsl(var(--primary))' : 'none',
-                                      maxWidth: '80%',
-                                    }}
-                                    onPointerDown={(e) => handleTextPointerDown(e, 'epitaph')}
-                                    onPointerMove={handleTextPointerMove}
-                                    onPointerUp={handleTextPointerUp}
-                                    onPointerCancel={handleTextPointerUp}
-                                    onWheel={(e) => handleTextWheel(e, 'epitaph')}
-                                  >
-                                    <span className="italic" style={{ fontSize: `${epitaphSize}px`, color: epitaphColor, whiteSpace: 'pre-wrap', textAlign: 'center', display: 'block' }}>
-                                      {epitaph || 'Forever in our hearts'}
-                                    </span>
-                                  </div>
-                                )}
                               </div>
                             </div>
                           </div>
@@ -970,95 +949,146 @@ const Dashboard = () => {
                                   </SelectContent>
                                 </Select>
                               </div>
-                              <div className="flex items-center gap-3 flex-wrap">
-                                <div className="flex items-center gap-2">
-                                  <Label className="text-muted-foreground text-xs">Color</Label>
-                                  <input
-                                    type="color"
-                                    value={datesColor.replace('cc', '')}
-                                    onChange={(e) => setDatesColor(e.target.value)}
-                                    className="w-8 h-8 rounded border border-border cursor-pointer"
+                              
+                              {/* Front row with format, color, size */}
+                              <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-border/50">
+                                <label className="flex items-center gap-2 cursor-pointer min-w-[60px]">
+                                  <input 
+                                    type="checkbox" 
+                                    checked={showDatesOnFront} 
+                                    onChange={(e) => setShowDatesOnFront(e.target.checked)}
+                                    className="accent-primary"
                                   />
-                                </div>
+                                  <span className="text-muted-foreground text-xs font-medium">Front</span>
+                                </label>
+                                <Select 
+                                  value={frontDateFormat} 
+                                  onValueChange={(v) => setFrontDateFormat(v as 'full' | 'short-month' | 'mmm-dd-yyyy' | 'numeric' | 'year')}
+                                  disabled={!showDatesOnFront}
+                                >
+                                  <SelectTrigger className="bg-secondary border-border text-foreground h-7 text-xs w-[130px]">
+                                    <SelectValue placeholder="Format" />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="full">January 1, 2025</SelectItem>
+                                    <SelectItem value="short-month">Jan 1, 2025</SelectItem>
+                                    <SelectItem value="mmm-dd-yyyy">Jan 01, 2025</SelectItem>
+                                    <SelectItem value="numeric">01/01/2025</SelectItem>
+                                    <SelectItem value="year">Years Only</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                                <input
+                                  type="color"
+                                  value={frontDatesColor.replace('cc', '')}
+                                  onChange={(e) => setFrontDatesColor(e.target.value)}
+                                  className="w-7 h-7 rounded border border-border cursor-pointer"
+                                  disabled={!showDatesOnFront}
+                                />
                                 <div className="flex items-center gap-1">
-                                  <Label className="text-muted-foreground text-xs">Size</Label>
+                                  <Button
+                                    type="button"
+                                    variant={frontDatesSize === 'auto' ? 'default' : 'outline'}
+                                    size="sm"
+                                    className="h-7 px-2 text-xs"
+                                    onClick={() => setFrontDatesSize('auto')}
+                                    disabled={!showDatesOnFront}
+                                  >
+                                    Auto
+                                  </Button>
                                   <Button
                                     type="button"
                                     variant="outline"
                                     size="icon"
                                     className="h-6 w-6 border-border"
-                                    onClick={() => setDatesSize(Math.max(8, datesSize - 2))}
+                                    onClick={() => setFrontDatesSize(typeof frontDatesSize === 'number' ? Math.max(8, frontDatesSize - 2) : 10)}
+                                    disabled={!showDatesOnFront}
                                   >
                                     <span className="text-xs">−</span>
                                   </Button>
-                                  <span className="text-xs text-foreground bg-secondary px-2 py-1 rounded min-w-[40px] text-center">{Math.round(datesSize)}px</span>
+                                  <span className="text-xs text-foreground bg-secondary px-1 py-0.5 rounded min-w-[35px] text-center">
+                                    {frontDatesSize === 'auto' ? 'auto' : `${frontDatesSize}px`}
+                                  </span>
                                   <Button
                                     type="button"
                                     variant="outline"
                                     size="icon"
                                     className="h-6 w-6 border-border"
-                                    onClick={() => setDatesSize(Math.min(48, datesSize + 2))}
+                                    onClick={() => setFrontDatesSize(typeof frontDatesSize === 'number' ? Math.min(48, frontDatesSize + 2) : 14)}
+                                    disabled={!showDatesOnFront}
                                   >
                                     <span className="text-xs">+</span>
                                   </Button>
                                 </div>
                               </div>
-                              
-                              {/* Front/Back with date format selectors */}
-                              <div className="flex flex-col gap-3 pt-2 border-t border-border/50">
-                                <div className="flex items-center gap-2">
-                                  <label className="flex items-center gap-2 cursor-pointer min-w-[70px]">
-                                    <input 
-                                      type="checkbox" 
-                                      checked={showDatesOnFront} 
-                                      onChange={(e) => setShowDatesOnFront(e.target.checked)}
-                                      className="accent-primary"
-                                    />
-                                    <span className="text-muted-foreground text-xs">Front</span>
-                                  </label>
-                                  <Select 
-                                    value={frontDateFormat} 
-                                    onValueChange={(v) => setFrontDateFormat(v as 'full' | 'short-month' | 'mmm-dd-yyyy' | 'numeric' | 'year')}
-                                    disabled={!showDatesOnFront}
-                                  >
-                                    <SelectTrigger className="bg-secondary border-border text-foreground h-8 text-xs flex-1">
-                                      <SelectValue placeholder="Date Format" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                      <SelectItem value="full">January 1, 2025</SelectItem>
-                                      <SelectItem value="short-month">Jan 1, 2025</SelectItem>
-                                      <SelectItem value="mmm-dd-yyyy">Jan 01, 2025</SelectItem>
-                                      <SelectItem value="numeric">01/01/2025</SelectItem>
-                                      <SelectItem value="year">Years Only</SelectItem>
-                                    </SelectContent>
-                                  </Select>
-                                </div>
-                                <div className="flex items-center gap-2">
-                                  <label className="flex items-center gap-2 cursor-pointer min-w-[70px]">
-                                    <input 
-                                      type="checkbox" 
-                                      checked={showDatesOnBack} 
-                                      onChange={(e) => setShowDatesOnBack(e.target.checked)}
-                                      className="accent-primary"
-                                    />
-                                    <span className="text-muted-foreground text-xs">Back</span>
-                                  </label>
-                                  <Select 
-                                    value={backDateFormat} 
-                                    onValueChange={(v) => setBackDateFormat(v as 'full' | 'short-month' | 'mmm-dd-yyyy' | 'numeric' | 'year')}
+
+                              {/* Back row with format, color, size */}
+                              <div className="flex flex-wrap items-center gap-2">
+                                <label className="flex items-center gap-2 cursor-pointer min-w-[60px]">
+                                  <input 
+                                    type="checkbox" 
+                                    checked={showDatesOnBack} 
+                                    onChange={(e) => setShowDatesOnBack(e.target.checked)}
+                                    className="accent-primary"
+                                  />
+                                  <span className="text-muted-foreground text-xs font-medium">Back</span>
+                                </label>
+                                <Select 
+                                  value={backDateFormat} 
+                                  onValueChange={(v) => setBackDateFormat(v as 'full' | 'short-month' | 'mmm-dd-yyyy' | 'numeric' | 'year')}
+                                  disabled={!showDatesOnBack}
+                                >
+                                  <SelectTrigger className="bg-secondary border-border text-foreground h-7 text-xs w-[130px]">
+                                    <SelectValue placeholder="Format" />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="full">January 1, 2025</SelectItem>
+                                    <SelectItem value="short-month">Jan 1, 2025</SelectItem>
+                                    <SelectItem value="mmm-dd-yyyy">Jan 01, 2025</SelectItem>
+                                    <SelectItem value="numeric">01/01/2025</SelectItem>
+                                    <SelectItem value="year">Years Only</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                                <input
+                                  type="color"
+                                  value={backDatesColor.replace('cc', '')}
+                                  onChange={(e) => setBackDatesColor(e.target.value)}
+                                  className="w-7 h-7 rounded border border-border cursor-pointer"
+                                  disabled={!showDatesOnBack}
+                                />
+                                <div className="flex items-center gap-1">
+                                  <Button
+                                    type="button"
+                                    variant={backDatesSize === 'auto' ? 'default' : 'outline'}
+                                    size="sm"
+                                    className="h-7 px-2 text-xs"
+                                    onClick={() => setBackDatesSize('auto')}
                                     disabled={!showDatesOnBack}
                                   >
-                                    <SelectTrigger className="bg-secondary border-border text-foreground h-8 text-xs flex-1">
-                                      <SelectValue placeholder="Date Format" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                      <SelectItem value="full">January 1, 2025</SelectItem>
-                                      <SelectItem value="short-month">Jan 1, 2025</SelectItem>
-                                      <SelectItem value="mmm-dd-yyyy">Jan 01, 2025</SelectItem>
-                                      <SelectItem value="numeric">01/01/2025</SelectItem>
-                                      <SelectItem value="year">Years Only</SelectItem>
-                                    </SelectContent>
-                                  </Select>
+                                    Auto
+                                  </Button>
+                                  <Button
+                                    type="button"
+                                    variant="outline"
+                                    size="icon"
+                                    className="h-6 w-6 border-border"
+                                    onClick={() => setBackDatesSize(typeof backDatesSize === 'number' ? Math.max(8, backDatesSize - 2) : 10)}
+                                    disabled={!showDatesOnBack}
+                                  >
+                                    <span className="text-xs">−</span>
+                                  </Button>
+                                  <span className="text-xs text-foreground bg-secondary px-1 py-0.5 rounded min-w-[35px] text-center">
+                                    {backDatesSize === 'auto' ? 'auto' : `${backDatesSize}px`}
+                                  </span>
+                                  <Button
+                                    type="button"
+                                    variant="outline"
+                                    size="icon"
+                                    className="h-6 w-6 border-border"
+                                    onClick={() => setBackDatesSize(typeof backDatesSize === 'number' ? Math.min(48, backDatesSize + 2) : 14)}
+                                    disabled={!showDatesOnBack}
+                                  >
+                                    <span className="text-xs">+</span>
+                                  </Button>
                                 </div>
                               </div>
                             </div>
@@ -1189,7 +1219,10 @@ const Dashboard = () => {
                                       {deceasedName || 'Name Here'}
                                     </p>
                                     {showDatesOnBack && (
-                                      <p className={`text-[10px] ${backBgImage || metalFinish === 'black' ? 'text-zinc-300' : 'text-zinc-600'}`}>
+                                      <p style={{ 
+                                        fontSize: backDatesSize === 'auto' ? '10px' : `${backDatesSize}px`,
+                                        color: backDatesColor 
+                                      }}>
                                         {formatDates(birthDate, deathDate, backDateFormat)}
                                       </p>
                                     )}
