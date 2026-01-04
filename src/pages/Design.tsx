@@ -82,8 +82,8 @@ const Design = () => {
   const [nameSize, setNameSize] = useState(18);
   const [frontDatesSize, setFrontDatesSize] = useState<number | 'auto'>('auto');
   const [backDatesSize, setBackDatesSize] = useState<number | 'auto'>('auto');
-  const [frontDateFormat, setFrontDateFormat] = useState<'full' | 'short-month' | 'mmm-dd-yyyy' | 'numeric' | 'year'>('full');
-  const [backDateFormat, setBackDateFormat] = useState<'full' | 'short-month' | 'mmm-dd-yyyy' | 'numeric' | 'year'>('full');
+  const [frontDateFormat, setFrontDateFormat] = useState<'full' | 'short-month' | 'mmm-dd-yyyy' | 'numeric' | 'year'>('mmm-dd-yyyy');
+  const [backDateFormat, setBackDateFormat] = useState<'full' | 'short-month' | 'mmm-dd-yyyy' | 'numeric' | 'year'>('mmm-dd-yyyy');
   const [additionalText, setAdditionalText] = useState('');
   const [additionalTextPosition, setAdditionalTextPosition] = useState({ x: 50, y: 70 });
   const [additionalTextColor, setAdditionalTextColor] = useState('#ffffff');
