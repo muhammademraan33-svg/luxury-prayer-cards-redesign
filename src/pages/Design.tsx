@@ -103,6 +103,7 @@ const Design = () => {
   const [backNameSize, setBackNameSize] = useState(16);
   const [backNameColor, setBackNameColor] = useState('#18181b');
   const [backNameBold, setBackNameBold] = useState(true);
+  const [backNameFont, setBackNameFont] = useState('Great Vibes');
   const [showNameOnBack, setShowNameOnBack] = useState(true);
   
   // Bold options
@@ -1218,11 +1219,12 @@ const Design = () => {
                                   )}
                                   {showNameOnBack && (
                                     <p 
-                                      className="font-serif mb-0.5 whitespace-pre text-center"
+                                      className="mb-0.5 whitespace-pre text-center"
                                       style={{ 
                                         fontSize: `${backNameSize}px`,
                                         color: backNameColor,
-                                        fontWeight: backNameBold ? 'bold' : 'normal'
+                                        fontWeight: backNameBold ? 'bold' : 'normal',
+                                        fontFamily: backNameFont
                                       }}
                                     >
                                       {deceasedName || 'Name Here'}
@@ -1336,50 +1338,64 @@ const Design = () => {
                             </label>
                           </div>
                           {showNameOnBack && (
-                            <div className="flex items-center gap-3 flex-wrap">
-                              <div className="flex items-center gap-2">
-                                <Label className="text-slate-400 text-xs">Color</Label>
-                                <input
-                                  type="color"
-                                  value={backNameColor}
-                                  onChange={(e) => setBackNameColor(e.target.value)}
-                                  className="w-7 h-7 rounded border border-slate-600 cursor-pointer"
-                                />
-                              </div>
-                              <div className="flex items-center gap-1">
-                                <Label className="text-slate-400 text-xs">Size</Label>
+                            <>
+                              <Select value={backNameFont} onValueChange={setBackNameFont}>
+                                <SelectTrigger className="bg-slate-700 border-slate-600 text-white">
+                                  <SelectValue placeholder="Font" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  {FONT_OPTIONS.map((font) => (
+                                    <SelectItem key={font.value} value={font.value} style={{ fontFamily: font.value }}>
+                                      {font.name}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                              <div className="flex items-center gap-3 flex-wrap">
+                                <div className="flex items-center gap-2">
+                                  <Label className="text-slate-400 text-xs">Color</Label>
+                                  <input
+                                    type="color"
+                                    value={backNameColor}
+                                    onChange={(e) => setBackNameColor(e.target.value)}
+                                    className="w-7 h-7 rounded border border-slate-600 cursor-pointer"
+                                  />
+                                </div>
+                                <div className="flex items-center gap-1">
+                                  <Label className="text-slate-400 text-xs">Size</Label>
+                                  <Button
+                                    type="button"
+                                    variant="outline"
+                                    size="icon"
+                                    className="h-6 w-6 border-slate-600"
+                                    onClick={() => setBackNameSize(Math.max(8, backNameSize - 2))}
+                                  >
+                                    <span className="text-xs">−</span>
+                                  </Button>
+                                  <span className="text-xs text-white bg-slate-700 px-2 py-1 rounded min-w-[40px] text-center">
+                                    {backNameSize}px
+                                  </span>
+                                  <Button
+                                    type="button"
+                                    variant="outline"
+                                    size="icon"
+                                    className="h-6 w-6 border-slate-600"
+                                    onClick={() => setBackNameSize(Math.min(36, backNameSize + 2))}
+                                  >
+                                    <span className="text-xs">+</span>
+                                  </Button>
+                                </div>
                                 <Button
                                   type="button"
-                                  variant="outline"
-                                  size="icon"
-                                  className="h-6 w-6 border-slate-600"
-                                  onClick={() => setBackNameSize(Math.max(8, backNameSize - 2))}
+                                  variant={backNameBold ? 'default' : 'outline'}
+                                  size="sm"
+                                  className={`h-7 px-3 text-xs font-bold ${backNameBold ? 'bg-amber-600 text-white' : 'border-slate-600 text-slate-300'}`}
+                                  onClick={() => setBackNameBold(!backNameBold)}
                                 >
-                                  <span className="text-xs">−</span>
-                                </Button>
-                                <span className="text-xs text-white bg-slate-700 px-2 py-1 rounded min-w-[40px] text-center">
-                                  {backNameSize}px
-                                </span>
-                                <Button
-                                  type="button"
-                                  variant="outline"
-                                  size="icon"
-                                  className="h-6 w-6 border-slate-600"
-                                  onClick={() => setBackNameSize(Math.min(36, backNameSize + 2))}
-                                >
-                                  <span className="text-xs">+</span>
+                                  B
                                 </Button>
                               </div>
-                              <Button
-                                type="button"
-                                variant={backNameBold ? 'default' : 'outline'}
-                                size="sm"
-                                className={`h-7 px-3 text-xs font-bold ${backNameBold ? 'bg-amber-600 text-white' : 'border-slate-600 text-slate-300'}`}
-                                onClick={() => setBackNameBold(!backNameBold)}
-                              >
-                                B
-                              </Button>
-                            </div>
+                            </>
                           )}
                         </div>
 
