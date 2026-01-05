@@ -69,8 +69,28 @@
     color: hsl(var(--primary-foreground)) !important;
   }
 
-  /* Make leftover white text readable on the cream palette, but exclude buttons */
-  .text-white:not(button .text-white):not(.bg-primary .text-white):not(button):not([class*="bg-primary"]) { 
-    color: hsl(var(--foreground)) !important; 
+  /* Keep text-white working on inputs and buttons */
+  input.text-white,
+  select.text-white,
+  textarea.text-white,
+  button .text-white,
+  [class*="bg-primary"] .text-white,
+  [class*="bg-amber"] .text-white,
+  .bg-slate-700 .text-white {
+    color: hsl(var(--foreground)) !important;
+  }
+
+  /* Style inputs to have visible text */
+  input[type="date"],
+  input[type="text"],
+  input[type="number"],
+  textarea {
+    color: hsl(var(--foreground)) !important;
+    color-scheme: light;
+  }
+
+  /* Date picker icons */
+  input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(0.3);
   }
 }
