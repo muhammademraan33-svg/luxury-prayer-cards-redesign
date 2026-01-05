@@ -1,5 +1,5 @@
 import { useLayoutEffect, useRef, useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -123,6 +123,8 @@ type CardThickness = 'standard' | 'premium';
 type EaselPhotoSize = '16x20' | '18x24';
 
 const Design = () => {
+  const [searchParams] = useSearchParams();
+
   // Scroll to top on mount
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -136,6 +138,15 @@ const Design = () => {
   const [deathDate, setDeathDate] = useState('');
   const [metalFinish, setMetalFinish] = useState<MetalFinish>('white');
   const [selectedPackage, setSelectedPackage] = useState<PackageTier>('better');
+
+  // If user came from pricing on the landing page, honor ?package=good|better|best
+  useEffect(() => {
+    const pkg = searchParams.get('package');
+    if (pkg === 'good' || pkg === 'better' || pkg === 'best') {
+      setSelectedPackage(pkg);
+    }
+  }, [searchParams]);
+
   const [extraSets, setExtraSets] = useState(0); // Additional 55-card sets beyond package
   const [extraPhotos, setExtraPhotos] = useState(0); // Extra photos beyond package (handled by easelPhotos length)
   const [upgradeToOvernight, setUpgradeToOvernight] = useState(false);
@@ -717,7 +728,6 @@ const Design = () => {
   };
 
   const currentPackage = PACKAGES[selectedPackage];
-  console.log('DEBUG: selectedPackage =', selectedPackage, 'currentPackage.photos =', currentPackage.photos);
   
   const calculatePrice = () => {
     let total = currentPackage.price;
