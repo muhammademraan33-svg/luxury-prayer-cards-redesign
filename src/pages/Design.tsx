@@ -2311,76 +2311,72 @@ const Design = () => {
                       Upload 2 different photos for your included easel displays. You can add more to create a collage or display multiple memories.
                     </p>
 
-                    {/* Easel Photos Grid */}
-                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-4">
-                      {/* Uploaded Photos */}
-                      {easelPhotos.map((photo, index) => (
-                        <div 
-                          key={index}
-                          className="relative rounded-lg overflow-hidden shadow-lg bg-slate-800 border border-slate-600 group"
-                          style={{ 
-                            aspectRatio: easelPhotoSize === '16x20' ? '16/20' : '18/24',
-                          }}
-                        >
-                          <img 
-                            src={photo} 
-                            alt={`Easel photo ${index + 1}`} 
-                            className="w-full h-full object-cover"
-                          />
-                          
-                          {/* Photo Number Badge */}
-                          <div className="absolute top-1 left-1 bg-slate-900/80 text-white text-[10px] px-1.5 py-0.5 rounded">
-                            #{index + 1} {index < 2 ? '✓' : '+$27'}
-                          </div>
-                          
-                          {/* Size Label */}
-                          <div className="absolute top-1 right-1 bg-amber-600/90 text-white text-[8px] px-1 py-0.5 rounded">
-                            {easelPhotoSize}
-                          </div>
-                          
-                          {/* Remove Button */}
+                    {/* Easel Photos Grid - Always show 6 slots */}
+                    <div className="grid grid-cols-3 gap-3 mb-4">
+                      {/* Render 6 slots - filled with photos or placeholders */}
+                      {Array.from({ length: 6 }).map((_, index) => {
+                        const photo = easelPhotos[index];
+                        const isIncluded = index < 2;
+                        
+                        if (photo) {
+                          return (
+                            <div 
+                              key={index}
+                              className="relative rounded-lg overflow-hidden shadow-lg bg-slate-800 border border-slate-600 group"
+                              style={{ 
+                                aspectRatio: easelPhotoSize === '16x20' ? '16/20' : '18/24',
+                              }}
+                            >
+                              <img 
+                                src={photo} 
+                                alt={`Easel photo ${index + 1}`} 
+                                className="w-full h-full object-cover"
+                              />
+                              
+                              {/* Photo Number Badge */}
+                              <div className={`absolute top-1 left-1 ${isIncluded ? 'bg-emerald-600/90' : 'bg-amber-600/90'} text-white text-[10px] px-1.5 py-0.5 rounded`}>
+                                #{index + 1} {isIncluded ? '✓ Included' : '+$27'}
+                              </div>
+                              
+                              {/* Size Label */}
+                              <div className="absolute top-1 right-1 bg-slate-900/80 text-white text-[8px] px-1 py-0.5 rounded">
+                                {easelPhotoSize}
+                              </div>
+                              
+                              {/* Remove Button */}
+                              <button
+                                type="button"
+                                onClick={() => removeEaselPhoto(index)}
+                                className="absolute bottom-1 right-1 bg-rose-600/90 text-white p-1.5 rounded opacity-0 group-hover:opacity-100 transition-opacity"
+                              >
+                                <Trash2 className="h-3.5 w-3.5" />
+                              </button>
+                            </div>
+                          );
+                        }
+                        
+                        // Empty placeholder slot
+                        return (
                           <button
+                            key={`placeholder-${index}`}
                             type="button"
-                            onClick={() => removeEaselPhoto(index)}
-                            className="absolute bottom-1 right-1 bg-rose-600/90 text-white p-1 rounded opacity-0 group-hover:opacity-100 transition-opacity"
+                            onClick={() => easelPhotosInputRef.current?.click()}
+                            className={`rounded-lg border-2 border-dashed ${isIncluded ? 'border-emerald-500/50 hover:border-emerald-400' : 'border-slate-600 hover:border-amber-500'} transition-colors flex flex-col items-center justify-center p-4 bg-slate-800/50 hover:bg-slate-700/50`}
+                            style={{ 
+                              aspectRatio: easelPhotoSize === '16x20' ? '16/20' : '18/24',
+                            }}
                           >
-                            <Trash2 className="h-3 w-3" />
+                            <div className={`w-10 h-10 rounded-full ${isIncluded ? 'bg-emerald-500/20' : 'bg-slate-700'} flex items-center justify-center mb-2`}>
+                              <ImageIcon className={`h-5 w-5 ${isIncluded ? 'text-emerald-400' : 'text-slate-500'}`} />
+                            </div>
+                            <p className="text-slate-400 text-xs font-medium">Photo {index + 1}</p>
+                            <p className={`text-[10px] mt-0.5 ${isIncluded ? 'text-emerald-400' : 'text-amber-400'}`}>
+                              {isIncluded ? '✓ Included' : '+$27'}
+                            </p>
+                            <p className="text-slate-500 text-[9px] mt-1">Click to upload</p>
                           </button>
-                        </div>
-                      ))}
-                      
-                      {/* Add Photo Placeholder(s) */}
-                      {easelPhotos.length < 2 && Array.from({ length: 2 - easelPhotos.length }).map((_, i) => (
-                        <button
-                          key={`placeholder-${i}`}
-                          type="button"
-                          onClick={() => easelPhotosInputRef.current?.click()}
-                          className="rounded-lg border-2 border-dashed border-slate-600 hover:border-amber-500 transition-colors flex flex-col items-center justify-center p-4 bg-slate-800/50"
-                          style={{ 
-                            aspectRatio: easelPhotoSize === '16x20' ? '16/20' : '18/24',
-                          }}
-                        >
-                          <ImageIcon className="h-6 w-6 text-slate-500 mb-1" />
-                          <p className="text-slate-500 text-xs">Photo {easelPhotos.length + i + 1}</p>
-                          <p className="text-amber-400 text-[10px]">Included</p>
-                        </button>
-                      ))}
-                      
-                      {/* Add More Button */}
-                      {easelPhotos.length >= 2 && (
-                        <button
-                          type="button"
-                          onClick={() => easelPhotosInputRef.current?.click()}
-                          className="rounded-lg border-2 border-dashed border-slate-600 hover:border-amber-500 transition-colors flex flex-col items-center justify-center p-4 bg-slate-800/50"
-                          style={{ 
-                            aspectRatio: easelPhotoSize === '16x20' ? '16/20' : '18/24',
-                          }}
-                        >
-                          <ImageIcon className="h-6 w-6 text-slate-500 mb-1" />
-                          <p className="text-slate-500 text-xs">Add More</p>
-                          <p className="text-amber-400 text-[10px]">+$27 each</p>
-                        </button>
-                      )}
+                        );
+                      })}
                     </div>
 
                     {/* Upload Button */}
