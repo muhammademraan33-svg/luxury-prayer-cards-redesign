@@ -26,8 +26,8 @@ const Index = () => {
       id: 'best',
       badge: 'BEST',
       name: 'Legacy',
-      price: 349,
-      comparePrice: 495,
+      price: 299,
+      comparePrice: 450,
       items: ['165 Premium Metal Prayer Cards', '6 Easel Photo Boards', '48-Hour Delivery', 'Satisfaction Guaranteed'],
     },
   ];
