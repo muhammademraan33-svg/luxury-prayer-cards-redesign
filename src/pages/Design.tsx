@@ -2652,21 +2652,44 @@ const Design = () => {
 
                     {/* Premium Thickness Upgrade (only show if package doesn't include it) */}
                     {currentPackage.thickness !== 'premium' && (
-                      <div className="flex items-center justify-between p-4 bg-slate-700/30 rounded-lg">
-                        <div className="flex items-center gap-3">
-                          <input
-                            type="checkbox"
-                            id="upgradeThickness"
-                            checked={upgradeThickness}
-                            onChange={(e) => setUpgradeThickness(e.target.checked)}
-                            className="accent-amber-600 w-5 h-5"
-                          />
-                          <label htmlFor="upgradeThickness" className="cursor-pointer">
-                            <p className="text-white font-medium">Upgrade to Premium Thickness</p>
-                            <p className="text-slate-400 text-sm">Solid .080" heirloom quality</p>
-                          </label>
+                      <div 
+                        className={`p-4 rounded-lg border-2 cursor-pointer transition-all ${
+                          upgradeThickness 
+                            ? 'bg-amber-900/30 border-amber-500' 
+                            : 'bg-slate-700/30 border-transparent hover:border-slate-500'
+                        }`}
+                        onClick={() => setUpgradeThickness(!upgradeThickness)}
+                      >
+                        <div className="flex items-start justify-between gap-4">
+                          <div className="flex items-start gap-3">
+                            <input
+                              type="checkbox"
+                              id="upgradeThickness"
+                              checked={upgradeThickness}
+                              onChange={(e) => setUpgradeThickness(e.target.checked)}
+                              className="accent-amber-600 w-5 h-5 mt-1"
+                            />
+                            <div>
+                              <p className="text-white font-medium">Upgrade to Premium Thickness</p>
+                              <p className="text-slate-400 text-sm mb-3">Heirloom quality that lasts generations</p>
+                              
+                              {/* Visual comparison */}
+                              <div className="flex items-end gap-6 mt-2">
+                                <div className="flex flex-col items-center">
+                                  <div className="w-14 h-1 bg-slate-500 rounded-sm shadow-md" />
+                                  <span className="text-xs text-slate-500 mt-1.5">Standard</span>
+                                  <span className="text-[10px] text-slate-600">.040"</span>
+                                </div>
+                                <div className="flex flex-col items-center">
+                                  <div className="w-14 h-2.5 bg-gradient-to-b from-amber-400 to-amber-600 rounded-sm shadow-lg" />
+                                  <span className="text-xs text-amber-400 mt-1.5 font-medium">Premium</span>
+                                  <span className="text-[10px] text-amber-500">.080"</span>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          <span className="text-amber-400 font-bold text-lg">+${PREMIUM_THICKNESS_PRICE * ((currentPackage.cards / 55) + extraSets)}</span>
                         </div>
-                        <span className="text-amber-400 font-medium">+${PREMIUM_THICKNESS_PRICE * ((currentPackage.cards / 55) + extraSets)}</span>
                       </div>
                     )}
 
