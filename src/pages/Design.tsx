@@ -113,8 +113,8 @@ const PACKAGES: Record<PackageTier, PackageConfig> = {
 
 // Add-on pricing
 const ADDITIONAL_SET_PRICE = 110; // Additional 55 cards
-const ADDITIONAL_PHOTO_PRICE = 27; // Additional easel photo
-const EASEL_18X24_UPSELL = 10; // Upgrade from 16x20 to 18x24
+const ADDITIONAL_PHOTO_PRICE = 19; // Additional easel photo ($2 cost)
+const EASEL_18X24_UPSELL = 5; // Upgrade from 16x20 to 18x24 (no extra cost)
 const PREMIUM_THICKNESS_PRICE = 15; // Upgrade to .080" thick cards per set
 const OVERNIGHT_UPCHARGE_PERCENT = 100; // 100% upcharge for overnight
 
