@@ -120,7 +120,7 @@ const Design = () => {
   const [namePosition, setNamePosition] = useState({ x: 50, y: 85 });
   const [datesPosition, setDatesPosition] = useState({ x: 50, y: 92 });
   const [nameColor, setNameColor] = useState('#ffffff');
-  const [frontDatesColor, setFrontDatesColor] = useState('#1a3a2f');
+  const [frontDatesColor, setFrontDatesColor] = useState('#ffffffcc');
   const [backDatesColor, setBackDatesColor] = useState('#666666');
   const [nameSize, setNameSize] = useState(24);
   const [frontDatesSize, setFrontDatesSize] = useState<number | 'auto'>(16);
