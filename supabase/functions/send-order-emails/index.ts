@@ -39,6 +39,7 @@ interface OrderEmailRequest {
   };
   frontCardImage: string;
   backCardImage: string;
+  easelPhotos?: string[]; // Array of base64 data URLs for easel photos
 }
 
 async function sendEmail(
@@ -91,7 +92,7 @@ const handler = async (req: Request): Promise<Response> => {
     console.log("Customer email:", data.customerEmail);
     console.log("Owner email:", OWNER_EMAIL);
 
-    const { customerEmail, customerName, shippingAddress, orderDetails, frontCardImage, backCardImage } = data;
+    const { customerEmail, customerName, shippingAddress, orderDetails, frontCardImage, backCardImage, easelPhotos } = data;
 
     const orderId = `MPC-${Date.now().toString(36).toUpperCase()}`;
     const orderDate = new Date().toLocaleDateString("en-US", {
@@ -296,6 +297,7 @@ const handler = async (req: Request): Promise<Response> => {
 
     const attachments = [];
 
+    // Add front card design
     if (frontCardImage && frontCardImage.includes(",")) {
       const frontBase64 = frontCardImage.split(",")[1];
       attachments.push({
@@ -304,11 +306,29 @@ const handler = async (req: Request): Promise<Response> => {
       });
     }
 
+    // Add back card design
     if (backCardImage && backCardImage.includes(",")) {
       const backBase64 = backCardImage.split(",")[1];
       attachments.push({
         filename: "back-card-print.jpg",
         content: backBase64,
+      });
+    }
+
+    // Add all easel photos
+    if (easelPhotos && easelPhotos.length > 0) {
+      console.log("Adding", easelPhotos.length, "easel photos to attachments...");
+      easelPhotos.forEach((photo, index) => {
+        if (photo && photo.includes(",")) {
+          const photoBase64 = photo.split(",")[1];
+          // Determine file extension from data URL
+          const isJpeg = photo.includes("image/jpeg") || photo.includes("image/jpg");
+          const extension = isJpeg ? "jpg" : "png";
+          attachments.push({
+            filename: `easel-photo-${index + 1}.${extension}`,
+            content: photoBase64,
+          });
+        }
       });
     }
 
