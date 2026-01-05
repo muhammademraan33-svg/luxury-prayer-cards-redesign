@@ -115,7 +115,7 @@ const Design = () => {
   
   // Bold options
   const [nameBold, setNameBold] = useState(true);
-  const [datesBold, setDatesBold] = useState(false);
+  const [datesBold, setDatesBold] = useState(true);
   const [additionalTextBold, setAdditionalTextBold] = useState(false);
   const [inLovingMemoryBold, setInLovingMemoryBold] = useState(false);
   const [prayerBold, setPrayerBold] = useState(false);
