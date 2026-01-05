@@ -1,7 +1,10 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
 const OWNER_EMAIL = Deno.env.get("OWNER_EMAIL");
+const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
+const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -32,6 +35,7 @@ interface OrderEmailRequest {
     additionalSets: number;
     prayerText: string;
     qrUrl: string;
+    packageName: string;
   };
   frontCardImage: string;
   backCardImage: string;
@@ -54,6 +58,8 @@ async function sendEmail(
     emailData.attachments = attachments;
   }
 
+  console.log("Sending email to:", to, "Subject:", subject);
+
   const response = await fetch("https://api.resend.com/emails", {
     method: "POST",
     headers: {
@@ -65,6 +71,7 @@ async function sendEmail(
 
   if (!response.ok) {
     const error = await response.text();
+    console.error("Resend API error:", error);
     throw new Error(`Resend API error: ${error}`);
   }
 
@@ -93,6 +100,34 @@ const handler = async (req: Request): Promise<Response> => {
       month: "long",
       day: "numeric",
     });
+
+    // Create Supabase client with service role for inserting order
+    const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+
+    // Insert order into database
+    console.log("Inserting order into database...");
+    const { error: insertError } = await supabase.from("orders").insert({
+      customer_name: customerName,
+      customer_email: customerEmail,
+      customer_phone: shippingAddress.phone,
+      shipping_address: shippingAddress.street,
+      shipping_city: shippingAddress.city,
+      shipping_state: shippingAddress.state,
+      shipping_zip: shippingAddress.zip,
+      package_name: orderDetails.packageName || "Essential",
+      total_cards: orderDetails.totalCards,
+      total_photos: orderDetails.easelPhotoCount,
+      total_price: orderDetails.totalPrice,
+      shipping_type: orderDetails.shipping,
+      status: "pending",
+    });
+
+    if (insertError) {
+      console.error("Database insert error:", insertError);
+      // Continue anyway - email is more important
+    } else {
+      console.log("Order inserted into database successfully");
+    }
 
     // Customer confirmation email
     const customerEmailHtml = `
@@ -159,6 +194,7 @@ const handler = async (req: Request): Promise<Response> => {
               </p>
             </div>
             
+            <p>You'll receive another email with tracking information once your order ships.</p>
             <p>If you have any questions, please reply to this email.</p>
             <p>With sympathy,<br><strong>Metal Prayer Cards Team</strong></p>
           </div>
@@ -236,8 +272,7 @@ const handler = async (req: Request): Promise<Response> => {
             <div class="section">
               <h3>🛒 Order Summary</h3>
               <table>
-                <tr><td>Base Pack (55 cards + 2 photos)</td><td>$127</td></tr>
-                ${orderDetails.additionalSets > 0 ? `<tr><td>Additional Card Sets × ${orderDetails.additionalSets}</td><td>$${orderDetails.additionalSets * 110}</td></tr>` : ""}
+                <tr><td>Package</td><td>${orderDetails.packageName}</td></tr>
                 <tr><td>Total Prayer Cards</td><td>${orderDetails.totalCards}</td></tr>
                 <tr><td>Easel Photos</td><td>${orderDetails.easelPhotoCount} (${orderDetails.easelPhotoSize})</td></tr>
                 <tr><td>Shipping</td><td>${orderDetails.shipping === "overnight" ? "OVERNIGHT RUSH (+100%)" : "2-Day Express (Included)"}</td></tr>
@@ -247,12 +282,11 @@ const handler = async (req: Request): Promise<Response> => {
             
             <div class="section">
               <h3>🖨️ Print Files</h3>
-              <p><strong>IMPORTANT:</strong> Print-ready card images (with 1.25" bleed) are attached to this email as PNG files.</p>
+              <p><strong>IMPORTANT:</strong> Print-ready card images are attached to this email as PNG files.</p>
               <ul>
                 <li><strong>front-card-print.png</strong> - Front of prayer card</li>
                 <li><strong>back-card-print.png</strong> - Back of prayer card</li>
               </ul>
-              <p style="color: #dc2626;"><em>Files include 1.25" bleed area for professional printing.</em></p>
             </div>
           </div>
         </div>

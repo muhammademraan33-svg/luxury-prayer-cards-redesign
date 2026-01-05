@@ -14,6 +14,27 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_users: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["admin_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["admin_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["admin_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
       funeral_homes: {
         Row: {
           address: string | null
@@ -132,15 +153,87 @@ export type Database = {
           },
         ]
       }
+      orders: {
+        Row: {
+          back_design_url: string | null
+          created_at: string
+          customer_email: string
+          customer_name: string
+          customer_phone: string | null
+          front_design_url: string | null
+          id: string
+          package_name: string
+          shipping_address: string
+          shipping_city: string
+          shipping_state: string
+          shipping_type: string
+          shipping_zip: string
+          status: string
+          total_cards: number
+          total_photos: number
+          total_price: number
+          tracking_carrier: string | null
+          tracking_number: string | null
+          tracking_sent_at: string | null
+          updated_at: string
+        }
+        Insert: {
+          back_design_url?: string | null
+          created_at?: string
+          customer_email: string
+          customer_name: string
+          customer_phone?: string | null
+          front_design_url?: string | null
+          id?: string
+          package_name: string
+          shipping_address: string
+          shipping_city: string
+          shipping_state: string
+          shipping_type?: string
+          shipping_zip: string
+          status?: string
+          total_cards: number
+          total_photos: number
+          total_price: number
+          tracking_carrier?: string | null
+          tracking_number?: string | null
+          tracking_sent_at?: string | null
+          updated_at?: string
+        }
+        Update: {
+          back_design_url?: string | null
+          created_at?: string
+          customer_email?: string
+          customer_name?: string
+          customer_phone?: string | null
+          front_design_url?: string | null
+          id?: string
+          package_name?: string
+          shipping_address?: string
+          shipping_city?: string
+          shipping_state?: string
+          shipping_type?: string
+          shipping_zip?: string
+          status?: string
+          total_cards?: number
+          total_photos?: number
+          total_price?: number
+          tracking_carrier?: string | null
+          tracking_number?: string | null
+          tracking_sent_at?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      is_admin: { Args: { _user_id: string }; Returns: boolean }
     }
     Enums: {
-      [_ in never]: never
+      admin_role: "admin"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -267,6 +360,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      admin_role: ["admin"],
+    },
   },
 } as const
