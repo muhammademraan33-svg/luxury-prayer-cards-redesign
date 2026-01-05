@@ -100,6 +100,7 @@ const Design = () => {
   const [backBgZoom, setBackBgZoom] = useState(1);
   const [backBgPanX, setBackBgPanX] = useState(0);
   const [backBgPanY, setBackBgPanY] = useState(0);
+  const [backBgRotation, setBackBgRotation] = useState(0);
   const [backText, setBackText] = useState('The Lord is my shepherd; I shall not want.');
   const [prayerTextSize, setPrayerTextSize] = useState<number | 'auto'>('auto');
   const [autoPrayerFontSize, setAutoPrayerFontSize] = useState(16);
@@ -1378,15 +1379,21 @@ const Design = () => {
                             
                             return (
                               <div 
-                                className={`absolute inset-0 rounded-2xl ${!backBgImage ? `bg-gradient-to-br ${currentBackMetal.gradient}` : ''}`}
-                                style={backBgImage ? { 
-                                  backgroundImage: `url(${backBgImage})`, 
-                                  backgroundSize: `${100 * backBgZoom}%`, 
-                                  backgroundPosition: `${50 + backBgPanX}% ${50 + backBgPanY}%`
-                                } : undefined}
+                                className={`absolute inset-0 rounded-2xl overflow-hidden ${!backBgImage ? `bg-gradient-to-br ${currentBackMetal.gradient}` : ''}`}
                               >
                                 {backBgImage && (
-                                  <div className="absolute inset-0 bg-black/40 rounded-2xl"></div>
+                                  <>
+                                    <img 
+                                      src={backBgImage}
+                                      alt="Background"
+                                      className="absolute w-full h-full object-cover"
+                                      style={{
+                                        transform: `scale(${backBgZoom}) translate(${backBgPanX}%, ${backBgPanY}%) rotate(${backBgRotation}deg)`,
+                                        transformOrigin: 'center center',
+                                      }}
+                                    />
+                                    <div className="absolute inset-0 bg-black/40 rounded-2xl"></div>
+                                  </>
                                 )}
                                 {!backBgImage && (
                                   <div 
@@ -1749,6 +1756,7 @@ const Design = () => {
                                   setBackBgZoom(1);
                                   setBackBgPanX(0);
                                   setBackBgPanY(0);
+                                  setBackBgRotation(0);
                                 }}
                                 className={`w-12 h-16 rounded-lg overflow-hidden border-2 transition-all bg-gradient-to-br ${metal.gradient} ${
                                   !backBgImage && backMetalFinish === metal.id ? 'border-amber-500 ring-2 ring-amber-500/30' : 'border-slate-600 hover:border-slate-500'
@@ -1772,6 +1780,7 @@ const Design = () => {
                                   setBackBgZoom(1);
                                   setBackBgPanX(0);
                                   setBackBgPanY(0);
+                                  setBackBgRotation(0);
                                 }}
                                 className={`w-12 h-16 rounded-lg overflow-hidden border-2 transition-all ${
                                   backBgImage === bg.src ? 'border-amber-500 ring-2 ring-amber-500/30' : 'border-slate-600 hover:border-slate-500'
@@ -1804,6 +1813,7 @@ const Design = () => {
                                   setBackBgZoom(1);
                                   setBackBgPanX(0);
                                   setBackBgPanY(0);
+                                  setBackBgRotation(0);
                                 }}
                                 className="border-slate-600 text-slate-300 hover:bg-slate-700"
                               >
@@ -1814,11 +1824,11 @@ const Design = () => {
                           )}
                         </div>
 
-                        {/* Zoom/Pan Controls for Back Background */}
+                        {/* Zoom/Pan/Rotate Controls for Back Background */}
                         {backBgImage && (
                           <div className="w-full max-w-md space-y-2 p-3 bg-slate-700/30 rounded-lg">
                             <div className="flex items-center gap-3">
-                              <Label className="text-slate-400 text-xs">Zoom</Label>
+                              <Label className="text-slate-400 text-xs w-12">Zoom</Label>
                               <input
                                 type="range"
                                 min="1"
@@ -1830,47 +1840,57 @@ const Design = () => {
                               />
                               <span className="text-xs text-slate-400 min-w-[40px]">{Math.round(backBgZoom * 100)}%</span>
                             </div>
-                            {backBgZoom > 1 && (
-                              <>
-                                <div className="flex items-center gap-3">
-                                  <Label className="text-slate-400 text-xs">Pan X</Label>
-                                  <input
-                                    type="range"
-                                    min="-50"
-                                    max="50"
-                                    step="1"
-                                    value={backBgPanX}
-                                    onChange={(e) => setBackBgPanX(parseFloat(e.target.value))}
-                                    className="flex-1 accent-amber-600"
-                                  />
-                                </div>
-                                <div className="flex items-center gap-3">
-                                  <Label className="text-slate-400 text-xs">Pan Y</Label>
-                                  <input
-                                    type="range"
-                                    min="-50"
-                                    max="50"
-                                    step="1"
-                                    value={backBgPanY}
-                                    onChange={(e) => setBackBgPanY(parseFloat(e.target.value))}
-                                    className="flex-1 accent-amber-600"
-                                  />
-                                </div>
-                                <Button
-                                  type="button"
-                                  variant="outline"
-                                  size="sm"
-                                  onClick={() => {
-                                    setBackBgZoom(1);
-                                    setBackBgPanX(0);
-                                    setBackBgPanY(0);
-                                  }}
-                                  className="border-slate-600 text-slate-300 text-xs"
-                                >
-                                  Reset Position
-                                </Button>
-                              </>
-                            )}
+                            <div className="flex items-center gap-3">
+                              <Label className="text-slate-400 text-xs w-12">Move X</Label>
+                              <input
+                                type="range"
+                                min="-50"
+                                max="50"
+                                step="1"
+                                value={backBgPanX}
+                                onChange={(e) => setBackBgPanX(parseFloat(e.target.value))}
+                                className="flex-1 accent-amber-600"
+                              />
+                            </div>
+                            <div className="flex items-center gap-3">
+                              <Label className="text-slate-400 text-xs w-12">Move Y</Label>
+                              <input
+                                type="range"
+                                min="-50"
+                                max="50"
+                                step="1"
+                                value={backBgPanY}
+                                onChange={(e) => setBackBgPanY(parseFloat(e.target.value))}
+                                className="flex-1 accent-amber-600"
+                              />
+                            </div>
+                            <div className="flex items-center gap-3">
+                              <Label className="text-slate-400 text-xs w-12">Rotate</Label>
+                              <input
+                                type="range"
+                                min="-180"
+                                max="180"
+                                step="1"
+                                value={backBgRotation}
+                                onChange={(e) => setBackBgRotation(parseFloat(e.target.value))}
+                                className="flex-1 accent-amber-600"
+                              />
+                              <span className="text-xs text-slate-400 min-w-[40px]">{backBgRotation}°</span>
+                            </div>
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              onClick={() => {
+                                setBackBgZoom(1);
+                                setBackBgPanX(0);
+                                setBackBgPanY(0);
+                                setBackBgRotation(0);
+                              }}
+                              className="border-slate-600 text-slate-300 text-xs w-full"
+                            >
+                              Reset Position
+                            </Button>
                           </div>
                         )}
 
@@ -2859,13 +2879,24 @@ const Design = () => {
               className="w-full h-full rounded-lg overflow-hidden relative flex flex-col"
               style={{
                 backgroundColor: backBgImage ? 'transparent' : '#ffffff',
-                backgroundImage: backBgImage ? `url(${backBgImage})` : 'none',
-                backgroundSize: 'cover',
-                backgroundPosition: 'center',
               }}
             >
+              {backBgImage && (
+                <>
+                  <img 
+                    src={backBgImage}
+                    alt="Background"
+                    className="absolute w-full h-full object-cover"
+                    style={{
+                      transform: `scale(${backBgZoom}) translate(${backBgPanX}%, ${backBgPanY}%) rotate(${backBgRotation}deg)`,
+                      transformOrigin: 'center center',
+                    }}
+                  />
+                  <div className="absolute inset-0 bg-black/40"></div>
+                </>
+              )}
               {/* Back content */}
-              <div className="flex-1 flex flex-col p-6 relative">
+              <div className="flex-1 flex flex-col p-6 relative z-10">
                 {showInLovingMemory && (
                   <div
                     className="text-center mb-2"
