@@ -339,6 +339,12 @@ const Design = () => {
     }).join('\n');
   };
 
+  // Use pixel line-height to avoid mobile Safari rounding/clipping
+  const getPrayerLineHeightPx = (fontPx: number) => {
+    const mult = fontPx <= 8 ? 1.05 : 1.15;
+    return Math.max(1, Math.round(fontPx * mult));
+  };
+
   // Compute the maximum prayer font size that fits the available space
   // (space changes when QR/logo/header elements change)
   useLayoutEffect(() => {
@@ -348,18 +354,35 @@ const Design = () => {
     const textEl = prayerTextRef.current;
     if (!container || !textEl) return;
 
-    // Wait until layout is stable for this paint.
-    const raf = requestAnimationFrame(() => {
+    let disposed = false;
+
+    const recompute = () => {
+      if (disposed) return;
+
       const minPx = 3;
       const maxPx = 22;
 
+      // Temporarily remove clipping while measuring (clipping can make scrollHeight unreliable on some browsers)
+      const prev = {
+        fontSize: textEl.style.fontSize,
+        lineHeight: textEl.style.lineHeight,
+        maxHeight: textEl.style.maxHeight,
+        overflow: textEl.style.overflow,
+      };
+
       const fits = (px: number) => {
         textEl.style.fontSize = `${px}px`;
-        textEl.style.lineHeight = px <= 8 ? '1.05' : '1.15';
+        textEl.style.lineHeight = `${getPrayerLineHeightPx(px)}px`;
+        textEl.style.maxHeight = 'none';
+        textEl.style.overflow = 'visible';
 
-        // Trigger layout
-        const heightOk = textEl.scrollHeight <= container.clientHeight + 1;
-        const widthOk = textEl.scrollWidth <= container.clientWidth + 1;
+        // Force layout
+        // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+        textEl.offsetHeight;
+
+        // Give a small safety margin to prevent bottom-line clipping (mobile Safari can round line boxes)
+        const heightOk = textEl.scrollHeight <= container.clientHeight - 6;
+        const widthOk = textEl.scrollWidth <= container.clientWidth - 2;
         return heightOk && widthOk;
       };
 
@@ -380,13 +403,41 @@ const Design = () => {
         }
       }
 
-      setAutoPrayerFontSize((prev) => (prev === best ? prev : best));
+      // Restore previous styles
+      textEl.style.fontSize = prev.fontSize;
+      textEl.style.lineHeight = prev.lineHeight;
+      textEl.style.maxHeight = prev.maxHeight;
+      textEl.style.overflow = prev.overflow;
+
+      setAutoPrayerFontSize((prevSize) => (prevSize === best ? prevSize : best));
+    };
+
+    // Schedule twice to allow layout to settle (fonts/QR/footer can shift after first paint)
+    const schedule = () => {
+      requestAnimationFrame(() => requestAnimationFrame(recompute));
+    };
+
+    schedule();
+
+    // Recompute when the container size changes (e.g., mobile viewport/keyboard changes)
+    const ro = new ResizeObserver(() => schedule());
+    ro.observe(container);
+
+    // Recompute again once fonts are loaded (prevents late font-metric changes from causing clipping)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const fontsReady = (document as any).fonts?.ready as Promise<void> | undefined;
+    fontsReady?.then(() => {
+      if (!disposed) schedule();
     });
 
-    return () => cancelAnimationFrame(raf);
+    return () => {
+      disposed = true;
+      ro.disconnect();
+    };
   }, [
     backText,
     prayerBold,
+    prayerTextSize,
     cardSide,
     orientation,
     showQrCode,
@@ -1365,23 +1416,21 @@ const Design = () => {
                                 <div ref={prayerContainerRef} className="flex-1 flex items-center justify-center py-1 px-1 overflow-hidden min-h-0">
                                   <p 
                                     ref={prayerTextRef}
-                                    className={`leading-snug font-serif italic ${backBgImage || metalFinish === 'black' ? 'text-zinc-200' : 'text-zinc-700'} whitespace-pre-line text-center`}
+                                    className={`font-serif italic ${backBgImage || metalFinish === 'black' ? 'text-zinc-200' : 'text-zinc-700'} whitespace-pre-line text-center`}
                                     style={{
                                       fontSize: `${(
                                         prayerTextSize === 'auto'
                                           ? autoPrayerFontSize
                                           : Math.min(prayerTextSize, autoPrayerFontSize)
                                       )}px`,
-                                      lineHeight: (
-                                        (prayerTextSize === 'auto'
+                                      lineHeight: `${getPrayerLineHeightPx(
+                                        prayerTextSize === 'auto'
                                           ? autoPrayerFontSize
-                                          : Math.min(prayerTextSize, autoPrayerFontSize)) <= 8
-                                      ) ? 1.05 : (prayerTextSize === 'auto' ? 1.15 : 1.3),
+                                          : Math.min(prayerTextSize, autoPrayerFontSize)
+                                      )}px`,
                                       textWrap: 'pretty',
                                       wordBreak: 'keep-all',
                                       fontWeight: prayerBold ? 'bold' : 'normal',
-                                      maxHeight: '100%',
-                                      overflow: 'hidden',
                                     }}
                                   >
                                     {preventOrphans(backText)}
