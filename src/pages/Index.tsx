@@ -145,7 +145,7 @@ const Index = () => {
                     ))}
                   </ul>
 
-                  <Link to="/design" className="block">
+                  <Link to={`/design?package=${pkg.id}`} className="block">
                     <Button
                       size="lg"
                       className={
