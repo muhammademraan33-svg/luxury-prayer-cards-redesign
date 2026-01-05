@@ -5,6 +5,33 @@ import { Shield, Package, Truck, Clock, Heart, Star, CheckCircle2, ArrowRight, G
 import eternityLogo from '@/assets/eternity-cards-logo.png';
 
 const Index = () => {
+  const packages = [
+    {
+      id: 'good',
+      badge: undefined as string | undefined,
+      name: 'Essential',
+      price: 127,
+      comparePrice: 195,
+      items: ['55 Premium Metal Prayer Cards', '2 Easel Photo Boards', '48-Hour Delivery', 'Satisfaction Guaranteed'],
+    },
+    {
+      id: 'better',
+      badge: 'MOST POPULAR',
+      name: 'Family',
+      price: 199,
+      comparePrice: 295,
+      items: ['110 Premium Metal Prayer Cards', '4 Easel Photo Boards', '48-Hour Delivery', 'Satisfaction Guaranteed'],
+    },
+    {
+      id: 'best',
+      badge: 'BEST',
+      name: 'Legacy',
+      price: 349,
+      comparePrice: 495,
+      items: ['165 Premium Metal Prayer Cards', '6 Easel Photo Boards', 'Overnight Shipping', 'Premium .080\" Thickness'],
+    },
+  ];
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -67,99 +94,124 @@ const Index = () => {
 
       {/* Pricing Section - Moved Up */}
       <section className="container mx-auto px-4 py-16" id="pricing">
-        <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-          {/* Main Package */}
-          <Card className="bg-primary/10 border-primary/30 relative overflow-hidden">
-            <div className="absolute top-4 right-4 bg-primary text-primary-foreground text-xs font-bold px-3 py-1 rounded-full">
-              BEST VALUE
-            </div>
-            <CardContent className="p-8">
-              <div className="flex items-center gap-3 mb-4">
-                <Package className="h-8 w-8 text-primary" />
-                <h3 className="text-2xl font-bold text-foreground">Complete Memorial Set</h3>
-              </div>
-              <div className="mb-6">
-                <div className="flex items-baseline gap-2">
-                  <span className="text-5xl font-bold text-foreground">$127</span>
-                  <span className="text-muted-foreground line-through">$250</span>
-                </div>
-                <p className="text-primary font-medium mt-1">Save $123</p>
-              </div>
-              <ul className="space-y-3 text-foreground/80 mb-8">
-                <li className="flex items-center gap-2">
-                  <CheckCircle2 className="w-5 h-5 text-primary" />
-                  55 Premium Metal Prayer Cards
-                </li>
-                <li className="flex items-center gap-2">
-                  <CheckCircle2 className="w-5 h-5 text-primary" />
-                  2 Easel Photo Boards (FREE)
-                </li>
-                <li className="flex items-center gap-2">
-                  <CheckCircle2 className="w-5 h-5 text-primary" />
-                  48-Hour Delivery
-                </li>
-                <li className="flex items-center gap-2">
-                  <CheckCircle2 className="w-5 h-5 text-primary" />
-                  Satisfaction Guaranteed
-                </li>
-              </ul>
-              <Link to="/design" className="block">
-                <Button size="lg" className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold text-lg py-6">
-                  Start Designing
-                  <ArrowRight className="ml-2 h-5 w-5" />
-                </Button>
-              </Link>
-            </CardContent>
-          </Card>
+        <div className="max-w-5xl mx-auto">
+          <div className="text-center mb-10">
+            <h2 className="text-3xl md:text-4xl font-bold text-foreground">Choose Your Package</h2>
+            <p className="text-muted-foreground mt-2">Good / Better / Best options for every service size.</p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-6">
+            {packages.map((pkg) => (
+              <Card
+                key={pkg.id}
+                className={
+                  pkg.id === 'better'
+                    ? 'bg-primary/10 border-primary/30 relative overflow-hidden'
+                    : 'bg-card border-border relative overflow-hidden'
+                }
+              >
+                {pkg.badge ? (
+                  <div
+                    className={
+                      pkg.id === 'better'
+                        ? 'absolute top-4 right-4 bg-primary text-primary-foreground text-xs font-bold px-3 py-1 rounded-full'
+                        : 'absolute top-4 right-4 bg-foreground text-background text-xs font-bold px-3 py-1 rounded-full'
+                    }
+                  >
+                    {pkg.badge}
+                  </div>
+                ) : null}
+
+                <CardContent className="p-8">
+                  <div className="flex items-center gap-3 mb-4">
+                    <Package className={pkg.id === 'better' ? 'h-7 w-7 text-primary' : 'h-7 w-7 text-muted-foreground'} />
+                    <h3 className="text-2xl font-bold text-foreground">{pkg.name}</h3>
+                  </div>
+
+                  <div className="mb-6">
+                    <div className="flex items-baseline gap-2">
+                      <span className="text-5xl font-bold text-foreground">${pkg.price}</span>
+                      <span className="text-muted-foreground line-through">${pkg.comparePrice}</span>
+                    </div>
+                    <p className="text-muted-foreground text-sm mt-2">One-time package price</p>
+                  </div>
+
+                  <ul className="space-y-3 text-foreground/80 mb-8">
+                    {pkg.items.map((item) => (
+                      <li key={item} className="flex items-center gap-2">
+                        <CheckCircle2 className={pkg.id === 'better' ? 'w-5 h-5 text-primary' : 'w-5 h-5 text-muted-foreground'} />
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+
+                  <Link to="/design" className="block">
+                    <Button
+                      size="lg"
+                      className={
+                        pkg.id === 'better'
+                          ? 'w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold text-lg py-6'
+                          : 'w-full font-semibold text-lg py-6'
+                      }
+                      variant={pkg.id === 'better' ? 'default' : 'outline'}
+                    >
+                      Start Designing
+                      <ArrowRight className="ml-2 h-5 w-5" />
+                    </Button>
+                  </Link>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
 
           {/* Add-ons */}
-          <Card className="bg-card border-border">
-            <CardContent className="p-8">
-              <h3 className="text-2xl font-bold text-foreground mb-6 flex items-center gap-3">
-                <Truck className="h-8 w-8 text-muted-foreground" />
-                Add-Ons
-              </h3>
-              <div className="space-y-6">
-                <div className="border-b border-border pb-6">
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <p className="text-foreground font-semibold">Additional 55-Card Set</p>
-                      <p className="text-muted-foreground text-sm">Same design, more cards</p>
+          <div className="mt-10">
+            <Card className="bg-card border-border">
+              <CardContent className="p-8">
+                <h3 className="text-2xl font-bold text-foreground mb-6 flex items-center gap-3">
+                  <Truck className="h-8 w-8 text-muted-foreground" />
+                  Add-Ons
+                </h3>
+                <div className="space-y-6">
+                  <div className="border-b border-border pb-6">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <p className="text-foreground font-semibold">Additional 55-Card Set</p>
+                        <p className="text-muted-foreground text-sm">Same design, more cards</p>
+                      </div>
+                      <span className="text-2xl font-bold text-foreground">$110</span>
                     </div>
-                    <span className="text-2xl font-bold text-foreground">$110</span>
                   </div>
-                </div>
-                <div className="border-b border-border pb-6">
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <p className="text-foreground font-semibold">Extra Photo Boards</p>
-                      <p className="text-muted-foreground text-sm">16x20 easel displays</p>
+                  <div className="border-b border-border pb-6">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <p className="text-foreground font-semibold">Extra Photo Boards</p>
+                        <p className="text-muted-foreground text-sm">16x20 easel displays</p>
+                      </div>
+                      <span className="text-2xl font-bold text-foreground">$19</span>
                     </div>
-                    <span className="text-2xl font-bold text-foreground">$19</span>
                   </div>
-                </div>
-                <div className="border-b border-border pb-6">
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <p className="text-foreground font-semibold">Upgrade to 18x24</p>
-                      <p className="text-muted-foreground text-sm">Larger photo board size</p>
+                  <div className="border-b border-border pb-6">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <p className="text-foreground font-semibold">Upgrade to 18x24</p>
+                        <p className="text-muted-foreground text-sm">Larger photo board size</p>
+                      </div>
+                      <span className="text-2xl font-bold text-foreground">+$5</span>
                     </div>
-                    <span className="text-2xl font-bold text-foreground">+$5</span>
+                  </div>
+                  <div className="bg-destructive/10 border border-destructive/30 rounded-lg p-4">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Clock className="h-5 w-5 text-destructive" />
+                      <p className="text-destructive font-semibold">Rush Overnight</p>
+                    </div>
+                    <p className="text-foreground/80 text-sm mb-2">Order by noon, ships same day.</p>
+                    <p className="text-destructive font-bold">+100% Expedite Fee</p>
                   </div>
                 </div>
-                <div className="bg-destructive/10 border border-destructive/30 rounded-lg p-4">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Clock className="h-5 w-5 text-destructive" />
-                    <p className="text-destructive font-semibold">Rush Overnight</p>
-                  </div>
-                  <p className="text-foreground/80 text-sm mb-2">
-                    Order by noon, ships same day.
-                  </p>
-                  <p className="text-destructive font-bold">+100% Expedite Fee</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          </div>
         </div>
       </section>
 
