@@ -1461,19 +1461,6 @@ const Design = () => {
 
                                 {/* Footer Section - Logo and/or QR Code */}
                                 <div className="shrink-0 flex flex-col items-center">
-                                  {/* Funeral Home Logo - Bottom (when no QR) */}
-                                  {funeralHomeLogo && funeralHomeLogoPosition === 'bottom' && !showQrCode && (
-                                    <div className="flex justify-center mt-1">
-                                      <img 
-                                        src={funeralHomeLogo} 
-                                        alt="Funeral Home Logo" 
-                                        className="object-contain"
-                                        style={{ height: `${funeralHomeLogoSize}px`, maxWidth: '70%' }}
-                                        onLoad={() => setPrayerLayoutNonce((n) => n + 1)}
-                                      />
-                                    </div>
-                                  )}
-
                                   {/* QR Code */}
                                   {showQrCode && qrUrl && (
                                     <div className="flex flex-col items-center">
@@ -1488,16 +1475,19 @@ const Design = () => {
                                       <p className={`text-[6px] mt-0.5 ${backBgImage || metalFinish === 'black' ? 'text-zinc-400' : 'text-zinc-600'}`}>
                                         Scan to visit
                                       </p>
-                                      {/* Logo below QR if position is bottom */}
-                                      {funeralHomeLogo && funeralHomeLogoPosition === 'bottom' && (
-                                        <img 
-                                          src={funeralHomeLogo} 
-                                          alt="Funeral Home Logo" 
-                                          className="object-contain mt-1"
-                                          style={{ height: `${funeralHomeLogoSize}px`, maxWidth: '70%' }}
-                                          onLoad={() => setPrayerLayoutNonce((n) => n + 1)}
-                                        />
-                                      )}
+                                    </div>
+                                  )}
+
+                                  {/* Funeral Home Logo - Bottom */}
+                                  {funeralHomeLogo && funeralHomeLogoPosition === 'bottom' && (
+                                    <div className="flex justify-center mt-1">
+                                      <img 
+                                        src={funeralHomeLogo} 
+                                        alt="Funeral Home Logo" 
+                                        className="object-contain"
+                                        style={{ height: `${funeralHomeLogoSize}px`, maxWidth: '70%' }}
+                                        onLoad={() => setPrayerLayoutNonce((n) => n + 1)}
+                                      />
                                     </div>
                                   )}
                                 </div>
