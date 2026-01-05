@@ -13,8 +13,21 @@ import { Textarea } from '@/components/ui/textarea';
 import { prayerTemplates } from '@/data/prayerTemplates';
 import { toast } from 'sonner';
 import eternityLogo from '@/assets/eternity-cards-logo.png';
+import cloudsLightBg from '@/assets/backgrounds/clouds-light.jpg';
+import marbleGreyBg from '@/assets/backgrounds/marble-grey.jpg';
+import sunsetCloudsBg from '@/assets/backgrounds/sunset-clouds.jpg';
+import liliesCreamBg from '@/assets/backgrounds/lilies-cream.jpg';
+import heavenlyRaysBg from '@/assets/backgrounds/heavenly-rays.jpg';
 import html2canvas from 'html2canvas';
 import { supabase } from '@/integrations/supabase/client';
+
+const PRESET_BACKGROUNDS = [
+  { id: 'clouds', name: 'Soft Clouds', src: cloudsLightBg },
+  { id: 'marble', name: 'Grey Marble', src: marbleGreyBg },
+  { id: 'sunset', name: 'Sunset Clouds', src: sunsetCloudsBg },
+  { id: 'lilies', name: 'White Lilies', src: liliesCreamBg },
+  { id: 'rays', name: 'Heavenly Rays', src: heavenlyRaysBg },
+];
 const FONT_OPTIONS = [
   { value: 'Playfair Display', name: 'Playfair Display' },
   { value: 'Cormorant Garamond', name: 'Cormorant Garamond' },
@@ -71,6 +84,9 @@ const Design = () => {
   const [photoPanY, setPhotoPanY] = useState(0);
   const [isPanning, setIsPanning] = useState(false);
   const [backBgImage, setBackBgImage] = useState<string | null>(null);
+  const [backBgZoom, setBackBgZoom] = useState(1);
+  const [backBgPanX, setBackBgPanX] = useState(0);
+  const [backBgPanY, setBackBgPanY] = useState(0);
   const [backText, setBackText] = useState('The Lord is my shepherd; I shall not want.');
   const [prayerTextSize, setPrayerTextSize] = useState<number | 'auto'>('auto');
   const [autoPrayerFontSize, setAutoPrayerFontSize] = useState(16);
@@ -1343,8 +1359,8 @@ const Design = () => {
                             className={`absolute inset-0 rounded-2xl ${!backBgImage ? `bg-gradient-to-br ${currentFinish.gradient}` : ''}`}
                             style={backBgImage ? { 
                               backgroundImage: `url(${backBgImage})`, 
-                              backgroundSize: 'cover', 
-                              backgroundPosition: 'center' 
+                              backgroundSize: `${100 * backBgZoom}%`, 
+                              backgroundPosition: `${50 + backBgPanX}% ${50 + backBgPanY}%`
                             } : undefined}
                           >
                             {backBgImage && (
@@ -1694,7 +1710,32 @@ const Design = () => {
                           className="hidden"
                           onChange={(e) => e.target.files?.[0] && handleImageUpload(e.target.files[0], 'back')}
                         />
-                        <div className="flex gap-2">
+                        {/* Preset Backgrounds */}
+                        <div className="w-full max-w-md">
+                          <Label className="text-slate-400 text-xs mb-2 block">Preset Backgrounds</Label>
+                          <div className="flex gap-2 flex-wrap">
+                            {PRESET_BACKGROUNDS.map((bg) => (
+                              <button
+                                key={bg.id}
+                                type="button"
+                                onClick={() => {
+                                  setBackBgImage(bg.src);
+                                  setBackBgZoom(1);
+                                  setBackBgPanX(0);
+                                  setBackBgPanY(0);
+                                }}
+                                className={`w-12 h-16 rounded-lg overflow-hidden border-2 transition-all ${
+                                  backBgImage === bg.src ? 'border-amber-500 ring-2 ring-amber-500/30' : 'border-slate-600 hover:border-slate-500'
+                                }`}
+                                title={bg.name}
+                              >
+                                <img src={bg.src} alt={bg.name} className="w-full h-full object-cover" />
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+
+                        <div className="flex gap-2 flex-wrap">
                           <Button
                             type="button"
                             variant="outline"
@@ -1705,17 +1746,84 @@ const Design = () => {
                             {backBgImage ? 'Change Background' : 'Upload Background'}
                           </Button>
                           {backBgImage && (
-                            <Button
-                              type="button"
-                              variant="outline"
-                              onClick={() => setBackBgImage(null)}
-                              className="border-slate-600 text-slate-300 hover:bg-slate-700"
-                            >
-                              <RotateCcw className="h-4 w-4 mr-2" />
-                              Use Metal
-                            </Button>
+                            <>
+                              <Button
+                                type="button"
+                                variant="outline"
+                                onClick={() => {
+                                  setBackBgImage(null);
+                                  setBackBgZoom(1);
+                                  setBackBgPanX(0);
+                                  setBackBgPanY(0);
+                                }}
+                                className="border-slate-600 text-slate-300 hover:bg-slate-700"
+                              >
+                                <RotateCcw className="h-4 w-4 mr-2" />
+                                Use Metal
+                              </Button>
+                            </>
                           )}
                         </div>
+
+                        {/* Zoom/Pan Controls for Back Background */}
+                        {backBgImage && (
+                          <div className="w-full max-w-md space-y-2 p-3 bg-slate-700/30 rounded-lg">
+                            <div className="flex items-center gap-3">
+                              <Label className="text-slate-400 text-xs">Zoom</Label>
+                              <input
+                                type="range"
+                                min="1"
+                                max="3"
+                                step="0.1"
+                                value={backBgZoom}
+                                onChange={(e) => setBackBgZoom(parseFloat(e.target.value))}
+                                className="flex-1 accent-amber-600"
+                              />
+                              <span className="text-xs text-slate-400 min-w-[40px]">{Math.round(backBgZoom * 100)}%</span>
+                            </div>
+                            {backBgZoom > 1 && (
+                              <>
+                                <div className="flex items-center gap-3">
+                                  <Label className="text-slate-400 text-xs">Pan X</Label>
+                                  <input
+                                    type="range"
+                                    min="-50"
+                                    max="50"
+                                    step="1"
+                                    value={backBgPanX}
+                                    onChange={(e) => setBackBgPanX(parseFloat(e.target.value))}
+                                    className="flex-1 accent-amber-600"
+                                  />
+                                </div>
+                                <div className="flex items-center gap-3">
+                                  <Label className="text-slate-400 text-xs">Pan Y</Label>
+                                  <input
+                                    type="range"
+                                    min="-50"
+                                    max="50"
+                                    step="1"
+                                    value={backBgPanY}
+                                    onChange={(e) => setBackBgPanY(parseFloat(e.target.value))}
+                                    className="flex-1 accent-amber-600"
+                                  />
+                                </div>
+                                <Button
+                                  type="button"
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => {
+                                    setBackBgZoom(1);
+                                    setBackBgPanX(0);
+                                    setBackBgPanY(0);
+                                  }}
+                                  className="border-slate-600 text-slate-300 text-xs"
+                                >
+                                  Reset Position
+                                </Button>
+                              </>
+                            )}
+                          </div>
+                        )}
 
                         {/* In Loving Memory Controls */}
                         <div className="w-full max-w-md space-y-3 p-3 bg-slate-700/30 rounded-lg">
