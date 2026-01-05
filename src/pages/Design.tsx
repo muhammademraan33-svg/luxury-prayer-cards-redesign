@@ -164,11 +164,6 @@ const Design = () => {
   // Easel photo state - supports multiple photos (2 included, can add more)
   const [easelPhotos, setEaselPhotos] = useState<string[]>([]);
   const [easelPhotoSize, setEaselPhotoSize] = useState<EaselPhotoSize>('16x20');
-  const [easelPhotoText, setEaselPhotoText] = useState('');
-  const [easelPhotoTextPosition, setEaselPhotoTextPosition] = useState<'top' | 'bottom'>('bottom');
-  const [easelPhotoTextColor, setEaselPhotoTextColor] = useState('#ffffff');
-  const [easelPhotoTextSize, setEaselPhotoTextSize] = useState(24);
-  const [showEaselPhotoText, setShowEaselPhotoText] = useState(true);
   const easelPhotosInputRef = useRef<HTMLInputElement>(null);
   
   // Shipping address state
@@ -2230,25 +2225,6 @@ const Design = () => {
                             className="w-full h-full object-cover"
                           />
                           
-                          {/* Text Overlay */}
-                          {showEaselPhotoText && easelPhotoText && (
-                            <div 
-                              className={`absolute left-0 right-0 px-2 py-1 bg-black/50 text-center ${
-                                easelPhotoTextPosition === 'top' ? 'top-0' : 'bottom-0'
-                              }`}
-                            >
-                              <p 
-                                style={{ 
-                                  color: easelPhotoTextColor,
-                                  fontSize: `${Math.max(6, easelPhotoTextSize / 4)}px`,
-                                }}
-                                className="font-serif truncate"
-                              >
-                                {easelPhotoText}
-                              </p>
-                            </div>
-                          )}
-                          
                           {/* Photo Number Badge */}
                           <div className="absolute top-1 left-1 bg-slate-900/80 text-white text-[10px] px-1.5 py-0.5 rounded">
                             #{index + 1} {index < 2 ? '✓' : '+$27'}
@@ -2371,87 +2347,6 @@ const Design = () => {
                       </div>
                     </div>
 
-                    {/* Text Overlay Controls */}
-                    <div className="space-y-3 p-4 bg-slate-700/30 rounded-lg">
-                      <div className="flex items-center justify-between">
-                        <Label className="text-white text-sm font-medium">Text Overlay</Label>
-                        <label className="flex items-center gap-2 cursor-pointer">
-                          <input 
-                            type="checkbox" 
-                            checked={showEaselPhotoText} 
-                            onChange={(e) => setShowEaselPhotoText(e.target.checked)}
-                            className="accent-amber-600"
-                          />
-                          <span className="text-slate-400 text-xs">Show</span>
-                        </label>
-                      </div>
-                      {showEaselPhotoText && (
-                        <>
-                          <Input
-                            placeholder="Name or memorial text..."
-                            value={easelPhotoText}
-                            onChange={(e) => setEaselPhotoText(e.target.value)}
-                            className="bg-slate-700 border-slate-600 text-white"
-                          />
-                          <div className="flex flex-wrap items-center gap-3">
-                            <div className="flex items-center gap-2">
-                              <Label className="text-slate-400 text-xs">Position</Label>
-                              <div className="flex gap-1">
-                                <Button
-                                  type="button"
-                                  variant={easelPhotoTextPosition === 'top' ? 'default' : 'outline'}
-                                  size="sm"
-                                  className={`h-7 px-2 text-xs ${easelPhotoTextPosition === 'top' ? 'bg-amber-600' : 'border-slate-600'}`}
-                                  onClick={() => setEaselPhotoTextPosition('top')}
-                                >
-                                  Top
-                                </Button>
-                                <Button
-                                  type="button"
-                                  variant={easelPhotoTextPosition === 'bottom' ? 'default' : 'outline'}
-                                  size="sm"
-                                  className={`h-7 px-2 text-xs ${easelPhotoTextPosition === 'bottom' ? 'bg-amber-600' : 'border-slate-600'}`}
-                                  onClick={() => setEaselPhotoTextPosition('bottom')}
-                                >
-                                  Bottom
-                                </Button>
-                              </div>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <Label className="text-slate-400 text-xs">Color</Label>
-                              <input
-                                type="color"
-                                value={easelPhotoTextColor}
-                                onChange={(e) => setEaselPhotoTextColor(e.target.value)}
-                                className="w-7 h-7 rounded border border-slate-600 cursor-pointer"
-                              />
-                            </div>
-                            <div className="flex items-center gap-1">
-                              <Label className="text-slate-400 text-xs">Size</Label>
-                              <Button
-                                type="button"
-                                variant="outline"
-                                size="icon"
-                                className="h-6 w-6 border-slate-600"
-                                onClick={() => setEaselPhotoTextSize(Math.max(12, easelPhotoTextSize - 2))}
-                              >
-                                <span className="text-xs">−</span>
-                              </Button>
-                              <span className="text-xs text-white bg-slate-700 px-2 py-1 rounded min-w-[40px] text-center">{easelPhotoTextSize}px</span>
-                              <Button
-                                type="button"
-                                variant="outline"
-                                size="icon"
-                                className="h-6 w-6 border-slate-600"
-                                onClick={() => setEaselPhotoTextSize(Math.min(48, easelPhotoTextSize + 2))}
-                              >
-                                <span className="text-xs">+</span>
-                              </Button>
-                            </div>
-                          </div>
-                        </>
-                      )}
-                    </div>
                   </div>
 
                   <Button 
