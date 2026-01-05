@@ -105,8 +105,8 @@ const PACKAGES: Record<PackageTier, PackageConfig> = {
     comparePrice: 495,
     cards: 165,
     photos: 6,
-    shipping: 'Overnight',
-    thickness: 'premium' as CardThickness,
+    shipping: '2-Day Express',
+    thickness: 'standard' as CardThickness,
     description: 'Complete memorial package',
   },
 };
@@ -2373,11 +2373,11 @@ const Design = () => {
                   <div className="border-t border-slate-700 pt-6">
                     <div className="flex items-center gap-2 mb-4">
                       <ImageIcon className="h-5 w-5 text-amber-400" />
-                      <Label className="text-white font-semibold text-lg">Easel Photos (2 Included)</Label>
+                      <Label className="text-white font-semibold text-lg">Easel Photos ({currentPackage.photos} Included)</Label>
                     </div>
                     
                     <p className="text-slate-400 text-sm mb-4">
-                      Upload 2 different photos for your included easel displays. You can add more to create a collage or display multiple memories.
+                      Upload up to {currentPackage.photos} different photos for your included easel displays. You can add more to create a collage or display multiple memories.
                     </p>
 
                     {/* Easel Photos Grid - Always show 6 slots */}
@@ -2385,7 +2385,7 @@ const Design = () => {
                       {/* Render 6 slots - filled with photos or placeholders */}
                       {Array.from({ length: 6 }).map((_, index) => {
                         const photo = easelPhotos[index];
-                        const isIncluded = index < 2;
+                        const isIncluded = index < currentPackage.photos;
                         
                         if (photo) {
                           return (
@@ -2404,7 +2404,7 @@ const Design = () => {
                               
                               {/* Photo Number Badge */}
                               <div className={`absolute top-1 left-1 ${isIncluded ? 'bg-emerald-600/90' : 'bg-amber-600/90'} text-white text-[10px] px-1.5 py-0.5 rounded`}>
-                                #{index + 1} {isIncluded ? '✓ Included' : '+$27'}
+                                #{index + 1} {isIncluded ? '✓ Included' : `+$${ADDITIONAL_PHOTO_PRICE}`}
                               </div>
                               
                               {/* Size Label */}
@@ -2440,7 +2440,7 @@ const Design = () => {
                             </div>
                             <p className="text-slate-400 text-xs font-medium">Photo {index + 1}</p>
                             <p className={`text-[10px] mt-0.5 ${isIncluded ? 'text-emerald-400' : 'text-amber-400'}`}>
-                              {isIncluded ? '✓ Included' : '+$27'}
+                              {isIncluded ? '✓ Included' : `+$${ADDITIONAL_PHOTO_PRICE}`}
                             </p>
                             <p className="text-slate-500 text-[9px] mt-1">Click to upload</p>
                           </button>
@@ -2481,7 +2481,7 @@ const Design = () => {
                     </div>
                     
                     <p className="text-slate-500 text-xs text-center mb-4">
-                      💡 First 2 photos are included • Additional photos are $27 each
+                      💡 First {currentPackage.photos} photos are included • Additional photos are ${ADDITIONAL_PHOTO_PRICE} each
                     </p>
 
                     {/* Size Selection */}
@@ -2510,7 +2510,7 @@ const Design = () => {
                           }`}
                         >
                           <p className="text-white font-medium">18" × 24"</p>
-                          <p className="text-amber-400 text-sm">+$10 each</p>
+                          <p className="text-amber-400 text-sm">+${EASEL_18X24_UPSELL} each</p>
                         </button>
                       </div>
                     </div>
