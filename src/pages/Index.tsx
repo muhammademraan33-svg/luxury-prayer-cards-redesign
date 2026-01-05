@@ -53,11 +53,11 @@ const Index = () => {
       {/* Hero */}
       <section className="container mx-auto px-4 py-16 md:py-20 text-center">
         <h1 className="text-5xl md:text-7xl font-bold text-foreground mb-6 leading-tight tracking-tight">
-          Metal Memorial Cards<br />
-          <span className="text-primary">That Last Forever</span>
+          Make Your Final Memory<br />
+          <span className="text-primary">One That Lasts for Eternity</span>
         </h1>
         <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-8">
-          55 premium metal prayer cards + 2 easel photo boards. Delivered in 48 hours.
+          Indestructible metal prayer cards that fit perfectly in a wallet. Never bend, never fade.
         </p>
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-10">
           <Link to="/design">
