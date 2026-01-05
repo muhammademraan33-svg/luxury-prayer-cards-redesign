@@ -2,8 +2,6 @@ import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Shield, Package, Truck, Clock, Heart, Star, CheckCircle2, ArrowRight, Gift } from 'lucide-react';
-import eternityLogo from '@/assets/eternity-cards-logo.png';
-
 const Index = () => {
   const packages = [
     {
@@ -38,7 +36,7 @@ const Index = () => {
       <header className="border-b border-border bg-card/80 backdrop-blur-sm sticky top-0 z-50">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <img src={eternityLogo} alt="Metal Prayer Cards" className="h-12 w-auto" />
+            <span className="text-xl font-bold text-foreground">Metalprayercards.com</span>
           </div>
           <nav className="hidden md:flex items-center gap-8">
             <a href="#pricing" className="text-muted-foreground hover:text-foreground transition-colors text-sm font-medium">Pricing</a>
@@ -391,7 +389,7 @@ const Index = () => {
       <footer className="border-t border-border py-8 bg-card/50">
         <div className="container mx-auto px-4">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-            <img src={eternityLogo} alt="Metal Prayer Cards" className="h-10 w-auto" />
+            <span className="text-lg font-bold text-foreground">Metalprayercards.com</span>
             <p className="text-muted-foreground text-sm">© 2025 Metal Prayer Cards. All rights reserved.</p>
           </div>
         </div>

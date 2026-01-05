@@ -9,8 +9,6 @@ import {
 } from 'lucide-react';
 import { BusinessCardData } from '@/types/businessCard';
 import { cn } from '@/lib/utils';
-import logo from '@/assets/eternity-cards-logo.png';
-
 interface EditorHeaderProps {
   cardData: BusinessCardData;
   activeSide: 'front' | 'back';
@@ -42,7 +40,7 @@ export const EditorHeader = ({
     <header className="h-14 border-b border-border bg-card flex items-center justify-between px-4 shrink-0">
       {/* Left section - Logo */}
       <div className="flex items-center gap-3">
-        <img src={logo} alt="Metal Prayer Cards" className="h-8" />
+        <span className="text-lg font-bold text-foreground">Metalprayercards.com</span>
         <div className="h-6 w-px bg-border hidden sm:block" />
         <div className="hidden sm:flex items-center gap-1">
           <Button 
