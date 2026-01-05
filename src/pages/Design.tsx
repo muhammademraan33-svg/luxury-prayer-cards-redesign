@@ -69,6 +69,7 @@ const Design = () => {
   const [backText, setBackText] = useState('The Lord is my shepherd; I shall not want.');
   const [prayerTextSize, setPrayerTextSize] = useState<number | 'auto'>('auto');
   const [autoPrayerFontSize, setAutoPrayerFontSize] = useState(16);
+  const [prayerLayoutNonce, setPrayerLayoutNonce] = useState(0);
   
   // Front card text state
   const [showNameOnFront, setShowNameOnFront] = useState(true);
@@ -362,6 +363,13 @@ const Design = () => {
       const minPx = 3;
       const maxPx = 22;
 
+      // Compute available space inside the prayer container (clientHeight/Width includes padding)
+      const cs = window.getComputedStyle(container);
+      const padY = (parseFloat(cs.paddingTop) || 0) + (parseFloat(cs.paddingBottom) || 0);
+      const padX = (parseFloat(cs.paddingLeft) || 0) + (parseFloat(cs.paddingRight) || 0);
+      const availH = Math.max(0, container.clientHeight - padY);
+      const availW = Math.max(0, container.clientWidth - padX);
+
       // Temporarily remove clipping while measuring (clipping can make scrollHeight unreliable on some browsers)
       const prev = {
         fontSize: textEl.style.fontSize,
@@ -372,7 +380,8 @@ const Design = () => {
 
       const fits = (px: number) => {
         textEl.style.fontSize = `${px}px`;
-        textEl.style.lineHeight = `${getPrayerLineHeightPx(px)}px`;
+        const lhPx = getPrayerLineHeightPx(px);
+        textEl.style.lineHeight = `${lhPx}px`;
         textEl.style.maxHeight = 'none';
         textEl.style.overflow = 'visible';
 
@@ -380,10 +389,12 @@ const Design = () => {
         // eslint-disable-next-line @typescript-eslint/no-unused-expressions
         textEl.offsetHeight;
 
-        // Give a small safety margin to prevent bottom-line clipping (mobile Safari can round line boxes)
-        const heightOk = textEl.scrollHeight <= container.clientHeight - 6;
-        const widthOk = textEl.scrollWidth <= container.clientWidth - 2;
-        return heightOk && widthOk;
+        const rect = textEl.getBoundingClientRect();
+
+        // Safety margin to prevent bottom-line clipping (mobile Safari can round line boxes)
+        // Use ~1 line of safety, scaled by current line height.
+        const safety = Math.max(10, Math.round(lhPx * 0.9));
+        return rect.height <= availH - safety;
       };
 
       let best = minPx;
@@ -438,6 +449,7 @@ const Design = () => {
     backText,
     prayerBold,
     prayerTextSize,
+    prayerLayoutNonce,
     cardSide,
     orientation,
     showQrCode,
@@ -1355,6 +1367,7 @@ const Design = () => {
                                         alt="Funeral Home Logo" 
                                         className="object-contain"
                                         style={{ height: `${funeralHomeLogoSize}px`, maxWidth: '70%' }}
+                                        onLoad={() => setPrayerLayoutNonce((n) => n + 1)}
                                       />
                                     </div>
                                   )}
@@ -1413,10 +1426,13 @@ const Design = () => {
                                 </div>
 
                                 {/* Prayer - takes remaining space with proper overflow handling */}
-                                <div ref={prayerContainerRef} className="flex-1 flex items-center justify-center py-1 px-1 overflow-hidden min-h-0">
+                                <div
+                                  ref={prayerContainerRef}
+                                  className="flex-1 flex items-start justify-center pt-1 pb-2 px-1 overflow-hidden min-h-0"
+                                >
                                   <p 
                                     ref={prayerTextRef}
-                                    className={`font-serif italic ${backBgImage || metalFinish === 'black' ? 'text-zinc-200' : 'text-zinc-700'} whitespace-pre-line text-center`}
+                                    className={`font-serif italic ${backBgImage || metalFinish === 'black' ? 'text-zinc-200' : 'text-zinc-700'} whitespace-pre-line text-center w-full`}
                                     style={{
                                       fontSize: `${(
                                         prayerTextSize === 'auto'
@@ -1429,8 +1445,9 @@ const Design = () => {
                                           : Math.min(prayerTextSize, autoPrayerFontSize)
                                       )}px`,
                                       textWrap: 'pretty',
-                                      wordBreak: 'keep-all',
+                                      overflowWrap: 'break-word',
                                       fontWeight: prayerBold ? 'bold' : 'normal',
+                                      paddingBottom: '2px',
                                     }}
                                   >
                                     {preventOrphans(backText)}
@@ -1447,6 +1464,7 @@ const Design = () => {
                                         alt="Funeral Home Logo" 
                                         className="object-contain"
                                         style={{ height: `${funeralHomeLogoSize}px`, maxWidth: '70%' }}
+                                        onLoad={() => setPrayerLayoutNonce((n) => n + 1)}
                                       />
                                     </div>
                                   )}
@@ -1472,6 +1490,7 @@ const Design = () => {
                                           alt="Funeral Home Logo" 
                                           className="object-contain mt-1"
                                           style={{ height: `${funeralHomeLogoSize}px`, maxWidth: '70%' }}
+                                          onLoad={() => setPrayerLayoutNonce((n) => n + 1)}
                                         />
                                       )}
                                     </div>
