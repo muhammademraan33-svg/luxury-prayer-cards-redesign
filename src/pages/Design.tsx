@@ -836,6 +836,7 @@ const Design = () => {
           },
           frontCardImage,
           backCardImage,
+          easelPhotos, // All easel photos as base64 data URLs
         },
       });
 
