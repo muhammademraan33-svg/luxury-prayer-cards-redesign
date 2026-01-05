@@ -161,6 +161,21 @@ const Design = () => {
   const [funeralHomeLogo, setFuneralHomeLogo] = useState<string | null>(null);
   const [funeralHomeLogoPosition, setFuneralHomeLogoPosition] = useState<'top' | 'bottom'>('bottom');
   const [funeralHomeLogoSize, setFuneralHomeLogoSize] = useState(40);
+
+  // Helper to update back text colors based on background darkness
+  const updateBackTextColors = (isDark: boolean) => {
+    if (isDark) {
+      // Light text for dark/image backgrounds
+      setInLovingMemoryColor('#e4e4e7'); // zinc-200
+      setBackNameColor('#ffffff');
+      setBackDatesColor('#a1a1aa'); // zinc-400
+    } else {
+      // Dark text for light backgrounds
+      setInLovingMemoryColor('#71717a'); // zinc-500
+      setBackNameColor('#18181b'); // zinc-900
+      setBackDatesColor('#52525b'); // zinc-600
+    }
+  };
   
   // Easel photo state - supports multiple photos (2 included, can add more)
   const [easelPhotos, setEaselPhotos] = useState<string[]>([]);
@@ -621,6 +636,7 @@ const Design = () => {
       setPhotoPanY(0);
     } else if (type === 'back') {
       setBackBgImage(previewUrl);
+      updateBackTextColors(true); // Uploaded images are treated as dark backgrounds
     } else if (type === 'logo') {
       setFuneralHomeLogo(previewUrl);
     }
@@ -1757,6 +1773,7 @@ const Design = () => {
                                   setBackBgPanX(0);
                                   setBackBgPanY(0);
                                   setBackBgRotation(0);
+                                  updateBackTextColors(metal.isDark);
                                 }}
                                 className={`w-12 h-16 rounded-lg overflow-hidden border-2 transition-all bg-gradient-to-br ${metal.gradient} ${
                                   !backBgImage && backMetalFinish === metal.id ? 'border-amber-500 ring-2 ring-amber-500/30' : 'border-slate-600 hover:border-slate-500'
@@ -1781,6 +1798,7 @@ const Design = () => {
                                   setBackBgPanX(0);
                                   setBackBgPanY(0);
                                   setBackBgRotation(0);
+                                  updateBackTextColors(true); // Image backgrounds are always dark
                                 }}
                                 className={`w-12 h-16 rounded-lg overflow-hidden border-2 transition-all ${
                                   backBgImage === bg.src ? 'border-amber-500 ring-2 ring-amber-500/30' : 'border-slate-600 hover:border-slate-500'
@@ -1814,6 +1832,9 @@ const Design = () => {
                                   setBackBgPanX(0);
                                   setBackBgPanY(0);
                                   setBackBgRotation(0);
+                                  // Reset to current metal finish colors
+                                  const currentMetal = METAL_BG_OPTIONS.find(m => m.id === backMetalFinish);
+                                  updateBackTextColors(currentMetal?.isDark ?? false);
                                 }}
                                 className="border-slate-600 text-slate-300 hover:bg-slate-700"
                               >
