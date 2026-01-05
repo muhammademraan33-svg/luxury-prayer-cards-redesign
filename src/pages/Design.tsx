@@ -342,6 +342,12 @@ const Design = () => {
       }
     };
 
+    // Parse date string (YYYY-MM-DD) to avoid timezone offset issues
+    const parseLocalDate = (dateStr: string): Date => {
+      const [year, month, day] = dateStr.split('-').map(Number);
+      return new Date(year, month - 1, day);
+    };
+
     if (!birth || !death) {
       switch (format) {
         case 'year': return '1945 – 2025';
@@ -351,8 +357,8 @@ const Design = () => {
         default: return 'January 1, 1945 – December 31, 2025';
       }
     }
-    const birthD = new Date(birth);
-    const deathD = new Date(death);
+    const birthD = parseLocalDate(birth);
+    const deathD = parseLocalDate(death);
     
     return `${formatSingleDate(birthD, format)} – ${formatSingleDate(deathD, format)}`;
   };
