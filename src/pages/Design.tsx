@@ -1454,7 +1454,8 @@ const Design = () => {
                                       <span style={{ 
                                         fontSize: backDatesSize === 'auto' ? '9px' : `${backDatesSize}px`,
                                         color: backDatesColor,
-                                        fontWeight: datesBold ? 'bold' : 'normal'
+                                        fontWeight: datesBold ? 'bold' : 'normal',
+                                        whiteSpace: 'nowrap'
                                       }}>
                                         {formatDates(birthDate, deathDate, backDateFormat)}
                                       </span>
@@ -2892,6 +2893,7 @@ const Design = () => {
                       fontFamily: datesFont,
                       fontSize: `${(typeof backDatesSize === 'number' ? backDatesSize : 10) * 3}px`,
                       color: backDatesColor,
+                      whiteSpace: 'nowrap',
                     }}
                   >
                     {formatDates(birthDate, deathDate, backDateFormat)}
