@@ -97,6 +97,7 @@ const Design = () => {
   const [photoZoom, setPhotoZoom] = useState(1);
   const [photoPanX, setPhotoPanX] = useState(0);
   const [photoPanY, setPhotoPanY] = useState(0);
+  const [photoRotation, setPhotoRotation] = useState(0);
   const [isPanning, setIsPanning] = useState(false);
   const [backBgImage, setBackBgImage] = useState<string | null>(null);
   const [backBgType, setBackBgType] = useState<BackBgType>('metal');
@@ -877,7 +878,7 @@ const Design = () => {
                                   draggable={false}
                                   className="w-full h-full object-cover pointer-events-none select-none"
                                   style={{
-                                    transform: `translate(${photoPanX}px, ${photoPanY}px) scale(${photoZoom})`,
+                                    transform: `translate(${photoPanX}px, ${photoPanY}px) scale(${photoZoom}) rotate(${photoRotation}deg)`,
                                     transformOrigin: 'center',
                                     willChange: 'transform',
                                   }}
@@ -1006,6 +1007,7 @@ const Design = () => {
                                   setPhotoZoom(1);
                                   setPhotoPanX(0);
                                   setPhotoPanY(0);
+                                  setPhotoRotation(0);
                                 }}
                                 className="border-slate-600 text-slate-300 hover:bg-slate-700"
                               >
@@ -1020,6 +1022,7 @@ const Design = () => {
                                   setPhotoZoom(1);
                                   setPhotoPanX(0);
                                   setPhotoPanY(0);
+                                  setPhotoRotation(0);
                                 }}
                                 className="border-rose-600/50 text-rose-400 hover:bg-rose-600/20"
                               >
@@ -1029,10 +1032,75 @@ const Design = () => {
                           )}
                         </div>
 
+                        {/* Photo Controls Panel */}
                         {deceasedPhoto && (
-                          <p className="text-slate-400 text-xs text-center bg-slate-700/50 px-3 py-2 rounded-lg">
-                            📱 Drag to move • Pinch/scroll on text to resize
-                          </p>
+                          <div className="w-full max-w-md space-y-2 p-3 bg-slate-700/30 rounded-lg">
+                            <Label className="text-white text-sm font-medium">Adjust Photo</Label>
+                            <div className="flex items-center gap-3">
+                              <Label className="text-slate-400 text-xs w-12">Zoom</Label>
+                              <input
+                                type="range"
+                                min="1"
+                                max="3"
+                                step="0.1"
+                                value={photoZoom}
+                                onChange={(e) => setPhotoZoom(parseFloat(e.target.value))}
+                                className="flex-1 accent-amber-600"
+                              />
+                              <span className="text-xs text-slate-400 min-w-[40px]">{Math.round(photoZoom * 100)}%</span>
+                            </div>
+                            <div className="flex items-center gap-3">
+                              <Label className="text-slate-400 text-xs w-12">Move X</Label>
+                              <input
+                                type="range"
+                                min="-100"
+                                max="100"
+                                step="1"
+                                value={photoPanX}
+                                onChange={(e) => setPhotoPanX(parseFloat(e.target.value))}
+                                className="flex-1 accent-amber-600"
+                              />
+                            </div>
+                            <div className="flex items-center gap-3">
+                              <Label className="text-slate-400 text-xs w-12">Move Y</Label>
+                              <input
+                                type="range"
+                                min="-100"
+                                max="100"
+                                step="1"
+                                value={photoPanY}
+                                onChange={(e) => setPhotoPanY(parseFloat(e.target.value))}
+                                className="flex-1 accent-amber-600"
+                              />
+                            </div>
+                            <div className="flex items-center gap-3">
+                              <Label className="text-slate-400 text-xs w-12">Rotate</Label>
+                              <input
+                                type="range"
+                                min="-180"
+                                max="180"
+                                step="1"
+                                value={photoRotation}
+                                onChange={(e) => setPhotoRotation(parseFloat(e.target.value))}
+                                className="flex-1 accent-amber-600"
+                              />
+                              <span className="text-xs text-slate-400 min-w-[40px]">{photoRotation}°</span>
+                            </div>
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              onClick={() => {
+                                setPhotoZoom(1);
+                                setPhotoPanX(0);
+                                setPhotoPanY(0);
+                                setPhotoRotation(0);
+                              }}
+                              className="border-slate-600 text-slate-300 text-xs w-full"
+                            >
+                              Reset Position
+                            </Button>
+                          </div>
                         )}
 
                         {/* Text Controls */}
