@@ -48,6 +48,7 @@ const Admin = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [authLoading, setAuthLoading] = useState(false);
+  const [isSignup, setIsSignup] = useState(false);
 
   useEffect(() => {
     // Set up auth state listener
@@ -141,6 +142,30 @@ const Admin = () => {
     }
   };
 
+  const handleSignup = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setAuthLoading(true);
+
+    try {
+      const { error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          emailRedirectTo: `${window.location.origin}/admin`,
+        },
+      });
+
+      if (error) throw error;
+      toast.success('Account created! You can now login.');
+      setIsSignup(false);
+    } catch (error: any) {
+      console.error('Signup error:', error);
+      toast.error(error.message || 'Failed to sign up');
+    } finally {
+      setAuthLoading(false);
+    }
+  };
+
   const handleLogout = async () => {
     await supabase.auth.signOut();
     setUser(null);
@@ -207,16 +232,18 @@ const Admin = () => {
     );
   }
 
-  // Login form
+  // Login/Signup form
   if (!user) {
     return (
       <div className="min-h-screen bg-slate-900 flex items-center justify-center p-4">
         <Card className="w-full max-w-md bg-slate-800 border-slate-700">
           <CardHeader>
-            <CardTitle className="text-white text-center">Admin Login</CardTitle>
+            <CardTitle className="text-white text-center">
+              {isSignup ? 'Create Admin Account' : 'Admin Login'}
+            </CardTitle>
           </CardHeader>
           <CardContent>
-            <form onSubmit={handleLogin} className="space-y-4">
+            <form onSubmit={isSignup ? handleSignup : handleLogin} className="space-y-4">
               <div>
                 <Label htmlFor="email" className="text-slate-300">Email</Label>
                 <Input
@@ -244,9 +271,18 @@ const Admin = () => {
                 className="w-full bg-amber-600 hover:bg-amber-700"
                 disabled={authLoading}
               >
-                {authLoading ? 'Logging in...' : 'Login'}
+                {authLoading ? (isSignup ? 'Creating account...' : 'Logging in...') : (isSignup ? 'Create Account' : 'Login')}
               </Button>
             </form>
+            <div className="mt-4 text-center">
+              <button
+                type="button"
+                onClick={() => setIsSignup(!isSignup)}
+                className="text-amber-500 hover:text-amber-400 text-sm"
+              >
+                {isSignup ? 'Already have an account? Login' : 'Need an account? Sign up'}
+              </button>
+            </div>
           </CardContent>
         </Card>
       </div>
