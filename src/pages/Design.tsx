@@ -67,6 +67,9 @@ const EXPRESS_PACK_PRICE = 127; // 55 cards + 2 easel photos (16x20)
 const ADDITIONAL_SET_PRICE = 110; // Additional 55 cards
 const ADDITIONAL_PHOTO_PRICE = 27; // Additional easel photo
 const EASEL_18X24_UPSELL = 10; // Upgrade from 16x20 to 18x24
+const PREMIUM_THICKNESS_PRICE = 15; // Upgrade to .080" thick cards per set
+
+type CardThickness = 'standard' | 'premium';
 
 type EaselPhotoSize = '16x20' | '18x24';
 
@@ -85,6 +88,7 @@ const Design = () => {
   const [metalFinish, setMetalFinish] = useState<MetalFinish>('white');
   const [shipping, setShipping] = useState<ShippingType>('express');
   const [additionalSets, setAdditionalSets] = useState(0);
+  const [cardThickness, setCardThickness] = useState<CardThickness>('standard');
   const [qrUrl, setQrUrl] = useState('');
   const [showQrCode, setShowQrCode] = useState(true);
   const [orientation, setOrientation] = useState<Orientation>('portrait');
@@ -671,6 +675,11 @@ const Design = () => {
     if (easelPhotoSize === '18x24') {
       total += EASEL_18X24_UPSELL * totalEaselPhotos;
     }
+    // Premium thickness upsell - applies to base set + additional sets
+    if (cardThickness === 'premium') {
+      const totalSets = 1 + additionalSets;
+      total += PREMIUM_THICKNESS_PRICE * totalSets;
+    }
     if (shipping === 'overnight') {
       total *= 2; // 100% upcharge
     }
@@ -737,6 +746,7 @@ const Design = () => {
             totalCards: 55 + (additionalSets * 55),
             easelPhotoCount: Math.max(2, easelPhotos.length),
             easelPhotoSize,
+            cardThickness,
             shipping,
             totalPrice: calculatePrice(),
             additionalSets,
@@ -2428,6 +2438,7 @@ const Design = () => {
                       <li className="flex items-center gap-2">
                         <span className="text-amber-400">✓</span>
                         55 Premium Metal Prayer Cards
+                        {cardThickness === 'premium' && <span className="text-amber-400 text-xs ml-1">(Premium .080")</span>}
                       </li>
                       <li className="flex items-center gap-2">
                         <span className="text-amber-400">✓</span>
@@ -2488,6 +2499,53 @@ const Design = () => {
                           )}
                         </div>
                       </div>
+                    </div>
+
+                    {/* Premium Thickness Upgrade */}
+                    <div className="space-y-3">
+                      <Label className="text-slate-400 block">Card Thickness</Label>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <button
+                          type="button"
+                          onClick={() => setCardThickness('standard')}
+                          className={`p-4 rounded-lg border-2 transition-all text-left ${
+                            cardThickness === 'standard' 
+                              ? 'border-amber-500 bg-amber-600/10' 
+                              : 'border-slate-600 hover:border-slate-500'
+                          }`}
+                        >
+                          <div className="flex items-center justify-between mb-2">
+                            <p className="text-white font-semibold">Standard</p>
+                            <span className="text-amber-400 text-sm font-medium">Included</span>
+                          </div>
+                          <p className="text-slate-400 text-sm mb-2">.040" thick — Like a credit card</p>
+                          <p className="text-slate-500 text-xs">Lightweight & elegant</p>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setCardThickness('premium')}
+                          className={`p-4 rounded-lg border-2 transition-all text-left relative overflow-hidden ${
+                            cardThickness === 'premium' 
+                              ? 'border-amber-500 bg-amber-600/10' 
+                              : 'border-slate-600 hover:border-slate-500'
+                          }`}
+                        >
+                          <div className="absolute top-0 right-0 bg-gradient-to-l from-amber-600 to-amber-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-bl">
+                            POPULAR
+                          </div>
+                          <div className="flex items-center justify-between mb-2">
+                            <p className="text-white font-semibold">Premium</p>
+                            <span className="text-amber-400 text-sm font-medium">+${PREMIUM_THICKNESS_PRICE}/set</span>
+                          </div>
+                          <p className="text-slate-400 text-sm mb-2">.080" thick — 2× the weight</p>
+                          <p className="text-slate-500 text-xs">Heirloom quality feel</p>
+                        </button>
+                      </div>
+                      {cardThickness === 'premium' && (
+                        <p className="text-amber-400 text-xs text-center">
+                          ✨ Premium cards for {1 + additionalSets} set{1 + additionalSets > 1 ? 's' : ''}: +${PREMIUM_THICKNESS_PRICE * (1 + additionalSets)}
+                        </p>
+                      )}
                     </div>
                   </div>
 
@@ -2707,6 +2765,13 @@ const Design = () => {
                         <div className="flex justify-between">
                           <span className="text-slate-300">Additional Easel Photos × {easelPhotos.length - 2}</span>
                           <span className="text-white">${(easelPhotos.length - 2) * ADDITIONAL_PHOTO_PRICE}</span>
+                        </div>
+                      )}
+                      
+                      {cardThickness === 'premium' && (
+                        <div className="flex justify-between">
+                          <span className="text-slate-300">Premium Thickness (.080") × {1 + additionalSets} set{1 + additionalSets > 1 ? 's' : ''}</span>
+                          <span className="text-white">${PREMIUM_THICKNESS_PRICE * (1 + additionalSets)}</span>
                         </div>
                       )}
                       
