@@ -58,7 +58,7 @@ const Design = () => {
   const [deceasedName, setDeceasedName] = useState('');
   const [birthDate, setBirthDate] = useState('');
   const [deathDate, setDeathDate] = useState('');
-  const [metalFinish, setMetalFinish] = useState<MetalFinish>('silver');
+  const [metalFinish, setMetalFinish] = useState<MetalFinish>('white');
   const [shipping, setShipping] = useState<ShippingType>('express');
   const [additionalSets, setAdditionalSets] = useState(0);
   const [qrUrl, setQrUrl] = useState('');
