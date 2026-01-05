@@ -790,9 +790,9 @@ const Design = () => {
         const frontCanvas = await html2canvas(frontPrintRef.current, {
           scale: 3, // High resolution for print
           useCORS: true,
-          backgroundColor: null,
+          backgroundColor: '#ffffff',
         });
-        frontCardImage = frontCanvas.toDataURL('image/png');
+        frontCardImage = frontCanvas.toDataURL('image/jpeg', 0.95);
       }
       
       // Capture back card
@@ -800,9 +800,9 @@ const Design = () => {
         const backCanvas = await html2canvas(backPrintRef.current, {
           scale: 3,
           useCORS: true,
-          backgroundColor: null,
+          backgroundColor: '#ffffff',
         });
-        backCardImage = backCanvas.toDataURL('image/png');
+        backCardImage = backCanvas.toDataURL('image/jpeg', 0.95);
       }
 
       // Send order to edge function

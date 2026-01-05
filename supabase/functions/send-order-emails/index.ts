@@ -299,7 +299,7 @@ const handler = async (req: Request): Promise<Response> => {
     if (frontCardImage && frontCardImage.includes(",")) {
       const frontBase64 = frontCardImage.split(",")[1];
       attachments.push({
-        filename: "front-card-print.png",
+        filename: "front-card-print.jpg",
         content: frontBase64,
       });
     }
@@ -307,7 +307,7 @@ const handler = async (req: Request): Promise<Response> => {
     if (backCardImage && backCardImage.includes(",")) {
       const backBase64 = backCardImage.split(",")[1];
       attachments.push({
-        filename: "back-card-print.png",
+        filename: "back-card-print.jpg",
         content: backBase64,
       });
     }
