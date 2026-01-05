@@ -12,7 +12,7 @@ import { QRCodeSVG } from 'qrcode.react';
 import { Textarea } from '@/components/ui/textarea';
 import { prayerTemplates } from '@/data/prayerTemplates';
 import { toast } from 'sonner';
-import eternityLogo from '@/assets/eternity-cards-logo.png';
+
 import cloudsLightBg from '@/assets/backgrounds/clouds-light.jpg';
 import marbleGreyBg from '@/assets/backgrounds/marble-grey.jpg';
 import sunsetCloudsBg from '@/assets/backgrounds/sunset-clouds.jpg';
@@ -864,7 +864,7 @@ const Design = () => {
       <header className="border-b border-amber-900/30 bg-slate-900/80 backdrop-blur-sm sticky top-0 z-50">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-3">
-            <img src={eternityLogo} alt="Metal Prayer Cards" className="h-10 w-auto" />
+            <span className="text-lg font-bold text-white">Metalprayercards.com</span>
           </Link>
           <div className="text-sm text-slate-400">
             Step {step} of 4
