@@ -179,7 +179,7 @@ const Index = () => {
                         <p className="text-foreground font-semibold">Additional 55-Card Set</p>
                         <p className="text-muted-foreground text-sm">Same design, more cards</p>
                       </div>
-                      <span className="text-2xl font-bold text-foreground">$110</span>
+                      <span className="text-2xl font-bold text-foreground">$79</span>
                     </div>
                   </div>
                   <div className="border-b border-border pb-6">
