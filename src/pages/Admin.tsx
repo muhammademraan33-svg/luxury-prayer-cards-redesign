@@ -43,6 +43,7 @@ const Admin = () => {
   const [trackingCarrier, setTrackingCarrier] = useState('usps');
   const [sendingTracking, setSendingTracking] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+  const [grantingAdmin, setGrantingAdmin] = useState(false);
 
   // Auth email/password state
   const [email, setEmail] = useState('');
@@ -174,6 +175,24 @@ const Admin = () => {
     toast.success('Logged out');
   };
 
+  const handleGrantAdmin = async () => {
+    if (!user) return;
+
+    setGrantingAdmin(true);
+    try {
+      const { error } = await supabase.functions.invoke('grant-admin');
+      if (error) throw error;
+
+      toast.success('Admin access enabled. Reloading...');
+      await checkAdminStatus(user.id);
+    } catch (e: any) {
+      console.error('Grant admin error:', e);
+      toast.error(e?.message || 'Could not enable admin access');
+    } finally {
+      setGrantingAdmin(false);
+    }
+  };
+
   const handleSendTracking = async () => {
     if (!selectedOrder || !trackingNumber.trim()) {
       toast.error('Please enter a tracking number');
@@ -294,9 +313,21 @@ const Admin = () => {
     return (
       <div className="min-h-screen bg-slate-900 flex items-center justify-center p-4">
         <Card className="w-full max-w-md bg-slate-800 border-slate-700">
-          <CardContent className="pt-6 text-center">
-            <p className="text-slate-300 mb-4">You don't have admin access.</p>
-            <Button onClick={handleLogout} variant="outline" className="border-slate-600 text-slate-300">
+          <CardContent className="pt-6 text-center space-y-4">
+            <p className="text-slate-300">
+              Your account was created, but it isn't approved for admin access yet.
+            </p>
+            <p className="text-slate-400 text-sm">
+              If this is the owner account ({user?.email}), click below to activate admin access.
+            </p>
+            <Button
+              onClick={handleGrantAdmin}
+              className="w-full bg-amber-600 hover:bg-amber-700"
+              disabled={grantingAdmin}
+            >
+              {grantingAdmin ? 'Activating...' : 'Activate Admin Access'}
+            </Button>
+            <Button onClick={handleLogout} variant="outline" className="w-full border-slate-600 text-slate-300">
               Logout
             </Button>
           </CardContent>

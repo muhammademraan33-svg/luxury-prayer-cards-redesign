@@ -5,3 +5,6 @@ verify_jwt = false
 
 [functions.send-tracking-email]
 verify_jwt = true
+
+[functions.grant-admin]
+verify_jwt = true
