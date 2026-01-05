@@ -62,12 +62,61 @@ const METAL_FINISHES: { id: MetalFinish; name: string; gradient: string }[] = [
   { id: 'marble', name: 'Silver Marble', gradient: 'from-gray-300 via-slate-100 to-gray-400' },
 ];
 
-// Pricing constants
-const EXPRESS_PACK_PRICE = 127; // 55 cards + 2 easel photos (16x20)
+// Package pricing - Good/Better/Best tiers
+type PackageTier = 'good' | 'better' | 'best';
+
+interface PackageConfig {
+  name: string;
+  price: number;
+  comparePrice: number;
+  cards: number;
+  photos: number;
+  shipping: string;
+  thickness: CardThickness;
+  description: string;
+  popular?: boolean;
+}
+
+const PACKAGES: Record<PackageTier, PackageConfig> = {
+  good: {
+    name: 'Essential',
+    price: 127,
+    comparePrice: 195,
+    cards: 55,
+    photos: 2,
+    shipping: '2-Day Express',
+    thickness: 'standard' as CardThickness,
+    description: 'Perfect for intimate gatherings',
+  },
+  better: {
+    name: 'Family',
+    price: 199,
+    comparePrice: 295,
+    cards: 110,
+    photos: 4,
+    shipping: '2-Day Express',
+    thickness: 'standard' as CardThickness,
+    description: 'Most popular for services',
+    popular: true,
+  },
+  best: {
+    name: 'Legacy',
+    price: 349,
+    comparePrice: 495,
+    cards: 165,
+    photos: 6,
+    shipping: 'Overnight',
+    thickness: 'premium' as CardThickness,
+    description: 'Complete memorial package',
+  },
+};
+
+// Add-on pricing
 const ADDITIONAL_SET_PRICE = 110; // Additional 55 cards
 const ADDITIONAL_PHOTO_PRICE = 27; // Additional easel photo
 const EASEL_18X24_UPSELL = 10; // Upgrade from 16x20 to 18x24
 const PREMIUM_THICKNESS_PRICE = 15; // Upgrade to .080" thick cards per set
+const OVERNIGHT_UPCHARGE_PERCENT = 100; // 100% upcharge for overnight
 
 type CardThickness = 'standard' | 'premium';
 
@@ -86,9 +135,11 @@ const Design = () => {
   const [birthDate, setBirthDate] = useState('');
   const [deathDate, setDeathDate] = useState('');
   const [metalFinish, setMetalFinish] = useState<MetalFinish>('white');
-  const [shipping, setShipping] = useState<ShippingType>('express');
-  const [additionalSets, setAdditionalSets] = useState(0);
-  const [cardThickness, setCardThickness] = useState<CardThickness>('standard');
+  const [selectedPackage, setSelectedPackage] = useState<PackageTier>('better');
+  const [extraSets, setExtraSets] = useState(0); // Additional 55-card sets beyond package
+  const [extraPhotos, setExtraPhotos] = useState(0); // Extra photos beyond package (handled by easelPhotos length)
+  const [upgradeToOvernight, setUpgradeToOvernight] = useState(false);
+  const [upgradeThickness, setUpgradeThickness] = useState(false);
   const [qrUrl, setQrUrl] = useState('');
   const [showQrCode, setShowQrCode] = useState(true);
   const [orientation, setOrientation] = useState<Orientation>('portrait');
@@ -665,27 +716,44 @@ const Design = () => {
     setEaselPhotos(prev => prev.filter((_, i) => i !== index));
   };
 
+  const currentPackage = PACKAGES[selectedPackage];
+  
   const calculatePrice = () => {
-    let total = EXPRESS_PACK_PRICE;
-    total += additionalSets * ADDITIONAL_SET_PRICE;
-    // Additional photos beyond the 2 included
-    const extraPhotos = Math.max(0, easelPhotos.length - 2);
-    total += extraPhotos * ADDITIONAL_PHOTO_PRICE;
-    // Add 18x24 upsell if selected - applies to all easel photos
-    const totalEaselPhotos = Math.max(2, easelPhotos.length);
+    let total = currentPackage.price;
+    
+    // Extra card sets beyond package
+    total += extraSets * ADDITIONAL_SET_PRICE;
+    
+    // Additional photos beyond package includes
+    const includedPhotos = currentPackage.photos;
+    const additionalPhotosCount = Math.max(0, easelPhotos.length - includedPhotos);
+    total += additionalPhotosCount * ADDITIONAL_PHOTO_PRICE;
+    
+    // 18x24 upsell - applies to all easel photos (package included + extras)
+    const totalEaselPhotos = Math.max(includedPhotos, easelPhotos.length);
     if (easelPhotoSize === '18x24') {
       total += EASEL_18X24_UPSELL * totalEaselPhotos;
     }
-    // Premium thickness upsell - applies to base set + additional sets
-    if (cardThickness === 'premium') {
-      const totalSets = 1 + additionalSets;
+    
+    // Premium thickness upgrade (only if not already premium in package)
+    if (upgradeThickness && currentPackage.thickness !== 'premium') {
+      const totalSets = (currentPackage.cards / 55) + extraSets;
       total += PREMIUM_THICKNESS_PRICE * totalSets;
     }
-    if (shipping === 'overnight') {
-      total *= 2; // 100% upcharge
+    
+    // Overnight upgrade (only if not already overnight in package)
+    if (upgradeToOvernight && currentPackage.shipping !== 'Overnight') {
+      total = Math.round(total * 2); // 100% upcharge
     }
+    
     return total;
   };
+  
+  // Derived values for display
+  const totalCards = currentPackage.cards + (extraSets * 55);
+  const includedPhotos = currentPackage.photos;
+  const effectiveThickness = upgradeThickness || currentPackage.thickness === 'premium' ? 'premium' : 'standard';
+  const effectiveShipping = upgradeToOvernight || currentPackage.shipping === 'Overnight' ? 'overnight' : 'express';
 
   const handleSubmitOrder = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -744,13 +812,14 @@ const Design = () => {
             deathDate,
             metalFinish: currentFinish.name,
             orientation,
-            totalCards: 55 + (additionalSets * 55),
-            easelPhotoCount: Math.max(2, easelPhotos.length),
+            totalCards,
+            easelPhotoCount: Math.max(includedPhotos, easelPhotos.length),
             easelPhotoSize,
-            cardThickness,
-            shipping,
+            cardThickness: effectiveThickness,
+            shipping: effectiveShipping,
             totalPrice: calculatePrice(),
-            additionalSets,
+            packageName: currentPackage.name,
+            extraSets,
             prayerText: backText,
             qrUrl,
           },
@@ -2461,46 +2530,85 @@ const Design = () => {
               {/* Step 2: Package Selection */}
               {step === 2 && (
                 <div className="space-y-6">
-                  {/* Express Pack - Base Package */}
-                  <div className="bg-gradient-to-br from-amber-900/40 to-amber-800/20 border border-amber-600/50 rounded-xl p-6">
-                    <div className="flex items-center gap-3 mb-4">
-                      <Package className="h-8 w-8 text-amber-400" />
-                      <div>
-                        <h3 className="text-xl font-bold text-white">2-Day Express Pack</h3>
-                        <p className="text-slate-400 text-sm">Included in every order</p>
-                      </div>
+                  {/* Package Tier Selection */}
+                  <div>
+                    <h3 className="text-white font-semibold text-lg mb-4 flex items-center gap-2">
+                      <Package className="h-5 w-5 text-amber-400" />
+                      Choose Your Package
+                    </h3>
+                    
+                    <div className="grid grid-cols-1 gap-4">
+                      {(Object.entries(PACKAGES) as [PackageTier, typeof PACKAGES.good][]).map(([tier, pkg]) => (
+                        <button
+                          key={tier}
+                          type="button"
+                          onClick={() => setSelectedPackage(tier)}
+                          className={`relative p-5 rounded-xl border-2 transition-all text-left ${
+                            selectedPackage === tier
+                              ? 'border-amber-500 bg-gradient-to-br from-amber-600/20 to-amber-900/10'
+                              : 'border-slate-600 hover:border-amber-500/50'
+                          }`}
+                        >
+                          {pkg.popular && (
+                            <div className="absolute -top-3 left-4 bg-gradient-to-r from-amber-600 to-amber-500 text-white text-xs font-bold px-3 py-1 rounded-full">
+                              MOST POPULAR
+                            </div>
+                          )}
+                          
+                          <div className="flex items-start justify-between gap-4">
+                            <div className="flex-1">
+                              <div className="flex items-center gap-3 mb-2">
+                                <h4 className="text-xl font-bold text-white">{pkg.name}</h4>
+                                {tier === 'best' && (
+                                  <span className="text-xs bg-amber-500/20 text-amber-400 px-2 py-0.5 rounded">BEST VALUE</span>
+                                )}
+                              </div>
+                              <p className="text-slate-400 text-sm mb-3">{pkg.description}</p>
+                              <ul className="space-y-1.5 text-sm">
+                                <li className="flex items-center gap-2 text-slate-300">
+                                  <span className="text-amber-400">✓</span>
+                                  {pkg.cards} Premium Metal Cards
+                                  {pkg.thickness === 'premium' && <span className="text-amber-400 text-xs">(Premium .080")</span>}
+                                </li>
+                                <li className="flex items-center gap-2 text-slate-300">
+                                  <span className="text-amber-400">✓</span>
+                                  {pkg.photos} Easel Photos Included
+                                </li>
+                                <li className="flex items-center gap-2 text-slate-300">
+                                  <span className="text-amber-400">✓</span>
+                                  {pkg.shipping}
+                                  {pkg.shipping === 'Overnight' && <span className="text-rose-400 text-xs ml-1">⚡</span>}
+                                </li>
+                              </ul>
+                            </div>
+                            
+                            <div className="text-right">
+                              <div className="flex items-baseline gap-1">
+                                <span className="text-3xl font-bold text-white">${pkg.price}</span>
+                              </div>
+                              <span className="text-slate-500 line-through text-sm">${pkg.comparePrice}</span>
+                              <p className="text-amber-400 text-xs font-medium">Save ${pkg.comparePrice - pkg.price}</p>
+                            </div>
+                          </div>
+                          
+                          {selectedPackage === tier && (
+                            <div className="absolute top-4 right-4 w-6 h-6 bg-amber-500 rounded-full flex items-center justify-center">
+                              <span className="text-white text-sm">✓</span>
+                            </div>
+                          )}
+                        </button>
+                      ))}
                     </div>
-                    <div className="flex items-baseline gap-2 mb-4">
-                      <span className="text-4xl font-bold text-white">${EXPRESS_PACK_PRICE}</span>
-                      <span className="text-slate-400 line-through">$250</span>
-                      <span className="text-amber-400 font-medium ml-2">Save $123!</span>
-                    </div>
-                    <ul className="space-y-2 text-slate-300">
-                      <li className="flex items-center gap-2">
-                        <span className="text-amber-400">✓</span>
-                        55 Premium Metal Prayer Cards
-                        {cardThickness === 'premium' && <span className="text-amber-400 text-xs ml-1">(Premium .080")</span>}
-                      </li>
-                      <li className="flex items-center gap-2">
-                        <span className="text-amber-400">✓</span>
-                        2 Easel Photos ({easelPhotoSize}) - Can upload different images
-                        {easelPhotoSize === '18x24' && <span className="text-amber-400 text-xs ml-1">+${EASEL_18X24_UPSELL * 2}</span>}
-                      </li>
-                      <li className="flex items-center gap-2">
-                        <span className="text-amber-400">✓</span>
-                        2-Day Express Delivery
-                      </li>
-                    </ul>
                   </div>
 
                   {/* Add-ons */}
                   <div className="space-y-4">
-                    <Label className="text-slate-400 block">Add-Ons (Optional)</Label>
+                    <Label className="text-slate-400 block text-sm">Customize (Optional)</Label>
                     
                     {/* Additional Card Sets */}
                     <div className="flex items-center justify-between p-4 bg-slate-700/30 rounded-lg">
                       <div>
-                        <p className="text-white font-medium">Additional Set of 55 Cards</p>
+                        <p className="text-white font-medium">Extra Card Sets (+55 each)</p>
                         <p className="text-slate-400 text-sm">${ADDITIONAL_SET_PRICE} per set</p>
                       </div>
                       <div className="flex items-center gap-2">
@@ -2508,17 +2616,17 @@ const Design = () => {
                           type="button"
                           variant="outline"
                           size="icon"
-                          onClick={() => setAdditionalSets(Math.max(0, additionalSets - 1))}
+                          onClick={() => setExtraSets(Math.max(0, extraSets - 1))}
                           className="h-8 w-8 border-slate-600"
                         >
                           −
                         </Button>
-                        <span className="text-white w-8 text-center">{additionalSets}</span>
+                        <span className="text-white w-8 text-center">{extraSets}</span>
                         <Button
                           type="button"
                           variant="outline"
                           size="icon"
-                          onClick={() => setAdditionalSets(additionalSets + 1)}
+                          onClick={() => setExtraSets(extraSets + 1)}
                           className="h-8 w-8 border-slate-600"
                         >
                           +
@@ -2526,146 +2634,75 @@ const Design = () => {
                       </div>
                     </div>
 
-                    {/* Additional Photos Info */}
-                    <div className="p-4 bg-slate-700/30 rounded-lg">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className="text-white font-medium">Additional Easel Photos</p>
-                          <p className="text-slate-400 text-sm">Add more photos in Step 1 (${ADDITIONAL_PHOTO_PRICE} each beyond 2 included)</p>
-                        </div>
-                        <div className="text-right">
-                          <span className="text-white font-medium">{Math.max(0, easelPhotos.length - 2)} extra</span>
-                          {easelPhotos.length > 2 && (
-                            <p className="text-amber-400 text-sm">+${(easelPhotos.length - 2) * ADDITIONAL_PHOTO_PRICE}</p>
-                          )}
+                    {/* Additional Photos beyond package */}
+                    {easelPhotos.length > currentPackage.photos && (
+                      <div className="p-4 bg-slate-700/30 rounded-lg">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="text-white font-medium">Extra Easel Photos</p>
+                            <p className="text-slate-400 text-sm">${ADDITIONAL_PHOTO_PRICE} each (beyond {currentPackage.photos} included)</p>
+                          </div>
+                          <div className="text-right">
+                            <span className="text-white font-medium">{easelPhotos.length - currentPackage.photos} extra</span>
+                            <p className="text-amber-400 text-sm">+${(easelPhotos.length - currentPackage.photos) * ADDITIONAL_PHOTO_PRICE}</p>
+                          </div>
                         </div>
                       </div>
-                    </div>
+                    )}
 
-                    {/* Premium Thickness Upgrade */}
-                    <div className="space-y-4">
-                      <Label className="text-slate-400 block">Upgrade Your Cards</Label>
-                      
-                      {/* Visual Thickness Comparison */}
-                      <div className="bg-slate-800/50 rounded-xl p-4 border border-slate-700">
-                        <div className="flex items-center justify-center gap-8 mb-4">
-                          {/* Standard Card Visual */}
-                          <div className="flex flex-col items-center">
-                            <div className="relative mb-2">
-                              <div 
-                                className="w-16 bg-gradient-to-b from-zinc-400 via-zinc-300 to-zinc-400 rounded-sm shadow-lg"
-                                style={{ height: '4px' }}
-                              />
-                              <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-12 h-1 bg-black/20 blur-sm rounded-full" />
-                            </div>
-                            <p className="text-slate-400 text-xs font-medium">Standard</p>
-                            <p className="text-slate-500 text-[10px]">.040"</p>
-                          </div>
-                          
-                          {/* Arrow indicator */}
-                          <div className="flex flex-col items-center">
-                            <ArrowRight className="w-5 h-5 text-amber-500" />
-                          </div>
-                          
-                          {/* Premium Card Visual */}
-                          <div className="flex flex-col items-center">
-                            <div className="relative mb-2">
-                              <div 
-                                className="w-16 bg-gradient-to-b from-amber-300 via-amber-200 to-amber-400 rounded-sm shadow-lg ring-1 ring-amber-500/30"
-                                style={{ height: '8px' }}
-                              />
-                              <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-12 h-1.5 bg-black/30 blur-sm rounded-full" />
-                            </div>
-                            <p className="text-amber-400 text-xs font-medium">Premium</p>
-                            <p className="text-amber-500/70 text-[10px]">.080"</p>
-                          </div>
+                    {/* Premium Thickness Upgrade (only show if package doesn't include it) */}
+                    {currentPackage.thickness !== 'premium' && (
+                      <div className="flex items-center justify-between p-4 bg-slate-700/30 rounded-lg">
+                        <div className="flex items-center gap-3">
+                          <input
+                            type="checkbox"
+                            id="upgradeThickness"
+                            checked={upgradeThickness}
+                            onChange={(e) => setUpgradeThickness(e.target.checked)}
+                            className="accent-amber-600 w-5 h-5"
+                          />
+                          <label htmlFor="upgradeThickness" className="cursor-pointer">
+                            <p className="text-white font-medium">Upgrade to Premium Thickness</p>
+                            <p className="text-slate-400 text-sm">Solid .080" heirloom quality</p>
+                          </label>
                         </div>
-                        <p className="text-center text-slate-500 text-xs">Actual thickness comparison</p>
+                        <span className="text-amber-400 font-medium">+${PREMIUM_THICKNESS_PRICE * ((currentPackage.cards / 55) + extraSets)}</span>
                       </div>
-                      
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                        <button
-                          type="button"
-                          onClick={() => setCardThickness('standard')}
-                          className={`p-4 rounded-lg border-2 transition-all text-left ${
-                            cardThickness === 'standard' 
-                              ? 'border-amber-500 bg-amber-600/10' 
-                              : 'border-slate-600 hover:border-slate-500'
-                          }`}
-                        >
-                          <div className="flex items-center justify-between mb-2">
-                            <p className="text-white font-semibold">Standard</p>
-                            <span className="text-slate-400 text-sm">Included</span>
-                          </div>
-                          <p className="text-slate-400 text-sm">Flexible like a gift card</p>
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => setCardThickness('premium')}
-                          className={`p-4 rounded-lg border-2 transition-all text-left relative overflow-hidden ${
-                            cardThickness === 'premium' 
-                              ? 'border-amber-500 bg-gradient-to-br from-amber-600/20 to-amber-900/10' 
-                              : 'border-slate-600 hover:border-amber-500/50'
-                          }`}
-                        >
-                          <div className="absolute top-0 right-0 bg-gradient-to-l from-amber-600 to-amber-500 text-white text-[10px] font-bold px-2.5 py-1 rounded-bl-lg">
-                            MOST CHOSEN
-                          </div>
-                          <div className="flex items-center justify-between mb-2">
-                            <p className="text-white font-semibold">Premium</p>
-                            <span className="text-amber-400 text-sm font-medium">+${PREMIUM_THICKNESS_PRICE}/set</span>
-                          </div>
-                          <p className="text-slate-400 text-sm">Solid & substantial</p>
-                          <p className="text-amber-400/80 text-xs mt-1">✦ Heirloom-quality keepsake</p>
-                        </button>
+                    )}
+
+                    {/* Overnight Upgrade (only show if package doesn't include it) */}
+                    {currentPackage.shipping !== 'Overnight' && (
+                      <div className="flex items-center justify-between p-4 bg-slate-700/30 rounded-lg">
+                        <div className="flex items-center gap-3">
+                          <input
+                            type="checkbox"
+                            id="upgradeOvernight"
+                            checked={upgradeToOvernight}
+                            onChange={(e) => setUpgradeToOvernight(e.target.checked)}
+                            className="accent-amber-600 w-5 h-5"
+                          />
+                          <label htmlFor="upgradeOvernight" className="cursor-pointer">
+                            <p className="text-white font-medium flex items-center gap-2">
+                              <Clock className="h-4 w-4 text-rose-400" />
+                              Upgrade to Overnight
+                            </p>
+                            <p className="text-slate-400 text-sm">Order before 12pm for next day</p>
+                          </label>
+                        </div>
+                        <span className="text-rose-400 font-medium">+100%</span>
                       </div>
-                      {cardThickness === 'premium' && (
-                        <p className="text-amber-400 text-xs text-center">
-                          ✨ Premium upgrade for {1 + additionalSets} set{1 + additionalSets > 1 ? 's' : ''}: +${PREMIUM_THICKNESS_PRICE * (1 + additionalSets)}
-                        </p>
-                      )}
-                    </div>
+                    )}
                   </div>
 
-                  {/* Shipping Options */}
-                  <div>
-                    <Label className="text-slate-400 mb-3 block">Shipping Speed</Label>
-                    <RadioGroup value={shipping} onValueChange={(v) => setShipping(v as ShippingType)}>
-                      <div 
-                        className={`flex items-center justify-between p-4 rounded-lg border-2 cursor-pointer transition-all ${
-                          shipping === 'express' ? 'border-amber-500 bg-amber-600/10' : 'border-slate-600 hover:border-slate-500'
-                        }`} 
-                        onClick={() => setShipping('express')}
-                      >
-                        <div className="flex items-center gap-3">
-                          <RadioGroupItem value="express" id="express" className="border-slate-500" />
-                          <div>
-                            <Label htmlFor="express" className="text-white font-medium cursor-pointer flex items-center gap-2">
-                              <Truck className="h-4 w-4" /> 2-Day Express
-                            </Label>
-                            <p className="text-sm text-slate-400">Included in package</p>
-                          </div>
-                        </div>
-                        <p className="text-amber-400 font-semibold">Included</p>
+                  {/* Price Summary */}
+                  <div className="bg-amber-900/20 border border-amber-600/30 rounded-lg p-4">
+                    <div className="flex justify-between items-center">
+                      <div>
+                        <p className="text-slate-300 text-sm">Your Order</p>
+                        <p className="text-white font-medium">{currentPackage.name} Package + Add-ons</p>
                       </div>
-                      <div 
-                        className={`flex items-center justify-between p-4 rounded-lg border-2 cursor-pointer transition-all mt-3 ${
-                          shipping === 'overnight' ? 'border-amber-500 bg-amber-600/10' : 'border-slate-600 hover:border-slate-500'
-                        }`} 
-                        onClick={() => setShipping('overnight')}
-                      >
-                        <div className="flex items-center gap-3">
-                          <RadioGroupItem value="overnight" id="overnight" className="border-slate-500" />
-                          <div>
-                            <Label htmlFor="overnight" className="text-white font-medium cursor-pointer flex items-center gap-2">
-                              <Clock className="h-4 w-4 text-rose-400" /> Overnight Rush
-                            </Label>
-                            <p className="text-sm text-slate-400">Order before 12pm for next day</p>
-                          </div>
-                        </div>
-                        <p className="text-rose-400 font-semibold">+100%</p>
-                      </div>
-                    </RadioGroup>
+                      <p className="text-2xl font-bold text-amber-400">${calculatePrice()}</p>
+                    </div>
                   </div>
 
                   <div className="flex gap-3 pt-2">
@@ -2821,42 +2858,42 @@ const Design = () => {
                     
                     <div className="space-y-3">
                       <div className="flex justify-between">
-                        <span className="text-slate-300">2-Day Express Pack (55 cards + 2 photos)</span>
-                        <span className="text-white">${EXPRESS_PACK_PRICE}</span>
+                        <span className="text-slate-300">{currentPackage.name} Package ({currentPackage.cards} cards + {currentPackage.photos} photos)</span>
+                        <span className="text-white">${currentPackage.price}</span>
                       </div>
                       
-                      {additionalSets > 0 && (
+                      {extraSets > 0 && (
                         <div className="flex justify-between">
-                          <span className="text-slate-300">Additional Card Sets × {additionalSets}</span>
-                          <span className="text-white">${additionalSets * ADDITIONAL_SET_PRICE}</span>
+                          <span className="text-slate-300">Extra Card Sets × {extraSets}</span>
+                          <span className="text-white">${extraSets * ADDITIONAL_SET_PRICE}</span>
                         </div>
                       )}
                       
                       {easelPhotoSize === '18x24' && (
                         <div className="flex justify-between">
-                          <span className="text-slate-300">18×24 Easel Photo Upgrade × {Math.max(2, easelPhotos.length)}</span>
-                          <span className="text-white">${EASEL_18X24_UPSELL * Math.max(2, easelPhotos.length)}</span>
+                          <span className="text-slate-300">18×24 Easel Photo Upgrade × {Math.max(currentPackage.photos, easelPhotos.length)}</span>
+                          <span className="text-white">${EASEL_18X24_UPSELL * Math.max(currentPackage.photos, easelPhotos.length)}</span>
                         </div>
                       )}
                       
-                      {easelPhotos.length > 2 && (
+                      {easelPhotos.length > currentPackage.photos && (
                         <div className="flex justify-between">
-                          <span className="text-slate-300">Additional Easel Photos × {easelPhotos.length - 2}</span>
-                          <span className="text-white">${(easelPhotos.length - 2) * ADDITIONAL_PHOTO_PRICE}</span>
+                          <span className="text-slate-300">Additional Easel Photos × {easelPhotos.length - currentPackage.photos}</span>
+                          <span className="text-white">${(easelPhotos.length - currentPackage.photos) * ADDITIONAL_PHOTO_PRICE}</span>
                         </div>
                       )}
                       
-                      {cardThickness === 'premium' && (
+                      {upgradeThickness && currentPackage.thickness !== 'premium' && (
                         <div className="flex justify-between">
-                          <span className="text-slate-300">Premium Thickness (.080") × {1 + additionalSets} set{1 + additionalSets > 1 ? 's' : ''}</span>
-                          <span className="text-white">${PREMIUM_THICKNESS_PRICE * (1 + additionalSets)}</span>
+                          <span className="text-slate-300">Premium Thickness Upgrade</span>
+                          <span className="text-white">${PREMIUM_THICKNESS_PRICE * ((currentPackage.cards / 55) + extraSets)}</span>
                         </div>
                       )}
                       
-                      {shipping === 'overnight' && (
+                      {upgradeToOvernight && currentPackage.shipping !== 'Overnight' && (
                         <div className="flex justify-between text-rose-400">
-                          <span>Overnight Rush (+100%)</span>
-                          <span>+${calculatePrice() / 2}</span>
+                          <span>Overnight Rush Upgrade (+100%)</span>
+                          <span>+${Math.round(calculatePrice() / 2)}</span>
                         </div>
                       )}
                       
@@ -2887,10 +2924,16 @@ const Design = () => {
                       <span className="text-slate-400">Orientation:</span> {orientation}
                     </p>
                     <p className="text-slate-300">
-                      <span className="text-slate-400">Total Cards:</span> {55 + (additionalSets * 55)}
+                      <span className="text-slate-400">Total Cards:</span> {totalCards}
                     </p>
                     <p className="text-slate-300">
-                      <span className="text-slate-400">Easel Photos:</span> {Math.max(2, easelPhotos.length)} ({easelPhotoSize})
+                      <span className="text-slate-400">Card Thickness:</span> {effectiveThickness === 'premium' ? 'Premium .080"' : 'Standard .040"'}
+                    </p>
+                    <p className="text-slate-300">
+                      <span className="text-slate-400">Easel Photos:</span> {Math.max(currentPackage.photos, easelPhotos.length)} ({easelPhotoSize})
+                    </p>
+                    <p className="text-slate-300">
+                      <span className="text-slate-400">Shipping:</span> {effectiveShipping === 'overnight' ? 'Overnight Rush' : '2-Day Express'}
                     </p>
                   </div>
 
@@ -2941,7 +2984,7 @@ const Design = () => {
                   <h2 className="text-2xl font-bold text-white">Thank You for Your Order!</h2>
                   <p className="text-slate-300 max-w-md mx-auto">
                     A confirmation email has been sent to <strong>{customerEmail}</strong>.
-                    Your premium metal prayer cards will be shipped within {shipping === 'overnight' ? '24 hours' : '2 business days'}.
+                    Your premium metal prayer cards will be shipped within {effectiveShipping === 'overnight' ? '24 hours' : '2 business days'}.
                   </p>
                   <Link to="/">
                     <Button className="bg-amber-600 hover:bg-amber-700 text-white font-semibold mt-4">
