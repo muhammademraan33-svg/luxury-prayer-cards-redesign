@@ -39,58 +39,74 @@
 
   /* Borders */
   .border-slate-700,
-  .border-slate-600 {
+  .border-slate-600,
+  .border-slate-600\/50 {
     border-color: hsl(var(--border)) !important;
   }
 
   .border-amber-900\/30 { border-color: hsl(var(--border) / 0.5) !important; }
   .border-amber-600\/50 { border-color: hsl(var(--primary) / 0.5) !important; }
 
-  /* Text */
+  /* Text - map slate colors to muted-foreground */
   .text-slate-300,
   .text-slate-400,
   .text-slate-500 {
     color: hsl(var(--muted-foreground)) !important;
   }
 
+  /* White text should be foreground color */
+  .text-white {
+    color: hsl(var(--foreground)) !important;
+  }
+
   /* Primary accent (formerly amber) */
-  .bg-amber-600 { background-color: hsl(var(--primary)) !important; }
+  .bg-amber-600 { 
+    background-color: hsl(var(--primary)) !important; 
+    color: hsl(var(--primary-foreground)) !important;
+  }
   .hover\:bg-amber-700:hover { background-color: hsl(var(--primary) / 0.9) !important; }
   .hover\:bg-amber-600\/20:hover { background-color: hsl(var(--primary) / 0.2) !important; }
 
   .text-amber-400 { color: hsl(var(--primary)) !important; }
+  .accent-amber-600 { accent-color: hsl(var(--primary)) !important; }
 
   /* Data-state variants (TabsTrigger etc.) */
   .data-\[state\=active\]\:bg-amber-600[data-state="active"] {
     background-color: hsl(var(--primary)) !important;
+    color: hsl(var(--primary-foreground)) !important;
   }
 
   .data-\[state\=active\]\:text-white[data-state="active"] {
     color: hsl(var(--primary-foreground)) !important;
   }
 
-  /* Keep text-white working on inputs and buttons */
-  input.text-white,
-  select.text-white,
-  textarea.text-white,
-  button .text-white,
-  [class*="bg-primary"] .text-white,
-  [class*="bg-amber"] .text-white,
-  .bg-slate-700 .text-white {
-    color: hsl(var(--foreground)) !important;
-  }
-
-  /* Style inputs to have visible text */
-  input[type="date"],
-  input[type="text"],
-  input[type="number"],
+  /* Form inputs - ensure text is visible */
+  input,
+  select,
   textarea {
     color: hsl(var(--foreground)) !important;
     color-scheme: light;
   }
 
-  /* Date picker icons */
+  input::placeholder,
+  textarea::placeholder {
+    color: hsl(var(--muted-foreground)) !important;
+  }
+
+  /* Date picker styling */
   input[type="date"]::-webkit-calendar-picker-indicator {
     filter: invert(0.3);
+    cursor: pointer;
+  }
+
+  /* Select triggers */
+  [data-radix-select-trigger] {
+    color: hsl(var(--foreground)) !important;
+  }
+
+  /* Buttons with default variant should have proper contrast */
+  button[data-variant="default"],
+  .bg-primary {
+    color: hsl(var(--primary-foreground)) !important;
   }
 }
