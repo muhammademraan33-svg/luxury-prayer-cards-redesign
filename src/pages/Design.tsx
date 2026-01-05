@@ -2300,29 +2300,6 @@ const Design = () => {
                       </div>
                     </TabsContent>
                   </Tabs>
-
-                  {/* Metal Finish Selection */}
-                  <div>
-                    <Label className="text-slate-400 mb-3 block">Metal Finish</Label>
-                    <div className="grid grid-cols-4 gap-3">
-                      {METAL_FINISHES.map((finish) => (
-                        <button
-                          key={finish.id}
-                          type="button"
-                          onClick={() => setMetalFinish(finish.id)}
-                          className={`p-3 rounded-lg border-2 transition-all ${
-                            metalFinish === finish.id 
-                              ? 'border-amber-500 ring-2 ring-amber-500/30' 
-                              : 'border-slate-600 hover:border-slate-500'
-                          }`}
-                        >
-                          <div className={`h-8 rounded bg-gradient-to-br ${finish.gradient} mb-2`}></div>
-                          <p className="text-xs text-slate-400">{finish.name}</p>
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
                   {/* Easel Photo Upload Section */}
                   <div className="border-t border-slate-700 pt-6">
                     <div className="flex items-center gap-2 mb-4">
