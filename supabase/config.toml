@@ -2,3 +2,6 @@ project_id = "ozhqiraljgmbdbqamyup"
 
 [functions.send-order-emails]
 verify_jwt = false
+
+[functions.send-tracking-email]
+verify_jwt = true
