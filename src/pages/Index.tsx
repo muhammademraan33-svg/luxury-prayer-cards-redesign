@@ -28,7 +28,7 @@ const Index = () => {
       name: 'Legacy',
       price: 349,
       comparePrice: 495,
-      items: ['165 Premium Metal Prayer Cards', '6 Easel Photo Boards', 'Overnight Shipping', 'Satisfaction Guaranteed'],
+      items: ['165 Premium Metal Prayer Cards', '6 Easel Photo Boards', '48-Hour Delivery', 'Satisfaction Guaranteed'],
     },
   ];
 
