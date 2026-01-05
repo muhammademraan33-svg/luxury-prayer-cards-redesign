@@ -133,9 +133,18 @@ const Index = () => {
                   <div className="flex justify-between items-start">
                     <div>
                       <p className="text-foreground font-semibold">Extra Photo Boards</p>
-                      <p className="text-muted-foreground text-sm">Additional easel displays</p>
+                      <p className="text-muted-foreground text-sm">16x20 easel displays</p>
                     </div>
-                    <span className="text-2xl font-bold text-foreground">$27</span>
+                    <span className="text-2xl font-bold text-foreground">$19</span>
+                  </div>
+                </div>
+                <div className="border-b border-border pb-6">
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <p className="text-foreground font-semibold">Upgrade to 18x24</p>
+                      <p className="text-muted-foreground text-sm">Larger photo board size</p>
+                    </div>
+                    <span className="text-2xl font-bold text-foreground">+$5</span>
                   </div>
                 </div>
                 <div className="bg-destructive/10 border border-destructive/30 rounded-lg p-4">
