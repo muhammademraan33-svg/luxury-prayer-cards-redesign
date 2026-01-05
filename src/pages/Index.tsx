@@ -58,7 +58,7 @@ const Index = () => {
           <span className="text-primary">Eternity</span>
         </h1>
         <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-8">
-          Premium luxury metal prayer cards & photo bundles built to make final memories last for eternity.
+          Premium luxury metal prayer cards & photo bundles built to make final memories last for eternity. Delivered in 48 hours.
         </p>
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-10">
           <Link to="/design">
