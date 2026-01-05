@@ -101,8 +101,8 @@ const PACKAGES: Record<PackageTier, PackageConfig> = {
   },
   best: {
     name: 'Legacy',
-    price: 349,
-    comparePrice: 495,
+    price: 299,
+    comparePrice: 450,
     cards: 165,
     photos: 6,
     shipping: '2-Day Express',
