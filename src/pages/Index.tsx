@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Shield, Package, Truck, Clock, Heart, Star, CheckCircle2, ArrowRight, Gift } from 'lucide-react';
-import metalCardMockup from '@/assets/metal-card-mockup.png';
+
 const Index = () => {
   const packages = [
     {
@@ -52,37 +52,26 @@ const Index = () => {
       </header>
 
       {/* Hero */}
-      <section className="container mx-auto px-4 py-16 md:py-24">
-        <div className="grid lg:grid-cols-2 gap-12 items-center">
-          <div className="text-center lg:text-left">
-            <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-foreground mb-6 leading-tight tracking-tight">
-              Built for<br />
-              <span className="text-primary">Eternity</span>
-            </h1>
-            <p className="text-xl text-muted-foreground max-w-xl mb-8">
-              The prayer card, reimagined. Premium metal cards that will never bend, never fade, and fit perfectly in any wallet.
-            </p>
-            <div className="flex flex-col sm:flex-row items-center lg:items-start justify-center lg:justify-start gap-4">
-              <Link to="/design">
-                <Button size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold text-lg px-12 py-7 shadow-xl">
-                  Create Your Cards
-                  <ArrowRight className="ml-2 h-5 w-5" />
-                </Button>
-              </Link>
-              <a href="#pricing">
-                <Button size="lg" variant="outline" className="text-lg px-10 py-7 border-2">
-                  See Pricing
-                </Button>
-              </a>
-            </div>
-          </div>
-          <div className="flex justify-center lg:justify-end">
-            <img 
-              src={metalCardMockup} 
-              alt="Premium metal prayer card" 
-              className="w-full max-w-lg rounded-lg shadow-2xl"
-            />
-          </div>
+      <section className="container mx-auto px-4 py-16 md:py-24 text-center">
+        <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-foreground mb-6 leading-tight tracking-tight">
+          Built for<br />
+          <span className="text-primary">Eternity</span>
+        </h1>
+        <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-8">
+          The prayer card, reimagined. Premium metal cards that will never bend, never fade, and fit perfectly in any wallet.
+        </p>
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-10">
+          <Link to="/design">
+            <Button size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold text-lg px-12 py-7 shadow-xl">
+              Create Your Cards
+              <ArrowRight className="ml-2 h-5 w-5" />
+            </Button>
+          </Link>
+          <a href="#pricing">
+            <Button size="lg" variant="outline" className="text-lg px-10 py-7 border-2">
+              See Pricing
+            </Button>
+          </a>
         </div>
         
         {/* Trust Indicators */}
