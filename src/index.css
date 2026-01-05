@@ -115,6 +115,15 @@
 }
 
 @layer utilities {
+  /* Make date picker inputs more readable with dark text */
+  input[type="date"] {
+    color: hsl(160 50% 18%);
+  }
+  
+  input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(25%) sepia(15%) saturate(800%) hue-rotate(100deg);
+  }
+
   .canvas-area {
     background-color: hsl(var(--canvas-bg));
     background-image: 
