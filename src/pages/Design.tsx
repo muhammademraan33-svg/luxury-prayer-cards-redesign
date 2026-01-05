@@ -19,6 +19,7 @@ import sunsetCloudsBg from '@/assets/backgrounds/sunset-clouds.jpg';
 import liliesCreamBg from '@/assets/backgrounds/lilies-cream.jpg';
 import heavenlyRaysBg from '@/assets/backgrounds/heavenly-rays.jpg';
 import html2canvas from 'html2canvas';
+import { relativeLuminance } from '@/lib/color';
 import { supabase } from '@/integrations/supabase/client';
 
 const PRESET_BACKGROUNDS = [
@@ -27,6 +28,16 @@ const PRESET_BACKGROUNDS = [
   { id: 'sunset', name: 'Sunset Clouds', src: sunsetCloudsBg },
   { id: 'lilies', name: 'White Lilies', src: liliesCreamBg },
   { id: 'rays', name: 'Heavenly Rays', src: heavenlyRaysBg },
+];
+
+// Metal background options for back of card
+type BackBgType = 'image' | 'metal';
+const METAL_BG_OPTIONS: { id: MetalFinish; name: string; gradient: string; isDark: boolean }[] = [
+  { id: 'silver', name: 'Brushed Silver', gradient: 'from-zinc-400 via-zinc-300 to-zinc-500', isDark: false },
+  { id: 'gold', name: 'Polished Gold', gradient: 'from-yellow-600 via-yellow-500 to-yellow-700', isDark: false },
+  { id: 'black', name: 'Matte Black', gradient: 'from-zinc-800 via-zinc-700 to-zinc-900', isDark: true },
+  { id: 'white', name: 'Pearl White', gradient: 'from-gray-100 via-white to-gray-200', isDark: false },
+  { id: 'marble', name: 'Silver Marble', gradient: 'from-gray-300 via-slate-100 to-gray-400', isDark: false },
 ];
 const FONT_OPTIONS = [
   { value: 'Playfair Display', name: 'Playfair Display' },
@@ -84,6 +95,8 @@ const Design = () => {
   const [photoPanY, setPhotoPanY] = useState(0);
   const [isPanning, setIsPanning] = useState(false);
   const [backBgImage, setBackBgImage] = useState<string | null>(null);
+  const [backBgType, setBackBgType] = useState<BackBgType>('metal');
+  const [backMetalFinish, setBackMetalFinish] = useState<MetalFinish>('white');
   const [backBgZoom, setBackBgZoom] = useState(1);
   const [backBgPanX, setBackBgPanX] = useState(0);
   const [backBgPanY, setBackBgPanY] = useState(0);
@@ -1355,43 +1368,51 @@ const Design = () => {
                           ref={cardPreviewRef}
                           className={`${cardClass} rounded-2xl shadow-2xl relative overflow-hidden`}
                         >
-                          <div 
-                            className={`absolute inset-0 rounded-2xl ${!backBgImage ? `bg-gradient-to-br ${currentFinish.gradient}` : ''}`}
-                            style={backBgImage ? { 
-                              backgroundImage: `url(${backBgImage})`, 
-                              backgroundSize: `${100 * backBgZoom}%`, 
-                              backgroundPosition: `${50 + backBgPanX}% ${50 + backBgPanY}%`
-                            } : undefined}
-                          >
-                            {backBgImage && (
-                              <div className="absolute inset-0 bg-black/40 rounded-2xl"></div>
-                            )}
-                            {!backBgImage && (
+                          {(() => {
+                            // Determine background and if it's dark
+                            const currentBackMetal = METAL_BG_OPTIONS.find(m => m.id === backMetalFinish) || METAL_BG_OPTIONS[0];
+                            const isBackDark = backBgImage ? true : currentBackMetal.isDark;
+                            const textColorClass = isBackDark ? 'text-zinc-200' : 'text-zinc-700';
+                            const mutedTextColorClass = isBackDark ? 'text-zinc-400' : 'text-zinc-600';
+                            
+                            return (
                               <div 
-                                className="absolute inset-0 opacity-20 rounded-2xl"
-                                style={{
-                                  backgroundImage: 'repeating-linear-gradient(90deg, transparent, transparent 1px, rgba(255,255,255,0.1) 1px, rgba(255,255,255,0.1) 2px)',
-                                }}
-                              />
-                            )}
-                            <div 
-                              className="relative z-10 w-full h-full p-3"
-                            >
-                              <div className="h-full flex flex-col text-center">
-                                {/* Header Section - Logo, In Loving Memory, Name, Dates */}
-                                <div className="flex flex-col items-center shrink-0">
-                                  {/* Funeral Home Logo - Top (above In Loving Memory) */}
-                                  {funeralHomeLogo && funeralHomeLogoPosition === 'top' && (
-                                    <div className="flex justify-center mb-1">
-                                      <img 
-                                        src={funeralHomeLogo} 
-                                        alt="Funeral Home Logo" 
-                                        className="object-contain"
-                                        style={{ height: `${funeralHomeLogoSize}px`, maxWidth: '70%' }}
-                                        onLoad={() => setPrayerLayoutNonce((n) => n + 1)}
-                                      />
-                                    </div>
-                                  )}
+                                className={`absolute inset-0 rounded-2xl ${!backBgImage ? `bg-gradient-to-br ${currentBackMetal.gradient}` : ''}`}
+                                style={backBgImage ? { 
+                                  backgroundImage: `url(${backBgImage})`, 
+                                  backgroundSize: `${100 * backBgZoom}%`, 
+                                  backgroundPosition: `${50 + backBgPanX}% ${50 + backBgPanY}%`
+                                } : undefined}
+                              >
+                                {backBgImage && (
+                                  <div className="absolute inset-0 bg-black/40 rounded-2xl"></div>
+                                )}
+                                {!backBgImage && (
+                                  <div 
+                                    className="absolute inset-0 opacity-20 rounded-2xl"
+                                    style={{
+                                      backgroundImage: 'repeating-linear-gradient(90deg, transparent, transparent 1px, rgba(255,255,255,0.1) 1px, rgba(255,255,255,0.1) 2px)',
+                                    }}
+                                  />
+                                )}
+                                <div 
+                                  className="relative z-10 w-full h-full p-3"
+                                >
+                                  <div className="h-full flex flex-col text-center">
+                                    {/* Header Section - Logo, In Loving Memory, Name, Dates */}
+                                    <div className="flex flex-col items-center shrink-0">
+                                      {/* Funeral Home Logo - Top (above In Loving Memory) */}
+                                      {funeralHomeLogo && funeralHomeLogoPosition === 'top' && (
+                                        <div className="flex justify-center mb-1">
+                                          <img 
+                                            src={funeralHomeLogo} 
+                                            alt="Funeral Home Logo" 
+                                            className="object-contain"
+                                            style={{ height: `${funeralHomeLogoSize}px`, maxWidth: '70%' }}
+                                            onLoad={() => setPrayerLayoutNonce((n) => n + 1)}
+                                          />
+                                        </div>
+                                      )}
                                   
                                   {showInLovingMemory && (
                                     <p 
@@ -1453,7 +1474,7 @@ const Design = () => {
                                 >
                                   <p 
                                     ref={prayerTextRef}
-                                    className={`font-serif italic ${backBgImage || metalFinish === 'black' ? 'text-zinc-200' : 'text-zinc-700'} whitespace-pre-line text-center w-full`}
+                                    className={`font-serif italic ${textColorClass} whitespace-pre-line text-center w-full`}
                                     style={{
                                       fontSize: `${(
                                         prayerTextSize === 'auto'
@@ -1488,7 +1509,7 @@ const Design = () => {
                                           includeMargin={false}
                                         />
                                       </div>
-                                      <p className={`text-[6px] mt-0.5 ${backBgImage || metalFinish === 'black' ? 'text-zinc-400' : 'text-zinc-600'}`}>
+                                      <p className={`text-[6px] mt-0.5 ${mutedTextColorClass}`}>
                                         Scan to visit
                                       </p>
                                     </div>
@@ -1510,6 +1531,8 @@ const Design = () => {
                               </div>
                             </div>
                           </div>
+                            );
+                          })()}
                         </div>
 
                         {/* Name on Back Controls */}
@@ -1710,9 +1733,33 @@ const Design = () => {
                           className="hidden"
                           onChange={(e) => e.target.files?.[0] && handleImageUpload(e.target.files[0], 'back')}
                         />
-                        {/* Preset Backgrounds */}
+                        {/* Metal Finish Options */}
                         <div className="w-full max-w-md">
-                          <Label className="text-slate-400 text-xs mb-2 block">Preset Backgrounds</Label>
+                          <Label className="text-slate-400 text-xs mb-2 block">Metal Finish</Label>
+                          <div className="flex gap-2 flex-wrap">
+                            {METAL_BG_OPTIONS.map((metal) => (
+                              <button
+                                key={metal.id}
+                                type="button"
+                                onClick={() => {
+                                  setBackBgImage(null);
+                                  setBackMetalFinish(metal.id);
+                                  setBackBgZoom(1);
+                                  setBackBgPanX(0);
+                                  setBackBgPanY(0);
+                                }}
+                                className={`w-12 h-16 rounded-lg overflow-hidden border-2 transition-all bg-gradient-to-br ${metal.gradient} ${
+                                  !backBgImage && backMetalFinish === metal.id ? 'border-amber-500 ring-2 ring-amber-500/30' : 'border-slate-600 hover:border-slate-500'
+                                }`}
+                                title={metal.name}
+                              />
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* Preset Image Backgrounds */}
+                        <div className="w-full max-w-md">
+                          <Label className="text-slate-400 text-xs mb-2 block">Image Backgrounds</Label>
                           <div className="flex gap-2 flex-wrap">
                             {PRESET_BACKGROUNDS.map((bg) => (
                               <button
