@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef, useState } from 'react';
+import { useLayoutEffect, useRef, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -47,6 +47,11 @@ const EASEL_18X24_UPSELL = 10; // Upgrade from 16x20 to 18x24
 type EaselPhotoSize = '16x20' | '18x24';
 
 const Design = () => {
+  // Scroll to top on mount
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   const [step, setStep] = useState(1);
   
   // Form state
