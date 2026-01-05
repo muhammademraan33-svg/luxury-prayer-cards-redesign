@@ -717,6 +717,7 @@ const Design = () => {
   };
 
   const currentPackage = PACKAGES[selectedPackage];
+  console.log('DEBUG: selectedPackage =', selectedPackage, 'currentPackage.photos =', currentPackage.photos);
   
   const calculatePrice = () => {
     let total = currentPackage.price;
