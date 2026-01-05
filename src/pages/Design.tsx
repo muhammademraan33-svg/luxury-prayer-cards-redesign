@@ -1430,10 +1430,10 @@ const Design = () => {
                                   )}
                                 </div>
 
-                                {/* Prayer - takes remaining space with proper overflow handling */}
+                                {/* Prayer - takes remaining space, vertically centered */}
                                 <div
                                   ref={prayerContainerRef}
-                                  className="flex-1 flex items-start justify-center pt-1 pb-2 px-1 overflow-hidden min-h-0"
+                                  className="flex-1 flex items-center justify-center py-1 px-1 overflow-hidden min-h-0"
                                 >
                                   <p 
                                     ref={prayerTextRef}
