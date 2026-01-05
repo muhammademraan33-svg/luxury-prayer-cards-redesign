@@ -69,6 +69,8 @@
     color: hsl(var(--primary-foreground)) !important;
   }
 
-  /* Make leftover white text readable on the cream palette (scoped to this page only) */
-  .text-white { color: hsl(var(--foreground)) !important; }
+  /* Make leftover white text readable on the cream palette, but exclude buttons */
+  .text-white:not(button .text-white):not(.bg-primary .text-white):not(button):not([class*="bg-primary"]) { 
+    color: hsl(var(--foreground)) !important; 
+  }
 }
