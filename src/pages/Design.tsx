@@ -1050,7 +1050,7 @@ const Design = () => {
                               <span className="text-xs text-slate-400 min-w-[40px]">{Math.round(photoZoom * 100)}%</span>
                             </div>
                             <div className="flex items-center gap-3">
-                              <Label className="text-slate-400 text-xs w-12">Move X</Label>
+                              <Label className="text-slate-400 text-xs w-16">Left/Right</Label>
                               <input
                                 type="range"
                                 min="-100"
@@ -1062,7 +1062,7 @@ const Design = () => {
                               />
                             </div>
                             <div className="flex items-center gap-3">
-                              <Label className="text-slate-400 text-xs w-12">Move Y</Label>
+                              <Label className="text-slate-400 text-xs w-16">Up/Down</Label>
                               <input
                                 type="range"
                                 min="-100"
@@ -1940,7 +1940,7 @@ const Design = () => {
                               <span className="text-xs text-slate-400 min-w-[40px]">{Math.round(backBgZoom * 100)}%</span>
                             </div>
                             <div className="flex items-center gap-3">
-                              <Label className="text-slate-400 text-xs w-12">Move X</Label>
+                              <Label className="text-slate-400 text-xs w-16">Left/Right</Label>
                               <input
                                 type="range"
                                 min="-50"
@@ -1952,7 +1952,7 @@ const Design = () => {
                               />
                             </div>
                             <div className="flex items-center gap-3">
-                              <Label className="text-slate-400 text-xs w-12">Move Y</Label>
+                              <Label className="text-slate-400 text-xs w-16">Up/Down</Label>
                               <input
                                 type="range"
                                 min="-50"
