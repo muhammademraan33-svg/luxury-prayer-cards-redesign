@@ -135,7 +135,7 @@ const Design = () => {
   const [birthDate, setBirthDate] = useState('');
   const [deathDate, setDeathDate] = useState('');
   const [metalFinish, setMetalFinish] = useState<MetalFinish>('white');
-  const [selectedPackage, setSelectedPackage] = useState<PackageTier>('better');
+  const [selectedPackage, setSelectedPackage] = useState<PackageTier>('good');
   const [extraSets, setExtraSets] = useState(0); // Additional 55-card sets beyond package
   const [extraPhotos, setExtraPhotos] = useState(0); // Extra photos beyond package (handled by easelPhotos length)
   const [upgradeToOvernight, setUpgradeToOvernight] = useState(false);
