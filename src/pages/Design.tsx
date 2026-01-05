@@ -2502,8 +2502,46 @@ const Design = () => {
                     </div>
 
                     {/* Premium Thickness Upgrade */}
-                    <div className="space-y-3">
-                      <Label className="text-slate-400 block">Card Thickness</Label>
+                    <div className="space-y-4">
+                      <Label className="text-slate-400 block">Upgrade Your Cards</Label>
+                      
+                      {/* Visual Thickness Comparison */}
+                      <div className="bg-slate-800/50 rounded-xl p-4 border border-slate-700">
+                        <div className="flex items-center justify-center gap-8 mb-4">
+                          {/* Standard Card Visual */}
+                          <div className="flex flex-col items-center">
+                            <div className="relative mb-2">
+                              <div 
+                                className="w-16 bg-gradient-to-b from-zinc-400 via-zinc-300 to-zinc-400 rounded-sm shadow-lg"
+                                style={{ height: '4px' }}
+                              />
+                              <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-12 h-1 bg-black/20 blur-sm rounded-full" />
+                            </div>
+                            <p className="text-slate-400 text-xs font-medium">Standard</p>
+                            <p className="text-slate-500 text-[10px]">.040"</p>
+                          </div>
+                          
+                          {/* Arrow indicator */}
+                          <div className="flex flex-col items-center">
+                            <ArrowRight className="w-5 h-5 text-amber-500" />
+                          </div>
+                          
+                          {/* Premium Card Visual */}
+                          <div className="flex flex-col items-center">
+                            <div className="relative mb-2">
+                              <div 
+                                className="w-16 bg-gradient-to-b from-amber-300 via-amber-200 to-amber-400 rounded-sm shadow-lg ring-1 ring-amber-500/30"
+                                style={{ height: '8px' }}
+                              />
+                              <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-12 h-1.5 bg-black/30 blur-sm rounded-full" />
+                            </div>
+                            <p className="text-amber-400 text-xs font-medium">Premium</p>
+                            <p className="text-amber-500/70 text-[10px]">.080"</p>
+                          </div>
+                        </div>
+                        <p className="text-center text-slate-500 text-xs">Actual thickness comparison</p>
+                      </div>
+                      
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         <button
                           type="button"
@@ -2516,34 +2554,33 @@ const Design = () => {
                         >
                           <div className="flex items-center justify-between mb-2">
                             <p className="text-white font-semibold">Standard</p>
-                            <span className="text-amber-400 text-sm font-medium">Included</span>
+                            <span className="text-slate-400 text-sm">Included</span>
                           </div>
-                          <p className="text-slate-400 text-sm mb-2">.040" thick — Like a credit card</p>
-                          <p className="text-slate-500 text-xs">Lightweight & elegant</p>
+                          <p className="text-slate-400 text-sm">Flexible like a gift card</p>
                         </button>
                         <button
                           type="button"
                           onClick={() => setCardThickness('premium')}
                           className={`p-4 rounded-lg border-2 transition-all text-left relative overflow-hidden ${
                             cardThickness === 'premium' 
-                              ? 'border-amber-500 bg-amber-600/10' 
-                              : 'border-slate-600 hover:border-slate-500'
+                              ? 'border-amber-500 bg-gradient-to-br from-amber-600/20 to-amber-900/10' 
+                              : 'border-slate-600 hover:border-amber-500/50'
                           }`}
                         >
-                          <div className="absolute top-0 right-0 bg-gradient-to-l from-amber-600 to-amber-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-bl">
-                            POPULAR
+                          <div className="absolute top-0 right-0 bg-gradient-to-l from-amber-600 to-amber-500 text-white text-[10px] font-bold px-2.5 py-1 rounded-bl-lg">
+                            MOST CHOSEN
                           </div>
                           <div className="flex items-center justify-between mb-2">
                             <p className="text-white font-semibold">Premium</p>
                             <span className="text-amber-400 text-sm font-medium">+${PREMIUM_THICKNESS_PRICE}/set</span>
                           </div>
-                          <p className="text-slate-400 text-sm mb-2">.080" thick — 2× the weight</p>
-                          <p className="text-slate-500 text-xs">Heirloom quality feel</p>
+                          <p className="text-slate-400 text-sm">Solid & substantial</p>
+                          <p className="text-amber-400/80 text-xs mt-1">✦ Heirloom-quality keepsake</p>
                         </button>
                       </div>
                       {cardThickness === 'premium' && (
                         <p className="text-amber-400 text-xs text-center">
-                          ✨ Premium cards for {1 + additionalSets} set{1 + additionalSets > 1 ? 's' : ''}: +${PREMIUM_THICKNESS_PRICE * (1 + additionalSets)}
+                          ✨ Premium upgrade for {1 + additionalSets} set{1 + additionalSets > 1 ? 's' : ''}: +${PREMIUM_THICKNESS_PRICE * (1 + additionalSets)}
                         </p>
                       )}
                     </div>
