@@ -19,6 +19,7 @@ const Index = () => {
       photoAddOnPrice: 0.27,
       items: [
         '72 Photo Prayer Cards (Glossy)',
+        '16×20 Easel Photo (+$5 for 18×24)',
         'Celebration of Life Photos from $0.27',
         'Full color, both sides',
         '3-Day Delivery',
@@ -39,6 +40,7 @@ const Index = () => {
       items: [
         '55 Premium Metal Prayer Cards',
         '36 Photo Prayer Cards',
+        '16×20 Easel Photo (+$5 for 18×24)',
         'Celebration of Life Photos from $0.27',
         '3-Day Delivery',
       ],
@@ -58,6 +60,7 @@ const Index = () => {
       items: [
         '110 Premium Metal Prayer Cards',
         '72 Photo Prayer Cards',
+        '16×20 Easel Photo (+$5 for 18×24)',
         'Celebration of Life Photos from $0.27',
         'Priority 2-Day Delivery',
         'Dedicated Support',
