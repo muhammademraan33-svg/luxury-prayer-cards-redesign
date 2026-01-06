@@ -53,6 +53,7 @@ type MetalFinish = 'silver' | 'gold' | 'black' | 'white' | 'marble';
 type Orientation = 'landscape' | 'portrait';
 type CardSide = 'front' | 'back';
 type ShippingType = 'express' | 'overnight';
+type CardType = 'metal' | 'paper';
 
 const METAL_FINISHES: { id: MetalFinish; name: string; gradient: string }[] = [
   { id: 'silver', name: 'Brushed Silver', gradient: 'from-zinc-400 via-zinc-300 to-zinc-500' },
@@ -138,6 +139,9 @@ const Design = () => {
   const [deathDate, setDeathDate] = useState('');
   const [metalFinish, setMetalFinish] = useState<MetalFinish>('white');
   const [selectedPackage, setSelectedPackage] = useState<PackageTier>('better');
+
+  // Card type from URL param (metal or paper)
+  const cardType: CardType = searchParams.get('type') === 'paper' ? 'paper' : 'metal';
 
   // If user came from pricing on the landing page, honor ?package=good|better|best
   useEffect(() => {
@@ -854,9 +858,19 @@ const Design = () => {
 
   const currentFinish = METAL_FINISHES.find(f => f.id === metalFinish) || METAL_FINISHES[0];
 
-  const cardClass = orientation === 'landscape' 
-    ? 'aspect-[3.5/2] w-80' 
-    : 'aspect-[2/3.5] w-56';
+  // Metal cards: 2" x 3.5" (credit card size), Paper cards: 3" x 4.75" (rectangle, no rounded corners)
+  const getCardClass = () => {
+    if (cardType === 'paper') {
+      // Paper prayer cards 3" x 4.75" - only portrait orientation
+      return 'aspect-[3/4.75] w-64';
+    }
+    // Metal cards 2" x 3.5"
+    return orientation === 'landscape' 
+      ? 'aspect-[3.5/2] w-80' 
+      : 'aspect-[2/3.5] w-56';
+  };
+  const cardClass = getCardClass();
+  const cardRounding = cardType === 'paper' ? '' : 'rounded-2xl';
 
   return (
     <div className="design-page min-h-screen bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900">
@@ -876,7 +890,7 @@ const Design = () => {
       <main className="container mx-auto px-4 py-8 max-w-4xl">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-white mb-2">
-            {step === 1 && 'Design Your Metal Prayer Card'}
+            {step === 1 && `Design Your ${cardType === 'paper' ? 'Photo Prayer Card' : 'Metal Prayer Card'}`}
             {step === 2 && 'Choose Your Package'}
             {step === 3 && 'Shipping Information'}
             {step === 4 && 'Review & Order'}
@@ -896,31 +910,33 @@ const Design = () => {
               {/* Step 1: Card Design */}
               {step === 1 && (
                 <div className="space-y-6">
-                  {/* Orientation Toggle */}
-                  <div className="flex items-center justify-center gap-4">
-                    <Button
-                      type="button"
-                      variant={orientation === 'landscape' ? 'default' : 'outline'}
-                      onClick={() => setOrientation('landscape')}
-                      className={orientation === 'landscape' 
-                        ? 'bg-amber-600 hover:bg-amber-700 !text-white' 
-                        : 'border-slate-600 text-slate-300 hover:bg-slate-700'}
-                    >
-                      <RectangleHorizontal className="h-4 w-4 mr-2" />
-                      Landscape
-                    </Button>
-                    <Button
-                      type="button"
-                      variant={orientation === 'portrait' ? 'default' : 'outline'}
-                      onClick={() => setOrientation('portrait')}
-                      className={orientation === 'portrait' 
-                        ? 'bg-amber-600 hover:bg-amber-700 !text-white' 
-                        : 'border-slate-600 text-slate-300 hover:bg-slate-700'}
-                    >
-                      <RectangleVertical className="h-4 w-4 mr-2" />
-                      Portrait
-                    </Button>
-                  </div>
+                  {/* Orientation Toggle - only for metal cards */}
+                  {cardType === 'metal' && (
+                    <div className="flex items-center justify-center gap-4">
+                      <Button
+                        type="button"
+                        variant={orientation === 'landscape' ? 'default' : 'outline'}
+                        onClick={() => setOrientation('landscape')}
+                        className={orientation === 'landscape' 
+                          ? 'bg-amber-600 hover:bg-amber-700 !text-white' 
+                          : 'border-slate-600 text-slate-300 hover:bg-slate-700'}
+                      >
+                        <RectangleHorizontal className="h-4 w-4 mr-2" />
+                        Landscape
+                      </Button>
+                      <Button
+                        type="button"
+                        variant={orientation === 'portrait' ? 'default' : 'outline'}
+                        onClick={() => setOrientation('portrait')}
+                        className={orientation === 'portrait' 
+                          ? 'bg-amber-600 hover:bg-amber-700 !text-white' 
+                          : 'border-slate-600 text-slate-300 hover:bg-slate-700'}
+                      >
+                        <RectangleVertical className="h-4 w-4 mr-2" />
+                        Portrait
+                      </Button>
+                    </div>
+                  )}
 
                   {/* Front/Back Tabs */}
                   <Tabs value={cardSide} onValueChange={(v) => setCardSide(v as CardSide)} className="w-full">
@@ -939,12 +955,12 @@ const Design = () => {
                         {/* Card Preview */}
                         <div 
                           ref={cardPreviewRef}
-                          className={`${cardClass} rounded-2xl overflow-hidden shadow-2xl relative`}
+                          className={`${cardClass} ${cardRounding} overflow-hidden shadow-2xl relative`}
                         >
-                          <div className={`absolute inset-0 bg-gradient-to-br ${currentFinish.gradient} p-1`}>
+                          <div className={`absolute inset-0 ${cardType === 'metal' ? `bg-gradient-to-br ${currentFinish.gradient} p-1` : 'bg-white'}`}>
                             <div 
                               ref={photoContainerRef}
-                              className="w-full h-full rounded-xl overflow-hidden bg-slate-700 flex items-center justify-center touch-none relative"
+                              className={`w-full h-full ${cardType === 'metal' ? 'rounded-xl' : ''} overflow-hidden bg-slate-700 flex items-center justify-center touch-none relative`}
                               style={{ cursor: deceasedPhoto && !draggingText ? (isPanning ? 'grabbing' : 'grab') : 'default' }}
                               onPointerDown={handlePhotoPointerDown}
                               onPointerMove={handlePhotoPointerMove}
@@ -1543,7 +1559,7 @@ const Design = () => {
                         {/* Card Preview */}
                         <div 
                           ref={cardPreviewRef}
-                          className={`${cardClass} rounded-2xl shadow-2xl relative overflow-hidden`}
+                          className={`${cardClass} ${cardRounding} shadow-2xl relative overflow-hidden`}
                         >
                           {(() => {
                             // Determine background and if it's dark
@@ -1554,7 +1570,7 @@ const Design = () => {
                             
                             return (
                               <div 
-                                className={`absolute inset-0 rounded-2xl overflow-hidden ${!backBgImage ? `bg-gradient-to-br ${currentBackMetal.gradient}` : ''}`}
+                                className={`absolute inset-0 ${cardRounding} overflow-hidden ${!backBgImage ? (cardType === 'metal' ? `bg-gradient-to-br ${currentBackMetal.gradient}` : 'bg-white') : ''}`}
                               >
                                 {backBgImage && (
                                   <>
@@ -1567,12 +1583,12 @@ const Design = () => {
                                         transformOrigin: 'center center',
                                       }}
                                     />
-                                    <div className="absolute inset-0 bg-black/40 rounded-2xl"></div>
+                                    <div className={`absolute inset-0 bg-black/40 ${cardRounding}`}></div>
                                   </>
                                 )}
-                                {!backBgImage && (
+                                {!backBgImage && cardType === 'metal' && (
                                   <div 
-                                    className="absolute inset-0 opacity-20 rounded-2xl"
+                                    className={`absolute inset-0 opacity-20 ${cardRounding}`}
                                     style={{
                                       backgroundImage: 'repeating-linear-gradient(90deg, transparent, transparent 1px, rgba(255,255,255,0.1) 1px, rgba(255,255,255,0.1) 2px)',
                                     }}
