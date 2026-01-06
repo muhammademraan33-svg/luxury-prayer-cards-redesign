@@ -478,12 +478,12 @@ const Index = () => {
 
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4 max-w-5xl mx-auto">
             {[
-              { size: '4×6', price: 7 },
-              { size: '5×7', price: 17 },
-              { size: '8×10', price: 27 },
-              { size: '11×14', price: 37 },
-              { size: '16×20', price: 47 },
-              { size: '18×24', price: 57 },
+              { size: '4×6', price: 0.37 },
+              { size: '5×7', price: 0.47 },
+              { size: '8×10', price: 7 },
+              { size: '11×14', price: 17 },
+              { size: '16×20', price: 27 },
+              { size: '18×24', price: 37 },
             ].map((photo) => (
               <Card key={photo.size} className="bg-card border-border hover:border-primary/50 transition-colors">
                 <CardContent className="p-4 text-center">
