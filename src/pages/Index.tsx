@@ -12,8 +12,8 @@ const Index = () => {
       badge: 'GREAT VALUE',
       name: 'Comfort Package',
       subtitle: 'Budget-Friendly',
-      price: 99,
-      comparePrice: 140,
+      price: 97,
+      comparePrice: 147,
       metalCards: 0,
       prayerCards: 72,
       photoAddOnPrice: 0.27,
@@ -31,8 +31,8 @@ const Index = () => {
       badge: 'MOST POPULAR',
       name: 'Classic Package',
       subtitle: 'Best Seller',
-      price: 199,
-      comparePrice: 295,
+      price: 197,
+      comparePrice: 297,
       metalCards: 55,
       prayerCards: 36,
       photoAddOnPrice: 0.27,
@@ -50,8 +50,8 @@ const Index = () => {
       badge: 'PREMIUM',
       name: 'Legacy Package',
       subtitle: 'When Only the Best Will Do',
-      price: 399,
-      comparePrice: 595,
+      price: 397,
+      comparePrice: 597,
       metalCards: 165,
       prayerCards: 100,
       photoAddOnPrice: 0.27,
@@ -73,23 +73,23 @@ const Index = () => {
       badge: undefined as string | undefined,
       name: 'Essential',
       price: 127,
-      comparePrice: 195,
+      comparePrice: 197,
       items: ['55 Premium Metal Prayer Cards', '3-Day Delivery', 'Satisfaction Guaranteed'],
     },
     {
       id: 'better',
       badge: 'MOST POPULAR',
       name: 'Family',
-      price: 199,
-      comparePrice: 295,
+      price: 197,
+      comparePrice: 297,
       items: ['110 Premium Metal Prayer Cards', '3-Day Delivery', 'Satisfaction Guaranteed'],
     },
     {
       id: 'best',
       badge: 'BEST',
       name: 'Legacy',
-      price: 299,
-      comparePrice: 450,
+      price: 297,
+      comparePrice: 447,
       items: ['165 Premium Metal Prayer Cards', '3-Day Delivery', 'Satisfaction Guaranteed'],
     },
   ];
@@ -99,7 +99,7 @@ const Index = () => {
       id: 'starter',
       name: 'Starter',
       quantity: 36,
-      price: 39,
+      price: 37,
       description: 'Perfect for intimate gatherings',
     },
     {
@@ -107,14 +107,14 @@ const Index = () => {
       badge: 'POPULAR',
       name: 'Standard',
       quantity: 72,
-      price: 59,
+      price: 57,
       description: 'Most common for services',
     },
     {
       id: 'large',
       name: 'Large',
       quantity: 100,
-      price: 79,
+      price: 77,
       description: 'For larger celebrations of life',
     },
   ];
@@ -379,7 +379,7 @@ const Index = () => {
                         <p className="text-foreground font-semibold">Additional 55-Card Set</p>
                         <p className="text-muted-foreground text-sm">Same design, more cards</p>
                       </div>
-                      <span className="text-2xl font-bold text-foreground">$79</span>
+                      <span className="text-2xl font-bold text-foreground">$77</span>
                     </div>
                   </div>
                   <div className="bg-destructive/10 border border-destructive/30 rounded-lg p-4">
