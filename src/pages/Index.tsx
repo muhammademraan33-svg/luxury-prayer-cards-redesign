@@ -152,15 +152,21 @@ const Index = () => {
           Premium metal prayer cards, photo prayer cards & celebration of life photos — crafted with care.
         </p>
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-10">
-          <Link to="/build">
+          <Link to="/design">
             <Button size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold text-lg px-8 py-7 shadow-xl">
-              Start Building
+              Metal Cards
+              <ArrowRight className="ml-2 h-5 w-5" />
+            </Button>
+          </Link>
+          <Link to="/design?type=paper&quantity=72">
+            <Button size="lg" variant="outline" className="text-lg px-8 py-7 border-2">
+              Photo Prayer Cards
               <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
           </Link>
           <Link to="/design/photos">
             <Button size="lg" variant="outline" className="text-lg px-8 py-7 border-2">
-              Celebration Photos Only
+              Celebration Photos
               <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
           </Link>
