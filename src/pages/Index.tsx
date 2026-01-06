@@ -505,54 +505,6 @@ const Index = () => {
             Premium metal finish • Full color both sides • 72-Hour +$10 • 48-Hour +$15 • Overnight +100%
           </p>
 
-          {/* Metal Add-ons */}
-          <div className="mt-10">
-            <Card className="bg-card border-border">
-              <CardContent className="p-8">
-                <h3 className="text-2xl font-bold text-foreground mb-6 flex items-center gap-3">
-                  <Truck className="h-8 w-8 text-muted-foreground" />
-                  Metal Card Add-Ons
-                </h3>
-                <div className="space-y-6">
-                  <div className="border-b border-border pb-6">
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <p className="text-foreground font-semibold">Additional 55-Card Set</p>
-                        <p className="text-muted-foreground text-sm">Same design, more cards</p>
-                      </div>
-                      <span className="text-2xl font-bold text-foreground">$77</span>
-                    </div>
-                  </div>
-                  <div className="border-b border-border pb-6">
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <p className="text-foreground font-semibold">Extra 16x20 Memorial Photos</p>
-                        <p className="text-muted-foreground text-sm">Professional quality displays</p>
-                      </div>
-                      <span className="text-2xl font-bold text-foreground">$17</span>
-                    </div>
-                  </div>
-                  <div className="border-b border-border pb-6">
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <p className="text-foreground font-semibold">Upgrade to 18x24</p>
-                        <p className="text-muted-foreground text-sm">Larger photo board size</p>
-                      </div>
-                      <span className="text-2xl font-bold text-foreground">+$7</span>
-                    </div>
-                  </div>
-                  <div className="bg-destructive/10 border border-destructive/30 rounded-lg p-4">
-                    <div className="flex items-center gap-2 mb-2">
-                      <Clock className="h-5 w-5 text-destructive" />
-                      <p className="text-destructive font-semibold">Rush Overnight</p>
-                    </div>
-                    <p className="text-foreground/80 text-sm mb-2">Order by noon, ships same day.</p>
-                    <p className="text-destructive font-bold">+100% Expedite Fee</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
         </div>
       </section>
 
