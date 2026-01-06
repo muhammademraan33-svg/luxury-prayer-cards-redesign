@@ -234,7 +234,7 @@ const Index = () => {
 
                 <CardContent className="p-8 text-center">
                   <h3 className="text-2xl font-bold text-foreground mb-2">{pkg.name}</h3>
-                  <p className="text-secondary font-bold text-sm mb-4">{pkg.description}</p>
+                  <p className="text-primary font-bold text-sm mb-4">{pkg.description}</p>
                   
                   <div className="mb-4">
                     <span className="text-5xl font-bold text-foreground">${pkg.price}</span>
