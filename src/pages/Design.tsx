@@ -890,7 +890,7 @@ const Design = () => {
       <header className="border-b border-amber-900/30 bg-slate-900/80 backdrop-blur-sm sticky top-0 z-50">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-3">
-            <span className="text-lg font-bold text-white">Metalprayercards.com</span>
+            <span className="text-lg font-bold text-white">LuxuryPrayerCards.com</span>
           </Link>
           <div className="text-sm text-slate-400">
             Step {step} of 4
@@ -3315,7 +3315,7 @@ const Design = () => {
       {/* Footer */}
       <footer className="border-t border-slate-800 py-8 mt-16">
         <div className="container mx-auto px-4 text-center text-slate-500">
-          <p>© 2025 Metal Prayer Cards. metalprayercards.com</p>
+          <p>© 2025 Luxury Prayer Cards. LuxuryPrayerCards.com</p>
         </div>
       </footer>
     </div>

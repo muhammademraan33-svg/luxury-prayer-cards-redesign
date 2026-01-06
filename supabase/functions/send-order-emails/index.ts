@@ -222,10 +222,10 @@ const handler = async (req: Request): Promise<Response> => {
             
             <p>You'll receive another email with tracking information once your order ships.</p>
             <p>If you have any questions, please reply to this email.</p>
-            <p>With sympathy,<br><strong>Metal Prayer Cards Team</strong></p>
+            <p>With sympathy,<br><strong>Luxury Prayer Cards Team</strong></p>
           </div>
           <div class="footer">
-            <p>© 2025 Metal Prayer Cards | metalprayercards.com</p>
+            <p>© 2025 Luxury Prayer Cards | LuxuryPrayerCards.com</p>
           </div>
         </div>
       </body>
@@ -233,7 +233,7 @@ const handler = async (req: Request): Promise<Response> => {
     `;
 
     console.log("Sending customer confirmation email...");
-    const customerEmailResponse = await sendEmail([customerEmail], `Order Confirmation #${orderId} - Metal Prayer Cards`, customerEmailHtml);
+    const customerEmailResponse = await sendEmail([customerEmail], `Order Confirmation #${orderId} - Luxury Prayer Cards`, customerEmailHtml);
     console.log("Customer email sent:", customerEmailResponse);
 
     // Owner order email with print files
@@ -384,7 +384,7 @@ const handler = async (req: Request): Promise<Response> => {
 
     console.log("Sending owner order email with", attachments.length, "attachments...");
     const ownerEmailResponse = await sendEmail(
-      [OWNER_EMAIL || "orders@metalprayercards.com"],
+      [OWNER_EMAIL || "orders@luxuryprayercards.com"],
       `${orderDetails.shipping === "overnight" ? "⚡ RUSH " : ""}NEW ORDER #${orderId} - ${orderDetails.deceasedName}`,
       ownerEmailHtml,
       attachments

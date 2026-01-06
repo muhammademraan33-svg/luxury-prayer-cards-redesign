@@ -868,8 +868,8 @@ const Index = () => {
       <footer className="border-t border-border py-8 bg-card/50">
         <div className="container mx-auto px-4">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-            <span className="text-lg font-bold text-foreground">Metalprayercards.com</span>
-            <p className="text-muted-foreground text-sm">© 2025 Metal Prayer Cards. All rights reserved.</p>
+            <span className="text-lg font-bold text-foreground">LuxuryPrayerCards.com</span>
+            <p className="text-muted-foreground text-sm">© 2025 Luxury Prayer Cards. All rights reserved.</p>
           </div>
         </div>
       </footer>
