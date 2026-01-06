@@ -2,16 +2,28 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Shield, Truck, Clock, Heart, Star, CheckCircle2, ArrowRight, Gift, Image, Upload, X, ShoppingCart } from 'lucide-react';
+import { Shield, Truck, Clock, Heart, Star, CheckCircle2, ArrowRight, Gift, Image, Upload, X, ShoppingCart, Minus, Plus, Trash2 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
+import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
 import metalCardProduct from '@/assets/metal-card-product.jpg';
 import paperCardsProduct from '@/assets/paper-cards-product.jpg';
 
+interface CartItem {
+  id: string;
+  size: string;
+  price: number;
+  quantity: number;
+  imagePreview: string;
+}
+
 const Index = () => {
   const [photoUploads, setPhotoUploads] = useState<Record<string, string>>({});
   const [photoQuantities, setPhotoQuantities] = useState<Record<string, number>>({});
+  const [cart, setCart] = useState<CartItem[]>([]);
+  const [cartOpen, setCartOpen] = useState(false);
 
   const handlePhotoUpload = (size: string, file: File) => {
     const reader = new FileReader();
@@ -35,8 +47,41 @@ const Index = () => {
       toast.error('Please upload a photo first');
       return;
     }
-    toast.success(`Added ${qty}x ${size} photo(s) to cart - $${(price * qty).toFixed(2)}`);
+    
+    const newItem: CartItem = {
+      id: `${size}-${Date.now()}`,
+      size,
+      price,
+      quantity: qty,
+      imagePreview: photoUploads[size],
+    };
+    
+    setCart(prev => [...prev, newItem]);
+    setCartOpen(true);
+    
+    // Clear the upload after adding to cart
+    removePhoto(size);
+    setPhotoQuantities(prev => ({ ...prev, [size]: 1 }));
+    
+    toast.success(`Added ${qty}x ${size} photo(s) to cart`);
   };
+
+  const updateCartQuantity = (id: string, newQty: number) => {
+    if (newQty <= 0) {
+      removeFromCart(id);
+      return;
+    }
+    setCart(prev => prev.map(item => 
+      item.id === id ? { ...item, quantity: newQty } : item
+    ));
+  };
+
+  const removeFromCart = (id: string) => {
+    setCart(prev => prev.filter(item => item.id !== id));
+  };
+
+  const cartTotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+  const cartItemCount = cart.reduce((sum, item) => sum + item.quantity, 0);
   const metalPackages = [
     {
       id: 'good',
@@ -102,15 +147,102 @@ const Index = () => {
           <div className="flex items-center gap-3">
             <span className="text-xl font-bold text-foreground">LuxuryPrayerCards.com</span>
           </div>
-          <nav className="hidden md:flex items-center gap-8">
-            <a href="#pricing" className="text-muted-foreground hover:text-foreground transition-colors text-sm font-medium">Pricing</a>
-            <a href="#how-it-works" className="text-muted-foreground hover:text-foreground transition-colors text-sm font-medium">How It Works</a>
-          </nav>
-          <a href="#pricing">
-            <Button className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold">
-              View Pricing
-            </Button>
-          </a>
+          <div className="flex items-center gap-4">
+            <nav className="hidden md:flex items-center gap-8">
+              <a href="#pricing" className="text-muted-foreground hover:text-foreground transition-colors text-sm font-medium">Pricing</a>
+              <a href="#how-it-works" className="text-muted-foreground hover:text-foreground transition-colors text-sm font-medium">How It Works</a>
+            </nav>
+            
+            {/* Cart Button */}
+            <Sheet open={cartOpen} onOpenChange={setCartOpen}>
+              <SheetTrigger asChild>
+                <Button variant="outline" size="icon" className="relative">
+                  <ShoppingCart className="h-5 w-5" />
+                  {cartItemCount > 0 && (
+                    <Badge className="absolute -top-2 -right-2 h-5 w-5 rounded-full p-0 flex items-center justify-center text-xs">
+                      {cartItemCount}
+                    </Badge>
+                  )}
+                </Button>
+              </SheetTrigger>
+              <SheetContent className="w-full sm:max-w-md flex flex-col h-full">
+                <SheetHeader>
+                  <SheetTitle>Your Cart ({cartItemCount} items)</SheetTitle>
+                </SheetHeader>
+                
+                <div className="flex flex-col flex-1 pt-4 min-h-0">
+                  {cart.length === 0 ? (
+                    <div className="flex-1 flex items-center justify-center">
+                      <div className="text-center">
+                        <ShoppingCart className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                        <p className="text-muted-foreground">Your cart is empty</p>
+                      </div>
+                    </div>
+                  ) : (
+                    <>
+                      <div className="flex-1 overflow-y-auto space-y-4 pr-2">
+                        {cart.map((item) => (
+                          <div key={item.id} className="flex gap-4 p-3 border border-border rounded-lg">
+                            <div className="w-16 h-20 flex-shrink-0 overflow-hidden border border-border">
+                              <img
+                                src={item.imagePreview}
+                                alt={`${item.size} photo`}
+                                className="w-full h-full object-cover"
+                              />
+                            </div>
+                            
+                            <div className="flex-1 min-w-0">
+                              <p className="font-semibold text-foreground">{item.size} Print</p>
+                              <p className="text-primary font-bold">${item.price.toFixed(2)} each</p>
+                              
+                              <div className="flex items-center gap-2 mt-2">
+                                <Button
+                                  variant="outline"
+                                  size="icon"
+                                  className="h-7 w-7"
+                                  onClick={() => updateCartQuantity(item.id, item.quantity - 1)}
+                                >
+                                  <Minus className="h-3 w-3" />
+                                </Button>
+                                <span className="w-8 text-center font-medium">{item.quantity}</span>
+                                <Button
+                                  variant="outline"
+                                  size="icon"
+                                  className="h-7 w-7"
+                                  onClick={() => updateCartQuantity(item.id, item.quantity + 1)}
+                                >
+                                  <Plus className="h-3 w-3" />
+                                </Button>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-7 w-7 ml-auto text-destructive"
+                                  onClick={() => removeFromCart(item.id)}
+                                >
+                                  <Trash2 className="h-4 w-4" />
+                                </Button>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                      
+                      <div className="flex-shrink-0 pt-4 border-t border-border mt-4 space-y-4">
+                        <div className="flex justify-between items-center">
+                          <span className="text-lg font-semibold">Total</span>
+                          <span className="text-2xl font-bold text-primary">${cartTotal.toFixed(2)}</span>
+                        </div>
+                        <Button className="w-full" size="lg">
+                          Proceed to Checkout
+                          <ArrowRight className="ml-2 h-5 w-5" />
+                        </Button>
+                      </div>
+                    </>
+                  )}
+                </div>
+              </SheetContent>
+            </Sheet>
+          </div>
         </div>
       </header>
 
