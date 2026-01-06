@@ -31,6 +31,31 @@ const Index = () => {
     },
   ];
 
+  const prayerCardPackages = [
+    {
+      id: 'starter',
+      name: 'Starter',
+      quantity: 36,
+      price: 39,
+      description: 'Perfect for intimate gatherings',
+    },
+    {
+      id: 'standard',
+      badge: 'POPULAR',
+      name: 'Standard',
+      quantity: 72,
+      price: 59,
+      description: 'Most common for services',
+    },
+    {
+      id: 'large',
+      name: 'Large',
+      quantity: 100,
+      price: 79,
+      description: 'For larger celebrations of life',
+    },
+  ];
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -211,6 +236,68 @@ const Index = () => {
               </CardContent>
             </Card>
           </div>
+        </div>
+      </section>
+
+      {/* Photo Prayer Cards Section */}
+      <section className="container mx-auto px-4 py-16 border-t border-border">
+        <div className="max-w-5xl mx-auto">
+          <div className="text-center mb-10">
+            <span className="inline-block bg-secondary text-secondary-foreground text-sm font-medium px-4 py-1.5 rounded-full mb-4">
+              BUDGET-FRIENDLY OPTION
+            </span>
+            <h2 className="text-3xl md:text-4xl font-bold text-foreground">Photo Prayer Cards</h2>
+            <p className="text-muted-foreground mt-2 max-w-xl mx-auto">
+              Beautiful glossy cardstock prayer cards — the classic choice families have trusted for generations.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-6">
+            {prayerCardPackages.map((pkg) => (
+              <Card
+                key={pkg.id}
+                className={
+                  pkg.badge
+                    ? 'bg-secondary/10 border-secondary/30 relative overflow-hidden'
+                    : 'bg-card border-border relative overflow-hidden'
+                }
+              >
+                {pkg.badge && (
+                  <div className="absolute top-4 right-4 bg-secondary text-secondary-foreground text-xs font-bold px-3 py-1 rounded-full">
+                    {pkg.badge}
+                  </div>
+                )}
+
+                <CardContent className="p-8 text-center">
+                  <h3 className="text-2xl font-bold text-foreground mb-2">{pkg.name}</h3>
+                  <p className="text-muted-foreground text-sm mb-4">{pkg.description}</p>
+                  
+                  <div className="mb-4">
+                    <span className="text-5xl font-bold text-foreground">${pkg.price}</span>
+                  </div>
+                  
+                  <p className="text-lg font-semibold text-foreground mb-6">
+                    {pkg.quantity} Cards
+                  </p>
+
+                  <Link to={`/design?type=paper&quantity=${pkg.quantity}`} className="block">
+                    <Button
+                      size="lg"
+                      className="w-full font-semibold text-lg py-6"
+                      variant={pkg.badge ? 'default' : 'outline'}
+                    >
+                      Order Now
+                      <ArrowRight className="ml-2 h-5 w-5" />
+                    </Button>
+                  </Link>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+
+          <p className="text-center text-muted-foreground text-sm mt-6">
+            Thick glossy cardstock • Full color both sides • Ships in 48 hours
+          </p>
         </div>
       </section>
 
