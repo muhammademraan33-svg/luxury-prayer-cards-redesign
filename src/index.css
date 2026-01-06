@@ -118,7 +118,13 @@
 
   body {
     @apply bg-background text-foreground antialiased;
-    font-family: 'Montserrat', system-ui, sans-serif;
+    font-family: 'Raleway', system-ui, sans-serif;
+    letter-spacing: 0.01em;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Cinzel', serif;
+    letter-spacing: 0.04em;
   }
 }
 
