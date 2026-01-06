@@ -39,7 +39,8 @@ const Index = () => {
       name: 'Starter',
       quantity: 36,
       price: 37,
-      description: 'Perfect for intimate gatherings',
+      photos: 1,
+      description: 'Includes 1 memorial photo',
     },
     {
       id: 'standard',
@@ -47,14 +48,16 @@ const Index = () => {
       name: 'Standard',
       quantity: 72,
       price: 57,
-      description: 'Most common for services',
+      photos: 2,
+      description: 'Includes 2 memorial photos',
     },
     {
       id: 'large',
       name: 'Large',
       quantity: 100,
       price: 77,
-      description: 'For larger celebrations of life',
+      photos: 2,
+      description: 'Includes 2 memorial photos',
     },
   ];
 
