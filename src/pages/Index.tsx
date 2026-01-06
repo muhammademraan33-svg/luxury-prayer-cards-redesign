@@ -286,7 +286,7 @@ const Index = () => {
           </div>
 
           <p className="text-center text-muted-foreground text-sm mt-6">
-            Thick glossy cardstock • Full color both sides • Delivered in 72 hours
+            Thick glossy cardstock • Full color both sides • Delivered in 72 hours, ready for the service
           </p>
         </div>
       </section>
@@ -328,7 +328,7 @@ const Index = () => {
           </div>
 
           <p className="text-center text-muted-foreground text-sm mt-8">
-            Premium glossy finish • Vibrant colors • Delivered in 72 hours
+            Premium glossy finish • Vibrant colors • Delivered in 72 hours, ready for the service
           </p>
         </div>
       </section>
