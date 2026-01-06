@@ -11,18 +11,23 @@ import { toast } from 'sonner';
 import metalCardProduct from '@/assets/metal-card-product.jpg';
 import paperCardsProduct from '@/assets/paper-cards-product.jpg';
 
+interface PhotoUploadItem {
+  src: string;
+  qty: number;
+}
+
 interface CartItem {
   id: string;
   size: string;
   price: number;
   quantity: number;
-  imagePreview: string | string[];
+  imagePreview: string | PhotoUploadItem[];
   packSize?: number;
 }
 
 const Index = () => {
   const [photoUploads, setPhotoUploads] = useState<Record<string, string>>({});
-  const [multiPhotoUploads, setMultiPhotoUploads] = useState<Record<string, string[]>>({});
+  const [multiPhotoUploads, setMultiPhotoUploads] = useState<Record<string, { src: string; qty: number }[]>>({});
   const [photoQuantities, setPhotoQuantities] = useState<Record<string, number>>({});
   const [cart, setCart] = useState<CartItem[]>([]);
   const [cartOpen, setCartOpen] = useState(false);
@@ -36,13 +41,13 @@ const Index = () => {
   };
 
   const handleMultiPhotoUpload = (size: string, files: FileList) => {
-    const newImages: string[] = [];
+    const newImages: PhotoUploadItem[] = [];
     let loaded = 0;
     
     Array.from(files).forEach((file) => {
       const reader = new FileReader();
       reader.onload = (e) => {
-        newImages.push(e.target?.result as string);
+        newImages.push({ src: e.target?.result as string, qty: 1 });
         loaded++;
         if (loaded === files.length) {
           setMultiPhotoUploads(prev => ({
@@ -241,12 +246,17 @@ const Index = () => {
                   ) : (
                     <>
                       <div className="flex-1 overflow-y-auto space-y-4 pr-2">
-                        {cart.map((item) => (
+                        {cart.map((item) => {
+                          const totalPrints = Array.isArray(item.imagePreview) 
+                            ? item.imagePreview.reduce((sum, p) => sum + p.qty, 0)
+                            : 1;
+                          return (
                           <div key={item.id} className="flex gap-4 p-3 border border-border rounded-lg">
                             <div className="w-16 h-20 flex-shrink-0 overflow-hidden border border-border">
                               {Array.isArray(item.imagePreview) ? (
-                                <div className="w-full h-full bg-primary/10 flex items-center justify-center">
+                                <div className="w-full h-full bg-primary/10 flex flex-col items-center justify-center">
                                   <span className="text-xs font-bold text-primary">{item.imagePreview.length} photos</span>
+                                  <span className="text-[10px] text-muted-foreground">{totalPrints} prints</span>
                                 </div>
                               ) : (
                                 <img
@@ -259,7 +269,7 @@ const Index = () => {
                             
                             <div className="flex-1 min-w-0">
                               <p className="font-semibold text-foreground">
-                                {item.size} {item.packSize ? `Pack of ${item.packSize}` : 'Print'}
+                                {item.size} {item.packSize ? 'Prints' : 'Print'}
                               </p>
                               <p className="text-primary font-bold">${item.price.toFixed(2)} {item.packSize ? 'per pack' : 'each'}</p>
                               
@@ -292,7 +302,8 @@ const Index = () => {
                               </div>
                             </div>
                           </div>
-                        ))}
+                          );
+                        })}
                       </div>
                       
                       <div className="flex-shrink-0 pt-4 border-t border-border mt-4 space-y-4">
@@ -634,19 +645,39 @@ const Index = () => {
                         // Multi-photo upload for packs
                         <>
                           {(multiPhotoUploads[photo.size]?.length || 0) > 0 && (
-                            <div className="mt-2 grid grid-cols-4 gap-2">
+                            <div className="mt-2 space-y-2">
                               {multiPhotoUploads[photo.size]?.map((img, idx) => (
-                                <div key={idx} className="relative" style={{ aspectRatio: photo.aspect }}>
-                                  <img 
-                                    src={img} 
-                                    alt={`Preview ${idx + 1}`} 
-                                    className="w-full h-full object-cover border border-border"
-                                  />
+                                <div key={idx} className="flex items-center gap-3 p-2 border border-border rounded-lg">
+                                  <div className="w-12 h-12 flex-shrink-0 overflow-hidden" style={{ aspectRatio: photo.aspect }}>
+                                    <img 
+                                      src={img.src} 
+                                      alt={`Preview ${idx + 1}`} 
+                                      className="w-full h-full object-cover border border-border"
+                                    />
+                                  </div>
+                                  <div className="flex items-center gap-2 flex-1">
+                                    <Label className="text-xs text-muted-foreground whitespace-nowrap">Qty:</Label>
+                                    <Input 
+                                      type="number"
+                                      min="1"
+                                      value={img.qty}
+                                      onChange={(e) => {
+                                        const newQty = parseInt(e.target.value) || 1;
+                                        setMultiPhotoUploads(prev => ({
+                                          ...prev,
+                                          [photo.size]: prev[photo.size]?.map((p, i) => 
+                                            i === idx ? { ...p, qty: newQty } : p
+                                          ) || []
+                                        }));
+                                      }}
+                                      className="w-16 h-8 text-sm"
+                                    />
+                                  </div>
                                   <button
                                     onClick={() => removeMultiPhoto(photo.size, idx)}
-                                    className="absolute -top-1 -right-1 bg-destructive text-destructive-foreground rounded-full p-0.5 hover:bg-destructive/90"
+                                    className="bg-destructive text-destructive-foreground rounded-full p-1 hover:bg-destructive/90"
                                   >
-                                    <X className="h-2 w-2" />
+                                    <X className="h-3 w-3" />
                                   </button>
                                 </div>
                               ))}
