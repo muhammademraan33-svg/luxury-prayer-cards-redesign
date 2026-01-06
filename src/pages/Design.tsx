@@ -1,5 +1,5 @@
 import { useLayoutEffect, useRef, useState, useEffect } from 'react';
-import { Link, useSearchParams } from 'react-router-dom';
+import { Link, useSearchParams, Navigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -126,10 +126,20 @@ type EaselPhotoSize = '16x20' | '18x24';
 const Design = () => {
   const [searchParams] = useSearchParams();
 
+  // Redirect to photos page if type=photos
+  const isPhotosType = searchParams.get('type') === 'photos';
+  const photoSize = searchParams.get('size') || '';
+  
   // Scroll to top on mount
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
+  
+  // Handle redirect for photos type
+  if (isPhotosType) {
+    const redirectUrl = photoSize ? `/design/photos?size=${photoSize}` : '/design/photos';
+    return <Navigate to={redirectUrl} replace />;
+  }
 
   const [step, setStep] = useState(1);
   

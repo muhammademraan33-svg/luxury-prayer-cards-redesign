@@ -100,7 +100,7 @@ const Index = () => {
               <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
           </Link>
-          <Link to="/design?type=photos">
+          <Link to="/design/photos">
             <Button size="lg" variant="outline" className="text-lg px-8 py-7 border-2">
               Celebration Photos
               <ArrowRight className="ml-2 h-5 w-5" />
@@ -383,7 +383,7 @@ const Index = () => {
                 <CardContent className="p-6 text-center">
                   <div className="text-2xl font-bold text-foreground mb-2">{photo.size}</div>
                   <div className="text-4xl font-bold text-primary mb-3">${photo.price}</div>
-                  <Link to={`/design?type=photos&size=${photo.size}`}>
+                  <Link to={`/design/photos?size=${photo.size}`}>
                     <Button variant="outline" className="w-full">
                       Order Now
                       <ArrowRight className="ml-2 h-4 w-4" />
