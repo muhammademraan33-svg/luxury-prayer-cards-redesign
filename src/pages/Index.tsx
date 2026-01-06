@@ -81,11 +81,11 @@ const Index = () => {
       {/* Hero */}
       <section className="container mx-auto px-4 py-16 md:py-24 text-center">
         <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-foreground mb-6 leading-tight tracking-tight">
-          Built for<br />
-          <span className="text-primary">Eternity</span>
+          Honor Their<br />
+          <span className="text-primary">Memory</span>
         </h1>
         <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-8">
-          Premium metal prayer cards, photo prayer cards & celebration of life photos.
+          Premium metal prayer cards, photo prayer cards & celebration of life photos — crafted with care.
         </p>
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-10">
           <Link to="/design">
