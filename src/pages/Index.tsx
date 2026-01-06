@@ -112,9 +112,9 @@ const Index = () => {
             <CheckCircle2 className="h-5 w-5 text-primary" />
             <span className="text-sm font-medium">Heirloom Quality</span>
           </div>
-          <div className="flex items-center gap-2">
-            <CheckCircle2 className="h-5 w-5 text-primary" />
-            <span className="text-sm font-medium">72-Hour Delivery</span>
+          <div className="flex items-center gap-2 bg-primary/15 px-4 py-2 rounded-full border border-primary/30">
+            <Clock className="h-5 w-5 text-primary" />
+            <span className="text-sm font-bold text-primary">72-Hour Delivery</span>
           </div>
         </div>
       </section>
