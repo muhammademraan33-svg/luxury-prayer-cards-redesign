@@ -798,7 +798,7 @@ const Index = () => {
                 </div>
                 <div>
                   <h3 className="text-lg font-semibold text-foreground mb-2">Fast Delivery</h3>
-                  <p className="text-muted-foreground text-sm">Ships in 48 hours. Overnight rush available.</p>
+                  <p className="text-muted-foreground text-sm">Choose from delivered in 24-72 hours.</p>
                 </div>
               </CardContent>
             </Card>
