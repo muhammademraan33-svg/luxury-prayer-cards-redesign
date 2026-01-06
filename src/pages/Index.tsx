@@ -360,7 +360,6 @@ const Index = () => {
               { size: '11x14', price: 17 },
               { size: '16x20', price: 27 },
               { size: '18x24', price: 37 },
-              { size: '18x27', price: 47 },
             ].map((photo) => (
               <Card key={photo.size} className="bg-card border-border">
                 <CardContent className="p-6 text-center">
