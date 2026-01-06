@@ -185,6 +185,9 @@ const Index = () => {
       price: 67,
       photos: 1,
       description: '+ 1 FREE 16x20 Memorial Photo',
+      size: '2.5" × 4.25"',
+      upsellSize: '3" × 4.75"',
+      upsellPrice: 17,
     },
     {
       id: 'standard',
@@ -194,6 +197,9 @@ const Index = () => {
       price: 87,
       photos: 2,
       description: '+ 2 FREE 16x20 Memorial Photos',
+      size: '2.5" × 4.25"',
+      upsellSize: '3" × 4.75"',
+      upsellPrice: 17,
     },
     {
       id: 'large',
@@ -202,6 +208,9 @@ const Index = () => {
       price: 97,
       photos: 2,
       description: '+ 2 FREE 16x20 Memorial Photos',
+      size: '2.5" × 4.25"',
+      upsellSize: '3" × 4.75"',
+      upsellPrice: 17,
     },
   ];
 
@@ -424,8 +433,15 @@ const Index = () => {
                     <span className="text-5xl font-bold text-foreground" style={{ fontVariantNumeric: 'lining-nums' }}>${pkg.price}</span>
                   </div>
                   
-                  <p className="text-lg font-semibold text-foreground mb-6">
+                  <p className="text-lg font-semibold text-foreground mb-2">
                     {pkg.quantity} Cards
+                  </p>
+                  
+                  <p className="text-sm text-muted-foreground mb-1">
+                    {pkg.size}
+                  </p>
+                  <p className="text-xs text-primary font-medium mb-6">
+                    Upgrade to {pkg.upsellSize} +${pkg.upsellPrice}
                   </p>
 
                   <Link to={`/design?type=paper&quantity=${pkg.quantity}`} className="block">
@@ -444,7 +460,7 @@ const Index = () => {
           </div>
 
           <p className="text-center text-muted-foreground text-sm mt-6">
-            Thick glossy cardstock • Full color both sides • 72-Hour +$10 • 48-Hour +$15 • Overnight +100% • +$7 per additional design
+            Thick glossy cardstock • Full color both sides • 72-Hour +$10 • 48-Hour +$15 • Overnight +100%
           </p>
         </div>
       </section>
