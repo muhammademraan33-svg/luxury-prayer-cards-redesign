@@ -4,58 +4,66 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Shield, Package, Truck, Clock, Heart, Star, CheckCircle2, ArrowRight, Gift } from 'lucide-react';
 
 const Index = () => {
-  // Complete Bundles - Everything families need
+  // Three-tier pricing bundles
   const bundles = [
     {
-      id: 'intimate',
-      badge: undefined as string | undefined,
-      name: 'Intimate Service',
-      subtitle: 'Up to 50 guests',
-      price: 189,
-      comparePrice: 280,
+      id: 'comfort',
+      tier: 'budget' as const,
+      badge: 'GREAT VALUE',
+      name: 'Comfort Package',
+      subtitle: 'Budget-Friendly',
+      price: 99,
+      comparePrice: 140,
+      metalCards: 0,
+      prayerCards: 72,
+      photoAddOnPrice: 5,
       items: [
-        '55 Metal Prayer Cards',
-        '36 Photo Prayer Cards',
-        '2× 8×10 Display Photos',
-        '10× 4×6 Keepsake Photos',
+        '72 Photo Prayer Cards (Glossy)',
+        'Full color, both sides',
         '3-Day Delivery',
       ],
+      highlight: 'Beautiful cards at an affordable price',
     },
     {
-      id: 'standard',
+      id: 'classic',
+      tier: 'standard' as const,
       badge: 'MOST POPULAR',
-      name: 'Standard Service',
-      subtitle: 'Up to 100 guests',
-      price: 299,
-      comparePrice: 420,
+      name: 'Classic Package',
+      subtitle: 'Best Seller',
+      price: 199,
+      comparePrice: 295,
+      metalCards: 55,
+      prayerCards: 36,
+      photoAddOnPrice: 5,
       items: [
-        '110 Metal Prayer Cards',
-        '72 Photo Prayer Cards',
-        '2× 11×14 Display Photos',
-        '20× 4×6 Keepsake Photos',
-        '10× 5×7 Keepsake Photos',
+        '55 Premium Metal Prayer Cards',
+        '36 Photo Prayer Cards',
         '3-Day Delivery',
       ],
+      highlight: 'Metal + paper cards — perfect balance',
     },
     {
-      id: 'grand',
-      badge: 'BEST VALUE',
-      name: 'Grand Service',
-      subtitle: '150+ guests',
-      price: 449,
-      comparePrice: 650,
+      id: 'legacy',
+      tier: 'luxury' as const,
+      badge: 'PREMIUM',
+      name: 'Legacy Package',
+      subtitle: 'When Only the Best Will Do',
+      price: 399,
+      comparePrice: 595,
+      metalCards: 165,
+      prayerCards: 100,
+      photoAddOnPrice: 5,
       items: [
-        '165 Metal Prayer Cards',
+        '165 Premium Metal Prayer Cards',
         '100 Photo Prayer Cards',
-        '2× 16×20 Display Photos',
-        '1× 18×24 Display Photo',
-        '30× 4×6 Keepsake Photos',
-        '20× 5×7 Keepsake Photos',
-        '3-Day Delivery',
+        'Priority 2-Day Delivery',
+        'Dedicated Support',
       ],
+      highlight: 'Maximum coverage for large services',
     },
   ];
 
+  // Metal Cards Only - Good/Better/Best
   const packages = [
     {
       id: 'good',
@@ -176,15 +184,15 @@ const Index = () => {
       </section>
 
 
-      {/* Complete Bundles - Featured First */}
+      {/* Complete Bundles - Three Price Tiers */}
       <section className="container mx-auto px-4 py-16" id="pricing">
-        <div className="max-w-5xl mx-auto">
+        <div className="max-w-6xl mx-auto">
           <div className="text-center mb-10">
             <span className="inline-block bg-primary text-primary-foreground text-sm font-bold px-4 py-1.5 rounded-full mb-4">
               COMPLETE PACKAGES
             </span>
-            <h2 className="text-3xl md:text-4xl font-bold text-foreground">Everything You Need, One Simple Price</h2>
-            <p className="text-muted-foreground mt-2">Metal cards + photo prayer cards + display photos — bundled for your service size.</p>
+            <h2 className="text-3xl md:text-4xl font-bold text-foreground">Choose Your Package</h2>
+            <p className="text-muted-foreground mt-2">Every package includes the option to add photos at just $5 each.</p>
           </div>
 
           <div className="grid md:grid-cols-3 gap-6 mb-8">
@@ -192,30 +200,34 @@ const Index = () => {
               <Card
                 key={bundle.id}
                 className={
-                  bundle.id === 'standard'
-                    ? 'bg-primary/10 border-primary/30 relative overflow-hidden ring-2 ring-primary/50'
+                  bundle.tier === 'luxury'
+                    ? 'bg-gradient-to-b from-primary/15 to-primary/5 border-primary/40 relative overflow-hidden ring-2 ring-primary/50'
+                    : bundle.tier === 'standard'
+                    ? 'bg-primary/10 border-primary/30 relative overflow-hidden'
                     : 'bg-card border-border relative overflow-hidden'
                 }
               >
-                {bundle.badge ? (
+                {bundle.badge && (
                   <div
                     className={
-                      bundle.id === 'standard'
+                      bundle.tier === 'luxury'
+                        ? 'absolute top-4 right-4 bg-gradient-to-r from-primary to-primary/80 text-primary-foreground text-xs font-bold px-3 py-1 rounded-full shadow-lg'
+                        : bundle.tier === 'standard'
                         ? 'absolute top-4 right-4 bg-primary text-primary-foreground text-xs font-bold px-3 py-1 rounded-full'
                         : 'absolute top-4 right-4 bg-foreground text-background text-xs font-bold px-3 py-1 rounded-full'
                     }
                   >
                     {bundle.badge}
                   </div>
-                ) : null}
+                )}
 
                 <CardContent className="p-8">
                   <div className="mb-2">
+                    <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1">{bundle.subtitle}</p>
                     <h3 className="text-2xl font-bold text-foreground">{bundle.name}</h3>
-                    <p className="text-muted-foreground text-sm">{bundle.subtitle}</p>
                   </div>
 
-                  <div className="mb-6">
+                  <div className="mb-4">
                     <div className="flex items-baseline gap-2">
                       <span className="text-5xl font-bold text-foreground">${bundle.price}</span>
                       <span className="text-muted-foreground line-through">${bundle.comparePrice}</span>
@@ -225,26 +237,41 @@ const Index = () => {
                     </p>
                   </div>
 
-                  <ul className="space-y-2 text-foreground/80 mb-8 text-sm">
+                  <p className="text-sm text-muted-foreground mb-4 italic">{bundle.highlight}</p>
+
+                  <ul className="space-y-2 text-foreground/80 mb-4 text-sm">
                     {bundle.items.map((item) => (
                       <li key={item} className="flex items-center gap-2">
-                        <CheckCircle2 className={bundle.id === 'standard' ? 'w-4 h-4 text-primary flex-shrink-0' : 'w-4 h-4 text-muted-foreground flex-shrink-0'} />
+                        <CheckCircle2 className={bundle.tier === 'luxury' ? 'w-4 h-4 text-primary flex-shrink-0' : bundle.tier === 'standard' ? 'w-4 h-4 text-primary flex-shrink-0' : 'w-4 h-4 text-muted-foreground flex-shrink-0'} />
                         {item}
                       </li>
                     ))}
                   </ul>
 
+                  {/* Photo Add-on Callout */}
+                  <div className="bg-secondary/50 border border-secondary rounded-lg p-3 mb-6">
+                    <div className="flex items-center gap-2 mb-1">
+                      <Gift className="w-4 h-4 text-primary" />
+                      <span className="text-sm font-semibold text-foreground">Add Photos</span>
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      Add celebration photos to your order for just <span className="font-bold text-primary">${bundle.photoAddOnPrice}/photo</span>. Select sizes & quantities at checkout.
+                    </p>
+                  </div>
+
                   <Link to={`/design?bundle=${bundle.id}`} className="block">
                     <Button
                       size="lg"
                       className={
-                        bundle.id === 'standard'
+                        bundle.tier === 'luxury'
+                          ? 'w-full bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary/80 text-primary-foreground font-semibold text-lg py-6 shadow-lg'
+                          : bundle.tier === 'standard'
                           ? 'w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold text-lg py-6'
                           : 'w-full font-semibold text-lg py-6'
                       }
-                      variant={bundle.id === 'standard' ? 'default' : 'outline'}
+                      variant={bundle.tier === 'budget' ? 'outline' : 'default'}
                     >
-                      Get This Bundle
+                      Get Started
                       <ArrowRight className="ml-2 h-5 w-5" />
                     </Button>
                   </Link>
@@ -254,7 +281,7 @@ const Index = () => {
           </div>
 
           <p className="text-center text-muted-foreground text-sm">
-            Need something different? Build your own below ↓
+            Want just metal cards or paper cards? See our à la carte options below ↓
           </p>
         </div>
       </section>
