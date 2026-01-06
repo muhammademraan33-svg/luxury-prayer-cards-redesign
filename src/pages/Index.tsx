@@ -478,12 +478,12 @@ const Index = () => {
 
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4 max-w-5xl mx-auto">
             {[
-              { size: '4×6', price: 0.27 },
-              { size: '5×7', price: 0.37 },
-              { size: '8×10', price: 7 },
-              { size: '11×14', price: 17 },
-              { size: '16×20', price: 27 },
-              { size: '18×24', price: 37 },
+              { size: '4×6', price: 5 },
+              { size: '5×7', price: 7 },
+              { size: '8×10', price: 12 },
+              { size: '11×14', price: 18 },
+              { size: '16×20', price: 25 },
+              { size: '18×24', price: 30 },
             ].map((photo) => (
               <Card key={photo.size} className="bg-card border-border hover:border-primary/50 transition-colors">
                 <CardContent className="p-4 text-center">
@@ -674,8 +674,8 @@ const Index = () => {
       <footer className="border-t border-border py-8 bg-card/50">
         <div className="container mx-auto px-4">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-            <span className="text-lg font-bold text-foreground">Metalprayercards.com</span>
-            <p className="text-muted-foreground text-sm">© 2025 Metal Prayer Cards. All rights reserved.</p>
+            <span className="text-lg font-bold text-foreground">Luxuryprayercards.com</span>
+            <p className="text-muted-foreground text-sm">© 2025 Luxury Prayer Cards. All rights reserved.</p>
           </div>
         </div>
       </footer>
