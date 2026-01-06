@@ -95,7 +95,7 @@ const PACKAGES: Record<PackageTier, PackageConfig> = {
     comparePrice: 195,
     cards: 55,
     photos: 1,
-    shipping: '2-Day Express',
+    shipping: 'Delivered in 24-72 hours',
     thickness: 'standard' as CardThickness,
     description: 'Perfect for intimate gatherings',
   },
@@ -105,7 +105,7 @@ const PACKAGES: Record<PackageTier, PackageConfig> = {
     comparePrice: 295,
     cards: 110,
     photos: 1,
-    shipping: '2-Day Express',
+    shipping: 'Delivered in 24-72 hours',
     thickness: 'standard' as CardThickness,
     description: 'Most popular for services',
     popular: true,
@@ -116,7 +116,7 @@ const PACKAGES: Record<PackageTier, PackageConfig> = {
     comparePrice: 450,
     cards: 165,
     photos: 1,
-    shipping: '2-Day Express',
+    shipping: 'Delivered in 24-72 hours',
     thickness: 'standard' as CardThickness,
     description: 'Complete memorial package',
   },
@@ -3062,7 +3062,7 @@ const Design = () => {
                       <span className="text-slate-400">Easel Photos:</span> {Math.max(currentPackage.photos, easelPhotos.length)} ({easelPhotoSize})
                     </p>
                     <p className="text-slate-300">
-                      <span className="text-slate-400">Shipping:</span> {effectiveShipping === 'overnight' ? 'Overnight Rush' : '2-Day Express'}
+                      <span className="text-slate-400">Shipping:</span> {effectiveShipping === 'overnight' ? 'Overnight (24hr)' : 'Delivered in 24-72 hours'}
                     </p>
                   </div>
 
