@@ -11,7 +11,7 @@ const Index = () => {
       name: 'Essential',
       price: 127,
       comparePrice: 195,
-      items: ['55 Premium Metal Prayer Cards', '2 Easel Photo Boards', '72-Hour Delivery', 'Satisfaction Guaranteed'],
+      items: ['55 Premium Metal Prayer Cards', '3-Day Delivery', 'Satisfaction Guaranteed'],
     },
     {
       id: 'better',
@@ -19,7 +19,7 @@ const Index = () => {
       name: 'Family',
       price: 199,
       comparePrice: 295,
-      items: ['110 Premium Metal Prayer Cards', '4 Easel Photo Boards', '72-Hour Delivery', 'Satisfaction Guaranteed'],
+      items: ['110 Premium Metal Prayer Cards', '3-Day Delivery', 'Satisfaction Guaranteed'],
     },
     {
       id: 'best',
@@ -27,7 +27,7 @@ const Index = () => {
       name: 'Legacy',
       price: 299,
       comparePrice: 450,
-      items: ['165 Premium Metal Prayer Cards', '6 Easel Photo Boards', '72-Hour Delivery', 'Satisfaction Guaranteed'],
+      items: ['165 Premium Metal Prayer Cards', '3-Day Delivery', 'Satisfaction Guaranteed'],
     },
   ];
 
@@ -214,24 +214,6 @@ const Index = () => {
                       <span className="text-2xl font-bold text-foreground">$79</span>
                     </div>
                   </div>
-                  <div className="border-b border-border pb-6">
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <p className="text-foreground font-semibold">Extra Photo Boards</p>
-                        <p className="text-muted-foreground text-sm">16x20 easel displays</p>
-                      </div>
-                      <span className="text-2xl font-bold text-foreground">$19</span>
-                    </div>
-                  </div>
-                  <div className="border-b border-border pb-6">
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <p className="text-foreground font-semibold">Upgrade to 18x24</p>
-                        <p className="text-muted-foreground text-sm">Larger photo board size</p>
-                      </div>
-                      <span className="text-2xl font-bold text-foreground">+$5</span>
-                    </div>
-                  </div>
                   <div className="bg-destructive/10 border border-destructive/30 rounded-lg p-4">
                     <div className="flex items-center gap-2 mb-2">
                       <Clock className="h-5 w-5 text-destructive" />
@@ -309,32 +291,6 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Bonus Photo Boards - Metal Cards Only */}
-      <section className="py-12">
-        <div className="container mx-auto px-4">
-          <div className="max-w-3xl mx-auto bg-gradient-to-br from-primary/5 via-primary/10 to-primary/5 rounded-2xl p-8 border border-primary/20 relative">
-            <div className="absolute top-4 right-4">
-              <span className="bg-primary text-primary-foreground text-xs font-bold px-4 py-1.5 rounded-full">
-                WITH METAL CARDS
-              </span>
-            </div>
-            
-            <div className="flex items-center gap-4 mb-4">
-              <div className="w-12 h-12 bg-primary/20 rounded-xl flex items-center justify-center">
-                <Gift className="h-6 w-6 text-primary" />
-              </div>
-              <div>
-                <h2 className="text-xl font-bold text-foreground">Two Easel Photo Boards Included</h2>
-                <p className="text-muted-foreground">A $200+ value — on us with every metal card package</p>
-              </div>
-            </div>
-            
-            <p className="text-foreground/80 leading-relaxed">
-              Skip the trip to Staples. Every metal card order includes two professional-quality easel photo boards — ready for the service and home display.
-            </p>
-          </div>
-        </div>
-      </section>
 
       {/* Celebration of Life Photos */}
       <section id="celebration-photos" className="py-16 bg-secondary/5">
