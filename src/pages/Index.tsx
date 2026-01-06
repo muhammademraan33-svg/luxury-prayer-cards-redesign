@@ -508,32 +508,6 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Bonus Photo Boards - Metal Cards Only */}
-      <section className="py-12">
-        <div className="container mx-auto px-4">
-          <div className="max-w-3xl mx-auto bg-gradient-to-br from-primary/5 via-primary/10 to-primary/5 rounded-2xl p-8 border border-primary/20 relative">
-            <div className="absolute top-4 right-4">
-              <span className="bg-primary text-primary-foreground text-xs font-bold px-4 py-1.5 rounded-full">
-                WITH METAL CARDS
-              </span>
-            </div>
-            
-            <div className="flex items-center gap-4 mb-4">
-              <div className="w-12 h-12 bg-primary/20 rounded-xl flex items-center justify-center">
-                <Gift className="h-6 w-6 text-primary" />
-              </div>
-              <div>
-                <h2 className="text-xl font-bold text-foreground">Two 16x20 Memorial Photos Included</h2>
-                <p className="text-muted-foreground">A $200+ value — on us with every metal card package</p>
-              </div>
-            </div>
-            
-            <p className="text-foreground/80 leading-relaxed">
-              Every metal card order includes two professional-quality 16x20 memorial photos — ready for the service and home display.
-            </p>
-          </div>
-        </div>
-      </section>
 
       {/* Celebration of Life Memorial Photos */}
       <section className="container mx-auto px-4 py-16 border-t border-border">
