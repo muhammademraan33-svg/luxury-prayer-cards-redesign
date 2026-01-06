@@ -346,7 +346,7 @@ const Index = () => {
             </div>
             
             <p className="text-foreground/80 leading-relaxed">
-              Skip the trip to Staples. Every metal card order includes two professional-quality 16x20 memorial photos — ready for the service and home display.
+              Every metal card order includes two professional-quality 16x20 memorial photos — ready for the service and home display.
             </p>
           </div>
         </div>
