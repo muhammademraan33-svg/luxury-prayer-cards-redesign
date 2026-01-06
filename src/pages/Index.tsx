@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Shield, Truck, Clock, Heart, Star, CheckCircle2, ArrowRight, Gift } from 'lucide-react';
+import { Shield, Truck, Clock, Heart, Star, CheckCircle2, ArrowRight, Gift, Image } from 'lucide-react';
 import metalCardProduct from '@/assets/metal-card-product.jpg';
 import paperCardsProduct from '@/assets/paper-cards-product.jpg';
 
@@ -338,6 +338,46 @@ const Index = () => {
               Every metal card order includes two professional-quality 16x20 memorial photos — ready for the service and home display.
             </p>
           </div>
+        </div>
+      </section>
+
+      {/* Celebration of Life Memorial Photos */}
+      <section className="container mx-auto px-4 py-16 border-t border-border">
+        <div className="max-w-5xl mx-auto">
+          <div className="text-center mb-10">
+            <span className="inline-block bg-primary/10 text-primary text-sm font-medium px-4 py-1.5 rounded-full mb-4">
+              MEMORIAL PHOTOS
+            </span>
+            <h2 className="text-3xl md:text-4xl font-bold text-foreground">Celebration of Life Photos</h2>
+            <p className="text-muted-foreground mt-2">Professional-quality prints for the service and home display.</p>
+          </div>
+
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {[
+              { size: '4x6', price: 5 },
+              { size: '5x7', price: 7 },
+              { size: '8x10', price: 12 },
+              { size: '11x14', price: 17 },
+              { size: '16x20', price: 27 },
+              { size: '18x24', price: 37 },
+              { size: '18x27', price: 47 },
+            ].map((photo) => (
+              <Card key={photo.size} className="bg-card border-border">
+                <CardContent className="p-6 text-center">
+                  <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center mx-auto mb-3">
+                    <Image className="h-6 w-6 text-primary" />
+                  </div>
+                  <p className="text-xl font-bold text-foreground mb-1">{photo.size}</p>
+                  <p className="text-2xl font-bold text-primary">${photo.price}</p>
+                  <p className="text-muted-foreground text-xs mt-1">per print</p>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+
+          <p className="text-center text-muted-foreground text-sm mt-6">
+            Professional lustre finish • Arrives ready to frame • Add to any order
+          </p>
         </div>
       </section>
 
