@@ -18,6 +18,11 @@ import marbleGreyBg from '@/assets/backgrounds/marble-grey.jpg';
 import sunsetCloudsBg from '@/assets/backgrounds/sunset-clouds.jpg';
 import liliesCreamBg from '@/assets/backgrounds/lilies-cream.jpg';
 import heavenlyRaysBg from '@/assets/backgrounds/heavenly-rays.jpg';
+import oceanSunsetBg from '@/assets/backgrounds/ocean-sunset.jpg';
+import doveLightBg from '@/assets/backgrounds/dove-light.jpg';
+import mountainSunriseBg from '@/assets/backgrounds/mountain-sunrise.jpg';
+import rosesGardenBg from '@/assets/backgrounds/roses-garden.jpg';
+import forestPathBg from '@/assets/backgrounds/forest-path.jpg';
 import html2canvas from 'html2canvas';
 import { relativeLuminance } from '@/lib/color';
 import { supabase } from '@/integrations/supabase/client';
@@ -28,6 +33,11 @@ const PRESET_BACKGROUNDS = [
   { id: 'sunset', name: 'Sunset Clouds', src: sunsetCloudsBg },
   { id: 'lilies', name: 'White Lilies', src: liliesCreamBg },
   { id: 'rays', name: 'Heavenly Rays', src: heavenlyRaysBg },
+  { id: 'ocean', name: 'Ocean Sunset', src: oceanSunsetBg },
+  { id: 'dove', name: 'Dove Light', src: doveLightBg },
+  { id: 'mountain', name: 'Mountain Sunrise', src: mountainSunriseBg },
+  { id: 'roses', name: 'Rose Garden', src: rosesGardenBg },
+  { id: 'forest', name: 'Forest Path', src: forestPathBg },
 ];
 
 // Metal background options for back of card
@@ -164,6 +174,8 @@ const Design = () => {
   const [photoPanX, setPhotoPanX] = useState(0);
   const [photoPanY, setPhotoPanY] = useState(0);
   const [photoRotation, setPhotoRotation] = useState(0);
+  const [photoFade, setPhotoFade] = useState(false);
+  const [photoBrightness, setPhotoBrightness] = useState(100);
   const [isPanning, setIsPanning] = useState(false);
   const [backBgImage, setBackBgImage] = useState<string | null>(null);
   const [backBgType, setBackBgType] = useState<BackBgType>('metal');
@@ -969,17 +981,29 @@ const Design = () => {
                               onWheel={handlePhotoWheel}
                             >
                               {deceasedPhoto ? (
-                                <img
-                                  src={deceasedPhoto}
-                                  alt="Deceased"
-                                  draggable={false}
-                                  className="w-full h-full object-cover pointer-events-none select-none"
-                                  style={{
-                                    transform: `translate(${photoPanX}px, ${photoPanY}px) scale(${photoZoom}) rotate(${photoRotation}deg)`,
-                                    transformOrigin: 'center',
-                                    willChange: 'transform',
-                                  }}
-                                />
+                                <>
+                                  <img
+                                    src={deceasedPhoto}
+                                    alt="Deceased"
+                                    draggable={false}
+                                    className="w-full h-full object-cover pointer-events-none select-none"
+                                    style={{
+                                      transform: `translate(${photoPanX}px, ${photoPanY}px) scale(${photoZoom}) rotate(${photoRotation}deg)`,
+                                      transformOrigin: 'center',
+                                      willChange: 'transform',
+                                      filter: `brightness(${photoBrightness}%)`,
+                                    }}
+                                  />
+                                  {/* Fade overlay */}
+                                  {photoFade && (
+                                    <div 
+                                      className="absolute inset-0 pointer-events-none"
+                                      style={{
+                                        background: 'linear-gradient(to bottom, transparent 40%, rgba(0,0,0,0.3) 70%, rgba(0,0,0,0.6) 100%)',
+                                      }}
+                                    />
+                                  )}
+                                </>
                               ) : (
                                 <div className="text-center p-4">
                                   <ImageIcon className="h-12 w-12 text-slate-500 mx-auto mb-2" />
@@ -1183,6 +1207,31 @@ const Design = () => {
                               />
                               <span className="text-xs text-slate-400 min-w-[40px]">{photoRotation}°</span>
                             </div>
+                            <div className="flex items-center gap-3">
+                              <Label className="text-slate-400 text-xs w-12">Brightness</Label>
+                              <input
+                                type="range"
+                                min="50"
+                                max="150"
+                                step="5"
+                                value={photoBrightness}
+                                onChange={(e) => setPhotoBrightness(parseFloat(e.target.value))}
+                                className="flex-1 accent-amber-600"
+                              />
+                              <span className="text-xs text-slate-400 min-w-[40px]">{photoBrightness}%</span>
+                            </div>
+                            <div className="flex items-center justify-between pt-2 border-t border-slate-600">
+                              <Label className="text-slate-400 text-xs">Photo Fade Effect</Label>
+                              <label className="flex items-center gap-2 cursor-pointer">
+                                <input 
+                                  type="checkbox" 
+                                  checked={photoFade} 
+                                  onChange={(e) => setPhotoFade(e.target.checked)}
+                                  className="accent-amber-600"
+                                />
+                                <span className="text-slate-300 text-xs">{photoFade ? 'On' : 'Off'}</span>
+                              </label>
+                            </div>
                             <Button
                               type="button"
                               variant="outline"
@@ -1192,10 +1241,12 @@ const Design = () => {
                                 setPhotoPanX(0);
                                 setPhotoPanY(0);
                                 setPhotoRotation(0);
+                                setPhotoBrightness(100);
+                                setPhotoFade(false);
                               }}
                               className="border-slate-600 text-slate-300 text-xs w-full"
                             >
-                              Reset Position
+                              Reset All
                             </Button>
                           </div>
                         )}
@@ -1933,31 +1984,33 @@ const Design = () => {
                           className="hidden"
                           onChange={(e) => e.target.files?.[0] && handleImageUpload(e.target.files[0], 'back')}
                         />
-                        {/* Metal Finish Options */}
-                        <div className="w-full max-w-md">
-                          <Label className="text-slate-400 text-xs mb-2 block">Metal Finish</Label>
-                          <div className="flex gap-2 flex-wrap">
-                            {METAL_BG_OPTIONS.map((metal) => (
-                              <button
-                                key={metal.id}
-                                type="button"
-                                onClick={() => {
-                                  setBackBgImage(null);
-                                  setBackMetalFinish(metal.id);
-                                  setBackBgZoom(1);
-                                  setBackBgPanX(0);
-                                  setBackBgPanY(0);
-                                  setBackBgRotation(0);
-                                  updateBackTextColors(metal.isDark);
-                                }}
-                                className={`w-12 h-16 rounded-lg overflow-hidden border-2 transition-all bg-gradient-to-br ${metal.gradient} ${
-                                  !backBgImage && backMetalFinish === metal.id ? 'border-amber-500 ring-2 ring-amber-500/30' : 'border-slate-600 hover:border-slate-500'
-                                }`}
-                                title={metal.name}
-                              />
-                            ))}
+                        {/* Metal Finish Options - Only for metal cards */}
+                        {cardType === 'metal' && (
+                          <div className="w-full max-w-md">
+                            <Label className="text-slate-400 text-xs mb-2 block">Metal Finish</Label>
+                            <div className="flex gap-2 flex-wrap">
+                              {METAL_BG_OPTIONS.map((metal) => (
+                                <button
+                                  key={metal.id}
+                                  type="button"
+                                  onClick={() => {
+                                    setBackBgImage(null);
+                                    setBackMetalFinish(metal.id);
+                                    setBackBgZoom(1);
+                                    setBackBgPanX(0);
+                                    setBackBgPanY(0);
+                                    setBackBgRotation(0);
+                                    updateBackTextColors(metal.isDark);
+                                  }}
+                                  className={`w-12 h-16 rounded-lg overflow-hidden border-2 transition-all bg-gradient-to-br ${metal.gradient} ${
+                                    !backBgImage && backMetalFinish === metal.id ? 'border-amber-500 ring-2 ring-amber-500/30' : 'border-slate-600 hover:border-slate-500'
+                                  }`}
+                                  title={metal.name}
+                                />
+                              ))}
+                            </div>
                           </div>
-                        </div>
+                        )}
 
                         {/* Preset Image Backgrounds */}
                         <div className="w-full max-w-md">
@@ -1996,7 +2049,7 @@ const Design = () => {
                             <ImageIcon className="h-4 w-4 mr-2" />
                             {backBgImage ? 'Change Background' : 'Upload Background'}
                           </Button>
-                          {backBgImage && (
+                          {backBgImage && cardType === 'metal' && (
                             <>
                               <Button
                                 type="button"
@@ -2017,6 +2070,24 @@ const Design = () => {
                                 Use Metal
                               </Button>
                             </>
+                          )}
+                          {backBgImage && cardType === 'paper' && (
+                            <Button
+                              type="button"
+                              variant="outline"
+                              onClick={() => {
+                                setBackBgImage(null);
+                                setBackBgZoom(1);
+                                setBackBgPanX(0);
+                                setBackBgPanY(0);
+                                setBackBgRotation(0);
+                                updateBackTextColors(false); // Paper default is light
+                              }}
+                              className="border-slate-600 text-slate-300 hover:bg-slate-700"
+                            >
+                              <RotateCcw className="h-4 w-4 mr-2" />
+                              Plain White
+                            </Button>
                           )}
                         </div>
 
@@ -3068,15 +3139,26 @@ const Design = () => {
           >
             <div className="w-full h-full rounded-lg overflow-hidden bg-slate-700 relative">
               {deceasedPhoto && (
-                <img
-                  src={deceasedPhoto}
-                  alt="Memorial"
-                  className="w-full h-full object-cover"
-                  style={{
-                    transform: `translate(${photoPanX}px, ${photoPanY}px) scale(${photoZoom})`,
-                    transformOrigin: 'center',
-                  }}
-                />
+                <>
+                  <img
+                    src={deceasedPhoto}
+                    alt="Memorial"
+                    className="w-full h-full object-cover"
+                    style={{
+                      transform: `translate(${photoPanX}px, ${photoPanY}px) scale(${photoZoom})`,
+                      transformOrigin: 'center',
+                      filter: `brightness(${photoBrightness}%)`,
+                    }}
+                  />
+                  {photoFade && (
+                    <div 
+                      className="absolute inset-0 pointer-events-none"
+                      style={{
+                        background: 'linear-gradient(to bottom, transparent 40%, rgba(0,0,0,0.3) 70%, rgba(0,0,0,0.6) 100%)',
+                      }}
+                    />
+                  )}
+                </>
               )}
               {showNameOnFront && (
                 <div
