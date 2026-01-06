@@ -13,7 +13,7 @@ const Index = () => {
       name: 'Essential',
       price: 97,
       comparePrice: 167,
-      items: ['55 Premium Metal Prayer Cards', '2 Easel Photo Boards', '48-Hour Delivery', 'Satisfaction Guaranteed'],
+      items: ['55 Premium Metal Prayer Cards', '2 FREE 16x20 Memorial Photos', '48-Hour Delivery', 'Satisfaction Guaranteed'],
     },
     {
       id: 'better',
@@ -21,7 +21,7 @@ const Index = () => {
       name: 'Family',
       price: 167,
       comparePrice: 247,
-      items: ['110 Premium Metal Prayer Cards', '4 Easel Photo Boards', '48-Hour Delivery', 'Satisfaction Guaranteed'],
+      items: ['110 Premium Metal Prayer Cards', '4 FREE 16x20 Memorial Photos', '48-Hour Delivery', 'Satisfaction Guaranteed'],
     },
     {
       id: 'best',
@@ -29,7 +29,7 @@ const Index = () => {
       name: 'Legacy',
       price: 247,
       comparePrice: 397,
-      items: ['165 Premium Metal Prayer Cards', '6 Easel Photo Boards', '48-Hour Delivery', 'Satisfaction Guaranteed'],
+      items: ['165 Premium Metal Prayer Cards', '6 FREE 16x20 Memorial Photos', '48-Hour Delivery', 'Satisfaction Guaranteed'],
     },
   ];
 
@@ -295,8 +295,8 @@ const Index = () => {
                   <div className="border-b border-border pb-6">
                     <div className="flex justify-between items-start">
                       <div>
-                        <p className="text-foreground font-semibold">Extra Photo Boards</p>
-                        <p className="text-muted-foreground text-sm">16x20 easel displays</p>
+                        <p className="text-foreground font-semibold">Extra 16x20 Memorial Photos</p>
+                        <p className="text-muted-foreground text-sm">Professional quality displays</p>
                       </div>
                       <span className="text-2xl font-bold text-foreground">$17</span>
                     </div>
@@ -340,13 +340,13 @@ const Index = () => {
                 <Gift className="h-6 w-6 text-primary" />
               </div>
               <div>
-                <h2 className="text-xl font-bold text-foreground">Two Easel Photo Boards Included</h2>
+                <h2 className="text-xl font-bold text-foreground">Two 16x20 Memorial Photos Included</h2>
                 <p className="text-muted-foreground">A $200+ value — on us with every metal card package</p>
               </div>
             </div>
             
             <p className="text-foreground/80 leading-relaxed">
-              Skip the trip to Staples. Every metal card order includes two professional-quality easel photo boards — ready for the service and home display.
+              Skip the trip to Staples. Every metal card order includes two professional-quality 16x20 memorial photos — ready for the service and home display.
             </p>
           </div>
         </div>
