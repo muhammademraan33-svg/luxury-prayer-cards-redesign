@@ -1789,7 +1789,14 @@ const Design = () => {
                         {/* Name on Back Controls */}
                         <div className="w-full max-w-md space-y-3 p-3 bg-slate-700/30 rounded-lg">
                           <div className="flex items-center justify-between">
-                            <Label className="text-white text-sm font-medium">Name on Back</Label>
+                            <div className="flex flex-col">
+                              <Label className="text-white text-sm font-medium">Name on Back</Label>
+                              {showNameOnBack && (
+                                <span className="text-xs text-primary truncate max-w-[180px]" style={{ fontFamily: backNameFont }}>
+                                  {deceasedName || 'Name Here'}
+                                </span>
+                              )}
+                            </div>
                             <label className="flex items-center gap-2 cursor-pointer">
                               <input 
                                 type="checkbox" 
