@@ -347,6 +347,12 @@ const Index = () => {
               <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
           </Link>
+          <a href="#memorial-photos">
+            <Button size="lg" variant="outline" className="text-lg px-10 py-7 border-2">
+              Celebration of Life Photos
+              <ArrowRight className="ml-2 h-5 w-5" />
+            </Button>
+          </a>
         </div>
         
         {/* Trust Indicators */}
@@ -490,7 +496,7 @@ const Index = () => {
 
 
       {/* Celebration of Life Memorial Photos */}
-      <section className="container mx-auto px-4 py-16 border-t border-border">
+      <section id="memorial-photos" className="container mx-auto px-4 py-16 border-t border-border">
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-10">
             <span className="inline-block bg-primary/10 text-primary text-sm font-medium px-4 py-1.5 rounded-full mb-4">
