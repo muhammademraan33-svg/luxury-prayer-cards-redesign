@@ -77,7 +77,7 @@ const Index = () => {
       name: 'Essential',
       price: 127,
       comparePrice: 197,
-      items: ['55 Premium Metal Prayer Cards', '3-Day Delivery', 'Satisfaction Guaranteed'],
+      items: ['55 Premium Metal Prayer Cards', '16×20 Easel Photo (+$5 for 18×24)', '3-Day Delivery', 'Satisfaction Guaranteed'],
     },
     {
       id: 'better',
@@ -85,7 +85,7 @@ const Index = () => {
       name: 'Family',
       price: 197,
       comparePrice: 297,
-      items: ['110 Premium Metal Prayer Cards', '3-Day Delivery', 'Satisfaction Guaranteed'],
+      items: ['110 Premium Metal Prayer Cards', '16×20 Easel Photo (+$5 for 18×24)', '3-Day Delivery', 'Satisfaction Guaranteed'],
     },
     {
       id: 'best',
@@ -93,7 +93,7 @@ const Index = () => {
       name: 'Legacy',
       price: 297,
       comparePrice: 447,
-      items: ['165 Premium Metal Prayer Cards', '3-Day Delivery', 'Satisfaction Guaranteed'],
+      items: ['165 Premium Metal Prayer Cards', '16×20 Easel Photo (+$5 for 18×24)', '3-Day Delivery', 'Satisfaction Guaranteed'],
     },
   ];
 
