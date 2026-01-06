@@ -724,7 +724,7 @@ const Index = () => {
                             <Upload className="h-4 w-4 text-muted-foreground" />
                             <span className="text-sm text-muted-foreground">
                               {(multiPhotoUploads[photo.size]?.length || 0) > 0 
-                                ? `Add more (${multiPhotoUploads[photo.size]?.length}/${photo.packSize})` 
+                                ? 'Add more' 
                                 : 'Choose files'}
                             </span>
                             <input 
