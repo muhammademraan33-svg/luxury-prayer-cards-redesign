@@ -148,10 +148,13 @@ const ADDITIONAL_PHOTO_PRICE = 19; // Additional easel photo ($2 cost)
 const EASEL_18X24_UPSELL = 5; // Upgrade from 16x20 to 18x24 (no extra cost)
 const PREMIUM_THICKNESS_PRICE = 15; // Upgrade to .080" thick cards per set
 const OVERNIGHT_UPCHARGE_PERCENT = 100; // 100% upcharge for overnight
+const PAPER_SIZE_UPSELL = 7; // Upgrade from 2.5x4.25 to 3x4.75
+const ADDITIONAL_DESIGN_PRICE = 7; // Per additional design
 
 type CardThickness = 'standard' | 'premium';
 
 type EaselPhotoSize = '16x20' | '18x24';
+type PaperCardSize = '2.5x4.25' | '3x4.75';
 
 const Design = () => {
   const [searchParams] = useSearchParams();
@@ -185,6 +188,8 @@ const Design = () => {
   const [extraPhotos, setExtraPhotos] = useState(0); // Extra photos beyond package (handled by easelPhotos length)
   const [upgradeToOvernight, setUpgradeToOvernight] = useState(false);
   const [upgradeThickness, setUpgradeThickness] = useState(false);
+  const [paperCardSize, setPaperCardSize] = useState<PaperCardSize>('2.5x4.25'); // Paper card size option
+  const [additionalDesigns, setAdditionalDesigns] = useState<{qty: number}[]>([]); // Additional designs with qty
   const [qrUrl, setQrUrl] = useState('');
   const [showQrCode, setShowQrCode] = useState(true);
   const [orientation, setOrientation] = useState<Orientation>('portrait');
@@ -804,6 +809,17 @@ const Design = () => {
       total += PREMIUM_THICKNESS_PRICE * totalSets;
     }
     
+    // Paper card size upsell (3x4.75 instead of 2.5x4.25)
+    if (cardType === 'paper' && paperCardSize === '3x4.75') {
+      total += PAPER_SIZE_UPSELL;
+    }
+    
+    // Additional designs ($7 each) - sum up quantities for all additional designs
+    const additionalDesignCards = additionalDesigns.reduce((sum, d) => sum + d.qty, 0);
+    if (additionalDesigns.length > 0) {
+      total += additionalDesigns.length * ADDITIONAL_DESIGN_PRICE;
+    }
+    
     // Overnight upgrade (only if not already overnight in package)
     if (upgradeToOvernight && currentPackage.shipping !== 'Overnight') {
       total = Math.round(total * 2); // 100% upcharge
@@ -906,11 +922,11 @@ const Design = () => {
 
   const currentFinish = METAL_FINISHES.find(f => f.id === metalFinish) || METAL_FINISHES[0];
 
-  // Metal cards: 2" x 3.5" (credit card size), Paper cards: 3" x 4.75" (rectangle, no rounded corners)
+  // Metal cards: 2" x 3.5" (credit card size), Paper cards: 2.5x4.25 or 3x4.75
   const getCardClass = () => {
     if (cardType === 'paper') {
-      // Paper prayer cards 3" x 4.75" - only portrait orientation
-      return 'aspect-[3/4.75] w-64';
+      // Paper prayer cards - aspect ratio based on size selection
+      return paperCardSize === '3x4.75' ? 'aspect-[3/4.75] w-64' : 'aspect-[2.5/4.25] w-60';
     }
     // Metal cards 2" x 3.5"
     return orientation === 'landscape' 
@@ -2836,6 +2852,103 @@ const Design = () => {
                       </div>
                     )}
 
+                    {/* Paper Card Size Upgrade - only show for paper cards */}
+                    {cardType === 'paper' && (
+                      <div 
+                        className={`p-4 rounded-lg border-2 cursor-pointer transition-all ${
+                          paperCardSize === '3x4.75' 
+                            ? 'bg-amber-900/30 border-amber-500' 
+                            : 'bg-slate-700/30 border-transparent hover:border-slate-500'
+                        }`}
+                        onClick={() => setPaperCardSize(paperCardSize === '3x4.75' ? '2.5x4.25' : '3x4.75')}
+                      >
+                        <div className="flex items-start justify-between gap-4">
+                          <div className="flex items-start gap-3">
+                            <input
+                              type="checkbox"
+                              checked={paperCardSize === '3x4.75'}
+                              onChange={(e) => setPaperCardSize(e.target.checked ? '3x4.75' : '2.5x4.25')}
+                              className="accent-amber-600 w-5 h-5 mt-1"
+                              onClick={(e) => e.stopPropagation()}
+                            />
+                            <div>
+                              <p className="text-white font-medium">Upgrade to Larger Size</p>
+                              <p className="text-slate-400 text-sm">3" × 4.75" instead of 2.5" × 4.25"</p>
+                              <div className="flex items-end gap-4 mt-2">
+                                <div className="flex flex-col items-center">
+                                  <div className="w-10 h-14 border border-slate-500 rounded-sm" />
+                                  <span className="text-xs text-slate-500 mt-1">2.5×4.25</span>
+                                </div>
+                                <div className="flex flex-col items-center">
+                                  <div className="w-12 h-16 border-2 border-amber-500 rounded-sm bg-amber-500/10" />
+                                  <span className="text-xs text-amber-400 mt-1 font-medium">3×4.75</span>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          <span className="text-amber-400 font-bold text-lg">+${PAPER_SIZE_UPSELL}</span>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Multiple Designs - only show for paper cards */}
+                    {cardType === 'paper' && (
+                      <div className="p-4 bg-slate-700/30 rounded-lg space-y-3">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="text-white font-medium">Additional Designs</p>
+                            <p className="text-slate-400 text-sm">${ADDITIONAL_DESIGN_PRICE} per design + enter quantity for each</p>
+                          </div>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setAdditionalDesigns([...additionalDesigns, { qty: 10 }])}
+                            className="border-amber-600/50 text-amber-400 hover:bg-amber-600/20"
+                          >
+                            + Add Design
+                          </Button>
+                        </div>
+                        
+                        {additionalDesigns.length > 0 && (
+                          <div className="space-y-2 pt-2 border-t border-slate-600">
+                            {additionalDesigns.map((design, idx) => (
+                              <div key={idx} className="flex items-center gap-3 bg-slate-600/30 p-2 rounded">
+                                <span className="text-slate-300 text-sm">Design {idx + 2}</span>
+                                <div className="flex items-center gap-1">
+                                  <span className="text-slate-400 text-xs">Qty:</span>
+                                  <input
+                                    type="number"
+                                    min="1"
+                                    value={design.qty}
+                                    onChange={(e) => {
+                                      const newDesigns = [...additionalDesigns];
+                                      newDesigns[idx].qty = Math.max(1, parseInt(e.target.value) || 1);
+                                      setAdditionalDesigns(newDesigns);
+                                    }}
+                                    className="w-16 h-7 text-sm bg-slate-700 border border-slate-500 rounded px-2 text-white"
+                                  />
+                                </div>
+                                <span className="text-amber-400 text-sm ml-auto">+${ADDITIONAL_DESIGN_PRICE}</span>
+                                <Button
+                                  type="button"
+                                  variant="ghost"
+                                  size="icon"
+                                  onClick={() => setAdditionalDesigns(additionalDesigns.filter((_, i) => i !== idx))}
+                                  className="h-6 w-6 text-rose-400 hover:text-rose-300 hover:bg-rose-500/20"
+                                >
+                                  ×
+                                </Button>
+                              </div>
+                            ))}
+                            <p className="text-xs text-slate-400">
+                              Total additional design fee: ${additionalDesigns.length * ADDITIONAL_DESIGN_PRICE}
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                    )}
+
                     {/* Overnight Upgrade (only show if package doesn't include it) */}
                     {currentPackage.shipping !== 'Overnight' && (
                       <div className="flex items-center justify-between p-4 bg-slate-700/30 rounded-lg">
@@ -3053,6 +3166,20 @@ const Design = () => {
                         <div className="flex justify-between">
                           <span className="text-slate-300">Premium Thickness Upgrade</span>
                           <span className="text-white">${PREMIUM_THICKNESS_PRICE * ((currentPackage.cards / 55) + extraSets)}</span>
+                        </div>
+                      )}
+                      
+                      {cardType === 'paper' && paperCardSize === '3x4.75' && (
+                        <div className="flex justify-between">
+                          <span className="text-slate-300">Larger Card Size (3×4.75)</span>
+                          <span className="text-white">${PAPER_SIZE_UPSELL}</span>
+                        </div>
+                      )}
+                      
+                      {cardType === 'paper' && additionalDesigns.length > 0 && (
+                        <div className="flex justify-between">
+                          <span className="text-slate-300">Additional Designs × {additionalDesigns.length} (total {additionalDesigns.reduce((s, d) => s + d.qty, 0)} cards)</span>
+                          <span className="text-white">${additionalDesigns.length * ADDITIONAL_DESIGN_PRICE}</span>
                         </div>
                       )}
                       
