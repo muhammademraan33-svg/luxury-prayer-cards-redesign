@@ -14,6 +14,7 @@ import paperCardsProduct from '@/assets/paper-cards-product.jpg';
 interface PhotoUploadItem {
   src: string;
   qty: number;
+  size?: '16x20' | '18x24';
 }
 
 interface CartItem {
@@ -27,7 +28,7 @@ interface CartItem {
 
 const Index = () => {
   const [photoUploads, setPhotoUploads] = useState<Record<string, string>>({});
-  const [multiPhotoUploads, setMultiPhotoUploads] = useState<Record<string, { src: string; qty: number }[]>>({});
+  const [multiPhotoUploads, setMultiPhotoUploads] = useState<Record<string, PhotoUploadItem[]>>({});
   const [photoQuantities, setPhotoQuantities] = useState<Record<string, number>>({});
   const [cart, setCart] = useState<CartItem[]>([]);
   const [cartOpen, setCartOpen] = useState(false);
@@ -47,7 +48,7 @@ const Index = () => {
     Array.from(files).forEach((file) => {
       const reader = new FileReader();
       reader.onload = (e) => {
-        newImages.push({ src: e.target?.result as string, qty: 1 });
+        newImages.push({ src: e.target?.result as string, qty: 1, size: '16x20' });
         loaded++;
         if (loaded === files.length) {
           setMultiPhotoUploads(prev => ({
@@ -512,16 +513,21 @@ const Index = () => {
               { size: '5x7', price: 17, aspect: '5/7', packSize: 12, extraPrice: 0.67 },
               { size: '8x10', price: 7, aspect: '4/5' },
               { size: '11x14', price: 17, aspect: '11/14' },
-              { size: '16x20', price: 27, aspect: '4/5' },
-              { size: '18x24', price: 37, aspect: '3/4' },
+              { size: 'Memorial Photo', price: 17, aspect: '4/5', isMemorial: true },
             ].map((photo) => {
               // Calculate total prints and price for pack items
+              const uploads = multiPhotoUploads[photo.size] || [];
               const totalPrints = photo.packSize 
-                ? (multiPhotoUploads[photo.size]?.reduce((sum, p) => sum + p.qty, 0) || 0)
+                ? uploads.reduce((sum, p) => sum + p.qty, 0)
                 : 1;
               const extraPrints = photo.packSize ? Math.max(0, totalPrints - photo.packSize) : 0;
               const extraCost = extraPrints * (photo.extraPrice || 0);
-              const totalPrice = photo.price + extraCost;
+              
+              // For memorial photos, calculate based on size selections
+              const memorialTotal = (photo as any).isMemorial 
+                ? uploads.reduce((sum, p) => sum + (p.qty * (p.size === '18x24' ? 24 : 17)), 0)
+                : 0;
+              const totalPrice = (photo as any).isMemorial ? memorialTotal : (photo.price + extraCost);
               
               return (
               <Card key={photo.size} className="bg-card border-border">
@@ -533,17 +539,41 @@ const Index = () => {
                       </div>
                       <div>
                         <p className="text-lg font-bold text-foreground">
-                          {photo.size} {photo.packSize && <span className="text-sm font-normal text-muted-foreground">Pack of {photo.packSize}</span>}
+                          {(photo as any).isMemorial ? 'Memorial Photo' : photo.size} {photo.packSize && <span className="text-sm font-normal text-muted-foreground">Pack of {photo.packSize}</span>}
                         </p>
-                        <p className="text-primary font-bold">
-                          ${photo.price.toFixed(2)} {!photo.packSize && <span className="text-muted-foreground font-normal text-sm">each</span>}
-                        </p>
+                        {(photo as any).isMemorial ? (
+                          <p className="text-primary font-bold">
+                            16x20 $17 <span className="text-muted-foreground font-normal text-sm">or</span> 18x24 $24
+                          </p>
+                        ) : (
+                          <p className="text-primary font-bold">
+                            ${photo.price.toFixed(2)} {!photo.packSize && <span className="text-muted-foreground font-normal text-sm">each</span>}
+                          </p>
+                        )}
                         {photo.packSize && photo.extraPrice && (
                           <p className="text-xs text-muted-foreground">+${photo.extraPrice.toFixed(2)}/print over {photo.packSize}</p>
                         )}
                       </div>
                     </div>
                   </div>
+                  
+                  {/* Show total price for memorial photos */}
+                  {(photo as any).isMemorial && uploads.length > 0 && (
+                    <div className="mb-4 p-3 bg-accent/50 rounded-lg">
+                      <div className="flex justify-between text-sm">
+                        <span className="text-muted-foreground">Photos:</span>
+                        <span className="font-semibold">{uploads.length}</span>
+                      </div>
+                      <div className="flex justify-between text-sm">
+                        <span className="text-muted-foreground">Total prints:</span>
+                        <span className="font-semibold">{uploads.reduce((sum, p) => sum + p.qty, 0)}</span>
+                      </div>
+                      <div className="flex justify-between font-bold mt-1 pt-1 border-t border-border">
+                        <span>Total:</span>
+                        <span className="text-primary">${totalPrice.toFixed(2)}</span>
+                      </div>
+                    </div>
+                  )}
                   
                   {/* Show total price if over pack size */}
                   {photo.packSize && totalPrints > 0 && (
@@ -566,7 +596,7 @@ const Index = () => {
                   )}
                   
                   <div className="space-y-3">
-                    {!photo.packSize && (
+                    {!(photo as any).isMemorial && !photo.packSize && (
                       <div>
                         <Label htmlFor={`qty-${photo.size}`} className="text-sm text-muted-foreground">
                           Quantity
@@ -584,16 +614,16 @@ const Index = () => {
                     
                     <div>
                       <Label className="text-sm text-muted-foreground">
-                        Upload Photo{photo.packSize ? 's' : ''}
+                        Upload Photo{photo.packSize || (photo as any).isMemorial ? 's' : ''}
                       </Label>
                       
-                      {photo.packSize ? (
-                        // Multi-photo upload for packs
+                      {(photo.packSize || (photo as any).isMemorial) ? (
+                        // Multi-photo upload for packs and memorial photos
                         <>
-                          {(multiPhotoUploads[photo.size]?.length || 0) > 0 && (
+                          {uploads.length > 0 && (
                             <div className="mt-2 space-y-2">
-                              {multiPhotoUploads[photo.size]?.map((img, idx) => (
-                                <div key={idx} className="flex items-center gap-3 p-2 border border-border rounded-lg">
+                              {uploads.map((img, idx) => (
+                                <div key={idx} className="flex items-center gap-2 p-2 border border-border rounded-lg">
                                   <div className="w-12 h-12 flex-shrink-0 overflow-hidden" style={{ aspectRatio: photo.aspect }}>
                                     <img 
                                       src={img.src} 
@@ -601,7 +631,28 @@ const Index = () => {
                                       className="w-full h-full object-cover border border-border"
                                     />
                                   </div>
-                                  <div className="flex items-center gap-2 flex-1">
+                                  
+                                  {/* Size selector for memorial photos */}
+                                  {(photo as any).isMemorial && (
+                                    <select
+                                      value={img.size || '16x20'}
+                                      onChange={(e) => {
+                                        const newSize = e.target.value as '16x20' | '18x24';
+                                        setMultiPhotoUploads(prev => ({
+                                          ...prev,
+                                          [photo.size]: prev[photo.size]?.map((p, i) => 
+                                            i === idx ? { ...p, size: newSize } : p
+                                          ) || []
+                                        }));
+                                      }}
+                                      className="h-8 text-xs border border-border rounded px-1 bg-background"
+                                    >
+                                      <option value="16x20">16x20 - $17</option>
+                                      <option value="18x24">18x24 - $24</option>
+                                    </select>
+                                  )}
+                                  
+                                  <div className="flex items-center gap-1 flex-1">
                                     <Label className="text-xs text-muted-foreground whitespace-nowrap">Qty:</Label>
                                     <Input 
                                       type="number"
@@ -616,7 +667,7 @@ const Index = () => {
                                           ) || []
                                         }));
                                       }}
-                                      className="w-16 h-8 text-sm"
+                                      className="w-14 h-8 text-sm"
                                     />
                                   </div>
                                   <button
@@ -635,8 +686,8 @@ const Index = () => {
                           >
                             <Upload className="h-4 w-4 text-muted-foreground" />
                             <span className="text-sm text-muted-foreground">
-                              {(multiPhotoUploads[photo.size]?.length || 0) > 0 
-                                ? 'Add more' 
+                              {uploads.length > 0 
+                                ? 'Add more photos' 
                                 : 'Choose files'}
                             </span>
                             <input 
@@ -692,12 +743,12 @@ const Index = () => {
                     </div>
 
                     <Button 
-                      onClick={() => handleAddToCart(photo.size, totalPrice, photo.packSize)}
+                      onClick={() => handleAddToCart(photo.size, totalPrice, photo.packSize || ((photo as any).isMemorial ? -1 : undefined))}
                       className="w-full mt-2"
-                      variant={(photo.packSize ? (multiPhotoUploads[photo.size]?.length || 0) > 0 : photoUploads[photo.size]) ? 'default' : 'outline'}
+                      variant={((photo.packSize || (photo as any).isMemorial) ? uploads.length > 0 : photoUploads[photo.size]) ? 'default' : 'outline'}
                     >
                       <ShoppingCart className="h-4 w-4 mr-2" />
-                      Add to Cart {photo.packSize && totalPrints > 0 && `- $${totalPrice.toFixed(2)}`}
+                      Add to Cart {((photo.packSize || (photo as any).isMemorial) && uploads.length > 0) && `- $${totalPrice.toFixed(2)}`}
                     </Button>
                   </div>
                 </CardContent>
