@@ -200,7 +200,7 @@ const Index = () => {
           </div>
 
           <p className="text-center text-muted-foreground text-sm mt-6">
-            Thick glossy cardstock • Full color both sides • 72-Hour Delivery Included • 48-Hour +$15 • Overnight +100% • +$7 per additional design
+            Thick glossy cardstock • Full color both sides • 72-Hour +$10 • 48-Hour +$15 • Overnight +100% • +$7 per additional design
           </p>
         </div>
       </section>
@@ -260,7 +260,7 @@ const Index = () => {
           </div>
 
           <p className="text-center text-muted-foreground text-sm mt-6">
-            Premium metal finish • Full color both sides • 72-Hour Delivery Included • 48-Hour +$15 • Overnight +100%
+            Premium metal finish • Full color both sides • 72-Hour +$10 • 48-Hour +$15 • Overnight +100%
           </p>
 
           {/* Metal Add-ons */}
