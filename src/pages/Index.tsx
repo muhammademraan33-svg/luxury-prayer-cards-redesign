@@ -16,10 +16,10 @@ const Index = () => {
       comparePrice: 140,
       metalCards: 0,
       prayerCards: 72,
-      photoAddOnPrice: 0.25,
+      photoAddOnPrice: 0.27,
       items: [
         '72 Photo Prayer Cards (Glossy)',
-        'Celebration of Life Photos from $0.25',
+        'Celebration of Life Photos from $0.27',
         'Full color, both sides',
         '3-Day Delivery',
       ],
@@ -35,11 +35,11 @@ const Index = () => {
       comparePrice: 295,
       metalCards: 55,
       prayerCards: 36,
-      photoAddOnPrice: 0.25,
+      photoAddOnPrice: 0.27,
       items: [
         '55 Premium Metal Prayer Cards',
         '36 Photo Prayer Cards',
-        'Celebration of Life Photos from $0.25',
+        'Celebration of Life Photos from $0.27',
         '3-Day Delivery',
       ],
       highlight: 'Metal + paper cards — perfect balance',
@@ -54,11 +54,11 @@ const Index = () => {
       comparePrice: 595,
       metalCards: 165,
       prayerCards: 100,
-      photoAddOnPrice: 0.25,
+      photoAddOnPrice: 0.27,
       items: [
         '165 Premium Metal Prayer Cards',
         '100 Photo Prayer Cards',
-        'Celebration of Life Photos from $0.25',
+        'Celebration of Life Photos from $0.27',
         'Priority 2-Day Delivery',
         'Dedicated Support',
       ],
@@ -258,7 +258,7 @@ const Index = () => {
                       <span className="text-sm font-semibold text-foreground">Add Celebration Photos</span>
                     </div>
                     <p className="text-xs text-muted-foreground">
-                      Starting at just <span className="font-bold text-primary">$0.25/photo</span>. Select sizes & quantities at checkout.
+                      Starting at just <span className="font-bold text-primary">$0.27/photo</span>. Select sizes & quantities at checkout.
                     </p>
                   </div>
 
@@ -475,12 +475,12 @@ const Index = () => {
 
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4 max-w-5xl mx-auto">
             {[
-              { size: '4×6', price: 0.25 },
-              { size: '5×7', price: 0.35 },
-              { size: '8×10', price: 12 },
-              { size: '11×14', price: 18 },
-              { size: '16×20', price: 25 },
-              { size: '18×24', price: 35 },
+              { size: '4×6', price: 0.27 },
+              { size: '5×7', price: 0.37 },
+              { size: '8×10', price: 7 },
+              { size: '11×14', price: 17 },
+              { size: '16×20', price: 27 },
+              { size: '18×24', price: 37 },
             ].map((photo) => (
               <Card key={photo.size} className="bg-card border-border hover:border-primary/50 transition-colors">
                 <CardContent className="p-4 text-center">
