@@ -101,10 +101,10 @@ const handler = async (req: Request): Promise<Response> => {
             
             <p>Your package should arrive within ${order.shipping_type === "overnight" ? "1 business day" : "2-3 business days"}.</p>
             <p>If you have any questions about your order, please reply to this email.</p>
-            <p>With sympathy,<br><strong>Metal Prayer Cards Team</strong></p>
+            <p>With sympathy,<br><strong>Luxury Prayer Cards Team</strong></p>
           </div>
           <div class="footer">
-            <p>© 2025 Metal Prayer Cards | metalprayercards.com</p>
+            <p>© 2025 Luxury Prayer Cards | LuxuryPrayerCards.com</p>
           </div>
         </div>
       </body>
