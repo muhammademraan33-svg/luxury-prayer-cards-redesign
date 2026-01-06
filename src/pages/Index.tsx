@@ -624,7 +624,7 @@ const Index = () => {
                           {photo.size} {photo.packSize && <span className="text-sm font-normal text-muted-foreground">Pack of {photo.packSize}</span>}
                         </p>
                         <p className="text-primary font-bold">
-                          ${photo.price.toFixed(2)} <span className="text-muted-foreground font-normal text-sm">{photo.packSize ? 'per pack' : 'each'}</span>
+                          ${photo.price.toFixed(2)} {!photo.packSize && <span className="text-muted-foreground font-normal text-sm">each</span>}
                         </p>
                         {photo.packSize && photo.extraPrice && (
                           <p className="text-xs text-muted-foreground">+${photo.extraPrice.toFixed(2)}/print over {photo.packSize}</p>
