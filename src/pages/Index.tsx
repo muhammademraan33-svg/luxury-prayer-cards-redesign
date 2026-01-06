@@ -326,13 +326,13 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Bonus Photo Boards */}
+      {/* Bonus Photo Boards - Metal Cards Only */}
       <section className="py-12">
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto bg-gradient-to-br from-primary/5 via-primary/10 to-primary/5 rounded-2xl p-8 border border-primary/20 relative">
             <div className="absolute top-4 right-4">
               <span className="bg-primary text-primary-foreground text-xs font-bold px-4 py-1.5 rounded-full">
-                INCLUDED FREE
+                WITH METAL CARDS
               </span>
             </div>
             
@@ -341,13 +341,13 @@ const Index = () => {
                 <Gift className="h-6 w-6 text-primary" />
               </div>
               <div>
-                <h2 className="text-xl font-bold text-foreground">Two Easel Photo Boards</h2>
-                <p className="text-muted-foreground">A $200+ value — on us</p>
+                <h2 className="text-xl font-bold text-foreground">Two Easel Photo Boards Included</h2>
+                <p className="text-muted-foreground">A $200+ value — on us with every metal card package</p>
               </div>
             </div>
             
             <p className="text-foreground/80 leading-relaxed">
-              Skip the trip to Staples. Every order includes two professional-quality easel photo boards — ready for the service and home display.
+              Skip the trip to Staples. Every metal card order includes two professional-quality easel photo boards — ready for the service and home display.
             </p>
           </div>
         </div>
@@ -356,7 +356,7 @@ const Index = () => {
       {/* Features - Simplified */}
       <section className="py-16 bg-card/50 border-y border-border">
         <div className="container mx-auto px-4">
-          <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+          <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
             <Card className="bg-background border-border">
               <CardContent className="p-6 flex items-start gap-4">
                 <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center flex-shrink-0">
@@ -375,8 +375,20 @@ const Index = () => {
                   <Shield className="h-6 w-6 text-primary" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold text-foreground mb-2">Built to Last</h3>
-                  <p className="text-muted-foreground text-sm">Premium metal finish that won't fade, tear, or deteriorate.</p>
+                  <h3 className="text-lg font-semibold text-foreground mb-2">Premium Quality</h3>
+                  <p className="text-muted-foreground text-sm">Metal cards that last forever, or classic glossy cardstock.</p>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-background border-border">
+              <CardContent className="p-6 flex items-start gap-4">
+                <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center flex-shrink-0">
+                  <Truck className="h-6 w-6 text-primary" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold text-foreground mb-2">Fast Delivery</h3>
+                  <p className="text-muted-foreground text-sm">Ships in 48 hours. Overnight rush available.</p>
                 </div>
               </CardContent>
             </Card>
@@ -489,12 +501,20 @@ const Index = () => {
           <p className="text-lg text-muted-foreground mb-8">
             Create beautiful memorial cards in minutes.
           </p>
-          <Link to="/design">
-            <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90 font-semibold text-lg px-12 py-7 shadow-xl">
-              Design Your Cards Now
-              <ArrowRight className="ml-2 h-5 w-5" />
-            </Button>
-          </Link>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <Link to="/design">
+              <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90 font-semibold text-lg px-10 py-7 shadow-xl">
+                Metal Cards
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </Button>
+            </Link>
+            <Link to="/design?type=paper&quantity=72">
+              <Button size="lg" variant="outline" className="font-semibold text-lg px-10 py-7 border-2">
+                Photo Prayer Cards
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </Button>
+            </Link>
+          </div>
         </div>
       </section>
 
