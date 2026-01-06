@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { jsPDF } from "https://esm.sh/jspdf@2.5.1";
 
 const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
 const OWNER_EMAIL = Deno.env.get("OWNER_EMAIL");
@@ -40,6 +41,30 @@ interface OrderEmailRequest {
   frontCardImage: string;
   backCardImage: string;
   easelPhotos?: string[]; // Array of base64 data URLs for easel photos
+}
+
+// Generate a print-ready PDF from a base64 image
+// Card dimensions: 2.5" x 4.25" at 300 DPI for metal prayer cards
+function generatePrintPDF(imageBase64: string, title: string): string {
+  // Create PDF with custom size (2.5" x 4.25")
+  const doc = new jsPDF({
+    orientation: "portrait",
+    unit: "in",
+    format: [2.5, 4.25],
+  });
+
+  // Add title as metadata
+  doc.setProperties({
+    title: title,
+    subject: "Print-Ready Prayer Card",
+    creator: "Metal Prayer Cards",
+  });
+
+  // Add the image to fill the entire page
+  doc.addImage(imageBase64, "JPEG", 0, 0, 2.5, 4.25);
+
+  // Return as base64 string (without data URL prefix)
+  return doc.output("datauristring").split(",")[1];
 }
 
 async function sendEmail(
@@ -283,10 +308,11 @@ const handler = async (req: Request): Promise<Response> => {
             
             <div class="section">
               <h3>🖨️ Print Files</h3>
-              <p><strong>IMPORTANT:</strong> Print-ready card images are attached to this email as PNG files.</p>
+              <p><strong>IMPORTANT:</strong> Print-ready PDFs are attached to this email (2.5" x 4.25" at print resolution).</p>
               <ul>
-                <li><strong>front-card-print.png</strong> - Front of prayer card</li>
-                <li><strong>back-card-print.png</strong> - Back of prayer card</li>
+                <li><strong>front-card-[name].pdf</strong> - Front of prayer card (print-ready)</li>
+                <li><strong>back-card-[name].pdf</strong> - Back of prayer card (print-ready)</li>
+                <li>Easel photos attached as separate image files</li>
               </ul>
             </div>
           </div>
@@ -297,22 +323,46 @@ const handler = async (req: Request): Promise<Response> => {
 
     const attachments = [];
 
-    // Add front card design
+    // Generate print-ready PDFs for front and back cards
     if (frontCardImage && frontCardImage.includes(",")) {
       const frontBase64 = frontCardImage.split(",")[1];
-      attachments.push({
-        filename: "front-card-print.jpg",
-        content: frontBase64,
-      });
+      try {
+        console.log("Generating front card PDF...");
+        const frontPdfBase64 = generatePrintPDF(frontBase64, `Front Card - ${orderDetails.deceasedName}`);
+        attachments.push({
+          filename: `front-card-${orderDetails.deceasedName.replace(/\s+/g, "-")}.pdf`,
+          content: frontPdfBase64,
+        });
+        console.log("Front card PDF generated successfully");
+      } catch (pdfError) {
+        console.error("Error generating front PDF:", pdfError);
+        // Fallback to JPG if PDF fails
+        attachments.push({
+          filename: "front-card-print.jpg",
+          content: frontBase64,
+        });
+      }
     }
 
-    // Add back card design
+    // Generate back card PDF
     if (backCardImage && backCardImage.includes(",")) {
       const backBase64 = backCardImage.split(",")[1];
-      attachments.push({
-        filename: "back-card-print.jpg",
-        content: backBase64,
-      });
+      try {
+        console.log("Generating back card PDF...");
+        const backPdfBase64 = generatePrintPDF(backBase64, `Back Card - ${orderDetails.deceasedName}`);
+        attachments.push({
+          filename: `back-card-${orderDetails.deceasedName.replace(/\s+/g, "-")}.pdf`,
+          content: backPdfBase64,
+        });
+        console.log("Back card PDF generated successfully");
+      } catch (pdfError) {
+        console.error("Error generating back PDF:", pdfError);
+        // Fallback to JPG if PDF fails
+        attachments.push({
+          filename: "back-card-print.jpg",
+          content: backBase64,
+        });
+      }
     }
 
     // Add all easel photos
