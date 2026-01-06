@@ -6,100 +6,100 @@
 
 @layer base {
   :root {
-    /* Deep forest green with warm cream - inspired by nature */
-    --background: 45 25% 89%;
-    --foreground: 160 50% 18%;
+    /* Luxury gold & cream palette */
+    --background: 40 30% 96%;
+    --foreground: 30 15% 15%;
 
-    --card: 45 20% 92%;
-    --card-foreground: 160 50% 18%;
+    --card: 40 25% 98%;
+    --card-foreground: 30 15% 15%;
 
-    --popover: 45 20% 92%;
-    --popover-foreground: 160 50% 18%;
+    --popover: 40 25% 98%;
+    --popover-foreground: 30 15% 15%;
 
-    --primary: 160 50% 22%;
-    --primary-foreground: 45 25% 89%;
+    --primary: 38 70% 45%;
+    --primary-foreground: 40 30% 98%;
 
-    --secondary: 45 18% 85%;
-    --secondary-foreground: 160 45% 20%;
+    --secondary: 35 20% 90%;
+    --secondary-foreground: 30 20% 25%;
 
-    --muted: 45 15% 82%;
-    --muted-foreground: 160 30% 35%;
+    --muted: 35 15% 88%;
+    --muted-foreground: 30 10% 45%;
 
-    --accent: 160 35% 85%;
-    --accent-foreground: 160 50% 18%;
+    --accent: 38 40% 92%;
+    --accent-foreground: 30 15% 15%;
 
     --destructive: 0 55% 45%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 160 20% 75%;
-    --input: 160 20% 75%;
-    --ring: 160 50% 22%;
+    --border: 35 20% 85%;
+    --input: 35 20% 85%;
+    --ring: 38 70% 45%;
 
     --radius: 0.75rem;
 
     /* Custom design tokens */
-    --canvas-bg: 45 20% 86%;
-    --toolbar-bg: 45 20% 92%;
-    --card-shadow: 0 8px 32px -8px hsl(160 40% 15% / 0.15);
-    --card-shadow-lg: 0 16px 48px -12px hsl(160 40% 15% / 0.2);
+    --canvas-bg: 40 25% 94%;
+    --toolbar-bg: 40 25% 98%;
+    --card-shadow: 0 8px 32px -8px hsl(30 30% 20% / 0.12);
+    --card-shadow-lg: 0 16px 48px -12px hsl(30 30% 20% / 0.18);
     --metal-shimmer: linear-gradient(135deg, 
-      hsl(45 15% 82%) 0%, 
-      hsl(45 18% 88%) 25%, 
-      hsl(45 15% 80%) 50%, 
-      hsl(45 18% 88%) 75%, 
-      hsl(45 15% 82%) 100%);
+      hsl(38 50% 75%) 0%, 
+      hsl(40 60% 85%) 25%, 
+      hsl(38 50% 70%) 50%, 
+      hsl(40 60% 85%) 75%, 
+      hsl(38 50% 75%) 100%);
 
-    --sidebar-background: 45 22% 90%;
-    --sidebar-foreground: 160 50% 18%;
-    --sidebar-primary: 160 50% 22%;
-    --sidebar-primary-foreground: 45 25% 89%;
-    --sidebar-accent: 160 25% 85%;
-    --sidebar-accent-foreground: 160 50% 18%;
-    --sidebar-border: 160 18% 78%;
-    --sidebar-ring: 160 50% 22%;
+    --sidebar-background: 40 28% 97%;
+    --sidebar-foreground: 30 15% 15%;
+    --sidebar-primary: 38 70% 45%;
+    --sidebar-primary-foreground: 40 30% 98%;
+    --sidebar-accent: 38 30% 92%;
+    --sidebar-accent-foreground: 30 15% 15%;
+    --sidebar-border: 35 18% 88%;
+    --sidebar-ring: 38 70% 45%;
   }
 
   .dark {
-    /* Deep forest dark palette - rich greens with cream accents */
-    --background: 160 55% 12%;
-    --foreground: 45 20% 90%;
+    /* Luxury dark palette - deep charcoal with gold accents */
+    --background: 30 10% 8%;
+    --foreground: 40 20% 92%;
 
-    --card: 160 50% 16%;
-    --card-foreground: 45 20% 90%;
+    --card: 30 12% 12%;
+    --card-foreground: 40 20% 92%;
 
-    --popover: 160 50% 16%;
-    --popover-foreground: 45 20% 90%;
+    --popover: 30 12% 12%;
+    --popover-foreground: 40 20% 92%;
 
-    --primary: 45 30% 82%;
-    --primary-foreground: 160 55% 14%;
+    --primary: 40 65% 55%;
+    --primary-foreground: 30 10% 8%;
 
-    --secondary: 160 40% 20%;
-    --secondary-foreground: 45 18% 85%;
+    --secondary: 30 15% 18%;
+    --secondary-foreground: 40 18% 85%;
 
-    --muted: 160 40% 18%;
-    --muted-foreground: 45 12% 60%;
+    --muted: 30 12% 16%;
+    --muted-foreground: 40 10% 55%;
 
-    --accent: 160 45% 22%;
-    --accent-foreground: 45 25% 88%;
+    --accent: 35 20% 18%;
+    --accent-foreground: 40 20% 90%;
 
     --destructive: 0 50% 40%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 160 40% 24%;
-    --input: 160 40% 24%;
-    --ring: 45 30% 82%;
+    --border: 30 15% 20%;
+    --input: 30 15% 20%;
+    --ring: 40 65% 55%;
 
-    --canvas-bg: 160 52% 14%;
-    --toolbar-bg: 160 50% 16%;
+    --canvas-bg: 30 10% 10%;
+    --toolbar-bg: 30 12% 12%;
 
-    --sidebar-background: 160 55% 13%;
-    --sidebar-foreground: 45 18% 88%;
-    --sidebar-primary: 45 30% 82%;
-    --sidebar-primary-foreground: 160 55% 14%;
-    --sidebar-accent: 160 40% 20%;
-    --sidebar-accent-foreground: 45 18% 88%;
-    --sidebar-border: 160 40% 22%;
-    --sidebar-ring: 45 30% 82%;
+    --sidebar-background: 30 10% 9%;
+    --sidebar-foreground: 40 18% 90%;
+    --sidebar-primary: 40 65% 55%;
+    --sidebar-primary-foreground: 30 10% 8%;
+    --sidebar-accent: 30 15% 16%;
+    --sidebar-accent-foreground: 40 18% 90%;
+    --sidebar-border: 30 12% 18%;
+    --sidebar-ring: 40 65% 55%;
   }
 }
 
@@ -117,11 +117,11 @@
 @layer utilities {
   /* Make date picker inputs more readable with dark text */
   input[type="date"] {
-    color: hsl(160 50% 18%);
+    color: hsl(30 15% 15%);
   }
   
   input[type="date"]::-webkit-calendar-picker-indicator {
-    filter: invert(25%) sepia(15%) saturate(800%) hue-rotate(100deg);
+    filter: invert(25%) sepia(20%) saturate(600%) hue-rotate(10deg);
   }
 
   .canvas-area {
