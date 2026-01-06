@@ -4,6 +4,58 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Shield, Package, Truck, Clock, Heart, Star, CheckCircle2, ArrowRight, Gift } from 'lucide-react';
 
 const Index = () => {
+  // Complete Bundles - Everything families need
+  const bundles = [
+    {
+      id: 'intimate',
+      badge: undefined as string | undefined,
+      name: 'Intimate Service',
+      subtitle: 'Up to 50 guests',
+      price: 189,
+      comparePrice: 280,
+      items: [
+        '55 Metal Prayer Cards',
+        '36 Photo Prayer Cards',
+        '2× 8×10 Display Photos',
+        '10× 4×6 Keepsake Photos',
+        '3-Day Delivery',
+      ],
+    },
+    {
+      id: 'standard',
+      badge: 'MOST POPULAR',
+      name: 'Standard Service',
+      subtitle: 'Up to 100 guests',
+      price: 299,
+      comparePrice: 420,
+      items: [
+        '110 Metal Prayer Cards',
+        '72 Photo Prayer Cards',
+        '2× 11×14 Display Photos',
+        '20× 4×6 Keepsake Photos',
+        '10× 5×7 Keepsake Photos',
+        '3-Day Delivery',
+      ],
+    },
+    {
+      id: 'grand',
+      badge: 'BEST VALUE',
+      name: 'Grand Service',
+      subtitle: '150+ guests',
+      price: 449,
+      comparePrice: 650,
+      items: [
+        '165 Metal Prayer Cards',
+        '100 Photo Prayer Cards',
+        '2× 16×20 Display Photos',
+        '1× 18×24 Display Photo',
+        '30× 4×6 Keepsake Photos',
+        '20× 5×7 Keepsake Photos',
+        '3-Day Delivery',
+      ],
+    },
+  ];
+
   const packages = [
     {
       id: 'good',
@@ -124,12 +176,98 @@ const Index = () => {
       </section>
 
 
-      {/* Pricing Section - Moved Up */}
+      {/* Complete Bundles - Featured First */}
       <section className="container mx-auto px-4 py-16" id="pricing">
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-10">
-            <h2 className="text-3xl md:text-4xl font-bold text-foreground">Choose Your Package</h2>
-            <p className="text-muted-foreground mt-2">Good / Better / Best options for every service size.</p>
+            <span className="inline-block bg-primary text-primary-foreground text-sm font-bold px-4 py-1.5 rounded-full mb-4">
+              COMPLETE PACKAGES
+            </span>
+            <h2 className="text-3xl md:text-4xl font-bold text-foreground">Everything You Need, One Simple Price</h2>
+            <p className="text-muted-foreground mt-2">Metal cards + photo prayer cards + display photos — bundled for your service size.</p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-6 mb-8">
+            {bundles.map((bundle) => (
+              <Card
+                key={bundle.id}
+                className={
+                  bundle.id === 'standard'
+                    ? 'bg-primary/10 border-primary/30 relative overflow-hidden ring-2 ring-primary/50'
+                    : 'bg-card border-border relative overflow-hidden'
+                }
+              >
+                {bundle.badge ? (
+                  <div
+                    className={
+                      bundle.id === 'standard'
+                        ? 'absolute top-4 right-4 bg-primary text-primary-foreground text-xs font-bold px-3 py-1 rounded-full'
+                        : 'absolute top-4 right-4 bg-foreground text-background text-xs font-bold px-3 py-1 rounded-full'
+                    }
+                  >
+                    {bundle.badge}
+                  </div>
+                ) : null}
+
+                <CardContent className="p-8">
+                  <div className="mb-2">
+                    <h3 className="text-2xl font-bold text-foreground">{bundle.name}</h3>
+                    <p className="text-muted-foreground text-sm">{bundle.subtitle}</p>
+                  </div>
+
+                  <div className="mb-6">
+                    <div className="flex items-baseline gap-2">
+                      <span className="text-5xl font-bold text-foreground">${bundle.price}</span>
+                      <span className="text-muted-foreground line-through">${bundle.comparePrice}</span>
+                    </div>
+                    <p className="text-primary text-sm font-semibold mt-1">
+                      Save ${bundle.comparePrice - bundle.price}
+                    </p>
+                  </div>
+
+                  <ul className="space-y-2 text-foreground/80 mb-8 text-sm">
+                    {bundle.items.map((item) => (
+                      <li key={item} className="flex items-center gap-2">
+                        <CheckCircle2 className={bundle.id === 'standard' ? 'w-4 h-4 text-primary flex-shrink-0' : 'w-4 h-4 text-muted-foreground flex-shrink-0'} />
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+
+                  <Link to={`/design?bundle=${bundle.id}`} className="block">
+                    <Button
+                      size="lg"
+                      className={
+                        bundle.id === 'standard'
+                          ? 'w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold text-lg py-6'
+                          : 'w-full font-semibold text-lg py-6'
+                      }
+                      variant={bundle.id === 'standard' ? 'default' : 'outline'}
+                    >
+                      Get This Bundle
+                      <ArrowRight className="ml-2 h-5 w-5" />
+                    </Button>
+                  </Link>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+
+          <p className="text-center text-muted-foreground text-sm">
+            Need something different? Build your own below ↓
+          </p>
+        </div>
+      </section>
+
+      {/* Metal Cards Only */}
+      <section className="container mx-auto px-4 py-16 border-t border-border">
+        <div className="max-w-5xl mx-auto">
+          <div className="text-center mb-10">
+            <span className="inline-block bg-secondary text-secondary-foreground text-sm font-medium px-4 py-1.5 rounded-full mb-4">
+              À LA CARTE
+            </span>
+            <h2 className="text-3xl md:text-4xl font-bold text-foreground">Metal Prayer Cards Only</h2>
+            <p className="text-muted-foreground mt-2">Premium heirloom-quality metal cards.</p>
           </div>
 
           <div className="grid md:grid-cols-3 gap-6">
