@@ -297,29 +297,30 @@ const Index = () => {
         <div className="container mx-auto px-4">
           <div className="text-center mb-10">
             <span className="inline-block bg-primary/10 text-primary text-sm font-medium px-4 py-1.5 rounded-full mb-4">
-              LARGE FORMAT PRINTS
+              PHOTO PRINTS
             </span>
             <h2 className="text-3xl md:text-4xl font-bold text-foreground">Celebration of Life Photos</h2>
             <p className="text-muted-foreground mt-2 max-w-xl mx-auto">
-              Beautiful large format photo prints for display at services and memorial gatherings.
+              Beautiful photo prints for display at services and keepsakes for family.
             </p>
           </div>
 
-          <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4 max-w-5xl mx-auto">
             {[
+              { size: '4×6', price: 5 },
+              { size: '5×7', price: 8 },
               { size: '8×10', price: 12 },
               { size: '11×14', price: 18 },
               { size: '16×20', price: 25 },
               { size: '18×24', price: 35 },
             ].map((photo) => (
               <Card key={photo.size} className="bg-card border-border hover:border-primary/50 transition-colors">
-                <CardContent className="p-6 text-center">
-                  <div className="text-2xl font-bold text-foreground mb-2">{photo.size}</div>
-                  <div className="text-4xl font-bold text-primary mb-3">${photo.price}</div>
+                <CardContent className="p-4 text-center">
+                  <div className="text-xl font-bold text-foreground mb-1">{photo.size}</div>
+                  <div className="text-3xl font-bold text-primary mb-2">${photo.price}</div>
                   <Link to={`/design/photos?size=${photo.size}`}>
-                    <Button variant="outline" className="w-full">
-                      Order Now
-                      <ArrowRight className="ml-2 h-4 w-4" />
+                    <Button variant="outline" size="sm" className="w-full">
+                      Order
                     </Button>
                   </Link>
                 </CardContent>
