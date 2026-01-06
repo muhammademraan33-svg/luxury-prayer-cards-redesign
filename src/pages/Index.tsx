@@ -16,11 +16,13 @@ interface CartItem {
   size: string;
   price: number;
   quantity: number;
-  imagePreview: string;
+  imagePreview: string | string[];
+  packSize?: number;
 }
 
 const Index = () => {
   const [photoUploads, setPhotoUploads] = useState<Record<string, string>>({});
+  const [multiPhotoUploads, setMultiPhotoUploads] = useState<Record<string, string[]>>({});
   const [photoQuantities, setPhotoQuantities] = useState<Record<string, number>>({});
   const [cart, setCart] = useState<CartItem[]>([]);
   const [cartOpen, setCartOpen] = useState(false);
@@ -33,6 +35,26 @@ const Index = () => {
     reader.readAsDataURL(file);
   };
 
+  const handleMultiPhotoUpload = (size: string, files: FileList) => {
+    const newImages: string[] = [];
+    let loaded = 0;
+    
+    Array.from(files).forEach((file) => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        newImages.push(e.target?.result as string);
+        loaded++;
+        if (loaded === files.length) {
+          setMultiPhotoUploads(prev => ({
+            ...prev,
+            [size]: [...(prev[size] || []), ...newImages]
+          }));
+        }
+      };
+      reader.readAsDataURL(file);
+    });
+  };
+
   const removePhoto = (size: string) => {
     setPhotoUploads(prev => {
       const updated = { ...prev };
@@ -41,29 +63,67 @@ const Index = () => {
     });
   };
 
-  const handleAddToCart = (size: string, price: number) => {
+  const removeMultiPhoto = (size: string, index: number) => {
+    setMultiPhotoUploads(prev => ({
+      ...prev,
+      [size]: prev[size]?.filter((_, i) => i !== index) || []
+    }));
+  };
+
+  const clearMultiPhotos = (size: string) => {
+    setMultiPhotoUploads(prev => {
+      const updated = { ...prev };
+      delete updated[size];
+      return updated;
+    });
+  };
+
+  const handleAddToCart = (size: string, price: number, packSize?: number) => {
     const qty = photoQuantities[size] || 1;
-    if (!photoUploads[size]) {
-      toast.error('Please upload a photo first');
-      return;
+    
+    if (packSize) {
+      // Multi-photo pack
+      const images = multiPhotoUploads[size] || [];
+      if (images.length === 0) {
+        toast.error('Please upload at least one photo');
+        return;
+      }
+      
+      const newItem: CartItem = {
+        id: `${size}-${Date.now()}`,
+        size,
+        price,
+        quantity: qty,
+        imagePreview: images,
+        packSize,
+      };
+      
+      setCart(prev => [...prev, newItem]);
+      setCartOpen(true);
+      clearMultiPhotos(size);
+      setPhotoQuantities(prev => ({ ...prev, [size]: 1 }));
+      toast.success(`Added ${qty}x ${size} pack(s) to cart`);
+    } else {
+      // Single photo
+      if (!photoUploads[size]) {
+        toast.error('Please upload a photo first');
+        return;
+      }
+      
+      const newItem: CartItem = {
+        id: `${size}-${Date.now()}`,
+        size,
+        price,
+        quantity: qty,
+        imagePreview: photoUploads[size],
+      };
+      
+      setCart(prev => [...prev, newItem]);
+      setCartOpen(true);
+      removePhoto(size);
+      setPhotoQuantities(prev => ({ ...prev, [size]: 1 }));
+      toast.success(`Added ${qty}x ${size} photo(s) to cart`);
     }
-    
-    const newItem: CartItem = {
-      id: `${size}-${Date.now()}`,
-      size,
-      price,
-      quantity: qty,
-      imagePreview: photoUploads[size],
-    };
-    
-    setCart(prev => [...prev, newItem]);
-    setCartOpen(true);
-    
-    // Clear the upload after adding to cart
-    removePhoto(size);
-    setPhotoQuantities(prev => ({ ...prev, [size]: 1 }));
-    
-    toast.success(`Added ${qty}x ${size} photo(s) to cart`);
   };
 
   const updateCartQuantity = (id: string, newQty: number) => {
@@ -184,16 +244,24 @@ const Index = () => {
                         {cart.map((item) => (
                           <div key={item.id} className="flex gap-4 p-3 border border-border rounded-lg">
                             <div className="w-16 h-20 flex-shrink-0 overflow-hidden border border-border">
-                              <img
-                                src={item.imagePreview}
-                                alt={`${item.size} photo`}
-                                className="w-full h-full object-cover"
-                              />
+                              {Array.isArray(item.imagePreview) ? (
+                                <div className="w-full h-full bg-primary/10 flex items-center justify-center">
+                                  <span className="text-xs font-bold text-primary">{item.imagePreview.length} photos</span>
+                                </div>
+                              ) : (
+                                <img
+                                  src={item.imagePreview}
+                                  alt={`${item.size} photo`}
+                                  className="w-full h-full object-cover"
+                                />
+                              )}
                             </div>
                             
                             <div className="flex-1 min-w-0">
-                              <p className="font-semibold text-foreground">{item.size} Print</p>
-                              <p className="text-primary font-bold">${item.price.toFixed(2)} each</p>
+                              <p className="font-semibold text-foreground">
+                                {item.size} {item.packSize ? `Pack of ${item.packSize}` : 'Print'}
+                              </p>
+                              <p className="text-primary font-bold">${item.price.toFixed(2)} {item.packSize ? 'per pack' : 'each'}</p>
                               
                               <div className="flex items-center gap-2 mt-2">
                                 <Button
@@ -517,8 +585,8 @@ const Index = () => {
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[
-              { size: '4x6', price: 0.37, aspect: '3/2' },
-              { size: '5x7', price: 0.47, aspect: '5/7' },
+              { size: '4x6', price: 7.40, aspect: '3/2', packSize: 20 },
+              { size: '5x7', price: 5.64, aspect: '5/7', packSize: 12 },
               { size: '8x10', price: 7, aspect: '4/5' },
               { size: '11x14', price: 17, aspect: '11/14' },
               { size: '16x20', price: 27, aspect: '4/5' },
@@ -532,15 +600,21 @@ const Index = () => {
                         <Image className="h-5 w-5 text-primary" />
                       </div>
                       <div>
-                        <p className="text-lg font-bold text-foreground">{photo.size}</p>
-                        <p className="text-primary font-bold">${photo.price} <span className="text-muted-foreground font-normal text-sm">each</span></p>
+                        <p className="text-lg font-bold text-foreground">
+                          {photo.size} {photo.packSize && <span className="text-sm font-normal text-muted-foreground">Pack of {photo.packSize}</span>}
+                        </p>
+                        <p className="text-primary font-bold">
+                          ${photo.price.toFixed(2)} <span className="text-muted-foreground font-normal text-sm">{photo.packSize ? 'per pack' : 'each'}</span>
+                        </p>
                       </div>
                     </div>
                   </div>
                   
                   <div className="space-y-3">
                     <div>
-                      <Label htmlFor={`qty-${photo.size}`} className="text-sm text-muted-foreground">Quantity</Label>
+                      <Label htmlFor={`qty-${photo.size}`} className="text-sm text-muted-foreground">
+                        {photo.packSize ? 'Number of Packs' : 'Quantity'}
+                      </Label>
                       <Input 
                         id={`qty-${photo.size}`}
                         type="number" 
@@ -552,46 +626,98 @@ const Index = () => {
                     </div>
                     
                     <div>
-                      <Label className="text-sm text-muted-foreground">Upload Photo</Label>
-                      {photoUploads[photo.size] ? (
-                        <div className="mt-1 relative" style={{ aspectRatio: photo.aspect }}>
-                          <img 
-                            src={photoUploads[photo.size]} 
-                            alt="Preview" 
-                            className="w-full h-full object-cover border border-border"
-                          />
-                          <button
-                            onClick={() => removePhoto(photo.size)}
-                            className="absolute -top-2 -right-2 bg-destructive text-destructive-foreground rounded-full p-1 hover:bg-destructive/90"
+                      <Label className="text-sm text-muted-foreground">
+                        Upload Photo{photo.packSize ? 's' : ''} {photo.packSize && <span className="text-xs">(up to {photo.packSize})</span>}
+                      </Label>
+                      
+                      {photo.packSize ? (
+                        // Multi-photo upload for packs
+                        <>
+                          {(multiPhotoUploads[photo.size]?.length || 0) > 0 && (
+                            <div className="mt-2 grid grid-cols-4 gap-2">
+                              {multiPhotoUploads[photo.size]?.map((img, idx) => (
+                                <div key={idx} className="relative" style={{ aspectRatio: photo.aspect }}>
+                                  <img 
+                                    src={img} 
+                                    alt={`Preview ${idx + 1}`} 
+                                    className="w-full h-full object-cover border border-border"
+                                  />
+                                  <button
+                                    onClick={() => removeMultiPhoto(photo.size, idx)}
+                                    className="absolute -top-1 -right-1 bg-destructive text-destructive-foreground rounded-full p-0.5 hover:bg-destructive/90"
+                                  >
+                                    <X className="h-2 w-2" />
+                                  </button>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                          <label 
+                            htmlFor={`upload-${photo.size}`}
+                            className="mt-2 flex items-center justify-center gap-2 border-2 border-dashed border-border rounded-lg p-3 cursor-pointer hover:border-primary/50 hover:bg-accent/30 transition-colors"
                           >
-                            <X className="h-3 w-3" />
-                          </button>
-                        </div>
+                            <Upload className="h-4 w-4 text-muted-foreground" />
+                            <span className="text-sm text-muted-foreground">
+                              {(multiPhotoUploads[photo.size]?.length || 0) > 0 
+                                ? `Add more (${multiPhotoUploads[photo.size]?.length}/${photo.packSize})` 
+                                : 'Choose files'}
+                            </span>
+                            <input 
+                              id={`upload-${photo.size}`}
+                              type="file" 
+                              accept="image/*"
+                              multiple
+                              className="hidden"
+                              onChange={(e) => {
+                                if (e.target.files) handleMultiPhotoUpload(photo.size, e.target.files);
+                              }}
+                            />
+                          </label>
+                        </>
                       ) : (
-                        <label 
-                          htmlFor={`upload-${photo.size}`}
-                          className="mt-1 flex items-center justify-center gap-2 border-2 border-dashed border-border rounded-lg p-3 cursor-pointer hover:border-primary/50 hover:bg-accent/30 transition-colors"
-                        >
-                          <Upload className="h-4 w-4 text-muted-foreground" />
-                          <span className="text-sm text-muted-foreground">Choose file</span>
-                          <input 
-                            id={`upload-${photo.size}`}
-                            type="file" 
-                            accept="image/*" 
-                            className="hidden"
-                            onChange={(e) => {
-                              const file = e.target.files?.[0];
-                              if (file) handlePhotoUpload(photo.size, file);
-                            }}
-                          />
-                        </label>
+                        // Single photo upload
+                        <>
+                          {photoUploads[photo.size] ? (
+                            <div className="mt-1 relative" style={{ aspectRatio: photo.aspect }}>
+                              <img 
+                                src={photoUploads[photo.size]} 
+                                alt="Preview" 
+                                className="w-full h-full object-cover border border-border"
+                              />
+                              <button
+                                onClick={() => removePhoto(photo.size)}
+                                className="absolute -top-2 -right-2 bg-destructive text-destructive-foreground rounded-full p-1 hover:bg-destructive/90"
+                              >
+                                <X className="h-3 w-3" />
+                              </button>
+                            </div>
+                          ) : (
+                            <label 
+                              htmlFor={`upload-${photo.size}`}
+                              className="mt-1 flex items-center justify-center gap-2 border-2 border-dashed border-border rounded-lg p-3 cursor-pointer hover:border-primary/50 hover:bg-accent/30 transition-colors"
+                            >
+                              <Upload className="h-4 w-4 text-muted-foreground" />
+                              <span className="text-sm text-muted-foreground">Choose file</span>
+                              <input 
+                                id={`upload-${photo.size}`}
+                                type="file" 
+                                accept="image/*" 
+                                className="hidden"
+                                onChange={(e) => {
+                                  const file = e.target.files?.[0];
+                                  if (file) handlePhotoUpload(photo.size, file);
+                                }}
+                              />
+                            </label>
+                          )}
+                        </>
                       )}
                     </div>
 
                     <Button 
-                      onClick={() => handleAddToCart(photo.size, photo.price)}
+                      onClick={() => handleAddToCart(photo.size, photo.price, photo.packSize)}
                       className="w-full mt-2"
-                      variant={photoUploads[photo.size] ? 'default' : 'outline'}
+                      variant={(photo.packSize ? (multiPhotoUploads[photo.size]?.length || 0) > 0 : photoUploads[photo.size]) ? 'default' : 'outline'}
                     >
                       <ShoppingCart className="h-4 w-4 mr-2" />
                       Add to Cart
