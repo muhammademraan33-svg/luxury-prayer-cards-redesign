@@ -6,100 +6,108 @@
 
 @layer base {
   :root {
-    /* Deep forest green with warm cream - inspired by nature */
-    --background: 45 25% 89%;
-    --foreground: 160 50% 18%;
+    /* Luxury Memorial Palette - Navy/Gold/Ivory
+       Navy = dignity, peace, trust | Gold = honor, celebration | Ivory = comfort, purity */
+    --background: 40 30% 96%;
+    --foreground: 220 45% 15%;
 
-    --card: 45 20% 92%;
-    --card-foreground: 160 50% 18%;
+    --card: 40 25% 98%;
+    --card-foreground: 220 45% 15%;
 
-    --popover: 45 20% 92%;
-    --popover-foreground: 160 50% 18%;
+    --popover: 40 25% 98%;
+    --popover-foreground: 220 45% 15%;
 
-    --primary: 160 50% 22%;
-    --primary-foreground: 45 25% 89%;
+    /* Deep midnight navy - dignity & trust */
+    --primary: 220 50% 20%;
+    --primary-foreground: 40 30% 96%;
 
-    --secondary: 45 18% 85%;
-    --secondary-foreground: 160 45% 20%;
+    /* Warm ivory - comfort & warmth */
+    --secondary: 40 25% 92%;
+    --secondary-foreground: 220 45% 18%;
 
-    --muted: 45 15% 82%;
-    --muted-foreground: 160 30% 35%;
+    /* Soft champagne muted tones */
+    --muted: 35 20% 88%;
+    --muted-foreground: 220 25% 40%;
 
-    --accent: 160 35% 85%;
-    --accent-foreground: 160 50% 18%;
+    /* Warm gold accent - celebration & honor */
+    --accent: 42 65% 55%;
+    --accent-foreground: 220 45% 12%;
 
     --destructive: 0 55% 45%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 160 20% 75%;
-    --input: 160 20% 75%;
-    --ring: 160 50% 22%;
+    /* Warm gold-touched borders */
+    --border: 35 25% 82%;
+    --input: 35 25% 82%;
+    --ring: 42 65% 55%;
 
     --radius: 0.75rem;
 
     /* Custom design tokens */
-    --canvas-bg: 45 20% 86%;
-    --toolbar-bg: 45 20% 92%;
-    --card-shadow: 0 8px 32px -8px hsl(160 40% 15% / 0.15);
-    --card-shadow-lg: 0 16px 48px -12px hsl(160 40% 15% / 0.2);
+    --canvas-bg: 40 25% 94%;
+    --toolbar-bg: 40 25% 98%;
+    --card-shadow: 0 8px 32px -8px hsl(220 45% 15% / 0.12);
+    --card-shadow-lg: 0 16px 48px -12px hsl(220 45% 15% / 0.18);
     --metal-shimmer: linear-gradient(135deg, 
-      hsl(45 15% 82%) 0%, 
-      hsl(45 18% 88%) 25%, 
-      hsl(45 15% 80%) 50%, 
-      hsl(45 18% 88%) 75%, 
-      hsl(45 15% 82%) 100%);
+      hsl(42 40% 85%) 0%, 
+      hsl(42 50% 92%) 25%, 
+      hsl(42 40% 82%) 50%, 
+      hsl(42 50% 92%) 75%, 
+      hsl(42 40% 85%) 100%);
 
-    --sidebar-background: 45 22% 90%;
-    --sidebar-foreground: 160 50% 18%;
-    --sidebar-primary: 160 50% 22%;
-    --sidebar-primary-foreground: 45 25% 89%;
-    --sidebar-accent: 160 25% 85%;
-    --sidebar-accent-foreground: 160 50% 18%;
-    --sidebar-border: 160 18% 78%;
-    --sidebar-ring: 160 50% 22%;
+    --sidebar-background: 40 28% 95%;
+    --sidebar-foreground: 220 45% 15%;
+    --sidebar-primary: 220 50% 20%;
+    --sidebar-primary-foreground: 40 30% 96%;
+    --sidebar-accent: 42 50% 88%;
+    --sidebar-accent-foreground: 220 45% 15%;
+    --sidebar-border: 35 22% 80%;
+    --sidebar-ring: 42 65% 55%;
   }
 
   .dark {
-    /* Deep forest dark palette - rich greens with cream accents */
-    --background: 160 55% 12%;
-    --foreground: 45 20% 90%;
+    /* Deep midnight palette - rich navy with warm gold accents */
+    --background: 220 50% 8%;
+    --foreground: 40 25% 92%;
 
-    --card: 160 50% 16%;
-    --card-foreground: 45 20% 90%;
+    --card: 220 45% 12%;
+    --card-foreground: 40 25% 92%;
 
-    --popover: 160 50% 16%;
-    --popover-foreground: 45 20% 90%;
+    --popover: 220 45% 12%;
+    --popover-foreground: 40 25% 92%;
 
-    --primary: 45 30% 82%;
-    --primary-foreground: 160 55% 14%;
+    /* Warm gold in dark mode */
+    --primary: 42 65% 60%;
+    --primary-foreground: 220 50% 10%;
 
-    --secondary: 160 40% 20%;
-    --secondary-foreground: 45 18% 85%;
+    --secondary: 220 40% 16%;
+    --secondary-foreground: 40 22% 88%;
 
-    --muted: 160 40% 18%;
-    --muted-foreground: 45 12% 60%;
+    --muted: 220 40% 14%;
+    --muted-foreground: 40 15% 55%;
 
-    --accent: 160 45% 22%;
-    --accent-foreground: 45 25% 88%;
+    /* Soft gold accent */
+    --accent: 42 55% 45%;
+    --accent-foreground: 40 30% 95%;
 
     --destructive: 0 50% 40%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 160 40% 24%;
-    --input: 160 40% 24%;
-    --ring: 45 30% 82%;
+    --border: 220 35% 20%;
+    --input: 220 35% 20%;
+    --ring: 42 65% 60%;
 
-    --canvas-bg: 160 52% 14%;
-    --toolbar-bg: 160 50% 16%;
+    --canvas-bg: 220 48% 10%;
+    --toolbar-bg: 220 45% 12%;
 
-    --sidebar-background: 160 55% 13%;
-    --sidebar-foreground: 45 18% 88%;
-    --sidebar-primary: 45 30% 82%;
-    --sidebar-primary-foreground: 160 55% 14%;
-    --sidebar-accent: 160 40% 20%;
-    --sidebar-accent-foreground: 45 18% 88%;
-    --sidebar-border: 160 40% 22%;
-    --sidebar-ring: 45 30% 82%;
+    --sidebar-background: 220 50% 9%;
+    --sidebar-foreground: 40 22% 90%;
+    --sidebar-primary: 42 65% 60%;
+    --sidebar-primary-foreground: 220 50% 10%;
+    --sidebar-accent: 220 40% 16%;
+    --sidebar-accent-foreground: 40 22% 88%;
+    --sidebar-border: 220 35% 18%;
+    --sidebar-ring: 42 65% 60%;
   }
 }
 
@@ -117,11 +125,11 @@
 @layer utilities {
   /* Make date picker inputs more readable with dark text */
   input[type="date"] {
-    color: hsl(160 50% 18%);
+    color: hsl(220 45% 15%);
   }
   
   input[type="date"]::-webkit-calendar-picker-indicator {
-    filter: invert(25%) sepia(15%) saturate(800%) hue-rotate(100deg);
+    filter: invert(15%) sepia(20%) saturate(600%) hue-rotate(190deg);
   }
 
   .canvas-area {
