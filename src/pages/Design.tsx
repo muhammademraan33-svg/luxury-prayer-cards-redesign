@@ -300,9 +300,8 @@ const Design = () => {
     }
   };
   
-  // Easel photo state - supports multiple photos (2 included, can add more)
-  const [easelPhotos, setEaselPhotos] = useState<string[]>([]);
-  const [easelPhotoSize, setEaselPhotoSize] = useState<EaselPhotoSize>('16x20');
+  // Easel photo state - supports multiple photos with individual sizes
+  const [easelPhotos, setEaselPhotos] = useState<{src: string, size: EaselPhotoSize}[]>([]);
   const easelPhotosInputRef = useRef<HTMLInputElement>(null);
   
   // Shipping address state
@@ -770,10 +769,10 @@ const Design = () => {
   const handleEaselPhotosUpload = (files: FileList | null) => {
     if (!files) return;
     
-    const newPhotos: string[] = [];
+    const newPhotos: {src: string, size: EaselPhotoSize}[] = [];
     Array.from(files).forEach(file => {
       const previewUrl = URL.createObjectURL(file);
-      newPhotos.push(previewUrl);
+      newPhotos.push({ src: previewUrl, size: '16x20' });
     });
     
     setEaselPhotos(prev => [...prev, ...newPhotos]);
@@ -797,11 +796,12 @@ const Design = () => {
     const additionalPhotosCount = Math.max(0, easelPhotos.length - includedPhotos);
     total += additionalPhotosCount * ADDITIONAL_PHOTO_PRICE;
     
-    // 18x24 upsell - applies to all easel photos (package included + extras)
-    const totalEaselPhotos = Math.max(includedPhotos, easelPhotos.length);
-    if (easelPhotoSize === '18x24') {
-      total += EASEL_18X24_UPSELL * totalEaselPhotos;
-    }
+    // 18x24 upsell - count how many photos are upgraded
+    const upgradedCount = easelPhotos.filter(p => p.size === '18x24').length;
+    // Also count included slots that should be upgraded (if user hasn't uploaded yet but has included slots)
+    const totalPhotoSlots = Math.max(includedPhotos, easelPhotos.length);
+    const upgradedSlots = upgradedCount;
+    total += upgradedSlots * EASEL_18X24_UPSELL;
     
     // Premium thickness upgrade (only if not already premium in package)
     if (upgradeThickness && currentPackage.thickness !== 'premium') {
@@ -893,7 +893,7 @@ const Design = () => {
             orientation,
             totalCards,
             easelPhotoCount: Math.max(includedPhotos, easelPhotos.length),
-            easelPhotoSize,
+            easelPhotoSizes: easelPhotos.map(p => p.size),
             cardThickness: effectiveThickness,
             shipping: effectiveShipping,
             totalPrice: calculatePrice(),
@@ -2552,11 +2552,11 @@ const Design = () => {
                               key={index}
                               className="relative rounded-lg overflow-hidden shadow-lg bg-slate-800 border border-slate-600 group"
                               style={{ 
-                                aspectRatio: easelPhotoSize === '16x20' ? '16/20' : '18/24',
+                                aspectRatio: photo.size === '16x20' ? '16/20' : '18/24',
                               }}
                             >
                               <img 
-                                src={photo} 
+                                src={photo.src} 
                                 alt={`Easel photo ${index + 1}`} 
                                 className="w-full h-full object-cover"
                               />
@@ -2566,10 +2566,20 @@ const Design = () => {
                                 #{index + 1} {isIncluded ? '✓ Included' : `+$${ADDITIONAL_PHOTO_PRICE}`}
                               </div>
                               
-                              {/* Size Label */}
-                              <div className="absolute top-1 right-1 bg-slate-900/80 text-white text-[8px] px-1 py-0.5 rounded">
-                                {easelPhotoSize}
-                              </div>
+                              {/* Size Toggle */}
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setEaselPhotos(prev => prev.map((p, i) => 
+                                    i === index ? { ...p, size: p.size === '16x20' ? '18x24' : '16x20' } : p
+                                  ));
+                                }}
+                                className={`absolute top-1 right-1 text-white text-[9px] px-1.5 py-0.5 rounded cursor-pointer transition-colors ${
+                                  photo.size === '18x24' ? 'bg-amber-600/90 hover:bg-amber-500' : 'bg-slate-900/80 hover:bg-slate-700'
+                                }`}
+                              >
+                                {photo.size} {photo.size === '18x24' && `+$${EASEL_18X24_UPSELL}`}
+                              </button>
                               
                               {/* Remove Button */}
                               <button
@@ -2591,7 +2601,7 @@ const Design = () => {
                             onClick={() => easelPhotosInputRef.current?.click()}
                             className={`rounded-lg border-2 border-dashed ${isIncluded ? 'border-emerald-500/50 hover:border-emerald-400' : 'border-slate-600 hover:border-amber-500'} transition-colors flex flex-col items-center justify-center p-4 bg-slate-800/50 hover:bg-slate-700/50`}
                             style={{ 
-                              aspectRatio: easelPhotoSize === '16x20' ? '16/20' : '18/24',
+                              aspectRatio: '16/20',
                             }}
                           >
                             <div className={`w-10 h-10 rounded-full ${isIncluded ? 'bg-emerald-500/20' : 'bg-slate-700'} flex items-center justify-center mb-2`}>
@@ -2640,39 +2650,8 @@ const Design = () => {
                     </div>
                     
                     <p className="text-slate-500 text-xs text-center mb-4">
-                      💡 First {currentPackage.photos} photos are included • Additional photos are ${ADDITIONAL_PHOTO_PRICE} each
+                      💡 First {currentPackage.photos} photo{currentPackage.photos > 1 ? 's are' : ' is'} 16x20 included • Additional photos are ${ADDITIONAL_PHOTO_PRICE} each • Upgrade any photo to 18x24 for +${EASEL_18X24_UPSELL}
                     </p>
-
-                    {/* Size Selection */}
-                    <div className="space-y-3 p-4 bg-slate-700/30 rounded-lg mb-4">
-                      <Label className="text-white text-sm font-medium">Easel Photo Size</Label>
-                      <div className="grid grid-cols-2 gap-3">
-                        <button
-                          type="button"
-                          onClick={() => setEaselPhotoSize('16x20')}
-                          className={`p-3 rounded-lg border-2 transition-all text-center ${
-                            easelPhotoSize === '16x20' 
-                              ? 'border-amber-500 bg-amber-600/20' 
-                              : 'border-slate-600 hover:border-slate-500'
-                          }`}
-                        >
-                          <p className="text-white font-medium">16" × 20"</p>
-                          <p className="text-amber-400 text-sm">Included</p>
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => setEaselPhotoSize('18x24')}
-                          className={`p-3 rounded-lg border-2 transition-all text-center ${
-                            easelPhotoSize === '18x24' 
-                              ? 'border-amber-500 bg-amber-600/20' 
-                              : 'border-slate-600 hover:border-slate-500'
-                          }`}
-                        >
-                          <p className="text-white font-medium">18" × 24"</p>
-                          <p className="text-amber-400 text-sm">+${EASEL_18X24_UPSELL} each</p>
-                        </button>
-                      </div>
-                    </div>
 
                   </div>
 
@@ -3148,10 +3127,10 @@ const Design = () => {
                         </div>
                       )}
                       
-                      {easelPhotoSize === '18x24' && (
+                      {easelPhotos.some(p => p.size === '18x24') && (
                         <div className="flex justify-between">
-                          <span className="text-slate-300">18×24 Easel Photo Upgrade × {Math.max(currentPackage.photos, easelPhotos.length)}</span>
-                          <span className="text-white">${EASEL_18X24_UPSELL * Math.max(currentPackage.photos, easelPhotos.length)}</span>
+                          <span className="text-slate-300">18×24 Easel Photo Upgrade × {easelPhotos.filter(p => p.size === '18x24').length}</span>
+                          <span className="text-white">${EASEL_18X24_UPSELL * easelPhotos.filter(p => p.size === '18x24').length}</span>
                         </div>
                       )}
                       
@@ -3223,7 +3202,7 @@ const Design = () => {
                       <span className="text-slate-400">Card Thickness:</span> {effectiveThickness === 'premium' ? 'Premium .080"' : 'Standard .040"'}
                     </p>
                     <p className="text-slate-300">
-                      <span className="text-slate-400">Easel Photos:</span> {Math.max(currentPackage.photos, easelPhotos.length)} ({easelPhotoSize})
+                      <span className="text-slate-400">Easel Photos:</span> {Math.max(currentPackage.photos, easelPhotos.length)} ({easelPhotos.filter(p => p.size === '18x24').length} upgraded to 18x24)
                     </p>
                     <p className="text-slate-300">
                       <span className="text-slate-400">Shipping:</span> {effectiveShipping === 'overnight' ? 'Overnight (24hr)' : 'Delivered in 24-72 hours'}
