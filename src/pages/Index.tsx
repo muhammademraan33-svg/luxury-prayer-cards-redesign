@@ -6,29 +6,29 @@ import metalCardProduct from '@/assets/metal-card-product.jpg';
 import paperCardsProduct from '@/assets/paper-cards-product.jpg';
 
 const Index = () => {
-  const packages = [
+  const metalPackages = [
     {
       id: 'good',
       badge: undefined as string | undefined,
       name: 'Essential',
       price: 127,
-      comparePrice: 195,
+      comparePrice: 197,
       items: ['55 Premium Metal Prayer Cards', '2 Easel Photo Boards', '48-Hour Delivery', 'Satisfaction Guaranteed'],
     },
     {
       id: 'better',
       badge: 'MOST POPULAR',
       name: 'Family',
-      price: 199,
-      comparePrice: 295,
+      price: 197,
+      comparePrice: 297,
       items: ['110 Premium Metal Prayer Cards', '4 Easel Photo Boards', '48-Hour Delivery', 'Satisfaction Guaranteed'],
     },
     {
       id: 'best',
-      badge: 'BEST',
+      badge: 'BEST VALUE',
       name: 'Legacy',
-      price: 299,
-      comparePrice: 450,
+      price: 297,
+      comparePrice: 447,
       items: ['165 Premium Metal Prayer Cards', '6 Easel Photo Boards', '48-Hour Delivery', 'Satisfaction Guaranteed'],
     },
   ];
@@ -38,22 +38,22 @@ const Index = () => {
       id: 'starter',
       name: 'Starter',
       quantity: 36,
-      price: 39,
+      price: 37,
       description: 'Perfect for intimate gatherings',
     },
     {
       id: 'standard',
-      badge: 'POPULAR',
+      badge: 'MOST POPULAR',
       name: 'Standard',
       quantity: 72,
-      price: 59,
+      price: 57,
       description: 'Most common for services',
     },
     {
       id: 'large',
       name: 'Large',
       quantity: 100,
-      price: 79,
+      price: 77,
       description: 'For larger celebrations of life',
     },
   ];
@@ -64,7 +64,7 @@ const Index = () => {
       <header className="border-b border-border bg-card/80 backdrop-blur-sm sticky top-0 z-50">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <span className="text-xl font-bold text-foreground">Metalprayercards.com</span>
+            <span className="text-xl font-bold text-foreground">LuxuryPrayerCards.com</span>
           </div>
           <nav className="hidden md:flex items-center gap-8">
             <a href="#pricing" className="text-muted-foreground hover:text-foreground transition-colors text-sm font-medium">Pricing</a>
@@ -81,22 +81,22 @@ const Index = () => {
       {/* Hero */}
       <section className="container mx-auto px-4 py-16 md:py-24 text-center">
         <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-foreground mb-6 leading-tight tracking-tight">
-          Built for<br />
-          <span className="text-primary">Eternity</span>
+          Beautiful Prayer Cards<br />
+          <span className="text-primary">Delivered Fast</span>
         </h1>
         <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-8">
-          Premium metal prayer cards & classic photo prayer cards. Delivered in 48 hours.
+          Premium photo prayer cards & heirloom metal cards. Shipped in 48 hours.
         </p>
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-10">
-          <Link to="/design">
+          <Link to="/design?type=paper&quantity=72">
             <Button size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold text-lg px-10 py-7 shadow-xl">
-              Metal Cards
+              Photo Prayer Cards
               <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
           </Link>
-          <Link to="/design?type=paper&quantity=72">
+          <Link to="/design">
             <Button size="lg" variant="outline" className="text-lg px-10 py-7 border-2">
-              Photo Prayer Cards
+              Metal Cards
               <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
           </Link>
@@ -125,152 +125,26 @@ const Index = () => {
           <div className="grid md:grid-cols-2 gap-8 max-w-3xl mx-auto">
             <div className="text-center">
               <div className="aspect-[4/3] mb-4 rounded-lg overflow-hidden shadow-lg">
-                <img src={metalCardProduct} alt="Premium Metal Prayer Card" className="w-full h-full object-cover" />
-              </div>
-              <h3 className="text-lg font-semibold text-foreground">Metal Prayer Cards</h3>
-              <p className="text-muted-foreground text-sm">Heirloom quality that lasts forever</p>
-            </div>
-            <div className="text-center">
-              <div className="aspect-[4/3] mb-4 rounded-lg overflow-hidden shadow-lg">
                 <img src={paperCardsProduct} alt="Glossy Photo Prayer Cards" className="w-full h-full object-cover" />
               </div>
               <h3 className="text-lg font-semibold text-foreground">Photo Prayer Cards</h3>
               <p className="text-muted-foreground text-sm">Classic glossy cardstock</p>
             </div>
+            <div className="text-center">
+              <div className="aspect-[4/3] mb-4 rounded-lg overflow-hidden shadow-lg">
+                <img src={metalCardProduct} alt="Premium Metal Prayer Card" className="w-full h-full object-cover" />
+              </div>
+              <h3 className="text-lg font-semibold text-foreground">Metal Prayer Cards</h3>
+              <p className="text-muted-foreground text-sm">Heirloom quality that lasts forever</p>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Pricing Section - Moved Up */}
+      {/* Photo Prayer Cards Section - PRIMARY */}
       <section className="container mx-auto px-4 py-16" id="pricing">
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-10">
-            <h2 className="text-3xl md:text-4xl font-bold text-foreground">Choose Your Package</h2>
-            <p className="text-muted-foreground mt-2">Good / Better / Best options for every service size.</p>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-6">
-            {packages.map((pkg) => (
-              <Card
-                key={pkg.id}
-                className={
-                  pkg.id === 'better'
-                    ? 'bg-primary/10 border-primary/30 relative overflow-hidden'
-                    : 'bg-card border-border relative overflow-hidden'
-                }
-              >
-                {pkg.badge ? (
-                  <div
-                    className={
-                      pkg.id === 'better'
-                        ? 'absolute top-4 right-4 bg-primary text-primary-foreground text-xs font-bold px-3 py-1 rounded-full'
-                        : 'absolute top-4 right-4 bg-foreground text-background text-xs font-bold px-3 py-1 rounded-full'
-                    }
-                  >
-                    {pkg.badge}
-                  </div>
-                ) : null}
-
-                <CardContent className="p-8">
-                  <div className="flex items-center gap-3 mb-4">
-                    <Package className={pkg.id === 'better' ? 'h-7 w-7 text-primary' : 'h-7 w-7 text-muted-foreground'} />
-                    <h3 className="text-2xl font-bold text-foreground">{pkg.name}</h3>
-                  </div>
-
-                  <div className="mb-6">
-                    <div className="flex items-baseline gap-2">
-                      <span className="text-5xl font-bold text-foreground">${pkg.price}</span>
-                      <span className="text-muted-foreground line-through">${pkg.comparePrice}</span>
-                    </div>
-                    <p className="text-muted-foreground text-sm mt-2">One-time package price</p>
-                  </div>
-
-                  <ul className="space-y-3 text-foreground/80 mb-8">
-                    {pkg.items.map((item) => (
-                      <li key={item} className="flex items-center gap-2">
-                        <CheckCircle2 className={pkg.id === 'better' ? 'w-5 h-5 text-primary' : 'w-5 h-5 text-muted-foreground'} />
-                        {item}
-                      </li>
-                    ))}
-                  </ul>
-
-                  <Link to={`/design?package=${pkg.id}`} className="block">
-                    <Button
-                      size="lg"
-                      className={
-                        pkg.id === 'better'
-                          ? 'w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold text-lg py-6'
-                          : 'w-full font-semibold text-lg py-6'
-                      }
-                      variant={pkg.id === 'better' ? 'default' : 'outline'}
-                    >
-                      Start Designing
-                      <ArrowRight className="ml-2 h-5 w-5" />
-                    </Button>
-                  </Link>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-
-          {/* Add-ons */}
-          <div className="mt-10">
-            <Card className="bg-card border-border">
-              <CardContent className="p-8">
-                <h3 className="text-2xl font-bold text-foreground mb-6 flex items-center gap-3">
-                  <Truck className="h-8 w-8 text-muted-foreground" />
-                  Add-Ons
-                </h3>
-                <div className="space-y-6">
-                  <div className="border-b border-border pb-6">
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <p className="text-foreground font-semibold">Additional 55-Card Set</p>
-                        <p className="text-muted-foreground text-sm">Same design, more cards</p>
-                      </div>
-                      <span className="text-2xl font-bold text-foreground">$79</span>
-                    </div>
-                  </div>
-                  <div className="border-b border-border pb-6">
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <p className="text-foreground font-semibold">Extra Photo Boards</p>
-                        <p className="text-muted-foreground text-sm">16x20 easel displays</p>
-                      </div>
-                      <span className="text-2xl font-bold text-foreground">$19</span>
-                    </div>
-                  </div>
-                  <div className="border-b border-border pb-6">
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <p className="text-foreground font-semibold">Upgrade to 18x24</p>
-                        <p className="text-muted-foreground text-sm">Larger photo board size</p>
-                      </div>
-                      <span className="text-2xl font-bold text-foreground">+$5</span>
-                    </div>
-                  </div>
-                  <div className="bg-destructive/10 border border-destructive/30 rounded-lg p-4">
-                    <div className="flex items-center gap-2 mb-2">
-                      <Clock className="h-5 w-5 text-destructive" />
-                      <p className="text-destructive font-semibold">Rush Overnight</p>
-                    </div>
-                    <p className="text-foreground/80 text-sm mb-2">Order by noon, ships same day.</p>
-                    <p className="text-destructive font-bold">+100% Expedite Fee</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-      </section>
-
-      {/* Photo Prayer Cards Section */}
-      <section className="container mx-auto px-4 py-16 border-t border-border">
-        <div className="max-w-5xl mx-auto">
-          <div className="text-center mb-10">
-            <span className="inline-block bg-secondary text-secondary-foreground text-sm font-medium px-4 py-1.5 rounded-full mb-4">
-              BUDGET-FRIENDLY OPTION
-            </span>
             <h2 className="text-3xl md:text-4xl font-bold text-foreground">Photo Prayer Cards</h2>
             <p className="text-muted-foreground mt-2 max-w-xl mx-auto">
               Beautiful glossy cardstock prayer cards — the classic choice families have trusted for generations.
@@ -283,12 +157,12 @@ const Index = () => {
                 key={pkg.id}
                 className={
                   pkg.badge
-                    ? 'bg-secondary/10 border-secondary/30 relative overflow-hidden'
+                    ? 'bg-primary/10 border-primary/30 relative overflow-hidden'
                     : 'bg-card border-border relative overflow-hidden'
                 }
               >
                 {pkg.badge && (
-                  <div className="absolute top-4 right-4 bg-secondary text-secondary-foreground text-xs font-bold px-3 py-1 rounded-full">
+                  <div className="absolute top-4 right-4 bg-primary text-primary-foreground text-xs font-bold px-3 py-1 rounded-full">
                     {pkg.badge}
                   </div>
                 )}
@@ -311,7 +185,7 @@ const Index = () => {
                       className="w-full font-semibold text-lg py-6"
                       variant={pkg.badge ? 'default' : 'outline'}
                     >
-                      Order Now
+                      Start Designing
                       <ArrowRight className="ml-2 h-5 w-5" />
                     </Button>
                   </Link>
@@ -321,8 +195,130 @@ const Index = () => {
           </div>
 
           <p className="text-center text-muted-foreground text-sm mt-6">
-            Thick glossy cardstock • Full color both sides • Ships in 48 hours
+            Thick glossy cardstock • Full color both sides • Ships in 48 hours • +$7 per additional design
           </p>
+        </div>
+      </section>
+
+      {/* Metal Cards Section - SECONDARY */}
+      <section className="container mx-auto px-4 py-16 border-t border-border">
+        <div className="max-w-5xl mx-auto">
+          <div className="text-center mb-10">
+            <span className="inline-block bg-secondary text-secondary-foreground text-sm font-medium px-4 py-1.5 rounded-full mb-4">
+              PREMIUM UPGRADE
+            </span>
+            <h2 className="text-3xl md:text-4xl font-bold text-foreground">Metal Prayer Cards</h2>
+            <p className="text-muted-foreground mt-2">Heirloom quality keepsakes that last forever.</p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-6">
+            {metalPackages.map((pkg) => (
+              <Card
+                key={pkg.id}
+                className={
+                  pkg.id === 'better'
+                    ? 'bg-secondary/10 border-secondary/30 relative overflow-hidden'
+                    : 'bg-card border-border relative overflow-hidden'
+                }
+              >
+                {pkg.badge ? (
+                  <div
+                    className={
+                      pkg.id === 'better'
+                        ? 'absolute top-4 right-4 bg-secondary text-secondary-foreground text-xs font-bold px-3 py-1 rounded-full'
+                        : 'absolute top-4 right-4 bg-foreground text-background text-xs font-bold px-3 py-1 rounded-full'
+                    }
+                  >
+                    {pkg.badge}
+                  </div>
+                ) : null}
+
+                <CardContent className="p-8">
+                  <div className="flex items-center gap-3 mb-4">
+                    <Package className={pkg.id === 'better' ? 'h-7 w-7 text-secondary' : 'h-7 w-7 text-muted-foreground'} />
+                    <h3 className="text-2xl font-bold text-foreground">{pkg.name}</h3>
+                  </div>
+
+                  <div className="mb-6">
+                    <div className="flex items-baseline gap-2">
+                      <span className="text-5xl font-bold text-foreground">${pkg.price}</span>
+                      <span className="text-muted-foreground line-through">${pkg.comparePrice}</span>
+                    </div>
+                    <p className="text-muted-foreground text-sm mt-2">One-time package price</p>
+                  </div>
+
+                  <ul className="space-y-3 text-foreground/80 mb-8">
+                    {pkg.items.map((item) => (
+                      <li key={item} className="flex items-center gap-2">
+                        <CheckCircle2 className={pkg.id === 'better' ? 'w-5 h-5 text-secondary' : 'w-5 h-5 text-muted-foreground'} />
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+
+                  <Link to={`/design?package=${pkg.id}`} className="block">
+                    <Button
+                      size="lg"
+                      className="w-full font-semibold text-lg py-6"
+                      variant="outline"
+                    >
+                      Start Designing
+                      <ArrowRight className="ml-2 h-5 w-5" />
+                    </Button>
+                  </Link>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+
+          {/* Metal Add-ons */}
+          <div className="mt-10">
+            <Card className="bg-card border-border">
+              <CardContent className="p-8">
+                <h3 className="text-2xl font-bold text-foreground mb-6 flex items-center gap-3">
+                  <Truck className="h-8 w-8 text-muted-foreground" />
+                  Metal Card Add-Ons
+                </h3>
+                <div className="space-y-6">
+                  <div className="border-b border-border pb-6">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <p className="text-foreground font-semibold">Additional 55-Card Set</p>
+                        <p className="text-muted-foreground text-sm">Same design, more cards</p>
+                      </div>
+                      <span className="text-2xl font-bold text-foreground">$77</span>
+                    </div>
+                  </div>
+                  <div className="border-b border-border pb-6">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <p className="text-foreground font-semibold">Extra Photo Boards</p>
+                        <p className="text-muted-foreground text-sm">16x20 easel displays</p>
+                      </div>
+                      <span className="text-2xl font-bold text-foreground">$17</span>
+                    </div>
+                  </div>
+                  <div className="border-b border-border pb-6">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <p className="text-foreground font-semibold">Upgrade to 18x24</p>
+                        <p className="text-muted-foreground text-sm">Larger photo board size</p>
+                      </div>
+                      <span className="text-2xl font-bold text-foreground">+$7</span>
+                    </div>
+                  </div>
+                  <div className="bg-destructive/10 border border-destructive/30 rounded-lg p-4">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Clock className="h-5 w-5 text-destructive" />
+                      <p className="text-destructive font-semibold">Rush Overnight</p>
+                    </div>
+                    <p className="text-foreground/80 text-sm mb-2">Order by noon, ships same day.</p>
+                    <p className="text-destructive font-bold">+100% Expedite Fee</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
         </div>
       </section>
 
