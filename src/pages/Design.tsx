@@ -2566,7 +2566,7 @@ const Design = () => {
                                 #{index + 1} {isIncluded ? '✓ Included' : `+$${ADDITIONAL_PHOTO_PRICE}`}
                               </div>
                               
-                              {/* Size Toggle */}
+                              {/* Size Toggle - Bottom Left */}
                               <button
                                 type="button"
                                 onClick={() => {
@@ -2574,11 +2574,11 @@ const Design = () => {
                                     i === index ? { ...p, size: p.size === '16x20' ? '18x24' : '16x20' } : p
                                   ));
                                 }}
-                                className={`absolute top-1 right-1 text-white text-[9px] px-1.5 py-0.5 rounded cursor-pointer transition-colors ${
-                                  photo.size === '18x24' ? 'bg-amber-600/90 hover:bg-amber-500' : 'bg-slate-900/80 hover:bg-slate-700'
+                                className={`absolute bottom-1 left-1 text-white text-[10px] px-2 py-1 rounded cursor-pointer transition-colors font-medium ${
+                                  photo.size === '18x24' ? 'bg-amber-600 hover:bg-amber-500' : 'bg-slate-800 hover:bg-slate-700 border border-slate-600'
                                 }`}
                               >
-                                {photo.size} {photo.size === '18x24' && `+$${EASEL_18X24_UPSELL}`}
+                                {photo.size === '16x20' ? '16x20 → Upgrade' : `18x24 +$${EASEL_18X24_UPSELL}`}
                               </button>
                               
                               {/* Remove Button */}
