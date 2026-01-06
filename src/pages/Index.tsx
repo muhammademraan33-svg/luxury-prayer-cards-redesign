@@ -16,9 +16,10 @@ const Index = () => {
       comparePrice: 140,
       metalCards: 0,
       prayerCards: 72,
-      photoAddOnPrice: 5,
+      photoAddOnPrice: 0.25,
       items: [
         '72 Photo Prayer Cards (Glossy)',
+        'Celebration of Life Photos from $0.25',
         'Full color, both sides',
         '3-Day Delivery',
       ],
@@ -34,10 +35,11 @@ const Index = () => {
       comparePrice: 295,
       metalCards: 55,
       prayerCards: 36,
-      photoAddOnPrice: 5,
+      photoAddOnPrice: 0.25,
       items: [
         '55 Premium Metal Prayer Cards',
         '36 Photo Prayer Cards',
+        'Celebration of Life Photos from $0.25',
         '3-Day Delivery',
       ],
       highlight: 'Metal + paper cards — perfect balance',
@@ -52,10 +54,11 @@ const Index = () => {
       comparePrice: 595,
       metalCards: 165,
       prayerCards: 100,
-      photoAddOnPrice: 5,
+      photoAddOnPrice: 0.25,
       items: [
         '165 Premium Metal Prayer Cards',
         '100 Photo Prayer Cards',
+        'Celebration of Life Photos from $0.25',
         'Priority 2-Day Delivery',
         'Dedicated Support',
       ],
@@ -252,10 +255,10 @@ const Index = () => {
                   <div className="bg-secondary/50 border border-secondary rounded-lg p-3 mb-6">
                     <div className="flex items-center gap-2 mb-1">
                       <Gift className="w-4 h-4 text-primary" />
-                      <span className="text-sm font-semibold text-foreground">Add Photos</span>
+                      <span className="text-sm font-semibold text-foreground">Add Celebration Photos</span>
                     </div>
                     <p className="text-xs text-muted-foreground">
-                      Add celebration photos to your order for just <span className="font-bold text-primary">${bundle.photoAddOnPrice}/photo</span>. Select sizes & quantities at checkout.
+                      Starting at just <span className="font-bold text-primary">$0.25/photo</span>. Select sizes & quantities at checkout.
                     </p>
                   </div>
 
