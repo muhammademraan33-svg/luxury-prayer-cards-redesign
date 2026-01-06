@@ -61,12 +61,15 @@ export default {
         },
       },
       fontFamily: {
-        sans: ['Montserrat', 'system-ui', 'sans-serif'],
-        display: ['Playfair Display', 'serif'],
+        sans: ['Raleway', 'system-ui', 'sans-serif'],
+        display: ['Cinzel', 'serif'],
+        serif: ['EB Garamond', 'Georgia', 'serif'],
         cormorant: ['Cormorant Garamond', 'serif'],
         script: ['Great Vibes', 'cursive'],
         montserrat: ['Montserrat', 'sans-serif'],
         poppins: ['Poppins', 'sans-serif'],
+        lora: ['Lora', 'serif'],
+        playfair: ['Playfair Display', 'serif'],
       },
       borderRadius: {
         lg: "var(--radius)",
