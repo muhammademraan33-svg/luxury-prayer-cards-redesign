@@ -596,13 +596,22 @@ const Index = () => {
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[
-              { size: '4x6', price: 12, aspect: '3/2', packSize: 20 },
-              { size: '5x7', price: 17, aspect: '5/7', packSize: 12 },
+              { size: '4x6', price: 12, aspect: '3/2', packSize: 20, extraPrice: 0.37 },
+              { size: '5x7', price: 17, aspect: '5/7', packSize: 12, extraPrice: 0.57 },
               { size: '8x10', price: 7, aspect: '4/5' },
               { size: '11x14', price: 17, aspect: '11/14' },
               { size: '16x20', price: 27, aspect: '4/5' },
               { size: '18x24', price: 37, aspect: '3/4' },
-            ].map((photo) => (
+            ].map((photo) => {
+              // Calculate total prints and price for pack items
+              const totalPrints = photo.packSize 
+                ? (multiPhotoUploads[photo.size]?.reduce((sum, p) => sum + p.qty, 0) || 0)
+                : 1;
+              const extraPrints = photo.packSize ? Math.max(0, totalPrints - photo.packSize) : 0;
+              const extraCost = extraPrints * (photo.extraPrice || 0);
+              const totalPrice = photo.price + extraCost;
+              
+              return (
               <Card key={photo.size} className="bg-card border-border">
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between mb-4">
@@ -617,24 +626,49 @@ const Index = () => {
                         <p className="text-primary font-bold">
                           ${photo.price.toFixed(2)} <span className="text-muted-foreground font-normal text-sm">{photo.packSize ? 'per pack' : 'each'}</span>
                         </p>
+                        {photo.packSize && photo.extraPrice && (
+                          <p className="text-xs text-muted-foreground">+${photo.extraPrice.toFixed(2)}/print over {photo.packSize}</p>
+                        )}
                       </div>
                     </div>
                   </div>
                   
-                  <div className="space-y-3">
-                    <div>
-                      <Label htmlFor={`qty-${photo.size}`} className="text-sm text-muted-foreground">
-                        {photo.packSize ? 'Number of Packs' : 'Quantity'}
-                      </Label>
-                      <Input 
-                        id={`qty-${photo.size}`}
-                        type="number" 
-                        min="1" 
-                        value={photoQuantities[photo.size] || 1}
-                        onChange={(e) => setPhotoQuantities(prev => ({ ...prev, [photo.size]: parseInt(e.target.value) || 1 }))}
-                        className="mt-1"
-                      />
+                  {/* Show total price if over pack size */}
+                  {photo.packSize && totalPrints > 0 && (
+                    <div className="mb-4 p-3 bg-accent/50 rounded-lg">
+                      <div className="flex justify-between text-sm">
+                        <span className="text-muted-foreground">Total prints:</span>
+                        <span className="font-semibold">{totalPrints}</span>
+                      </div>
+                      {extraPrints > 0 && (
+                        <div className="flex justify-between text-sm text-primary">
+                          <span>Extra prints ({extraPrints} × ${photo.extraPrice?.toFixed(2)}):</span>
+                          <span>+${extraCost.toFixed(2)}</span>
+                        </div>
+                      )}
+                      <div className="flex justify-between font-bold mt-1 pt-1 border-t border-border">
+                        <span>Total:</span>
+                        <span className="text-primary">${totalPrice.toFixed(2)}</span>
+                      </div>
                     </div>
+                  )}
+                  
+                  <div className="space-y-3">
+                    {!photo.packSize && (
+                      <div>
+                        <Label htmlFor={`qty-${photo.size}`} className="text-sm text-muted-foreground">
+                          Quantity
+                        </Label>
+                        <Input 
+                          id={`qty-${photo.size}`}
+                          type="number" 
+                          min="1" 
+                          value={photoQuantities[photo.size] || 1}
+                          onChange={(e) => setPhotoQuantities(prev => ({ ...prev, [photo.size]: parseInt(e.target.value) || 1 }))}
+                          className="mt-1"
+                        />
+                      </div>
+                    )}
                     
                     <div>
                       <Label className="text-sm text-muted-foreground">
@@ -746,17 +780,18 @@ const Index = () => {
                     </div>
 
                     <Button 
-                      onClick={() => handleAddToCart(photo.size, photo.price, photo.packSize)}
+                      onClick={() => handleAddToCart(photo.size, totalPrice, photo.packSize)}
                       className="w-full mt-2"
                       variant={(photo.packSize ? (multiPhotoUploads[photo.size]?.length || 0) > 0 : photoUploads[photo.size]) ? 'default' : 'outline'}
                     >
                       <ShoppingCart className="h-4 w-4 mr-2" />
-                      Add to Cart
+                      Add to Cart {photo.packSize && totalPrints > 0 && `- $${totalPrice.toFixed(2)}`}
                     </Button>
                   </div>
                 </CardContent>
               </Card>
-            ))}
+              );
+            })}
           </div>
 
           <p className="text-center text-muted-foreground text-sm mt-6">
