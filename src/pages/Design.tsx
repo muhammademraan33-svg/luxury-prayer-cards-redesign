@@ -148,7 +148,7 @@ const ADDITIONAL_PHOTO_PRICE = 17; // Additional easel photo 16x20
 const EASEL_18X24_UPSELL = 7; // Upgrade from 16x20 to 18x24
 const PREMIUM_THICKNESS_PRICE = 15; // Upgrade to .080" thick cards per set
 const OVERNIGHT_UPCHARGE_PERCENT = 100; // 100% upcharge for overnight
-const PAPER_SIZE_UPSELL = 7; // Upgrade from 2.5x4.25 to 3x4.75
+const PAPER_SIZE_UPSELL = 17; // Upgrade from 2.5x4.25 to 3x4.75
 const ADDITIONAL_DESIGN_PRICE = 7; // Per additional design
 
 type CardThickness = 'standard' | 'premium';
@@ -974,6 +974,45 @@ const Design = () => {
               {/* Step 1: Card Design */}
               {step === 1 && (
                 <div className="space-y-6">
+                  {/* Paper Card Size Selection - only for paper cards */}
+                  {cardType === 'paper' && (
+                    <div className="bg-slate-700/50 rounded-xl p-4 mb-4">
+                      <h3 className="text-lg font-semibold text-white mb-3 text-center">Choose Your Card Size</h3>
+                      <div className="grid grid-cols-2 gap-4">
+                        <button
+                          type="button"
+                          onClick={() => setPaperCardSize('2.5x4.25')}
+                          className={`p-4 rounded-lg border-2 transition-all ${
+                            paperCardSize === '2.5x4.25'
+                              ? 'border-amber-500 bg-amber-500/20'
+                              : 'border-slate-600 hover:border-slate-500'
+                          }`}
+                        >
+                          <div className="text-center">
+                            <div className="text-xl font-bold text-white mb-1">2.5" × 4.25"</div>
+                            <div className="text-slate-400 text-sm">Standard Size</div>
+                            <div className="text-amber-400 font-semibold mt-2">Included</div>
+                          </div>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setPaperCardSize('3x4.75')}
+                          className={`p-4 rounded-lg border-2 transition-all ${
+                            paperCardSize === '3x4.75'
+                              ? 'border-amber-500 bg-amber-500/20'
+                              : 'border-slate-600 hover:border-slate-500'
+                          }`}
+                        >
+                          <div className="text-center">
+                            <div className="text-xl font-bold text-white mb-1">3" × 4.75"</div>
+                            <div className="text-slate-400 text-sm">Large Size</div>
+                            <div className="text-amber-400 font-semibold mt-2">+$17</div>
+                          </div>
+                        </button>
+                      </div>
+                    </div>
+                  )}
+
                   {/* Orientation Toggle - only for metal cards */}
                   {cardType === 'metal' && (
                     <div className="flex items-center justify-center gap-4">
