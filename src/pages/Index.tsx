@@ -354,9 +354,9 @@ const Index = () => {
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {[
-              { size: '4x6', price: 5 },
-              { size: '5x7', price: 7 },
-              { size: '8x10', price: 12 },
+              { size: '4x6', price: 0.37 },
+              { size: '5x7', price: 0.47 },
+              { size: '8x10', price: 7 },
               { size: '11x14', price: 17 },
               { size: '16x20', price: 27 },
               { size: '18x24', price: 37 },
