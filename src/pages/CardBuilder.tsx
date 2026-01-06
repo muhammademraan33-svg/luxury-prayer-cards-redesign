@@ -17,12 +17,17 @@ import BuilderStepPhotos from '@/components/builder/BuilderStepPhotos';
 import BuilderStepCheckout from '@/components/builder/BuilderStepCheckout';
 import BuilderStepSuccess from '@/components/builder/BuilderStepSuccess';
 
+import BuilderStepProduct from '@/components/builder/BuilderStepProduct';
+
 // Types
 export interface CardBuilderState {
   // Person info
   deceasedName: string;
   birthDate: string;
   deathDate: string;
+  
+  // Product type selection
+  productType: 'metal' | 'paper' | 'photos';
   
   // Photo
   photo: string | null;
@@ -64,6 +69,7 @@ export interface CardBuilderState {
 
 const STEPS = [
   { id: 'welcome', title: 'Start', icon: Heart },
+  { id: 'product', title: 'Product', icon: Sparkles },
   { id: 'photo', title: 'Photo', icon: Sparkles },
   { id: 'prayer', title: 'Prayer', icon: Sparkles },
   { id: 'finish', title: 'Finish', icon: Sparkles },
@@ -76,6 +82,7 @@ const initialState: CardBuilderState = {
   deceasedName: '',
   birthDate: '',
   deathDate: '',
+  productType: 'metal',
   photo: null,
   photoZoom: 1,
   photoPanX: 0,
@@ -120,17 +127,19 @@ const CardBuilder = () => {
     switch (currentStep) {
       case 0: // Welcome
         return state.deceasedName.trim().length > 0;
-      case 1: // Photo
+      case 1: // Product
+        return state.productType !== undefined;
+      case 2: // Photo
         return state.photo !== null;
-      case 2: // Prayer
+      case 3: // Prayer
         return state.prayerText.trim().length > 0;
-      case 3: // Finish
+      case 4: // Finish
         return true;
-      case 4: // Package
+      case 5: // Package
         return true;
-      case 5: // Photos (optional upsell)
+      case 6: // Photos (optional upsell)
         return true;
-      case 6: // Checkout
+      case 7: // Checkout
         return state.customerName && state.customerEmail && state.shippingStreet && state.shippingCity && state.shippingState && state.shippingZip;
       default:
         return true;
@@ -164,16 +173,18 @@ const CardBuilder = () => {
       case 0:
         return <BuilderStepWelcome state={state} updateState={updateState} />;
       case 1:
-        return <BuilderStepPhoto state={state} updateState={updateState} />;
+        return <BuilderStepProduct state={state} updateState={updateState} />;
       case 2:
-        return <BuilderStepPrayer state={state} updateState={updateState} />;
+        return <BuilderStepPhoto state={state} updateState={updateState} />;
       case 3:
-        return <BuilderStepFinish state={state} updateState={updateState} />;
+        return <BuilderStepPrayer state={state} updateState={updateState} />;
       case 4:
-        return <BuilderStepPackage state={state} updateState={updateState} />;
+        return <BuilderStepFinish state={state} updateState={updateState} />;
       case 5:
-        return <BuilderStepPhotos state={state} updateState={updateState} />;
+        return <BuilderStepPackage state={state} updateState={updateState} />;
       case 6:
+        return <BuilderStepPhotos state={state} updateState={updateState} />;
+      case 7:
         return <BuilderStepCheckout state={state} updateState={updateState} onComplete={handleComplete} />;
       default:
         return <BuilderStepSuccess state={state} />;
