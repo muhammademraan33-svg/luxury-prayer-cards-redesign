@@ -1,5 +1,5 @@
 import { useLayoutEffect, useRef, useState, useEffect } from 'react';
-import { Link, useSearchParams, Navigate } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -82,7 +82,7 @@ const PACKAGES: Record<PackageTier, PackageConfig> = {
   good: {
     name: 'Essential',
     price: 127,
-    comparePrice: 197,
+    comparePrice: 195,
     cards: 55,
     photos: 2,
     shipping: '2-Day Express',
@@ -91,8 +91,8 @@ const PACKAGES: Record<PackageTier, PackageConfig> = {
   },
   better: {
     name: 'Family',
-    price: 197,
-    comparePrice: 297,
+    price: 199,
+    comparePrice: 295,
     cards: 110,
     photos: 4,
     shipping: '2-Day Express',
@@ -102,8 +102,8 @@ const PACKAGES: Record<PackageTier, PackageConfig> = {
   },
   best: {
     name: 'Legacy',
-    price: 297,
-    comparePrice: 447,
+    price: 299,
+    comparePrice: 450,
     cards: 165,
     photos: 6,
     shipping: '2-Day Express',
@@ -126,20 +126,10 @@ type EaselPhotoSize = '16x20' | '18x24';
 const Design = () => {
   const [searchParams] = useSearchParams();
 
-  // Redirect to photos page if type=photos
-  const isPhotosType = searchParams.get('type') === 'photos';
-  const photoSize = searchParams.get('size') || '';
-  
   // Scroll to top on mount
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
-  
-  // Handle redirect for photos type
-  if (isPhotosType) {
-    const redirectUrl = photoSize ? `/design/photos?size=${photoSize}` : '/design/photos';
-    return <Navigate to={redirectUrl} replace />;
-  }
 
   const [step, setStep] = useState(1);
   
