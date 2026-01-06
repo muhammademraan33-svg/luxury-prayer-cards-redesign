@@ -596,8 +596,8 @@ const Index = () => {
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[
-              { size: '4x6', price: 12, aspect: '3/2', packSize: 20, extraPrice: 0.37 },
-              { size: '5x7', price: 17, aspect: '5/7', packSize: 12, extraPrice: 0.57 },
+              { size: '4x6', price: 12, aspect: '3/2', packSize: 20, extraPrice: 0.57 },
+              { size: '5x7', price: 17, aspect: '5/7', packSize: 12, extraPrice: 0.67 },
               { size: '8x10', price: 7, aspect: '4/5' },
               { size: '11x14', price: 17, aspect: '11/14' },
               { size: '16x20', price: 27, aspect: '4/5' },
@@ -672,7 +672,7 @@ const Index = () => {
                     
                     <div>
                       <Label className="text-sm text-muted-foreground">
-                        Upload Photo{photo.packSize ? 's' : ''} {photo.packSize && <span className="text-xs">(up to {photo.packSize})</span>}
+                        Upload Photo{photo.packSize ? 's' : ''}
                       </Label>
                       
                       {photo.packSize ? (
