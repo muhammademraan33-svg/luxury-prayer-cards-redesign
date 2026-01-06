@@ -85,18 +85,24 @@ const Index = () => {
           <span className="text-primary">Eternity</span>
         </h1>
         <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-8">
-          Premium metal prayer cards & classic photo prayer cards. Delivered in 72 hours.
+          Premium metal prayer cards, photo prayer cards & celebration of life photos.
         </p>
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-10">
           <Link to="/design">
-            <Button size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold text-lg px-10 py-7 shadow-xl">
+            <Button size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold text-lg px-8 py-7 shadow-xl">
               Metal Cards
               <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
           </Link>
           <Link to="/design?type=paper&quantity=72">
-            <Button size="lg" variant="outline" className="text-lg px-10 py-7 border-2">
+            <Button size="lg" variant="outline" className="text-lg px-8 py-7 border-2">
               Photo Prayer Cards
+              <ArrowRight className="ml-2 h-5 w-5" />
+            </Button>
+          </Link>
+          <Link to="/design?type=photos">
+            <Button size="lg" variant="outline" className="text-lg px-8 py-7 border-2">
+              Celebration Photos
               <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
           </Link>
@@ -354,37 +360,42 @@ const Index = () => {
       </section>
 
       {/* Celebration of Life Photos */}
-      <section className="py-12 bg-secondary/5">
+      <section id="celebration-photos" className="py-16 bg-secondary/5">
         <div className="container mx-auto px-4">
           <div className="text-center mb-10">
             <span className="inline-block bg-primary/10 text-primary text-sm font-medium px-4 py-1.5 rounded-full mb-4">
-              ADD-ON
+              LARGE FORMAT PRINTS
             </span>
             <h2 className="text-3xl md:text-4xl font-bold text-foreground">Celebration of Life Photos</h2>
             <p className="text-muted-foreground mt-2 max-w-xl mx-auto">
-              Large format photo prints perfect for display at services and memorial gatherings.
+              Beautiful large format photo prints for display at services and memorial gatherings.
             </p>
           </div>
 
-          <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
+          <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto">
             {[
               { size: '8×10', price: 12 },
               { size: '11×14', price: 18 },
               { size: '16×20', price: 25 },
               { size: '18×24', price: 35 },
             ].map((photo) => (
-              <Card key={photo.size} className="bg-card border-border">
+              <Card key={photo.size} className="bg-card border-border hover:border-primary/50 transition-colors">
                 <CardContent className="p-6 text-center">
-                  <div className="text-2xl font-bold text-foreground mb-1">{photo.size}</div>
-                  <div className="text-3xl font-bold text-primary">${photo.price}</div>
-                  <p className="text-muted-foreground text-sm mt-1">per print</p>
+                  <div className="text-2xl font-bold text-foreground mb-2">{photo.size}</div>
+                  <div className="text-4xl font-bold text-primary mb-3">${photo.price}</div>
+                  <Link to={`/design?type=photos&size=${photo.size}`}>
+                    <Button variant="outline" className="w-full">
+                      Order Now
+                      <ArrowRight className="ml-2 h-4 w-4" />
+                    </Button>
+                  </Link>
                 </CardContent>
               </Card>
             ))}
           </div>
 
-          <p className="text-center text-muted-foreground text-sm mt-6">
-            Premium glossy finish • Vibrant colors • Add during checkout
+          <p className="text-center text-muted-foreground text-sm mt-8">
+            Premium glossy finish • Vibrant colors • Ships in 72 hours
           </p>
         </div>
       </section>
