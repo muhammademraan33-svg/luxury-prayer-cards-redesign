@@ -329,10 +329,10 @@ const Index = () => {
       <section className="container mx-auto px-4 py-16 md:py-24 text-center">
         <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-foreground mb-6 leading-tight tracking-tight">
           Prayer Cards & Memorial Photos<br />
-          <span className="text-primary">Delivered Fast</span>
+          <span className="text-primary">Delivered in 24-72 Hours</span>
         </h1>
         <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-8">
-          Photo prayer cards, heirloom metal cards & celebration of life prints. Shipped fast.
+          Photo prayer cards, heirloom metal cards & celebration of life prints. Delivered in 24-72 hours.
         </p>
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-10">
           <Link to="/design?type=paper&quantity=72">
@@ -806,19 +806,6 @@ const Index = () => {
               </CardContent>
             </Card>
             
-            <Card className="bg-background border-border">
-              <CardContent className="p-6">
-                <div className="flex gap-1 mb-3">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="h-4 w-4 fill-primary text-primary" />
-                  ))}
-                </div>
-                <p className="text-foreground/80 mb-4">
-                  "Photo boards included saved me so much stress."
-                </p>
-                <p className="font-semibold text-foreground text-sm">James R.</p>
-              </CardContent>
-            </Card>
             
             <Card className="bg-background border-border">
               <CardContent className="p-6">
