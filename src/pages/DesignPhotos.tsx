@@ -12,6 +12,8 @@ import { supabase } from '@/integrations/supabase/client';
 
 // Photo sizes and pricing
 const PHOTO_SIZES = [
+  { id: '4x6', name: '4×6', price: 5, width: 4, height: 6 },
+  { id: '5x7', name: '5×7', price: 7, width: 5, height: 7 },
   { id: '8x10', name: '8×10', price: 12, width: 8, height: 10 },
   { id: '11x14', name: '11×14', price: 18, width: 11, height: 14 },
   { id: '16x20', name: '16×20', price: 25, width: 16, height: 20 },
@@ -201,7 +203,7 @@ const DesignPhotos = () => {
             </div>
 
             {/* Size Selection */}
-            <RadioGroup value={selectedSize} onValueChange={(v) => setSelectedSize(v as PhotoSize)} className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <RadioGroup value={selectedSize} onValueChange={(v) => setSelectedSize(v as PhotoSize)} className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4">
               {PHOTO_SIZES.map((size) => (
                 <div key={size.id}>
                   <RadioGroupItem value={size.id} id={size.id} className="peer sr-only" />
