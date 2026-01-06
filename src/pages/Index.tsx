@@ -426,7 +426,7 @@ const Index = () => {
                           <img 
                             src={photoUploads[photo.size]} 
                             alt="Preview" 
-                            className="w-full h-full object-cover rounded-lg border border-border"
+                            className="w-full h-full object-cover border border-border"
                           />
                           <button
                             onClick={() => removePhoto(photo.size)}
