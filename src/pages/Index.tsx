@@ -70,11 +70,11 @@ const Index = () => {
             <a href="#pricing" className="text-muted-foreground hover:text-foreground transition-colors text-sm font-medium">Pricing</a>
             <a href="#how-it-works" className="text-muted-foreground hover:text-foreground transition-colors text-sm font-medium">How It Works</a>
           </nav>
-          <Link to="/design">
+          <a href="#pricing">
             <Button className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold">
-              Design Your Cards
+              View Pricing
             </Button>
-          </Link>
+          </a>
         </div>
       </header>
 
@@ -85,20 +85,21 @@ const Index = () => {
           <span className="text-primary">Eternity</span>
         </h1>
         <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-8">
-          Premium luxury metal prayer cards & photo bundles built to last for eternity. Delivered in 48 hours.
+          Premium metal prayer cards & classic photo prayer cards. Delivered in 48 hours.
         </p>
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-10">
           <Link to="/design">
-            <Button size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold text-lg px-12 py-7 shadow-xl">
-              Create Your Cards
+            <Button size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold text-lg px-10 py-7 shadow-xl">
+              Metal Cards
               <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
           </Link>
-          <a href="#pricing">
+          <Link to="/design?type=paper&quantity=72">
             <Button size="lg" variant="outline" className="text-lg px-10 py-7 border-2">
-              See Pricing
+              Photo Prayer Cards
+              <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
-          </a>
+          </Link>
         </div>
         
         {/* Trust Indicators */}
