@@ -40,7 +40,7 @@ const Index = () => {
       quantity: 36,
       price: 37,
       photos: 1,
-      description: 'Includes 1 memorial photo',
+      description: '+ 1 FREE 16x20 Memorial Photo',
     },
     {
       id: 'standard',
@@ -49,7 +49,7 @@ const Index = () => {
       quantity: 72,
       price: 57,
       photos: 2,
-      description: 'Includes 2 memorial photos',
+      description: '+ 2 FREE 16x20 Memorial Photos',
     },
     {
       id: 'large',
@@ -57,7 +57,7 @@ const Index = () => {
       quantity: 100,
       price: 77,
       photos: 2,
-      description: 'Includes 2 memorial photos',
+      description: '+ 2 FREE 16x20 Memorial Photos',
     },
   ];
 
