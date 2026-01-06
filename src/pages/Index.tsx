@@ -13,7 +13,7 @@ const Index = () => {
       name: 'Essential',
       price: 127,
       comparePrice: 195,
-      items: ['55 Premium Metal Prayer Cards', '2 Easel Photo Boards', '48-Hour Delivery', 'Satisfaction Guaranteed'],
+      items: ['55 Premium Metal Prayer Cards', '2 Easel Photo Boards', '72-Hour Delivery', 'Satisfaction Guaranteed'],
     },
     {
       id: 'better',
@@ -21,7 +21,7 @@ const Index = () => {
       name: 'Family',
       price: 199,
       comparePrice: 295,
-      items: ['110 Premium Metal Prayer Cards', '4 Easel Photo Boards', '48-Hour Delivery', 'Satisfaction Guaranteed'],
+      items: ['110 Premium Metal Prayer Cards', '4 Easel Photo Boards', '72-Hour Delivery', 'Satisfaction Guaranteed'],
     },
     {
       id: 'best',
@@ -29,7 +29,7 @@ const Index = () => {
       name: 'Legacy',
       price: 299,
       comparePrice: 450,
-      items: ['165 Premium Metal Prayer Cards', '6 Easel Photo Boards', '48-Hour Delivery', 'Satisfaction Guaranteed'],
+      items: ['165 Premium Metal Prayer Cards', '6 Easel Photo Boards', '72-Hour Delivery', 'Satisfaction Guaranteed'],
     },
   ];
 
@@ -85,7 +85,7 @@ const Index = () => {
           <span className="text-primary">Eternity</span>
         </h1>
         <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-8">
-          Premium metal prayer cards & classic photo prayer cards. Delivered in 48 hours.
+          Premium metal prayer cards & classic photo prayer cards. Delivered in 72 hours.
         </p>
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-10">
           <Link to="/design">
@@ -110,7 +110,7 @@ const Index = () => {
           </div>
           <div className="flex items-center gap-2">
             <CheckCircle2 className="h-5 w-5 text-primary" />
-            <span className="text-sm font-medium">48-Hour Delivery</span>
+            <span className="text-sm font-medium">72-Hour Delivery</span>
           </div>
           <div className="flex items-center gap-2">
             <CheckCircle2 className="h-5 w-5 text-primary" />
@@ -321,7 +321,7 @@ const Index = () => {
           </div>
 
           <p className="text-center text-muted-foreground text-sm mt-6">
-            Thick glossy cardstock • Full color both sides • Ships in 48 hours
+            Thick glossy cardstock • Full color both sides • Ships in 72 hours
           </p>
         </div>
       </section>
@@ -350,6 +350,42 @@ const Index = () => {
               Skip the trip to Staples. Every metal card order includes two professional-quality easel photo boards — ready for the service and home display.
             </p>
           </div>
+        </div>
+      </section>
+
+      {/* Celebration of Life Photos */}
+      <section className="py-12 bg-secondary/5">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-10">
+            <span className="inline-block bg-primary/10 text-primary text-sm font-medium px-4 py-1.5 rounded-full mb-4">
+              ADD-ON
+            </span>
+            <h2 className="text-3xl md:text-4xl font-bold text-foreground">Celebration of Life Photos</h2>
+            <p className="text-muted-foreground mt-2 max-w-xl mx-auto">
+              Large format photo prints perfect for display at services and memorial gatherings.
+            </p>
+          </div>
+
+          <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
+            {[
+              { size: '8×10', price: 12 },
+              { size: '11×14', price: 18 },
+              { size: '16×20', price: 25 },
+              { size: '18×24', price: 35 },
+            ].map((photo) => (
+              <Card key={photo.size} className="bg-card border-border">
+                <CardContent className="p-6 text-center">
+                  <div className="text-2xl font-bold text-foreground mb-1">{photo.size}</div>
+                  <div className="text-3xl font-bold text-primary">${photo.price}</div>
+                  <p className="text-muted-foreground text-sm mt-1">per print</p>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+
+          <p className="text-center text-muted-foreground text-sm mt-6">
+            Premium glossy finish • Vibrant colors • Add during checkout
+          </p>
         </div>
       </section>
 
