@@ -312,7 +312,22 @@ const Index = () => {
                           <span className="text-lg font-semibold">Total</span>
                           <span className="text-2xl font-bold text-primary">${cartTotal.toFixed(2)}</span>
                         </div>
-                        <Button className="w-full" size="lg">
+                        <Button 
+                          className="w-full" 
+                          size="lg"
+                          onClick={() => {
+                            // For now, redirect to design page - in production this would go to a checkout flow
+                            setCartOpen(false);
+                            toast.success('Proceeding to checkout...', {
+                              description: 'You will be redirected to complete your order.'
+                            });
+                            // Redirect to design page with first cart item
+                            const firstItem = cart[0];
+                            if (firstItem) {
+                              window.location.href = `/design?type=paper&quantity=${firstItem.packSize || 72}`;
+                            }
+                          }}
+                        >
                           Proceed to Checkout
                           <ArrowRight className="ml-2 h-5 w-5" />
                         </Button>
