@@ -23,21 +23,41 @@ import doveLightBg from '@/assets/backgrounds/dove-light.jpg';
 import mountainSunriseBg from '@/assets/backgrounds/mountain-sunrise.jpg';
 import rosesGardenBg from '@/assets/backgrounds/roses-garden.jpg';
 import forestPathBg from '@/assets/backgrounds/forest-path.jpg';
+import stainedGlassBg from '@/assets/backgrounds/stained-glass.jpg';
+import lavenderFieldBg from '@/assets/backgrounds/lavender-field.jpg';
+import cherryBlossomsBg from '@/assets/backgrounds/cherry-blossoms.jpg';
+import starryNightBg from '@/assets/backgrounds/starry-night.jpg';
+import goldMarbleBg from '@/assets/backgrounds/gold-marble.jpg';
+import mistyLakeBg from '@/assets/backgrounds/misty-lake.jpg';
+import whiteFeathersBg from '@/assets/backgrounds/white-feathers.jpg';
+import vintageRosesBg from '@/assets/backgrounds/vintage-roses.jpg';
+import wheatSunsetBg from '@/assets/backgrounds/wheat-sunset.jpg';
+import gardenPeaceBg from '@/assets/backgrounds/garden-peace.jpg';
 import html2canvas from 'html2canvas';
 import { relativeLuminance } from '@/lib/color';
 import { supabase } from '@/integrations/supabase/client';
 
 const PRESET_BACKGROUNDS = [
-  { id: 'clouds', name: 'Soft Clouds', src: cloudsLightBg },
-  { id: 'marble', name: 'Grey Marble', src: marbleGreyBg },
-  { id: 'sunset', name: 'Sunset Clouds', src: sunsetCloudsBg },
-  { id: 'lilies', name: 'White Lilies', src: liliesCreamBg },
-  { id: 'rays', name: 'Heavenly Rays', src: heavenlyRaysBg },
-  { id: 'ocean', name: 'Ocean Sunset', src: oceanSunsetBg },
-  { id: 'dove', name: 'Dove Light', src: doveLightBg },
-  { id: 'mountain', name: 'Mountain Sunrise', src: mountainSunriseBg },
-  { id: 'roses', name: 'Rose Garden', src: rosesGardenBg },
-  { id: 'forest', name: 'Forest Path', src: forestPathBg },
+  { id: 'clouds', name: 'Soft Clouds', src: cloudsLightBg, isDark: false },
+  { id: 'marble', name: 'Grey Marble', src: marbleGreyBg, isDark: false },
+  { id: 'sunset', name: 'Sunset Clouds', src: sunsetCloudsBg, isDark: true },
+  { id: 'lilies', name: 'White Lilies', src: liliesCreamBg, isDark: false },
+  { id: 'rays', name: 'Heavenly Rays', src: heavenlyRaysBg, isDark: false },
+  { id: 'ocean', name: 'Ocean Sunset', src: oceanSunsetBg, isDark: true },
+  { id: 'dove', name: 'Dove Light', src: doveLightBg, isDark: false },
+  { id: 'mountain', name: 'Mountain Sunrise', src: mountainSunriseBg, isDark: true },
+  { id: 'roses', name: 'Rose Garden', src: rosesGardenBg, isDark: true },
+  { id: 'forest', name: 'Forest Path', src: forestPathBg, isDark: true },
+  { id: 'stained-glass', name: 'Stained Glass', src: stainedGlassBg, isDark: true },
+  { id: 'lavender', name: 'Lavender Field', src: lavenderFieldBg, isDark: true },
+  { id: 'cherry', name: 'Cherry Blossoms', src: cherryBlossomsBg, isDark: false },
+  { id: 'starry', name: 'Starry Night', src: starryNightBg, isDark: true },
+  { id: 'gold-marble', name: 'Gold Marble', src: goldMarbleBg, isDark: false },
+  { id: 'misty-lake', name: 'Misty Lake', src: mistyLakeBg, isDark: false },
+  { id: 'feathers', name: 'White Feathers', src: whiteFeathersBg, isDark: false },
+  { id: 'vintage-roses', name: 'Vintage Roses', src: vintageRosesBg, isDark: false },
+  { id: 'wheat', name: 'Wheat Sunset', src: wheatSunsetBg, isDark: true },
+  { id: 'garden', name: 'Garden Peace', src: gardenPeaceBg, isDark: true },
 ];
 
 // Metal background options for back of card
@@ -244,6 +264,21 @@ const Design = () => {
   const [funeralHomeLogo, setFuneralHomeLogo] = useState<string | null>(null);
   const [funeralHomeLogoPosition, setFuneralHomeLogoPosition] = useState<'top' | 'bottom'>('bottom');
   const [funeralHomeLogoSize, setFuneralHomeLogoSize] = useState(40);
+
+  // Helper to update front text colors based on background darkness
+  const updateFrontTextColors = (isDark: boolean) => {
+    if (isDark) {
+      // Light text for dark backgrounds (photos, dark images)
+      setNameColor('#ffffff');
+      setFrontDatesColor('#ffffffcc');
+      setAdditionalTextColor('#ffffff');
+    } else {
+      // Dark text for light backgrounds
+      setNameColor('#18181b');
+      setFrontDatesColor('#3f3f46cc');
+      setAdditionalTextColor('#3f3f46');
+    }
+  };
 
   // Helper to update back text colors based on background darkness
   const updateBackTextColors = (isDark: boolean) => {
@@ -717,6 +752,7 @@ const Design = () => {
       setPhotoZoom(1);
       setPhotoPanX(0);
       setPhotoPanY(0);
+      updateFrontTextColors(true); // Photos are treated as dark backgrounds - use light text
     } else if (type === 'back') {
       setBackBgImage(previewUrl);
       updateBackTextColors(true); // Uploaded images are treated as dark backgrounds
@@ -1144,6 +1180,7 @@ const Design = () => {
                                   setPhotoPanX(0);
                                   setPhotoPanY(0);
                                   setPhotoRotation(0);
+                                  updateFrontTextColors(false); // No photo - reset to dark text
                                 }}
                                 className="border-rose-600/50 text-rose-400 hover:bg-rose-600/20"
                               >
@@ -2033,7 +2070,7 @@ const Design = () => {
                                   setBackBgPanX(0);
                                   setBackBgPanY(0);
                                   setBackBgRotation(0);
-                                  updateBackTextColors(true); // Image backgrounds are always dark
+                                  updateBackTextColors(bg.isDark);
                                 }}
                                 className={`w-12 h-16 rounded-lg overflow-hidden border-2 transition-all ${
                                   backBgImage === bg.src ? 'border-amber-500 ring-2 ring-amber-500/30' : 'border-slate-600 hover:border-slate-500'
