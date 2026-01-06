@@ -385,12 +385,12 @@ const Index = () => {
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[
-              { size: '4x6', price: 0.37 },
-              { size: '5x7', price: 0.47 },
-              { size: '8x10', price: 7 },
-              { size: '11x14', price: 17 },
-              { size: '16x20', price: 27 },
-              { size: '18x24', price: 37 },
+              { size: '4x6', price: 0.37, aspect: '3/2' },
+              { size: '5x7', price: 0.47, aspect: '5/7' },
+              { size: '8x10', price: 7, aspect: '4/5' },
+              { size: '11x14', price: 17, aspect: '11/14' },
+              { size: '16x20', price: 27, aspect: '4/5' },
+              { size: '18x24', price: 37, aspect: '3/4' },
             ].map((photo) => (
               <Card key={photo.size} className="bg-card border-border">
                 <CardContent className="p-6">
@@ -422,11 +422,11 @@ const Index = () => {
                     <div>
                       <Label className="text-sm text-muted-foreground">Upload Photo</Label>
                       {photoUploads[photo.size] ? (
-                        <div className="mt-1 relative">
+                        <div className="mt-1 relative" style={{ aspectRatio: photo.aspect }}>
                           <img 
                             src={photoUploads[photo.size]} 
                             alt="Preview" 
-                            className="w-full h-24 object-cover rounded-lg border border-border"
+                            className="w-full h-full object-cover rounded-lg border border-border"
                           />
                           <button
                             onClick={() => removePhoto(photo.size)}
