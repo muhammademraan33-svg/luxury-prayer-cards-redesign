@@ -2561,9 +2561,9 @@ const Design = () => {
                                 className="w-full h-full object-cover"
                               />
                               
-                              {/* Photo Number Badge */}
+                              {/* Photo Number Badge with Value */}
                               <div className={`absolute top-1 left-1 ${isIncluded ? 'bg-emerald-600/90' : 'bg-amber-600/90'} text-white text-[10px] px-1.5 py-0.5 rounded`}>
-                                #{index + 1} {isIncluded ? '✓ Included' : `+$${ADDITIONAL_PHOTO_PRICE}`}
+                                #{index + 1} {isIncluded ? `FREE ($${ADDITIONAL_PHOTO_PRICE} value)` : `+$${ADDITIONAL_PHOTO_PRICE}`}
                               </div>
                               
                               {/* Size Toggle - Bottom Left */}
@@ -2609,7 +2609,7 @@ const Design = () => {
                             </div>
                             <p className="text-slate-400 text-xs font-medium">Photo {index + 1}</p>
                             <p className={`text-[10px] mt-0.5 ${isIncluded ? 'text-emerald-400' : 'text-amber-400'}`}>
-                              {isIncluded ? '✓ Included' : `+$${ADDITIONAL_PHOTO_PRICE}`}
+                              {isIncluded ? `FREE ($${ADDITIONAL_PHOTO_PRICE} value)` : `+$${ADDITIONAL_PHOTO_PRICE}`}
                             </p>
                             <p className="text-slate-500 text-[9px] mt-1">Click to upload</p>
                           </button>
