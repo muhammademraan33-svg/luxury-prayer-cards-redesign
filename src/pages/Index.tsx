@@ -4,7 +4,6 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Shield, Package, Truck, Clock, Heart, Star, CheckCircle2, ArrowRight, Gift } from 'lucide-react';
 import metalCardProduct from '@/assets/metal-card-product.jpg';
 import paperCardsProduct from '@/assets/paper-cards-product.jpg';
-import easelBoardProduct from '@/assets/easel-board-product.jpg';
 
 const Index = () => {
   const packages = [
@@ -122,7 +121,7 @@ const Index = () => {
       {/* Product Showcase */}
       <section className="py-16 bg-card/50 border-y border-border">
         <div className="container mx-auto px-4">
-          <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+          <div className="grid md:grid-cols-2 gap-8 max-w-3xl mx-auto">
             <div className="text-center">
               <div className="aspect-[4/3] mb-4 rounded-lg overflow-hidden shadow-lg">
                 <img src={metalCardProduct} alt="Premium Metal Prayer Card" className="w-full h-full object-cover" />
@@ -136,13 +135,6 @@ const Index = () => {
               </div>
               <h3 className="text-lg font-semibold text-foreground">Photo Prayer Cards</h3>
               <p className="text-muted-foreground text-sm">Classic glossy cardstock</p>
-            </div>
-            <div className="text-center">
-              <div className="aspect-[4/3] mb-4 rounded-lg overflow-hidden shadow-lg">
-                <img src={easelBoardProduct} alt="Memorial Easel Photo Board" className="w-full h-full object-cover" />
-              </div>
-              <h3 className="text-lg font-semibold text-foreground">Easel Photo Boards</h3>
-              <p className="text-muted-foreground text-sm">Included free with every order</p>
             </div>
           </div>
         </div>
