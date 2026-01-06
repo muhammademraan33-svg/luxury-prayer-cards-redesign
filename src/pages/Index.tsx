@@ -181,7 +181,7 @@ const Index = () => {
     {
       id: 'starter',
       name: 'Starter',
-      quantity: 72,
+      quantity: 67,
       price: 57,
       photos: 1,
       description: '+ 1 FREE 16x20 Memorial Photo',
@@ -190,7 +190,7 @@ const Index = () => {
       id: 'standard',
       badge: 'MOST POPULAR',
       name: 'Standard',
-      quantity: 100,
+      quantity: 87,
       price: 77,
       photos: 2,
       description: '+ 2 FREE 16x20 Memorial Photos',
