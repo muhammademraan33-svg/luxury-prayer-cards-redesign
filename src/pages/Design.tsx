@@ -82,7 +82,7 @@ const PACKAGES: Record<PackageTier, PackageConfig> = {
   good: {
     name: 'Essential',
     price: 127,
-    comparePrice: 195,
+    comparePrice: 197,
     cards: 55,
     photos: 2,
     shipping: '2-Day Express',
@@ -91,8 +91,8 @@ const PACKAGES: Record<PackageTier, PackageConfig> = {
   },
   better: {
     name: 'Family',
-    price: 199,
-    comparePrice: 295,
+    price: 197,
+    comparePrice: 297,
     cards: 110,
     photos: 4,
     shipping: '2-Day Express',
@@ -102,8 +102,8 @@ const PACKAGES: Record<PackageTier, PackageConfig> = {
   },
   best: {
     name: 'Legacy',
-    price: 299,
-    comparePrice: 450,
+    price: 297,
+    comparePrice: 447,
     cards: 165,
     photos: 6,
     shipping: '2-Day Express',

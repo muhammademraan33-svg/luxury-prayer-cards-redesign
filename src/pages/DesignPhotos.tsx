@@ -16,7 +16,7 @@ const PHOTO_SIZES = [
   { id: '8x10', name: '8×10', price: 12, width: 8, height: 10 },
   { id: '11x14', name: '11×14', price: 18, width: 11, height: 14 },
   { id: '16x20', name: '16×20', price: 25, width: 16, height: 20 },
-  { id: '18x24', name: '18×24', price: 35, width: 18, height: 24 },
+  { id: '18x24', name: '18×24', price: 30, width: 18, height: 24 },
 ] as const;
 
 type PhotoSize = typeof PHOTO_SIZES[number]['id'];
@@ -159,38 +159,38 @@ const DesignPhotos = () => {
   };
 
   return (
-    <div className="min-h-screen bg-black">
+    <div className="min-h-screen bg-background">
       {/* Header */}
-      <div className="bg-black border-b border-neutral-800 sticky top-0 z-50">
+      <div className="bg-card border-b border-border sticky top-0 z-50">
         <div className="container mx-auto px-4 py-5 flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-2 text-neutral-400 hover:text-white transition-colors">
+          <Link to="/" className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors">
             <ArrowLeft className="h-4 w-4" />
             <span className="text-sm tracking-wide">Back</span>
           </Link>
-          <h1 className="text-sm font-light tracking-[0.2em] text-white uppercase">Celebration of Life</h1>
+          <h1 className="text-sm font-light tracking-[0.2em] text-foreground uppercase">Celebration of Life</h1>
           <div className="w-20"></div>
         </div>
       </div>
 
       {/* Progress Steps */}
-      <div className="bg-neutral-950 border-b border-neutral-800/50">
+      <div className="bg-secondary/30 border-b border-border">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-center gap-1 text-xs tracking-wide">
             {['Select Size', 'Upload', 'Shipping', 'Complete'].map((label, i) => (
               <div key={label} className="flex items-center">
                 <div className={`flex items-center gap-2 px-4 py-2 transition-all ${
-                  step > i + 1 ? 'text-white' :
-                  step === i + 1 ? 'text-white' : 'text-neutral-600'
+                  step > i + 1 ? 'text-foreground' :
+                  step === i + 1 ? 'text-foreground' : 'text-muted-foreground'
                 }`}>
                   <span className={`w-6 h-6 rounded-full flex items-center justify-center text-xs border ${
-                    step > i + 1 ? 'bg-white text-black border-white' :
-                    step === i + 1 ? 'border-white text-white' : 'border-neutral-700 text-neutral-600'
+                    step > i + 1 ? 'bg-primary text-primary-foreground border-primary' :
+                    step === i + 1 ? 'border-primary text-primary' : 'border-muted text-muted-foreground'
                   }`}>
                     {step > i + 1 ? <Check className="h-3 w-3" /> : i + 1}
                   </span>
                   <span className="hidden sm:inline">{label}</span>
                 </div>
-                {i < 3 && <div className={`w-12 h-px ${step > i + 1 ? 'bg-white' : 'bg-neutral-800'}`} />}
+                {i < 3 && <div className={`w-12 h-px ${step > i + 1 ? 'bg-primary' : 'bg-border'}`} />}
               </div>
             ))}
           </div>
@@ -202,8 +202,8 @@ const DesignPhotos = () => {
         {step === 1 && (
           <div className="space-y-12">
             <div className="text-center">
-              <h2 className="text-3xl font-light text-white tracking-wide mb-3">Select Print Size</h2>
-              <p className="text-neutral-500 text-sm tracking-wide">Museum-quality prints • Archival paper • Ships within 72 hours</p>
+              <h2 className="text-3xl font-light text-foreground tracking-wide mb-3">Select Print Size</h2>
+              <p className="text-muted-foreground text-sm tracking-wide">Museum-quality prints • Archival paper • Ships within 72 hours</p>
             </div>
 
             {/* Size Selection */}
@@ -213,35 +213,35 @@ const DesignPhotos = () => {
                   <RadioGroupItem value={size.id} id={size.id} className="peer sr-only" />
                   <Label
                     htmlFor={size.id}
-                    className="flex flex-col items-center justify-center p-6 bg-neutral-950 border border-neutral-800 cursor-pointer transition-all hover:border-neutral-600 peer-data-[state=checked]:border-white peer-data-[state=checked]:bg-neutral-900"
+                    className="flex flex-col items-center justify-center p-6 bg-card border border-border cursor-pointer transition-all hover:border-primary/50 peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary/10"
                   >
-                    <span className="text-xl font-light text-white tracking-wide mb-2">{size.name}</span>
-                    <span className="text-2xl font-light text-white">${size.price}</span>
+                    <span className="text-xl font-light text-foreground tracking-wide mb-2">{size.name}</span>
+                    <span className="text-2xl font-light text-foreground">${size.price}</span>
                   </Label>
                 </div>
               ))}
             </RadioGroup>
 
             {/* Quantity Selection */}
-            <div className="bg-neutral-950 border border-neutral-800 p-8">
+            <div className="bg-card border border-border p-8">
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="text-white font-light text-lg tracking-wide">Quantity</h3>
-                  <p className="text-neutral-500 text-sm mt-1">Number of {currentSizeConfig.name} prints</p>
+                  <h3 className="text-foreground font-light text-lg tracking-wide">Quantity</h3>
+                  <p className="text-muted-foreground text-sm mt-1">Number of {currentSizeConfig.name} prints</p>
                 </div>
                 <div className="flex items-center gap-6">
                   <button
                     onClick={() => updateQuantity(-1)}
                     disabled={quantity <= 1}
-                    className="w-10 h-10 border border-neutral-700 text-white hover:bg-neutral-800 disabled:opacity-30 disabled:cursor-not-allowed transition-colors flex items-center justify-center"
+                    className="w-10 h-10 border border-border text-foreground hover:bg-secondary disabled:opacity-30 disabled:cursor-not-allowed transition-colors flex items-center justify-center"
                   >
                     <Minus className="h-4 w-4" />
                   </button>
-                  <span className="text-2xl font-light text-white min-w-[3ch] text-center">{quantity}</span>
+                  <span className="text-2xl font-light text-foreground min-w-[3ch] text-center">{quantity}</span>
                   <button
                     onClick={() => updateQuantity(1)}
                     disabled={quantity >= 99}
-                    className="w-10 h-10 border border-neutral-700 text-white hover:bg-neutral-800 disabled:opacity-30 disabled:cursor-not-allowed transition-colors flex items-center justify-center"
+                    className="w-10 h-10 border border-border text-foreground hover:bg-secondary disabled:opacity-30 disabled:cursor-not-allowed transition-colors flex items-center justify-center"
                   >
                     <Plus className="h-4 w-4" />
                   </button>
@@ -250,19 +250,19 @@ const DesignPhotos = () => {
             </div>
 
             {/* Price Summary */}
-            <div className="border-t border-b border-neutral-800 py-8">
+            <div className="border-t border-b border-border py-8">
               <div className="flex justify-between items-center">
                 <div>
-                  <p className="text-neutral-500 text-sm tracking-wide">Order Total</p>
-                  <p className="text-white font-light mt-1">{quantity} × {currentSizeConfig.name} Print{quantity > 1 ? 's' : ''}</p>
+                  <p className="text-muted-foreground text-sm tracking-wide">Order Total</p>
+                  <p className="text-foreground font-light mt-1">{quantity} × {currentSizeConfig.name} Print{quantity > 1 ? 's' : ''}</p>
                 </div>
-                <p className="text-4xl font-light text-white">${totalPrice}</p>
+                <p className="text-4xl font-light text-foreground">${totalPrice}</p>
               </div>
             </div>
 
             <Button
               onClick={() => setStep(2)}
-              className="w-full bg-white hover:bg-neutral-100 text-black font-light tracking-wide py-7 text-base transition-colors"
+              className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-light tracking-wide py-7 text-base transition-colors"
             >
               Continue <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
@@ -273,15 +273,15 @@ const DesignPhotos = () => {
         {step === 2 && (
           <div className="space-y-10">
             <div className="text-center">
-              <h2 className="text-3xl font-light text-white tracking-wide mb-3">Upload Your Photo</h2>
-              <p className="text-neutral-500 text-sm tracking-wide">High resolution recommended for best results</p>
+              <h2 className="text-3xl font-light text-foreground tracking-wide mb-3">Upload Your Photo</h2>
+              <p className="text-muted-foreground text-sm tracking-wide">High resolution recommended for best results</p>
             </div>
 
             {/* Photo Preview */}
             <div className="flex flex-col items-center gap-8">
               <div
                 ref={previewRef}
-                className="relative bg-neutral-950 border border-neutral-800 overflow-hidden"
+                className="relative bg-card border border-border overflow-hidden"
                 style={{
                   width: '100%',
                   maxWidth: '420px',
@@ -298,14 +298,14 @@ const DesignPhotos = () => {
                     }}
                   />
                 ) : (
-                  <div className="absolute inset-0 flex flex-col items-center justify-center text-neutral-600">
+                  <div className="absolute inset-0 flex flex-col items-center justify-center text-muted-foreground">
                     <ImageIcon className="h-12 w-12 mb-4 stroke-1" />
                     <p className="text-sm tracking-wide">No photo uploaded</p>
                   </div>
                 )}
                 
                 {/* Size badge */}
-                <div className="absolute bottom-4 right-4 bg-black/80 text-white px-3 py-1.5 text-xs tracking-wide border border-neutral-700">
+                <div className="absolute bottom-4 right-4 bg-background/80 text-foreground px-3 py-1.5 text-xs tracking-wide border border-border">
                   {currentSizeConfig.name}
                 </div>
               </div>
@@ -323,7 +323,7 @@ const DesignPhotos = () => {
               {photos.length === 0 ? (
                 <button
                   onClick={() => photoInputRef.current?.click()}
-                  className="border border-neutral-700 text-white hover:bg-neutral-900 px-10 py-4 text-sm tracking-wide transition-colors flex items-center gap-3"
+                  className="border border-border text-foreground hover:bg-secondary px-10 py-4 text-sm tracking-wide transition-colors flex items-center gap-3"
                 >
                   <ImageIcon className="h-4 w-4 stroke-1" />
                   Select Photo
@@ -332,14 +332,14 @@ const DesignPhotos = () => {
                 <div className="flex gap-3">
                   <button
                     onClick={() => photoInputRef.current?.click()}
-                    className="border border-neutral-700 text-white hover:bg-neutral-900 px-6 py-3 text-sm tracking-wide transition-colors flex items-center gap-2"
+                    className="border border-border text-foreground hover:bg-secondary px-6 py-3 text-sm tracking-wide transition-colors flex items-center gap-2"
                   >
                     <Plus className="h-4 w-4 stroke-1" />
                     Add More
                   </button>
                   <button
                     onClick={() => removePhoto(selectedPhotoIndex)}
-                    className="border border-neutral-700 text-neutral-400 hover:text-white hover:border-neutral-500 px-6 py-3 text-sm tracking-wide transition-colors flex items-center gap-2"
+                    className="border border-border text-muted-foreground hover:text-foreground hover:border-primary/50 px-6 py-3 text-sm tracking-wide transition-colors flex items-center gap-2"
                   >
                     <Trash2 className="h-4 w-4 stroke-1" />
                     Remove
@@ -355,7 +355,7 @@ const DesignPhotos = () => {
                       key={index}
                       onClick={() => setSelectedPhotoIndex(index)}
                       className={`w-16 h-16 overflow-hidden border transition-all ${
-                        selectedPhotoIndex === index ? 'border-white' : 'border-neutral-800 hover:border-neutral-600'
+                        selectedPhotoIndex === index ? 'border-primary' : 'border-border hover:border-primary/50'
                       }`}
                     >
                       <img src={photo} alt={`Photo ${index + 1}`} className="w-full h-full object-cover" />
@@ -369,7 +369,7 @@ const DesignPhotos = () => {
             <div className="flex gap-4 pt-4">
               <button
                 onClick={() => setStep(1)}
-                className="flex-1 border border-neutral-700 text-white hover:bg-neutral-900 py-4 text-sm tracking-wide transition-colors flex items-center justify-center gap-2"
+                className="flex-1 border border-border text-foreground hover:bg-secondary py-4 text-sm tracking-wide transition-colors flex items-center justify-center gap-2"
               >
                 <ArrowLeft className="h-4 w-4" /> Back
               </button>
@@ -381,7 +381,7 @@ const DesignPhotos = () => {
                   }
                   setStep(3);
                 }}
-                className="flex-1 bg-white hover:bg-neutral-100 text-black font-light tracking-wide py-4 text-sm transition-colors"
+                className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground font-light tracking-wide py-4 text-sm transition-colors"
               >
                 Continue <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
@@ -393,114 +393,114 @@ const DesignPhotos = () => {
         {step === 3 && (
           <div className="space-y-10">
             <div className="text-center">
-              <h2 className="text-3xl font-light text-white tracking-wide mb-3">Shipping Details</h2>
-              <p className="text-neutral-500 text-sm tracking-wide">Where should we send your prints?</p>
+              <h2 className="text-3xl font-light text-foreground tracking-wide mb-3">Shipping Details</h2>
+              <p className="text-muted-foreground text-sm tracking-wide">Where should we send your prints?</p>
             </div>
 
             <div className="space-y-6 max-w-2xl mx-auto">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
-                  <Label className="text-neutral-400 text-xs tracking-wide uppercase">Full Name</Label>
+                  <Label className="text-muted-foreground text-xs tracking-wide uppercase">Full Name</Label>
                   <Input
                     value={customerName}
                     onChange={(e) => setCustomerName(e.target.value)}
                     placeholder="John Smith"
-                    className="bg-neutral-950 border-neutral-800 text-white placeholder:text-neutral-600 focus:border-white h-12"
+                    className="bg-card border-border text-foreground placeholder:text-muted-foreground focus:border-primary h-12"
                     required
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label className="text-neutral-400 text-xs tracking-wide uppercase">Email</Label>
+                  <Label className="text-muted-foreground text-xs tracking-wide uppercase">Email</Label>
                   <Input
                     type="email"
                     value={customerEmail}
                     onChange={(e) => setCustomerEmail(e.target.value)}
                     placeholder="john@example.com"
-                    className="bg-neutral-950 border-neutral-800 text-white placeholder:text-neutral-600 focus:border-white h-12"
+                    className="bg-card border-border text-foreground placeholder:text-muted-foreground focus:border-primary h-12"
                     required
                   />
                 </div>
               </div>
 
               <div className="space-y-2">
-                <Label className="text-neutral-400 text-xs tracking-wide uppercase">Street Address</Label>
+                <Label className="text-muted-foreground text-xs tracking-wide uppercase">Street Address</Label>
                 <Input
                   value={shippingStreet}
                   onChange={(e) => setShippingStreet(e.target.value)}
                   placeholder="123 Main Street, Apt 4B"
-                  className="bg-neutral-950 border-neutral-800 text-white placeholder:text-neutral-600 focus:border-white h-12"
+                  className="bg-card border-border text-foreground placeholder:text-muted-foreground focus:border-primary h-12"
                   required
                 />
               </div>
 
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <div className="space-y-2 col-span-2">
-                  <Label className="text-neutral-400 text-xs tracking-wide uppercase">City</Label>
+                  <Label className="text-muted-foreground text-xs tracking-wide uppercase">City</Label>
                   <Input
                     value={shippingCity}
                     onChange={(e) => setShippingCity(e.target.value)}
                     placeholder="New York"
-                    className="bg-neutral-950 border-neutral-800 text-white placeholder:text-neutral-600 focus:border-white h-12"
+                    className="bg-card border-border text-foreground placeholder:text-muted-foreground focus:border-primary h-12"
                     required
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label className="text-neutral-400 text-xs tracking-wide uppercase">State</Label>
+                  <Label className="text-muted-foreground text-xs tracking-wide uppercase">State</Label>
                   <Input
                     value={shippingState}
                     onChange={(e) => setShippingState(e.target.value)}
                     placeholder="NY"
-                    className="bg-neutral-950 border-neutral-800 text-white placeholder:text-neutral-600 focus:border-white h-12"
+                    className="bg-card border-border text-foreground placeholder:text-muted-foreground focus:border-primary h-12"
                     required
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label className="text-neutral-400 text-xs tracking-wide uppercase">ZIP</Label>
+                  <Label className="text-muted-foreground text-xs tracking-wide uppercase">ZIP</Label>
                   <Input
                     value={shippingZip}
                     onChange={(e) => setShippingZip(e.target.value)}
                     placeholder="10001"
-                    className="bg-neutral-950 border-neutral-800 text-white placeholder:text-neutral-600 focus:border-white h-12"
+                    className="bg-card border-border text-foreground placeholder:text-muted-foreground focus:border-primary h-12"
                     required
                   />
                 </div>
               </div>
 
               <div className="space-y-2">
-                <Label className="text-neutral-400 text-xs tracking-wide uppercase">Phone</Label>
+                <Label className="text-muted-foreground text-xs tracking-wide uppercase">Phone</Label>
                 <Input
                   type="tel"
                   value={shippingPhone}
                   onChange={(e) => setShippingPhone(e.target.value)}
                   placeholder="(555) 123-4567"
-                  className="bg-neutral-950 border-neutral-800 text-white placeholder:text-neutral-600 focus:border-white h-12"
+                  className="bg-card border-border text-foreground placeholder:text-muted-foreground focus:border-primary h-12"
                   required
                 />
               </div>
             </div>
 
             {/* Order Summary */}
-            <div className="border-t border-b border-neutral-800 py-8 max-w-2xl mx-auto">
+            <div className="border-t border-b border-border py-8 max-w-2xl mx-auto">
               <div className="flex justify-between items-center">
                 <div>
-                  <p className="text-neutral-500 text-sm tracking-wide">Order Total</p>
-                  <p className="text-white font-light mt-1">{quantity} × {currentSizeConfig.name} Print{quantity > 1 ? 's' : ''}</p>
+                  <p className="text-muted-foreground text-sm tracking-wide">Order Total</p>
+                  <p className="text-foreground font-light mt-1">{quantity} × {currentSizeConfig.name} Print{quantity > 1 ? 's' : ''}</p>
                 </div>
-                <p className="text-4xl font-light text-white">${totalPrice}</p>
+                <p className="text-4xl font-light text-foreground">${totalPrice}</p>
               </div>
             </div>
 
             <div className="flex gap-4 max-w-2xl mx-auto">
               <button
                 onClick={() => setStep(2)}
-                className="flex-1 border border-neutral-700 text-white hover:bg-neutral-900 py-4 text-sm tracking-wide transition-colors flex items-center justify-center gap-2"
+                className="flex-1 border border-border text-foreground hover:bg-secondary py-4 text-sm tracking-wide transition-colors flex items-center justify-center gap-2"
               >
                 <ArrowLeft className="h-4 w-4" /> Back
               </button>
               <Button
                 onClick={handleSubmit}
                 disabled={isSubmitting}
-                className="flex-1 bg-white hover:bg-neutral-100 text-black font-light tracking-wide py-4 text-sm transition-colors disabled:opacity-50"
+                className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground font-light tracking-wide py-4 text-sm transition-colors disabled:opacity-50"
               >
                 {isSubmitting ? (
                   <>
@@ -520,22 +520,22 @@ const DesignPhotos = () => {
         {/* Step 4: Confirmation */}
         {step === 4 && (
           <div className="text-center space-y-10 py-16">
-            <div className="w-16 h-16 border border-white rounded-full flex items-center justify-center mx-auto">
-              <Check className="h-6 w-6 text-white stroke-1" />
+            <div className="w-16 h-16 border border-primary rounded-full flex items-center justify-center mx-auto">
+              <Check className="h-6 w-6 text-primary stroke-1" />
             </div>
             <div>
-              <h2 className="text-3xl font-light text-white tracking-wide mb-4">Order Confirmed</h2>
-              <p className="text-neutral-500 max-w-md mx-auto text-sm leading-relaxed">
-                Thank you for your order. A confirmation email will be sent to <span className="text-white">{customerEmail}</span> with tracking information.
+              <h2 className="text-3xl font-light text-foreground tracking-wide mb-4">Order Confirmed</h2>
+              <p className="text-muted-foreground max-w-md mx-auto text-sm leading-relaxed">
+                Thank you for your order. A confirmation email will be sent to <span className="text-foreground">{customerEmail}</span> with tracking information.
               </p>
             </div>
-            <div className="border border-neutral-800 p-8 max-w-sm mx-auto">
-              <p className="text-neutral-500 text-xs tracking-wide uppercase mb-3">Order Summary</p>
-              <p className="text-white font-light text-lg">{quantity} × {currentSizeConfig.name}</p>
-              <p className="text-3xl font-light text-white mt-4">${totalPrice}</p>
+            <div className="border border-border p-8 max-w-sm mx-auto">
+              <p className="text-muted-foreground text-xs tracking-wide uppercase mb-3">Order Summary</p>
+              <p className="text-foreground font-light text-lg">{quantity} × {currentSizeConfig.name}</p>
+              <p className="text-3xl font-light text-foreground mt-4">${totalPrice}</p>
             </div>
             <Link to="/">
-              <button className="border border-neutral-700 text-white hover:bg-neutral-900 px-8 py-4 text-sm tracking-wide transition-colors inline-flex items-center gap-2">
+              <button className="border border-border text-foreground hover:bg-secondary px-8 py-4 text-sm tracking-wide transition-colors inline-flex items-center gap-2">
                 <ArrowLeft className="h-4 w-4" /> Return Home
               </button>
             </Link>
