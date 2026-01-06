@@ -13,7 +13,7 @@ const Index = () => {
       id: 'good',
       name: 'Essential',
       quantity: 55,
-      price: 97,
+      price: 117,
       photos: 2,
       description: '+ 2 FREE 16x20 Memorial Photos',
     },
