@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Shield, Package, Truck, Clock, Heart, Star, CheckCircle2, ArrowRight, Gift } from 'lucide-react';
+import { Shield, Truck, Clock, Heart, Star, CheckCircle2, ArrowRight, Gift } from 'lucide-react';
 import metalCardProduct from '@/assets/metal-card-product.jpg';
 import paperCardsProduct from '@/assets/paper-cards-product.jpg';
 
@@ -9,27 +9,29 @@ const Index = () => {
   const metalPackages = [
     {
       id: 'good',
-      badge: undefined as string | undefined,
       name: 'Essential',
+      quantity: 55,
       price: 97,
-      comparePrice: 167,
-      items: ['55 Premium Metal Prayer Cards', '2 FREE 16x20 Memorial Photos', '48-Hour Delivery', 'Satisfaction Guaranteed'],
+      photos: 2,
+      description: '+ 2 FREE 16x20 Memorial Photos',
     },
     {
       id: 'better',
       badge: 'MOST POPULAR',
       name: 'Family',
+      quantity: 110,
       price: 167,
-      comparePrice: 247,
-      items: ['110 Premium Metal Prayer Cards', '4 FREE 16x20 Memorial Photos', '48-Hour Delivery', 'Satisfaction Guaranteed'],
+      photos: 4,
+      description: '+ 4 FREE 16x20 Memorial Photos',
     },
     {
       id: 'best',
       badge: 'BEST VALUE',
       name: 'Legacy',
+      quantity: 165,
       price: 247,
-      comparePrice: 397,
-      items: ['165 Premium Metal Prayer Cards', '6 FREE 16x20 Memorial Photos', '48-Hour Delivery', 'Satisfaction Guaranteed'],
+      photos: 6,
+      description: '+ 6 FREE 16x20 Memorial Photos',
     },
   ];
 
@@ -219,51 +221,34 @@ const Index = () => {
               <Card
                 key={pkg.id}
                 className={
-                  pkg.id === 'better'
+                  pkg.badge
                     ? 'bg-secondary/10 border-secondary/30 relative overflow-hidden'
                     : 'bg-card border-border relative overflow-hidden'
                 }
               >
-                {pkg.badge ? (
-                  <div
-                    className={
-                      pkg.id === 'better'
-                        ? 'absolute top-4 right-4 bg-secondary text-secondary-foreground text-xs font-bold px-3 py-1 rounded-full'
-                        : 'absolute top-4 right-4 bg-foreground text-background text-xs font-bold px-3 py-1 rounded-full'
-                    }
-                  >
+                {pkg.badge && (
+                  <div className="absolute top-4 right-4 bg-secondary text-secondary-foreground text-xs font-bold px-3 py-1 rounded-full">
                     {pkg.badge}
                   </div>
-                ) : null}
+                )}
 
-                <CardContent className="p-8">
-                  <div className="flex items-center gap-3 mb-4">
-                    <Package className={pkg.id === 'better' ? 'h-7 w-7 text-secondary' : 'h-7 w-7 text-muted-foreground'} />
-                    <h3 className="text-2xl font-bold text-foreground">{pkg.name}</h3>
+                <CardContent className="p-8 text-center">
+                  <h3 className="text-2xl font-bold text-foreground mb-2">{pkg.name}</h3>
+                  <p className="text-secondary font-bold text-sm mb-4">{pkg.description}</p>
+                  
+                  <div className="mb-4">
+                    <span className="text-5xl font-bold text-foreground">${pkg.price}</span>
                   </div>
-
-                  <div className="mb-6">
-                    <div className="flex items-baseline gap-2">
-                      <span className="text-5xl font-bold text-foreground">${pkg.price}</span>
-                      <span className="text-muted-foreground line-through">${pkg.comparePrice}</span>
-                    </div>
-                    <p className="text-muted-foreground text-sm mt-2">One-time package price</p>
-                  </div>
-
-                  <ul className="space-y-3 text-foreground/80 mb-8">
-                    {pkg.items.map((item) => (
-                      <li key={item} className="flex items-center gap-2">
-                        <CheckCircle2 className={pkg.id === 'better' ? 'w-5 h-5 text-secondary' : 'w-5 h-5 text-muted-foreground'} />
-                        {item}
-                      </li>
-                    ))}
-                  </ul>
+                  
+                  <p className="text-lg font-semibold text-foreground mb-6">
+                    {pkg.quantity} Cards
+                  </p>
 
                   <Link to={`/design?package=${pkg.id}`} className="block">
                     <Button
                       size="lg"
                       className="w-full font-semibold text-lg py-6"
-                      variant="outline"
+                      variant={pkg.badge ? 'default' : 'outline'}
                     >
                       Start Designing
                       <ArrowRight className="ml-2 h-5 w-5" />
@@ -273,6 +258,10 @@ const Index = () => {
               </Card>
             ))}
           </div>
+
+          <p className="text-center text-muted-foreground text-sm mt-6">
+            Premium metal finish • Full color both sides • 72-Hour Delivery Included • 48-Hour +$15 • Overnight +100%
+          </p>
 
           {/* Metal Add-ons */}
           <div className="mt-10">
