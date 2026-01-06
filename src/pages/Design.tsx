@@ -911,7 +911,7 @@ const Design = () => {
       if (error) throw error;
 
       toast.success(`Order #${data.orderId} placed successfully! Check your email for confirmation.`);
-      setStep(5); // Success step
+      setStep(6); // Success step
     } catch (error) {
       console.error('Order submission error:', error);
       toast.error('Failed to submit order. Please try again.');
@@ -955,16 +955,18 @@ const Design = () => {
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-white mb-2">
             {step === 1 && `Design Your ${cardType === 'paper' ? 'Photo Prayer Card' : 'Metal Prayer Card'}`}
-            {step === 2 && 'Choose Your Package'}
-            {step === 3 && 'Shipping Information'}
-            {step === 4 && 'Review & Order'}
-            {step === 5 && 'Order Confirmed!'}
+            {step === 2 && 'Upgrade Your Cards'}
+            {step === 3 && 'Choose Your Package'}
+            {step === 4 && 'Shipping Information'}
+            {step === 5 && 'Review & Order'}
+            {step === 6 && 'Order Confirmed!'}
           </h1>
           <p className="text-slate-400">
             {step === 1 && 'Customize the front and back of your prayer card'}
-            {step === 2 && 'Select quantity and shipping options'}
-            {step === 3 && 'Enter your shipping details'}
-            {step === 4 && 'Confirm your order details'}
+            {step === 2 && 'Make your cards even more special'}
+            {step === 3 && 'Select quantity and shipping options'}
+            {step === 4 && 'Enter your shipping details'}
+            {step === 5 && 'Confirm your order details'}
           </p>
         </div>
 
@@ -2743,8 +2745,114 @@ const Design = () => {
                 </div>
               )}
 
-              {/* Step 2: Package Selection */}
+              {/* Step 2: Upsell */}
               {step === 2 && (
+                <div className="space-y-6">
+                  {/* Preview of their design */}
+                  <div className="text-center mb-4">
+                    <p className="text-slate-300 mb-4">Your design looks great! Want to make it even more special?</p>
+                  </div>
+
+                  {/* Metal Card Thickness Upsell */}
+                  {cardType === 'metal' && !upgradeThickness && (
+                    <div className="bg-gradient-to-br from-amber-900/30 to-slate-800 rounded-xl p-6 border border-amber-500/30">
+                      <div className="flex items-start gap-4">
+                        <div className="flex-1">
+                          <h3 className="text-xl font-bold text-white mb-2">Upgrade to Premium Thickness</h3>
+                          <p className="text-slate-300 mb-4">Double the thickness for a more substantial, heirloom-quality feel that lasts generations.</p>
+                          
+                          {/* Visual comparison */}
+                          <div className="flex items-end gap-6 mb-4">
+                            <div className="flex flex-col items-center">
+                              <div className="w-16 h-1.5 bg-gradient-to-b from-slate-400 to-slate-600 rounded-sm shadow" />
+                              <span className="text-xs text-slate-500 mt-2">Standard .040"</span>
+                            </div>
+                            <div className="flex flex-col items-center">
+                              <div className="w-16 h-3 bg-gradient-to-b from-amber-400 to-amber-600 rounded-sm shadow-lg" />
+                              <span className="text-xs text-amber-400 mt-2 font-semibold">Premium .080"</span>
+                            </div>
+                          </div>
+                          
+                          <Button
+                            type="button"
+                            onClick={() => setUpgradeThickness(true)}
+                            className="w-full bg-amber-600 hover:bg-amber-700 text-white font-semibold"
+                          >
+                            Upgrade for +${PREMIUM_THICKNESS_PRICE * ((currentPackage.cards / 55) + extraSets)}
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Paper Card Size Upsell */}
+                  {cardType === 'paper' && paperCardSize !== '3x4.75' && (
+                    <div className="bg-gradient-to-br from-amber-900/30 to-slate-800 rounded-xl p-6 border border-amber-500/30">
+                      <div className="flex items-start gap-4">
+                        <div className="flex-1">
+                          <h3 className="text-xl font-bold text-white mb-2">Upgrade to Large Size</h3>
+                          <p className="text-slate-300 mb-4">Bigger cards make a bigger impact. More room for your beautiful design.</p>
+                          
+                          {/* Visual comparison */}
+                          <div className="flex items-end gap-6 justify-center mb-4">
+                            <div className="flex flex-col items-center">
+                              <div className="w-12 h-16 border border-slate-500 rounded-sm bg-slate-700/50" />
+                              <span className="text-xs text-slate-500 mt-2">2.5" × 4.25"</span>
+                            </div>
+                            <div className="flex flex-col items-center">
+                              <div className="w-14 h-20 border-2 border-amber-500 rounded-sm bg-amber-500/10" />
+                              <span className="text-xs text-amber-400 mt-2 font-semibold">3" × 4.75"</span>
+                            </div>
+                          </div>
+                          
+                          <Button
+                            type="button"
+                            onClick={() => setPaperCardSize('3x4.75')}
+                            className="w-full bg-amber-600 hover:bg-amber-700 text-white font-semibold"
+                          >
+                            Upgrade for +${PAPER_SIZE_UPSELL}
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Already upgraded message */}
+                  {((cardType === 'metal' && upgradeThickness) || (cardType === 'paper' && paperCardSize === '3x4.75')) && (
+                    <div className="bg-green-900/30 rounded-xl p-6 border border-green-500/30 text-center">
+                      <div className="text-green-400 text-lg font-semibold mb-2">✓ Premium Upgrade Selected!</div>
+                      <p className="text-slate-300">
+                        {cardType === 'metal' 
+                          ? 'Your cards will be printed on premium .080" thick metal.' 
+                          : 'Your cards will be the larger 3" × 4.75" size.'}
+                      </p>
+                    </div>
+                  )}
+
+                  <div className="flex gap-3 pt-2">
+                    <Button 
+                      type="button" 
+                      variant="outline" 
+                      onClick={() => setStep(1)} 
+                      className="flex-1 border-slate-600 text-slate-300 hover:bg-slate-700"
+                    >
+                      <ArrowLeft className="h-4 w-4 mr-2" /> Back
+                    </Button>
+                    <Button 
+                      type="button" 
+                      onClick={() => setStep(3)} 
+                      className="flex-1 bg-amber-600 hover:bg-amber-700 text-white font-semibold"
+                    >
+                      {((cardType === 'metal' && !upgradeThickness) || (cardType === 'paper' && paperCardSize !== '3x4.75')) 
+                        ? 'No Thanks, Continue' 
+                        : 'Continue'} <ArrowRight className="h-4 w-4 ml-2" />
+                    </Button>
+                  </div>
+                </div>
+              )}
+
+              {/* Step 3: Package Selection */}
+              {step === 3 && (
                 <div className="space-y-6">
                   {/* Package Tier Selection */}
                   <div>
@@ -3045,7 +3153,7 @@ const Design = () => {
                     <Button 
                       type="button" 
                       variant="outline" 
-                      onClick={() => setStep(1)} 
+                      onClick={() => setStep(2)} 
                       className="flex-1 border-slate-600 text-slate-300 hover:bg-slate-700"
                     >
                       <ArrowLeft className="h-4 w-4 mr-2" /> Back
@@ -3058,7 +3166,7 @@ const Design = () => {
                           setStep(1);
                           return;
                         }
-                        setStep(3);
+                        setStep(4);
                       }} 
                       className="flex-1 bg-amber-600 hover:bg-amber-700 text-white font-semibold"
                     >
@@ -3068,8 +3176,8 @@ const Design = () => {
                 </div>
               )}
 
-              {/* Step 3: Shipping Information */}
-              {step === 3 && (
+              {/* Step 4: Shipping Information */}
+              {step === 4 && (
                 <div className="space-y-6">
                   <div className="flex items-center gap-2 mb-4">
                     <MapPin className="h-5 w-5 text-amber-400" />
@@ -3162,7 +3270,7 @@ const Design = () => {
                     <Button 
                       type="button" 
                       variant="outline" 
-                      onClick={() => setStep(2)} 
+                      onClick={() => setStep(3)} 
                       className="flex-1 border-slate-600 text-slate-300 hover:bg-slate-700"
                     >
                       <ArrowLeft className="h-4 w-4 mr-2" /> Back
@@ -3175,7 +3283,7 @@ const Design = () => {
                           toast.error('Please fill in all shipping fields');
                           return;
                         }
-                        setStep(4);
+                        setStep(5);
                       }} 
                       className="flex-1 bg-amber-600 hover:bg-amber-700 text-white font-semibold"
                     >
@@ -3185,8 +3293,8 @@ const Design = () => {
                 </div>
               )}
 
-              {/* Step 4: Review & Order */}
-              {step === 4 && (
+              {/* Step 5: Review & Order */}
+              {step === 5 && (
                 <div className="space-y-6">
                   {/* Order Summary */}
                   <div className="bg-slate-700/30 rounded-lg p-6 space-y-4">
@@ -3301,7 +3409,7 @@ const Design = () => {
                     <Button 
                       type="button" 
                       variant="outline" 
-                      onClick={() => setStep(3)} 
+                      onClick={() => setStep(4)} 
                       className="flex-1 border-slate-600 text-slate-300 hover:bg-slate-700"
                       disabled={isSubmitting}
                     >
@@ -3325,8 +3433,8 @@ const Design = () => {
                 </div>
               )}
 
-              {/* Step 5: Order Confirmation */}
-              {step === 5 && (
+              {/* Step 6: Order Confirmation */}
+              {step === 6 && (
                 <div className="text-center space-y-6 py-8">
                   <div className="w-20 h-20 bg-green-500/20 rounded-full flex items-center justify-center mx-auto">
                     <Package className="h-10 w-10 text-green-400" />
