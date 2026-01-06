@@ -406,7 +406,7 @@ const Index = () => {
                   <p className="text-primary font-bold text-sm mb-4">{pkg.description}</p>
                   
                   <div className="mb-4">
-                    <span className="text-5xl font-bold text-foreground">${pkg.price}</span>
+                    <span className="text-5xl font-bold text-foreground" style={{ fontVariantNumeric: 'lining-nums' }}>${pkg.price}</span>
                   </div>
                   
                   <p className="text-lg font-semibold text-foreground mb-6">
@@ -466,7 +466,7 @@ const Index = () => {
                   <p className="text-primary font-bold text-sm mb-4">{pkg.description}</p>
                   
                   <div className="mb-4">
-                    <span className="text-5xl font-bold text-foreground">${pkg.price}</span>
+                    <span className="text-5xl font-bold text-foreground" style={{ fontVariantNumeric: 'lining-nums' }}>${pkg.price}</span>
                   </div>
                   
                   <p className="text-lg font-semibold text-foreground mb-6">
