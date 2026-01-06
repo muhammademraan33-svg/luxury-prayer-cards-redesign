@@ -38,7 +38,7 @@ const Index = () => {
       id: 'starter',
       name: 'Starter',
       quantity: 36,
-      price: 37,
+      price: 47,
       photos: 1,
       description: '+ 1 FREE 16x20 Memorial Photo',
     },
