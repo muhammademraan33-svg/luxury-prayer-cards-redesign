@@ -1013,6 +1013,45 @@ const Design = () => {
                     </div>
                   )}
 
+                  {/* Metal Card Thickness Selection - only for metal cards */}
+                  {cardType === 'metal' && (
+                    <div className="bg-slate-700/50 rounded-xl p-4 mb-4">
+                      <h3 className="text-lg font-semibold text-white mb-3 text-center">Choose Your Card Thickness</h3>
+                      <div className="grid grid-cols-2 gap-4">
+                        <button
+                          type="button"
+                          onClick={() => setUpgradeThickness(false)}
+                          className={`p-4 rounded-lg border-2 transition-all ${
+                            !upgradeThickness
+                              ? 'border-amber-500 bg-amber-500/20'
+                              : 'border-slate-600 hover:border-slate-500'
+                          }`}
+                        >
+                          <div className="text-center">
+                            <div className="text-xl font-bold text-white mb-1">.040"</div>
+                            <div className="text-slate-400 text-sm">Standard Thickness</div>
+                            <div className="text-amber-400 font-semibold mt-2">Included</div>
+                          </div>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setUpgradeThickness(true)}
+                          className={`p-4 rounded-lg border-2 transition-all ${
+                            upgradeThickness
+                              ? 'border-amber-500 bg-amber-500/20'
+                              : 'border-slate-600 hover:border-slate-500'
+                          }`}
+                        >
+                          <div className="text-center">
+                            <div className="text-xl font-bold text-white mb-1">.080"</div>
+                            <div className="text-slate-400 text-sm">Premium Thickness</div>
+                            <div className="text-amber-400 font-semibold mt-2">+$15/set</div>
+                          </div>
+                        </button>
+                      </div>
+                    </div>
+                  )}
+
                   {/* Orientation Toggle - only for metal cards */}
                   {cardType === 'metal' && (
                     <div className="flex items-center justify-center gap-4">
