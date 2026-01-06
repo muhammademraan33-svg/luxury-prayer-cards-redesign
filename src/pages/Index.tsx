@@ -1,13 +1,42 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Shield, Truck, Clock, Heart, Star, CheckCircle2, ArrowRight, Gift, Image, Upload } from 'lucide-react';
+import { Shield, Truck, Clock, Heart, Star, CheckCircle2, ArrowRight, Gift, Image, Upload, X, ShoppingCart } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { toast } from 'sonner';
 import metalCardProduct from '@/assets/metal-card-product.jpg';
 import paperCardsProduct from '@/assets/paper-cards-product.jpg';
 
 const Index = () => {
+  const [photoUploads, setPhotoUploads] = useState<Record<string, string>>({});
+  const [photoQuantities, setPhotoQuantities] = useState<Record<string, number>>({});
+
+  const handlePhotoUpload = (size: string, file: File) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      setPhotoUploads(prev => ({ ...prev, [size]: e.target?.result as string }));
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const removePhoto = (size: string) => {
+    setPhotoUploads(prev => {
+      const updated = { ...prev };
+      delete updated[size];
+      return updated;
+    });
+  };
+
+  const handleAddToCart = (size: string, price: number) => {
+    const qty = photoQuantities[size] || 1;
+    if (!photoUploads[size]) {
+      toast.error('Please upload a photo first');
+      return;
+    }
+    toast.success(`Added ${qty}x ${size} photo(s) to cart - $${(price * qty).toFixed(2)}`);
+  };
   const metalPackages = [
     {
       id: 'good',
@@ -384,27 +413,57 @@ const Index = () => {
                         id={`qty-${photo.size}`}
                         type="number" 
                         min="1" 
-                        defaultValue="1" 
+                        value={photoQuantities[photo.size] || 1}
+                        onChange={(e) => setPhotoQuantities(prev => ({ ...prev, [photo.size]: parseInt(e.target.value) || 1 }))}
                         className="mt-1"
                       />
                     </div>
                     
                     <div>
-                      <Label htmlFor={`upload-${photo.size}`} className="text-sm text-muted-foreground">Upload Photo</Label>
-                      <label 
-                        htmlFor={`upload-${photo.size}`}
-                        className="mt-1 flex items-center justify-center gap-2 border-2 border-dashed border-border rounded-lg p-3 cursor-pointer hover:border-primary/50 hover:bg-accent/30 transition-colors"
-                      >
-                        <Upload className="h-4 w-4 text-muted-foreground" />
-                        <span className="text-sm text-muted-foreground">Choose file</span>
-                        <input 
-                          id={`upload-${photo.size}`}
-                          type="file" 
-                          accept="image/*" 
-                          className="hidden" 
-                        />
-                      </label>
+                      <Label className="text-sm text-muted-foreground">Upload Photo</Label>
+                      {photoUploads[photo.size] ? (
+                        <div className="mt-1 relative">
+                          <img 
+                            src={photoUploads[photo.size]} 
+                            alt="Preview" 
+                            className="w-full h-24 object-cover rounded-lg border border-border"
+                          />
+                          <button
+                            onClick={() => removePhoto(photo.size)}
+                            className="absolute -top-2 -right-2 bg-destructive text-destructive-foreground rounded-full p-1 hover:bg-destructive/90"
+                          >
+                            <X className="h-3 w-3" />
+                          </button>
+                        </div>
+                      ) : (
+                        <label 
+                          htmlFor={`upload-${photo.size}`}
+                          className="mt-1 flex items-center justify-center gap-2 border-2 border-dashed border-border rounded-lg p-3 cursor-pointer hover:border-primary/50 hover:bg-accent/30 transition-colors"
+                        >
+                          <Upload className="h-4 w-4 text-muted-foreground" />
+                          <span className="text-sm text-muted-foreground">Choose file</span>
+                          <input 
+                            id={`upload-${photo.size}`}
+                            type="file" 
+                            accept="image/*" 
+                            className="hidden"
+                            onChange={(e) => {
+                              const file = e.target.files?.[0];
+                              if (file) handlePhotoUpload(photo.size, file);
+                            }}
+                          />
+                        </label>
+                      )}
                     </div>
+
+                    <Button 
+                      onClick={() => handleAddToCart(photo.size, photo.price)}
+                      className="w-full mt-2"
+                      variant={photoUploads[photo.size] ? 'default' : 'outline'}
+                    >
+                      <ShoppingCart className="h-4 w-4 mr-2" />
+                      Add to Cart
+                    </Button>
                   </div>
                 </CardContent>
               </Card>
