@@ -1,7 +1,9 @@
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Shield, Truck, Clock, Heart, Star, CheckCircle2, ArrowRight, Gift } from 'lucide-react';
+import { Shield, Truck, Clock, Heart, Star, CheckCircle2, ArrowRight, Gift, Image, Upload } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import metalCardProduct from '@/assets/metal-card-product.jpg';
 import paperCardsProduct from '@/assets/paper-cards-product.jpg';
 
@@ -338,6 +340,80 @@ const Index = () => {
               Every metal card order includes two professional-quality 16x20 memorial photos — ready for the service and home display.
             </p>
           </div>
+        </div>
+      </section>
+
+      {/* Celebration of Life Memorial Photos */}
+      <section className="container mx-auto px-4 py-16 border-t border-border">
+        <div className="max-w-5xl mx-auto">
+          <div className="text-center mb-10">
+            <span className="inline-block bg-primary/10 text-primary text-sm font-medium px-4 py-1.5 rounded-full mb-4">
+              MEMORIAL PHOTOS
+            </span>
+            <h2 className="text-3xl md:text-4xl font-bold text-foreground">Celebration of Life Photos</h2>
+            <p className="text-muted-foreground mt-2">Professional-quality prints for the service and home display.</p>
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[
+              { size: '4x6', price: 0.37 },
+              { size: '5x7', price: 0.47 },
+              { size: '8x10', price: 7 },
+              { size: '11x14', price: 17 },
+              { size: '16x20', price: 27 },
+              { size: '18x24', price: 37 },
+            ].map((photo) => (
+              <Card key={photo.size} className="bg-card border-border">
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
+                        <Image className="h-5 w-5 text-primary" />
+                      </div>
+                      <div>
+                        <p className="text-lg font-bold text-foreground">{photo.size}</p>
+                        <p className="text-primary font-bold">${photo.price} <span className="text-muted-foreground font-normal text-sm">each</span></p>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-3">
+                    <div>
+                      <Label htmlFor={`qty-${photo.size}`} className="text-sm text-muted-foreground">Quantity</Label>
+                      <Input 
+                        id={`qty-${photo.size}`}
+                        type="number" 
+                        min="1" 
+                        defaultValue="1" 
+                        className="mt-1"
+                      />
+                    </div>
+                    
+                    <div>
+                      <Label htmlFor={`upload-${photo.size}`} className="text-sm text-muted-foreground">Upload Photo</Label>
+                      <label 
+                        htmlFor={`upload-${photo.size}`}
+                        className="mt-1 flex items-center justify-center gap-2 border-2 border-dashed border-border rounded-lg p-3 cursor-pointer hover:border-primary/50 hover:bg-accent/30 transition-colors"
+                      >
+                        <Upload className="h-4 w-4 text-muted-foreground" />
+                        <span className="text-sm text-muted-foreground">Choose file</span>
+                        <input 
+                          id={`upload-${photo.size}`}
+                          type="file" 
+                          accept="image/*" 
+                          className="hidden" 
+                        />
+                      </label>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+
+          <p className="text-center text-muted-foreground text-sm mt-6">
+            Professional lustre finish • Arrives ready to frame • Add to any order
+          </p>
         </div>
       </section>
 
