@@ -2919,15 +2919,11 @@ const Design = () => {
                     </div>
                   )}
 
-                  {/* Already upgraded message */}
-                  {((cardType === 'metal' && upgradeThickness) || (cardType === 'paper' && paperCardSize === '3x4.75')) && (
+                  {/* Already upgraded message - only for metal */}
+                  {cardType === 'metal' && upgradeThickness && (
                     <div className="bg-green-900/30 rounded-xl p-6 border border-green-500/30 text-center">
                       <div className="text-green-400 text-lg font-semibold mb-2">✓ Premium Upgrade Selected!</div>
-                      <p className="text-slate-300">
-                        {cardType === 'metal' 
-                          ? 'Your cards will be printed on premium .080" thick metal.' 
-                          : 'Your cards will be the larger 3" × 4.75" size.'}
-                      </p>
+                      <p className="text-slate-300">Your cards will be printed on premium .080" thick metal.</p>
                     </div>
                   )}
 
