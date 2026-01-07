@@ -189,7 +189,7 @@ const ADDITIONAL_PHOTO_PRICE = 17; // Additional easel photo 16x20
 const EASEL_18X24_UPSELL = 7; // Upgrade from 16x20 to 18x24
 const PREMIUM_THICKNESS_PRICE = 15; // Upgrade to .080" thick cards per set
 const OVERNIGHT_UPCHARGE_PERCENT = 100; // 100% upcharge for overnight
-const PAPER_SIZE_UPSELL = 17; // Upgrade from 2.5x4.25 to 3x4.75
+const PAPER_SIZE_UPSELL = 7; // Upgrade from 2.5x4.25 to 3x4.75
 const ADDITIONAL_DESIGN_PRICE = 7; // Per additional design
 
 type CardThickness = 'standard' | 'premium';
