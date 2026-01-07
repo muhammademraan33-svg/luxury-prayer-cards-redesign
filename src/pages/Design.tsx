@@ -2978,6 +2978,14 @@ const Design = () => {
                     <Button 
                       type="button" 
                       onClick={() => {
+                        // Store card data in sessionStorage for memorial photo editor
+                        sessionStorage.setItem('memorialPhotoData', JSON.stringify({
+                          deceasedName,
+                          birthDate,
+                          deathDate,
+                          deceasedPhoto,
+                          funeralHomeLogo,
+                        }));
                         // Navigate to memorial photo editor
                         const params = new URLSearchParams({
                           package: selectedPackage,
@@ -3259,6 +3267,14 @@ const Design = () => {
                     <Button 
                       type="button" 
                       onClick={() => {
+                        // Store card data in sessionStorage for memorial photo editor
+                        sessionStorage.setItem('memorialPhotoData', JSON.stringify({
+                          deceasedName,
+                          birthDate,
+                          deathDate,
+                          deceasedPhoto,
+                          funeralHomeLogo,
+                        }));
                         // Navigate to memorial photo editor with package info
                         const params = new URLSearchParams({
                           package: selectedPackage,

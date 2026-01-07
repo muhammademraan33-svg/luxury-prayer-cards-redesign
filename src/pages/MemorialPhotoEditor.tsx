@@ -1,11 +1,12 @@
-import { useState, useRef } from 'react';
-import { Link } from 'react-router-dom';
+import { useState, useRef, useEffect } from 'react';
+import { Link, useSearchParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ArrowLeft, Upload, RotateCcw, Image as ImageIcon, Type, Trash2, ShoppingCart, Plus, Minus, Copy } from 'lucide-react';
+import { Switch } from '@/components/ui/switch';
+import { ArrowLeft, Upload, RotateCcw, Image as ImageIcon, Type, Trash2, ShoppingCart, Plus, Minus, Copy, Building } from 'lucide-react';
 import { toast } from 'sonner';
 
 // Import all backgrounds
@@ -83,28 +84,55 @@ interface TextBox {
   color: string;
 }
 
-const createDefaultTextBoxes = (): TextBox[] => [
-  {
-    id: 'name',
-    content: 'John Doe',
-    x: 50,
-    y: 80,
-    fontFamily: 'Great Vibes',
-    fontSize: 32,
-    color: '#ffffff',
-  },
-  {
-    id: 'dates',
-    content: '1950 - 2024',
-    x: 50,
-    y: 90,
-    fontFamily: 'Cormorant Garamond',
-    fontSize: 18,
-    color: '#ffffff',
-  },
-];
+// Helper to format dates for display
+const formatDateForDisplay = (dateStr: string): string => {
+  if (!dateStr) return '';
+  try {
+    const date = new Date(dateStr + 'T00:00:00');
+    return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+  } catch {
+    return dateStr;
+  }
+};
+
+const createDefaultTextBoxes = (name?: string, birthDate?: string, deathDate?: string): TextBox[] => {
+  // Format dates if available
+  let datesContent = '1950 - 2024';
+  if (birthDate && deathDate) {
+    const birthYear = birthDate.split('-')[0];
+    const deathYear = deathDate.split('-')[0];
+    datesContent = `${birthYear} - ${deathYear}`;
+  } else if (birthDate) {
+    datesContent = birthDate.split('-')[0];
+  } else if (deathDate) {
+    datesContent = deathDate.split('-')[0];
+  }
+
+  return [
+    {
+      id: 'name',
+      content: name || 'John Doe',
+      x: 50,
+      y: 80,
+      fontFamily: 'Great Vibes',
+      fontSize: 32,
+      color: '#ffffff',
+    },
+    {
+      id: 'dates',
+      content: datesContent,
+      x: 50,
+      y: 90,
+      fontFamily: 'Cormorant Garamond',
+      fontSize: 18,
+      color: '#ffffff',
+    },
+  ];
+};
 
 const MemorialPhotoEditor = () => {
+  const [searchParams] = useSearchParams();
+  
   // Photo state
   const [photo, setPhoto] = useState<string | null>(null);
   const [photoZoom, setPhotoZoom] = useState(1);
@@ -121,6 +149,10 @@ const MemorialPhotoEditor = () => {
   const [isDragging, setIsDragging] = useState(false);
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
   
+  // Funeral home logo state
+  const [funeralHomeLogo, setFuneralHomeLogo] = useState<string | null>(null);
+  const [showFuneralLogo, setShowFuneralLogo] = useState(false);
+  
   // Order state
   const [photoSize, setPhotoSize] = useState<PhotoSize>('16x20');
   const [quantity, setQuantity] = useState(1);
@@ -128,6 +160,34 @@ const MemorialPhotoEditor = () => {
   const photoInputRef = useRef<HTMLInputElement>(null);
   const bgInputRef = useRef<HTMLInputElement>(null);
   const canvasRef = useRef<HTMLDivElement>(null);
+  const logoInputRef = useRef<HTMLInputElement>(null);
+
+  // Load data from card design if available
+  useEffect(() => {
+    const storedData = sessionStorage.getItem('memorialPhotoData');
+    if (storedData) {
+      try {
+        const data = JSON.parse(storedData);
+        
+        // Pre-fill name and dates
+        if (data.deceasedName || data.birthDate || data.deathDate) {
+          setTextBoxes(createDefaultTextBoxes(data.deceasedName, data.birthDate, data.deathDate));
+        }
+        
+        // Pre-fill photo from card design
+        if (data.deceasedPhoto) {
+          setPhoto(data.deceasedPhoto);
+        }
+        
+        // Store funeral home logo if provided
+        if (data.funeralHomeLogo) {
+          setFuneralHomeLogo(data.funeralHomeLogo);
+        }
+      } catch (e) {
+        console.error('Failed to parse memorial photo data:', e);
+      }
+    }
+  }, []);
 
   const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -348,6 +408,17 @@ const MemorialPhotoEditor = () => {
                 </div>
               ))}
               
+              {/* Funeral Home Logo */}
+              {showFuneralLogo && funeralHomeLogo && (
+                <div className="absolute bottom-3 left-1/2 transform -translate-x-1/2 pointer-events-none">
+                  <img 
+                    src={funeralHomeLogo} 
+                    alt="Funeral Home Logo" 
+                    className="h-10 w-auto max-w-[40%] object-contain opacity-90"
+                    style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.5))' }}
+                  />
+                </div>
+              )}
               {/* Upload prompt if no photo */}
               {!photo && (
                 <div 
@@ -461,7 +532,70 @@ const MemorialPhotoEditor = () => {
               </CardContent>
             </Card>
 
-            {/* Background Selection */}
+            {/* Funeral Home Logo Toggle */}
+            {funeralHomeLogo && (
+              <Card className="bg-slate-800 border-slate-700">
+                <CardContent className="p-6 space-y-4">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Building className="h-5 w-5 text-amber-400" />
+                    <Label className="text-white font-semibold">Funeral Home Logo</Label>
+                  </div>
+                  
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <img 
+                        src={funeralHomeLogo} 
+                        alt="Funeral Home Logo" 
+                        className="h-10 w-auto max-w-[100px] object-contain rounded"
+                      />
+                      <span className="text-slate-300 text-sm">Show on photo</span>
+                    </div>
+                    <Switch 
+                      checked={showFuneralLogo} 
+                      onCheckedChange={setShowFuneralLogo}
+                    />
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+            
+            {/* Upload logo if not from card design */}
+            {!funeralHomeLogo && (
+              <Card className="bg-slate-800 border-slate-700">
+                <CardContent className="p-6 space-y-4">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Building className="h-5 w-5 text-amber-400" />
+                    <Label className="text-white font-semibold">Funeral Home Logo</Label>
+                  </div>
+                  
+                  <input 
+                    ref={logoInputRef}
+                    type="file" 
+                    accept="image/*" 
+                    className="hidden"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) {
+                        const url = URL.createObjectURL(file);
+                        setFuneralHomeLogo(url);
+                        setShowFuneralLogo(true);
+                        toast.success('Logo added!');
+                      }
+                    }}
+                  />
+                  
+                  <Button 
+                    variant="outline"
+                    onClick={() => logoInputRef.current?.click()}
+                    className="w-full border-slate-600 text-slate-300 hover:bg-slate-700"
+                  >
+                    <Upload className="h-4 w-4 mr-2" />
+                    Add Funeral Home Logo
+                  </Button>
+                  <p className="text-slate-500 text-xs">Optional - adds your funeral home's logo to the photo</p>
+                </CardContent>
+              </Card>
+            )}
             <Card className="bg-slate-800 border-slate-700">
               <CardContent className="p-6 space-y-4">
                 <div className="flex items-center gap-2 mb-2">
