@@ -309,13 +309,7 @@ const Index = () => {
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-10">
           <Link to="/design?type=paper&quantity=72">
             <Button size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold text-lg px-10 py-7 shadow-xl">
-              Photo Prayer Cards
-              <ArrowRight className="ml-2 h-5 w-5" />
-            </Button>
-          </Link>
-          <Link to="/design">
-            <Button size="lg" variant="outline" className="text-lg px-10 py-7 border-2">
-              Metal Cards
+              Design Your Prayer Cards
               <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
           </Link>
@@ -369,8 +363,11 @@ const Index = () => {
                     <span className="bg-green-500/20 text-green-600 text-xs font-bold px-2 py-1 rounded">Save $58</span>
                   </div>
                   
-                  <p className="text-muted-foreground text-sm">
+                  <p className="text-muted-foreground text-sm mb-2">
                     Need more? Add cards for just ${prayerCardPricing.perCardPrice.toFixed(2)} each
+                  </p>
+                  <p className="text-muted-foreground text-sm">
+                    Upgrade to <span className="font-semibold text-foreground">metal cards</span> in the designer
                   </p>
                 </div>
 
@@ -393,55 +390,11 @@ const Index = () => {
           </Card>
 
           <p className="text-center text-muted-foreground text-sm mt-6">
-            Thick glossy cardstock • Full color both sides • 72-Hour +$10 • 48-Hour +$15 • Overnight +100%
+            Thick glossy cardstock • Metal upgrade available • 72-Hour +$10 • 48-Hour +$15 • Overnight +100%
           </p>
         </div>
       </section>
 
-      {/* Metal Cards Section - SECONDARY */}
-      <section className="container mx-auto px-4 py-16 border-t border-border">
-        <div className="max-w-5xl mx-auto">
-          <div className="text-center mb-10">
-            <span className="inline-block bg-secondary text-secondary-foreground text-sm font-medium px-4 py-1.5 rounded-full mb-4">
-              PREMIUM UPGRADE
-            </span>
-            <h2 className="text-3xl md:text-4xl font-bold text-foreground">Metal Prayer Cards</h2>
-            <p className="text-muted-foreground mt-2">Heirloom quality keepsakes that last forever.</p>
-          </div>
-
-          <Card className="bg-card border-border max-w-md mx-auto">
-            <CardContent className="p-8 text-center">
-              <h3 className="text-2xl font-bold text-foreground mb-2">Starter Bundle</h3>
-              <p className="text-primary font-bold text-sm mb-4">55 Metal Cards + 2 Memorial Easel Photos</p>
-              
-              <div className="mb-4 flex items-center gap-3 justify-center">
-                <span className="text-2xl text-muted-foreground line-through">$175</span>
-                <span className="text-5xl font-bold text-foreground" style={{ fontVariantNumeric: 'lining-nums' }}>${metalBasePrice}</span>
-                <span className="bg-green-500/20 text-green-600 text-xs font-bold px-2 py-1 rounded">Save $78</span>
-              </div>
-              
-              <p className="text-muted-foreground text-sm mb-6">
-                Additional sets of {metalCardsPerSet}: ${metalAdditionalSetPrice} each
-              </p>
-
-              <Link to="/design?type=metal" className="block">
-                <Button
-                  size="lg"
-                  className="w-full font-semibold text-lg py-6"
-                >
-                  Start Designing
-                  <ArrowRight className="ml-2 h-5 w-5" />
-                </Button>
-              </Link>
-            </CardContent>
-          </Card>
-
-          <p className="text-center text-muted-foreground text-sm mt-6">
-            Premium metal finish • Full color both sides • 72-Hour +$10 • 48-Hour +$15 • Overnight +100%
-          </p>
-
-        </div>
-      </section>
 
 
       {/* Celebration of Life Memorial Photos */}
