@@ -267,8 +267,24 @@ const Design = () => {
   const [photoPanY, setPhotoPanY] = useState(0);
   const [photoRotation, setPhotoRotation] = useState(0);
   const [photoFade, setPhotoFade] = useState(false);
-  const [showMetalBorder, setShowMetalBorder] = useState(true);
+  const [metalBorderColor, setMetalBorderColor] = useState<string>('#d4af37'); // 'none' or metallic hex
   const [photoBrightness, setPhotoBrightness] = useState(100);
+
+  // Metal border gradient based on color
+  const getMetalBorderGradient = (color: string): string => {
+    switch (color) {
+      case '#d4af37': // Gold
+        return 'from-yellow-200 via-yellow-400 to-yellow-700';
+      case '#c0c0c0': // Silver
+        return 'from-gray-200 via-gray-300 to-gray-500';
+      case '#b76e79': // Rose Gold
+        return 'from-pink-200 via-pink-300 to-pink-500';
+      case '#f8f8f8': // White
+        return 'from-gray-100 via-white to-gray-200';
+      default:
+        return 'from-yellow-200 via-yellow-400 to-yellow-700';
+    }
+  };
   const [isPanning, setIsPanning] = useState(false);
   const [backBgImage, setBackBgImage] = useState<string | null>(null);
   const [backBgType, setBackBgType] = useState<BackBgType>('metal');
@@ -1508,10 +1524,10 @@ const Design = () => {
                           ref={cardPreviewRef}
                           className={`${cardClass} ${cardRounding} overflow-hidden shadow-2xl relative`}
                         >
-                          <div className={`absolute inset-0 ${cardType === 'metal' && showMetalBorder ? `bg-gradient-to-br ${currentFinish.gradient} p-1` : cardType === 'metal' ? '' : 'bg-white'}`}>
+                          <div className={`absolute inset-0 ${cardType === 'metal' && metalBorderColor !== 'none' ? `bg-gradient-to-br ${getMetalBorderGradient(metalBorderColor)} p-1` : cardType === 'metal' ? '' : 'bg-white'}`}>
                             <div 
                               ref={photoContainerRef}
-                              className={`w-full h-full ${cardType === 'metal' && showMetalBorder ? 'rounded-xl' : ''} overflow-hidden bg-slate-700 flex items-center justify-center touch-none relative ${!deceasedPhoto ? 'cursor-pointer hover:bg-slate-600 transition-colors' : ''}`}
+                              className={`w-full h-full ${cardType === 'metal' && metalBorderColor !== 'none' ? 'rounded-xl' : ''} overflow-hidden bg-slate-700 flex items-center justify-center touch-none relative ${!deceasedPhoto ? 'cursor-pointer hover:bg-slate-600 transition-colors' : ''}`}
                               style={{ cursor: deceasedPhoto && !draggingText ? (isPanning ? 'grabbing' : 'grab') : (!deceasedPhoto ? 'pointer' : 'default') }}
                               onPointerDown={handlePhotoPointerDown}
                               onPointerMove={handlePhotoPointerMove}
@@ -1789,17 +1805,107 @@ const Design = () => {
                               </label>
                             </div>
                             {cardType === 'metal' && (
-                              <div className="flex items-center justify-between pt-2 border-t border-slate-600">
-                                <Label className="text-slate-400 text-xs">Metal Border Frame</Label>
-                                <label className="flex items-center gap-2 cursor-pointer">
-                                  <input 
-                                    type="checkbox" 
-                                    checked={showMetalBorder} 
-                                    onChange={(e) => setShowMetalBorder(e.target.checked)}
-                                    className="accent-amber-600"
-                                  />
-                                  <span className="text-slate-300 text-xs">{showMetalBorder ? 'On' : 'Off'}</span>
-                                </label>
+                              <div className="pt-2 border-t border-slate-600">
+                                <Label className="text-slate-400 text-xs mb-2 block">Metal Border Frame</Label>
+                                <div className="flex gap-2 flex-wrap">
+                                  {/* None option */}
+                                  <button
+                                    type="button"
+                                    onClick={() => setMetalBorderColor('none')}
+                                    className={`w-10 h-10 rounded-lg border-2 transition-all flex items-center justify-center ${
+                                      metalBorderColor === 'none'
+                                        ? 'border-amber-400 scale-110 ring-2 ring-amber-400/50'
+                                        : 'border-slate-600 hover:border-slate-500'
+                                    } bg-slate-700`}
+                                    title="No Border"
+                                  >
+                                    <span className="text-slate-400 text-xs font-medium">None</span>
+                                  </button>
+                                  {/* Gold */}
+                                  <button
+                                    type="button"
+                                    onClick={() => setMetalBorderColor('#d4af37')}
+                                    className={`w-10 h-10 rounded-lg border-2 transition-all overflow-hidden relative ${
+                                      metalBorderColor === '#d4af37'
+                                        ? 'border-amber-400 scale-110 ring-2 ring-amber-400/50'
+                                        : 'border-slate-600 hover:border-slate-500'
+                                    }`}
+                                    title="Gold"
+                                  >
+                                    <div
+                                      className="w-full h-full"
+                                      style={{
+                                        background:
+                                          'linear-gradient(135deg, #fff9e6 0%, #ffd700 15%, #d4af37 30%, #b8860b 50%, #d4af37 70%, #ffd700 85%, #fff9e6 100%)',
+                                        boxShadow:
+                                          'inset 0 2px 4px rgba(255,255,255,0.6), inset 0 -2px 4px rgba(0,0,0,0.2)',
+                                      }}
+                                    />
+                                  </button>
+                                  {/* Silver */}
+                                  <button
+                                    type="button"
+                                    onClick={() => setMetalBorderColor('#c0c0c0')}
+                                    className={`w-10 h-10 rounded-lg border-2 transition-all overflow-hidden relative ${
+                                      metalBorderColor === '#c0c0c0'
+                                        ? 'border-amber-400 scale-110 ring-2 ring-amber-400/50'
+                                        : 'border-slate-600 hover:border-slate-500'
+                                    }`}
+                                    title="Silver"
+                                  >
+                                    <div
+                                      className="w-full h-full"
+                                      style={{
+                                        background:
+                                          'linear-gradient(135deg, #ffffff 0%, #e8e8e8 15%, #c0c0c0 30%, #a8a8a8 50%, #c0c0c0 70%, #e8e8e8 85%, #ffffff 100%)',
+                                        boxShadow:
+                                          'inset 0 2px 4px rgba(255,255,255,0.8), inset 0 -2px 4px rgba(0,0,0,0.15)',
+                                      }}
+                                    />
+                                  </button>
+                                  {/* Rose Gold */}
+                                  <button
+                                    type="button"
+                                    onClick={() => setMetalBorderColor('#b76e79')}
+                                    className={`w-10 h-10 rounded-lg border-2 transition-all overflow-hidden relative ${
+                                      metalBorderColor === '#b76e79'
+                                        ? 'border-amber-400 scale-110 ring-2 ring-amber-400/50'
+                                        : 'border-slate-600 hover:border-slate-500'
+                                    }`}
+                                    title="Rose Gold"
+                                  >
+                                    <div
+                                      className="w-full h-full"
+                                      style={{
+                                        background:
+                                          'linear-gradient(135deg, #fce4e4 0%, #e8b4b8 15%, #b76e79 30%, #9e5a65 50%, #b76e79 70%, #e8b4b8 85%, #fce4e4 100%)',
+                                        boxShadow:
+                                          'inset 0 2px 4px rgba(255,255,255,0.5), inset 0 -2px 4px rgba(0,0,0,0.2)',
+                                      }}
+                                    />
+                                  </button>
+                                  {/* White */}
+                                  <button
+                                    type="button"
+                                    onClick={() => setMetalBorderColor('#f8f8f8')}
+                                    className={`w-10 h-10 rounded-lg border-2 transition-all overflow-hidden relative ${
+                                      metalBorderColor === '#f8f8f8'
+                                        ? 'border-amber-400 scale-110 ring-2 ring-amber-400/50'
+                                        : 'border-slate-600 hover:border-slate-500'
+                                    }`}
+                                    title="White"
+                                  >
+                                    <div
+                                      className="w-full h-full"
+                                      style={{
+                                        background:
+                                          'linear-gradient(135deg, #ffffff 0%, #fafafa 25%, #f0f0f0 50%, #fafafa 75%, #ffffff 100%)',
+                                        boxShadow:
+                                          'inset 0 2px 4px rgba(255,255,255,1), inset 0 -2px 4px rgba(0,0,0,0.05)',
+                                      }}
+                                    />
+                                  </button>
+                                </div>
                               </div>
                             )}
                             <Button
@@ -4315,10 +4421,10 @@ const Design = () => {
           }}
         >
           <div 
-            className={`w-full h-full rounded-lg overflow-hidden relative ${showMetalBorder ? `bg-gradient-to-br ${currentFinish.gradient}` : ''}`}
-            style={{ padding: showMetalBorder ? '4px' : '0' }}
+            className={`w-full h-full rounded-lg overflow-hidden relative ${metalBorderColor !== 'none' ? `bg-gradient-to-br ${getMetalBorderGradient(metalBorderColor)}` : ''}`}
+            style={{ padding: metalBorderColor !== 'none' ? '4px' : '0' }}
           >
-            <div className={`w-full h-full ${showMetalBorder ? 'rounded-lg' : ''} overflow-hidden bg-slate-700 relative`}>
+            <div className={`w-full h-full ${metalBorderColor !== 'none' ? 'rounded-lg' : ''} overflow-hidden bg-slate-700 relative`}>
               {deceasedPhoto && (
                 <>
                   <img
@@ -4393,11 +4499,11 @@ const Design = () => {
           }}
         >
           <div 
-            className={`w-full h-full rounded-lg overflow-hidden relative ${showMetalBorder ? `bg-gradient-to-br ${currentFinish.gradient}` : ''}`}
-            style={{ padding: showMetalBorder ? '4px' : '0' }}
+            className={`w-full h-full rounded-lg overflow-hidden relative ${metalBorderColor !== 'none' ? `bg-gradient-to-br ${getMetalBorderGradient(metalBorderColor)}` : ''}`}
+            style={{ padding: metalBorderColor !== 'none' ? '4px' : '0' }}
           >
             <div 
-              className={`w-full h-full ${showMetalBorder ? 'rounded-lg' : ''} overflow-hidden relative flex flex-col`}
+              className={`w-full h-full ${metalBorderColor !== 'none' ? 'rounded-lg' : ''} overflow-hidden relative flex flex-col`}
               style={{
                 backgroundColor: backBgImage ? 'transparent' : '#ffffff',
               }}
