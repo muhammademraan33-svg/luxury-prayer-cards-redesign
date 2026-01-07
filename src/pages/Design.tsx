@@ -191,7 +191,8 @@ const EASEL_18X24_UPSELL = 7; // Upgrade from 16x20 to 18x24
 const PREMIUM_THICKNESS_PRICE = 15; // Upgrade to .080" thick cards per set
 const OVERNIGHT_UPCHARGE_PERCENT = 100; // 100% upcharge for overnight
 const PAPER_SIZE_UPSELL = 7; // Upgrade from 2.5x4.25 to 3x4.75
-const ADDITIONAL_DESIGN_PRICE = 7; // Per additional design
+const ADDITIONAL_DESIGN_PRICE = 7; // Per additional design (metal only)
+const PAPER_PER_CARD_PRICE = 0.77; // Per card price for paper cards
 
 type CardThickness = 'standard' | 'premium';
 
@@ -975,12 +976,29 @@ const Design = () => {
     (packages as Record<string, PackageConfig>)[selectedPackage] ?? Object.values(packages)[0];
 
   const calculatePrice = () => {
+    // Paper cards: simple per-card pricing
+    if (cardType === 'paper') {
+      const totalPaperCards = mainDesignQty + additionalDesigns.reduce((sum, d) => sum + d.qty, 0);
+      let total = Math.round(totalPaperCards * PAPER_PER_CARD_PRICE * 100) / 100;
+      
+      // Paper card size upsell (3x4.75 instead of 2.5x4.25)
+      if (paperCardSize === '3x4.75') {
+        total += PAPER_SIZE_UPSELL;
+      }
+      
+      // Overnight upgrade
+      if (upgradeToOvernight) {
+        total = Math.round(total * 2); // 100% upcharge
+      }
+      
+      return Math.round(total);
+    }
+
+    // Metal cards: package-based pricing
     let total = currentPackage.price;
 
-    // Extra card sets beyond package (metal only)
-    if (cardType === 'metal') {
-      total += extraSets * ADDITIONAL_SET_PRICE;
-    }
+    // Extra card sets beyond package
+    total += extraSets * ADDITIONAL_SET_PRICE;
 
     // Additional photos beyond package includes
     const includedPhotos = currentPackage.photos;
@@ -991,18 +1009,13 @@ const Design = () => {
     const upgradedCount = easelPhotos.filter((p) => p.size === '18x24').length;
     total += upgradedCount * EASEL_18X24_UPSELL;
 
-    // Premium thickness upgrade (metal only)
-    if (cardType === 'metal' && upgradeThickness && currentPackage.thickness !== 'premium') {
+    // Premium thickness upgrade
+    if (upgradeThickness && currentPackage.thickness !== 'premium') {
       const totalSets = currentPackage.cards / 55 + extraSets;
       total += PREMIUM_THICKNESS_PRICE * totalSets;
     }
 
-    // Paper card size upsell (3x4.75 instead of 2.5x4.25)
-    if (cardType === 'paper' && paperCardSize === '3x4.75') {
-      total += PAPER_SIZE_UPSELL;
-    }
-
-    // Additional designs ($7 each)
+    // Additional designs ($7 each for metal)
     if (additionalDesigns.length > 0) {
       total += additionalDesigns.length * ADDITIONAL_DESIGN_PRICE;
     }
@@ -1145,14 +1158,14 @@ const Design = () => {
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-white mb-2">
             {step === 1 && `Design Your ${cardType === 'paper' ? 'Photo Prayer Card' : 'Metal Prayer Card'}${additionalDesigns.length > 0 ? 's' : ''}`}
-            {step === 2 && 'Choose Your Package'}
+            {step === 2 && (cardType === 'paper' ? 'Review Your Order' : 'Choose Your Package')}
             {step === 3 && 'Shipping Information'}
             {step === 4 && 'Review & Order'}
             {step === 5 && 'Order Confirmed!'}
           </h1>
           <p className="text-slate-400">
             {step === 1 && 'Customize your cards and set quantities'}
-            {step === 2 && 'Select quantity and shipping options'}
+            {step === 2 && (cardType === 'paper' ? 'Confirm your card selection and options' : 'Select quantity and shipping options')}
             {step === 3 && 'Enter your shipping details'}
             {step === 4 && 'Confirm your order details'}
           </p>
@@ -3114,7 +3127,6 @@ const Design = () => {
                         <div className="flex items-center justify-center gap-3 text-slate-400 group-hover:text-amber-400">
                           <Sparkles className="h-5 w-5" />
                           <span className="font-medium">+ Add Another Design</span>
-                          <span className="text-sm">(+${ADDITIONAL_DESIGN_PRICE})</span>
                         </div>
                         <p className="text-slate-500 text-sm mt-1">Different photo, prayer, or background</p>
                       </button>
@@ -3134,13 +3146,11 @@ const Design = () => {
                               <p className="text-slate-400 text-xs">cards total</p>
                             </div>
                           </div>
-                          {additionalDesigns.length > 0 && (
-                            <div className="mt-3 pt-3 border-t border-amber-500/20">
-                              <p className="text-amber-400 text-sm">
-                                +${additionalDesigns.length * ADDITIONAL_DESIGN_PRICE} for {additionalDesigns.length} additional design{additionalDesigns.length > 1 ? 's' : ''}
-                              </p>
-                            </div>
-                          )}
+                          <div className="mt-3 pt-3 border-t border-amber-500/20">
+                            <p className="text-slate-400 text-sm">
+                              ${PAPER_PER_CARD_PRICE.toFixed(2)}/card
+                            </p>
+                          </div>
                         </div>
                       )}
                     </div>
@@ -3163,88 +3173,134 @@ const Design = () => {
               )}
 
 
-              {/* Step 2: Package Selection */}
+              {/* Step 2: Package Selection (Metal) / Order Summary (Paper) */}
               {step === 2 && (
                 <div className="space-y-6">
-                  {/* Package Tier Selection */}
-                  <div>
-                    <h3 className="text-white font-semibold text-lg mb-4 flex items-center gap-2">
-                      <Package className="h-5 w-5 text-amber-400" />
-                      Choose Your Package
-                    </h3>
-                    
-                    <div className="grid grid-cols-1 gap-4">
-                      {Object.entries(packages).map(([id, pkg]) => {
-                        const showCompare = pkg.comparePrice > pkg.price;
-                        return (
-                          <button
-                            key={id}
-                            type="button"
-                            onClick={() => setSelectedPackage(id as PackageId)}
-                            className={`relative p-5 rounded-xl border-2 transition-all text-left ${
-                              selectedPackage === (id as PackageId)
-                                ? 'border-amber-500 bg-gradient-to-br from-amber-600/20 to-amber-900/10'
-                                : 'border-slate-600 hover:border-amber-500/50'
-                            }`}
-                          >
-                            {pkg.popular && (
-                              <div className="absolute -top-3 left-4 bg-gradient-to-r from-amber-600 to-amber-500 text-white text-xs font-bold px-3 py-1 rounded-full">
-                                MOST POPULAR
-                              </div>
-                            )}
+                  {/* Paper Cards: Simple Order Summary */}
+                  {cardType === 'paper' ? (
+                    <>
+                      {/* Order Summary for Paper */}
+                      <div className="bg-slate-800/50 rounded-xl p-5 border border-slate-600">
+                        <h3 className="text-white font-semibold text-lg mb-4 flex items-center gap-2">
+                          <Package className="h-5 w-5 text-amber-400" />
+                          Your Order
+                        </h3>
+                        
+                        <div className="space-y-3">
+                          <div className="flex justify-between items-center py-2 border-b border-slate-600">
+                            <span className="text-slate-300">Photo Prayer Cards</span>
+                            <span className="text-white font-medium">
+                              {mainDesignQty + additionalDesigns.reduce((sum, d) => sum + d.qty, 0)} cards
+                            </span>
+                          </div>
+                          
+                          <div className="flex justify-between items-center py-2 border-b border-slate-600">
+                            <span className="text-slate-300">Price per card</span>
+                            <span className="text-white font-medium">${PAPER_PER_CARD_PRICE.toFixed(2)}</span>
+                          </div>
+                          
+                          {additionalDesigns.length > 0 && (
+                            <div className="flex justify-between items-center py-2 border-b border-slate-600">
+                              <span className="text-slate-300">Designs</span>
+                              <span className="text-white font-medium">{1 + additionalDesigns.length} different designs</span>
+                            </div>
+                          )}
+                          
+                          <div className="flex justify-between items-center py-2 border-b border-slate-600">
+                            <span className="text-slate-300">Card Size</span>
+                            <span className="text-white font-medium">
+                              {paperCardSize === '3x4.75' ? '3" × 4.75" (Large)' : '2.5" × 4.25" (Standard)'}
+                            </span>
+                          </div>
+                          
+                          <div className="flex justify-between items-center py-2">
+                            <span className="text-slate-300">Shipping</span>
+                            <span className="text-white font-medium">Delivered in 24-72 hours</span>
+                          </div>
+                        </div>
+                      </div>
+                    </>
+                  ) : (
+                    /* Metal Cards: Package Selection */
+                    <div>
+                      <h3 className="text-white font-semibold text-lg mb-4 flex items-center gap-2">
+                        <Package className="h-5 w-5 text-amber-400" />
+                        Choose Your Package
+                      </h3>
+                      
+                      <div className="grid grid-cols-1 gap-4">
+                        {Object.entries(packages).map(([id, pkg]) => {
+                          const showCompare = pkg.comparePrice > pkg.price;
+                          return (
+                            <button
+                              key={id}
+                              type="button"
+                              onClick={() => setSelectedPackage(id as PackageId)}
+                              className={`relative p-5 rounded-xl border-2 transition-all text-left ${
+                                selectedPackage === (id as PackageId)
+                                  ? 'border-amber-500 bg-gradient-to-br from-amber-600/20 to-amber-900/10'
+                                  : 'border-slate-600 hover:border-amber-500/50'
+                              }`}
+                            >
+                              {pkg.popular && (
+                                <div className="absolute -top-3 left-4 bg-gradient-to-r from-amber-600 to-amber-500 text-white text-xs font-bold px-3 py-1 rounded-full">
+                                  MOST POPULAR
+                                </div>
+                              )}
 
-                            <div className="flex items-start justify-between gap-4">
-                              <div className="flex-1">
-                                <div className="flex items-center gap-3 mb-2">
-                                  <h4 className="text-xl font-bold text-white">{pkg.name}</h4>
-                                  {pkg.badge === 'BEST VALUE' && (
-                                    <span className="text-xs bg-amber-500/20 text-amber-400 px-2 py-0.5 rounded">BEST VALUE</span>
+                              <div className="flex items-start justify-between gap-4">
+                                <div className="flex-1">
+                                  <div className="flex items-center gap-3 mb-2">
+                                    <h4 className="text-xl font-bold text-white">{pkg.name}</h4>
+                                    {pkg.badge === 'BEST VALUE' && (
+                                      <span className="text-xs bg-amber-500/20 text-amber-400 px-2 py-0.5 rounded">BEST VALUE</span>
+                                    )}
+                                  </div>
+                                  <p className="text-slate-400 text-sm mb-3">{pkg.description}</p>
+                                  <ul className="space-y-1.5 text-sm">
+                                    <li className="flex items-center gap-2 text-slate-300">
+                                      <span className="text-amber-400">✓</span>
+                                      {pkg.cards} Premium Metal Cards
+                                      {pkg.thickness === 'premium' && (
+                                        <span className="text-amber-400 text-xs">(Premium .080\")</span>
+                                      )}
+                                    </li>
+                                    <li className="flex items-center gap-2 text-slate-300">
+                                      <span className="text-amber-400">✓</span>
+                                      {pkg.photos} Easel Photos Included
+                                    </li>
+                                    <li className="flex items-center gap-2 text-slate-300">
+                                      <span className="text-amber-400">✓</span>
+                                      {pkg.shipping}
+                                      {pkg.shipping === 'Overnight' && <span className="text-rose-400 text-xs ml-1">⚡</span>}
+                                    </li>
+                                  </ul>
+                                </div>
+
+                                <div className="text-right">
+                                  <div className="flex items-baseline gap-1">
+                                    <span className="text-3xl font-bold text-white">${pkg.price}</span>
+                                  </div>
+                                  {showCompare && (
+                                    <>
+                                      <span className="text-slate-500 line-through text-sm">${pkg.comparePrice}</span>
+                                      <p className="text-amber-400 text-xs font-medium">Save ${pkg.comparePrice - pkg.price}</p>
+                                    </>
                                   )}
                                 </div>
-                                <p className="text-slate-400 text-sm mb-3">{pkg.description}</p>
-                                <ul className="space-y-1.5 text-sm">
-                                  <li className="flex items-center gap-2 text-slate-300">
-                                    <span className="text-amber-400">✓</span>
-                                    {pkg.cards} {cardType === 'paper' ? 'Photo Prayer Cards' : 'Premium Metal Cards'}
-                                    {cardType === 'metal' && pkg.thickness === 'premium' && (
-                                      <span className="text-amber-400 text-xs">(Premium .080\")</span>
-                                    )}
-                                  </li>
-                                  <li className="flex items-center gap-2 text-slate-300">
-                                    <span className="text-amber-400">✓</span>
-                                    {pkg.photos} Easel Photos Included
-                                  </li>
-                                  <li className="flex items-center gap-2 text-slate-300">
-                                    <span className="text-amber-400">✓</span>
-                                    {pkg.shipping}
-                                    {pkg.shipping === 'Overnight' && <span className="text-rose-400 text-xs ml-1">⚡</span>}
-                                  </li>
-                                </ul>
                               </div>
 
-                              <div className="text-right">
-                                <div className="flex items-baseline gap-1">
-                                  <span className="text-3xl font-bold text-white">${pkg.price}</span>
+                              {selectedPackage === (id as PackageId) && (
+                                <div className="absolute top-4 right-4 w-6 h-6 bg-amber-500 rounded-full flex items-center justify-center">
+                                  <span className="text-white text-sm">✓</span>
                                 </div>
-                                {showCompare && (
-                                  <>
-                                    <span className="text-slate-500 line-through text-sm">${pkg.comparePrice}</span>
-                                    <p className="text-amber-400 text-xs font-medium">Save ${pkg.comparePrice - pkg.price}</p>
-                                  </>
-                                )}
-                              </div>
-                            </div>
-
-                            {selectedPackage === (id as PackageId) && (
-                              <div className="absolute top-4 right-4 w-6 h-6 bg-amber-500 rounded-full flex items-center justify-center">
-                                <span className="text-white text-sm">✓</span>
-                              </div>
-                            )}
-                          </button>
-                        );
-                      })}
+                              )}
+                            </button>
+                          );
+                        })}
+                      </div>
                     </div>
-                  </div>
+                  )}
 
                   {/* Add-ons */}
                   <div className="space-y-4">
@@ -3410,7 +3466,12 @@ const Design = () => {
                     <div className="flex justify-between items-center">
                       <div>
                         <p className="text-slate-300 text-sm">Your Order</p>
-                        <p className="text-white font-medium">{currentPackage.name} Package + Add-ons</p>
+                        <p className="text-white font-medium">
+                          {cardType === 'paper' 
+                            ? `${mainDesignQty + additionalDesigns.reduce((sum, d) => sum + d.qty, 0)} Photo Prayer Cards`
+                            : `${currentPackage.name} Package + Add-ons`
+                          }
+                        </p>
                       </div>
                       <p className="text-2xl font-bold text-amber-400">${calculatePrice()}</p>
                     </div>
