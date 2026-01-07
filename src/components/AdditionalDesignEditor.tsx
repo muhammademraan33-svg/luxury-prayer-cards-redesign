@@ -56,6 +56,7 @@ const PRESET_BACKGROUNDS = [
 
 export interface AdditionalDesignData {
   qty: number;
+  size: '2.5x4.25' | '3x4.75';
   photo: string | null;
   photoZoom: number;
   photoPanX: number;
@@ -71,6 +72,7 @@ export interface AdditionalDesignData {
 
 export const createEmptyDesign = (): AdditionalDesignData => ({
   qty: 10,
+  size: '2.5x4.25',
   photo: null,
   photoZoom: 1,
   photoPanX: 0,
