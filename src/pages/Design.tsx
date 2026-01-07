@@ -335,7 +335,7 @@ const Design = () => {
   ]);
 
   const [nameColor, setNameColor] = useState('#ffffff');
-  const [frontDatesColor, setFrontDatesColor] = useState('#ffffffcc');
+  const [frontDatesColor, setFrontDatesColor] = useState('#ffffff');
   const [backDatesColor, setBackDatesColor] = useState('#666666');
   const [nameSize, setNameSize] = useState(24);
   const [frontDatesSize, setFrontDatesSize] = useState<number | 'auto'>(16);
@@ -387,13 +387,13 @@ const Design = () => {
     if (isDark) {
       // Light text for dark backgrounds (photos, dark images)
       setNameColor('#ffffff');
-      setFrontDatesColor('#ffffffcc');
+      setFrontDatesColor('#ffffff');
       setAdditionalTextColor('#ffffff');
     } else {
       // Dark text for light backgrounds
-      setNameColor('#18181b');
-      setFrontDatesColor('#3f3f46cc');
-      setAdditionalTextColor('#3f3f46');
+      setNameColor('#111827');
+      setFrontDatesColor('#111827');
+      setAdditionalTextColor('#111827');
     }
   };
 
@@ -563,6 +563,11 @@ const Design = () => {
   const panStartRef = useRef<{ x: number; y: number; panX: number; panY: number } | null>(null);
   const pinchStartRef = useRef<{ distance: number; scale: number } | null>(null);
   const pointerCacheRef = useRef<Map<number, PointerEvent>>(new Map());
+  const photoZoomRef = useRef(photoZoom);
+
+  useEffect(() => {
+    photoZoomRef.current = photoZoom;
+  }, [photoZoom]);
 
   // Text drag handlers
   const handleTextPointerDown = (e: React.PointerEvent, textType: 'name' | 'dates' | 'additional' | 'backDates') => {
@@ -924,13 +929,28 @@ const Design = () => {
     }
 
     if (pointerCacheRef.current.size === 1) {
+      // Allow dragging even at 100% zoom by slightly increasing zoom on first drag.
+      const MIN_DRAG_ZOOM = 1.08;
+      let startPanX = photoPanX;
+      let startPanY = photoPanY;
+
+      if (photoZoomRef.current < MIN_DRAG_ZOOM) {
+        photoZoomRef.current = MIN_DRAG_ZOOM;
+        setPhotoZoom(MIN_DRAG_ZOOM);
+        const clamped = clampPhotoPan(photoPanX, photoPanY, MIN_DRAG_ZOOM);
+        startPanX = clamped.panX;
+        startPanY = clamped.panY;
+        setPhotoPanX(clamped.panX);
+        setPhotoPanY(clamped.panY);
+      }
+
       setIsPanning(true);
-      panStartRef.current = { x: e.clientX, y: e.clientY, panX: photoPanX, panY: photoPanY };
+      panStartRef.current = { x: e.clientX, y: e.clientY, panX: startPanX, panY: startPanY };
     } else if (pointerCacheRef.current.size === 2) {
       const pointers = Array.from(pointerCacheRef.current.values());
       pinchStartRef.current = {
         distance: getDistance(pointers[0], pointers[1]),
-        scale: photoZoom,
+        scale: photoZoomRef.current,
       };
     }
   };
@@ -939,11 +959,14 @@ const Design = () => {
     if (!deceasedPhoto) return;
     pointerCacheRef.current.set(e.pointerId, e.nativeEvent);
 
+    const currentScale = photoZoomRef.current;
+
     if (pointerCacheRef.current.size === 2 && pinchStartRef.current) {
       const pointers = Array.from(pointerCacheRef.current.values());
       const currentDistance = getDistance(pointers[0], pointers[1]);
       const scaleChange = currentDistance / pinchStartRef.current.distance;
       const newScale = Math.max(1, Math.min(3, pinchStartRef.current.scale * scaleChange));
+      photoZoomRef.current = newScale;
       setPhotoZoom(newScale);
 
       const clamped = clampPhotoPan(photoPanX, photoPanY, newScale);
@@ -955,7 +978,7 @@ const Design = () => {
 
       const nextPanX = panStartRef.current.panX + dx;
       const nextPanY = panStartRef.current.panY + dy;
-      const clamped = clampPhotoPan(nextPanX, nextPanY, photoZoom);
+      const clamped = clampPhotoPan(nextPanX, nextPanY, currentScale);
       setPhotoPanX(clamped.panX);
       setPhotoPanY(clamped.panY);
     }
@@ -982,7 +1005,8 @@ const Design = () => {
     if (!deceasedPhoto) return;
     e.preventDefault();
     const delta = -e.deltaY * 0.002;
-    const newScale = Math.max(1, Math.min(3, photoZoom + delta));
+    const newScale = Math.max(1, Math.min(3, photoZoomRef.current + delta));
+    photoZoomRef.current = newScale;
     setPhotoZoom(newScale);
     const clamped = clampPhotoPan(photoPanX, photoPanY, newScale);
     setPhotoPanX(clamped.panX);
@@ -1578,6 +1602,10 @@ const Design = () => {
                                     textShadow: '0 2px 4px rgba(0,0,0,0.5)',
                                     boxShadow: (draggingText === 'dates' || resizingText === 'dates') ? '0 0 0 2px #d97706' : 'none',
                                     whiteSpace: 'nowrap',
+                                    backgroundColor: deceasedPhoto ? 'hsl(0 0% 0% / 0.35)' : 'transparent',
+                                    border: deceasedPhoto ? '1px solid hsl(0 0% 100% / 0.16)' : 'none',
+                                    backdropFilter: deceasedPhoto ? 'blur(2px)' : undefined,
+                                    WebkitBackdropFilter: deceasedPhoto ? 'blur(2px)' : undefined,
                                   }}
                                   onPointerDown={(e) => handleTextPointerDown(e, 'dates')}
                                   onPointerMove={handleTextPointerMove}
