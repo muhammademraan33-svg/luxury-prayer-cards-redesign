@@ -358,7 +358,7 @@ const Design = () => {
   
   // Back name styling - syncs with front name size
   const backNameSize = nameSize; // Always match front name size
-  const [backNameColor, setBackNameColor] = useState('#18181b');
+  const [backNameColor, setBackNameColor] = useState('#ffffff');
   const [backNameBold, setBackNameBold] = useState(true);
   const [backNameFont, setBackNameFont] = useState('Great Vibes');
   const [showNameOnBack, setShowNameOnBack] = useState(true);
@@ -2347,7 +2347,6 @@ const Design = () => {
                                         color: backNameColor,
                                         fontWeight: backNameBold ? 'bold' : 'normal',
                                         fontFamily: backNameFont,
-                                        textShadow: '2px 2px 4px rgba(0,0,0,0.5)',
                                       }}
                                     >
                                       {deceasedName || 'Name Here'}
