@@ -2844,7 +2844,7 @@ const Design = () => {
                           window.scrollTo({ top: 0, behavior: 'smooth' });
                         }}
                       >
-                        <div className="flex items-center gap-4">
+                        <div className="flex flex-wrap items-center gap-4">
                           {/* Thumbnails - Front & Back */}
                           <div className="flex gap-1 flex-shrink-0">
                             {/* Front Thumbnail */}
@@ -2883,7 +2883,7 @@ const Design = () => {
                             </div>
                           </div>
                           
-                          <div className="flex-1">
+                          <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-2 mb-1">
                               <span className="text-white font-semibold">Design 1</span>
                               <span className="text-xs bg-amber-500/20 text-amber-400 px-2 py-0.5 rounded">Primary</span>
@@ -2909,7 +2909,7 @@ const Design = () => {
                             )}
                           </div>
                           
-                          <div className="flex flex-col items-end gap-1">
+                          <div className="ml-auto flex flex-col items-end gap-1 flex-shrink-0">
                             <Label className="text-slate-400 text-xs">How many?</Label>
                             <div className="flex items-center gap-2">
                               <Button
@@ -2930,7 +2930,7 @@ const Design = () => {
                                 value={mainDesignQty}
                                 onClick={(e) => e.stopPropagation()}
                                 onChange={(e) => setMainDesignQty(Math.max(1, parseInt(e.target.value) || 1))}
-                                className="w-20 h-8 text-center text-lg font-bold bg-slate-800 border border-amber-500/50 rounded px-2 text-white"
+                                className="w-20 h-8 px-2 text-center text-base sm:text-lg leading-none font-bold tabular-nums bg-slate-800 border border-amber-500/50 rounded text-white appearance-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                               />
                               <Button
                                 type="button"
@@ -2963,7 +2963,7 @@ const Design = () => {
                             window.scrollTo({ top: 0, behavior: 'smooth' });
                           }}
                         >
-                          <div className="flex items-center gap-4">
+                          <div className="flex flex-wrap items-center gap-4">
                             {/* Thumbnails - Front & Back */}
                             <div className="flex gap-1 flex-shrink-0">
                               {/* Front Thumbnail */}
@@ -3005,7 +3005,7 @@ const Design = () => {
                               </div>
                             </div>
                             
-                            <div className="flex-1">
+                            <div className="flex-1 min-w-0">
                               <div className="flex items-center gap-2 mb-1">
                                 <span className="text-white font-semibold">Design {idx + 2}</span>
                                 {design.photo && (
@@ -3051,7 +3051,7 @@ const Design = () => {
                               </div>
                             </div>
                             
-                            <div className="flex flex-col items-end gap-1">
+                            <div className="ml-auto flex flex-col items-end gap-1 flex-shrink-0">
                               <Label className="text-slate-400 text-xs">How many?</Label>
                               <div className="flex items-center gap-2">
                                 <Button
@@ -3078,7 +3078,7 @@ const Design = () => {
                                     newDesigns[idx].qty = Math.max(1, parseInt(e.target.value) || 1);
                                     setAdditionalDesigns(newDesigns);
                                   }}
-                                  className="w-20 h-8 text-center text-lg font-bold bg-slate-800 border border-slate-500 rounded px-2 text-white"
+                                  className="w-20 h-8 px-2 text-center text-base sm:text-lg leading-none font-bold tabular-nums bg-slate-800 border border-slate-500 rounded text-white appearance-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                                 />
                                 <Button
                                   type="button"
