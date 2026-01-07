@@ -3002,12 +3002,18 @@ const Design = () => {
                     </Button>
                     <Button 
                       type="button" 
-                      onClick={() => setStep(3)} 
+                      onClick={() => {
+                        // Navigate to memorial photo editor
+                        const params = new URLSearchParams({
+                          package: selectedPackage,
+                          photos: String(currentPackage.photos),
+                          cardType,
+                        });
+                        window.location.href = `/memorial-photo?${params.toString()}`;
+                      }} 
                       className="flex-1 bg-amber-600 hover:bg-amber-700 text-white font-semibold"
                     >
-                      {((cardType === 'metal' && !upgradeThickness) || (cardType === 'paper' && paperCardSize !== '3x4.75')) 
-                        ? 'No Thanks, Continue' 
-                        : 'Continue'} <ArrowRight className="h-4 w-4 ml-2" />
+                      Continue to Memorial Photos <ArrowRight className="h-4 w-4 ml-2" />
                     </Button>
                   </div>
                 </div>
