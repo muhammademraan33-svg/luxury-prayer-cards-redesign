@@ -151,14 +151,14 @@ const METAL_PACKAGES: Record<'good' | 'better' | 'best', PackageConfig> = {
 
 const PAPER_PACKAGES: Record<'starter' | 'standard' | 'large', PackageConfig> = {
   starter: {
-    name: 'Starter',
+    name: 'Starter Bundle',
     price: 67,
-    comparePrice: 67,
+    comparePrice: 125,
     cards: 72,
     photos: 1,
     shipping: 'Delivered in 48-72 hours',
     thickness: 'standard' as CardThickness,
-    description: 'Great for smaller gatherings',
+    description: '72 cards + 1 memorial easel photo',
   },
   standard: {
     name: 'Standard',
