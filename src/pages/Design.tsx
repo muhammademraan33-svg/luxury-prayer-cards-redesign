@@ -2691,10 +2691,10 @@ const Design = () => {
                       Upload up to {currentPackage.photos} different photos for your included easel displays. You can add more to create a collage or display multiple memories.
                     </p>
 
-                    {/* Easel Photos Grid - Always show 12 slots */}
+                    {/* Easel Photos Grid - Always show 6 slots */}
                     <div className="grid grid-cols-3 gap-3 mb-4">
-                      {/* Render 12 slots - filled with photos or placeholders */}
-                      {Array.from({ length: 12 }).map((_, index) => {
+                      {/* Render 6 slots - filled with photos or placeholders */}
+                      {Array.from({ length: 6 }).map((_, index) => {
                         const photo = easelPhotos[index];
                         const isIncluded = index < currentPackage.photos;
                         
