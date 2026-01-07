@@ -976,10 +976,13 @@ const Design = () => {
     (packages as Record<string, PackageConfig>)[selectedPackage] ?? Object.values(packages)[0];
 
   const calculatePrice = () => {
-    // Paper cards: simple per-card pricing
+    // Paper cards: package base price + $0.77 for additional cards over package quantity
     if (cardType === 'paper') {
       const totalPaperCards = mainDesignQty + additionalDesigns.reduce((sum, d) => sum + d.qty, 0);
-      let total = Math.round(totalPaperCards * PAPER_PER_CARD_PRICE * 100) / 100;
+      const includedCards = currentPackage.cards;
+      const additionalCards = Math.max(0, totalPaperCards - includedCards);
+      
+      let total = currentPackage.price + Math.round(additionalCards * PAPER_PER_CARD_PRICE * 100) / 100;
       
       // Paper card size upsell (3x4.75 instead of 2.5x4.25)
       if (paperCardSize === '3x4.75') {
