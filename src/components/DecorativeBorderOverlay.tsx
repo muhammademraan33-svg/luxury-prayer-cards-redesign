@@ -3,7 +3,7 @@ import React from 'react';
 export type DecorativeBorderType = 
   | 'none' 
   | 'classic-corners' 
-  | 'floral-vine' 
+  | 'art-deco' 
   | 'ornate-frame';
 
 export type MetallicColorType = 'gold' | 'silver' | 'rose-gold' | 'white';
@@ -57,7 +57,7 @@ const getMetallicGradientId = (color: string): string | null => {
 export const DECORATIVE_BORDERS: { id: DecorativeBorderType; name: string }[] = [
   { id: 'none', name: 'No Border' },
   { id: 'classic-corners', name: 'Classic Corners' },
-  { id: 'floral-vine', name: 'Floral Vine' },
+  { id: 'art-deco', name: 'Art Deco' },
   { id: 'ornate-frame', name: 'Ornate Frame' },
 ];
 
@@ -159,57 +159,41 @@ export const DecorativeBorderOverlay: React.FC<DecorativeBorderOverlayProps> = (
           </svg>
         );
 
-      case 'floral-vine':
+      case 'art-deco':
         return (
           <svg style={svgStyle} viewBox="0 0 100 150" preserveAspectRatio="none">
             <MetallicGradients />
-            {/* Top border with vine */}
-            <path 
-              d="M10 5 Q25 8 35 3 Q50 0 65 3 Q75 8 90 5" 
-              fill="none" 
-              stroke={strokeColor} 
-              strokeWidth="0.8"
-            />
-            <path d="M15 3 Q17 6 15 8 Q13 6 15 3" fill={fillColor} opacity="0.8" />
-            <path d="M30 2 Q32 5 30 7 Q28 5 30 2" fill={fillColor} opacity="0.8" />
-            <path d="M50 1 Q53 4 50 6 Q47 4 50 1" fill={fillColor} opacity="0.8" />
-            <path d="M70 2 Q72 5 70 7 Q68 5 70 2" fill={fillColor} opacity="0.8" />
-            <path d="M85 3 Q87 6 85 8 Q83 6 85 3" fill={fillColor} opacity="0.8" />
+            {/* Top border - geometric fan pattern */}
+            <path d="M5 8 L50 8 L50 3 L50 8 L95 8" fill="none" stroke={strokeColor} strokeWidth="1" />
+            <path d="M40 8 L50 2 L60 8" fill="none" stroke={strokeColor} strokeWidth="0.8" />
+            <path d="M43 8 L50 4 L57 8" fill="none" stroke={strokeColor} strokeWidth="0.6" />
+            <path d="M46 8 L50 5.5 L54 8" fill="none" stroke={strokeColor} strokeWidth="0.4" />
             
-            {/* Bottom border with vine */}
-            <path 
-              d="M10 145 Q25 142 35 147 Q50 150 65 147 Q75 142 90 145" 
-              fill="none" 
-              stroke={strokeColor} 
-              strokeWidth="0.8"
-            />
-            <path d="M15 147 Q17 144 15 142 Q13 144 15 147" fill={fillColor} opacity="0.8" />
-            <path d="M30 148 Q32 145 30 143 Q28 145 30 148" fill={fillColor} opacity="0.8" />
-            <path d="M50 149 Q53 146 50 144 Q47 146 50 149" fill={fillColor} opacity="0.8" />
-            <path d="M70 148 Q72 145 70 143 Q68 145 70 148" fill={fillColor} opacity="0.8" />
-            <path d="M85 147 Q87 144 85 142 Q83 144 85 147" fill={fillColor} opacity="0.8" />
+            {/* Bottom border - geometric fan pattern */}
+            <path d="M5 142 L50 142 L50 147 L50 142 L95 142" fill="none" stroke={strokeColor} strokeWidth="1" />
+            <path d="M40 142 L50 148 L60 142" fill="none" stroke={strokeColor} strokeWidth="0.8" />
+            <path d="M43 142 L50 146 L57 142" fill="none" stroke={strokeColor} strokeWidth="0.6" />
+            <path d="M46 142 L50 144.5 L54 142" fill="none" stroke={strokeColor} strokeWidth="0.4" />
             
-            {/* Left border */}
-            <path 
-              d="M5 20 Q8 40 3 60 Q0 75 3 90 Q8 110 5 130" 
-              fill="none" 
-              stroke={strokeColor} 
-              strokeWidth="0.8"
-            />
+            {/* Left border - stepped pattern */}
+            <path d="M8 15 L8 135" fill="none" stroke={strokeColor} strokeWidth="1" />
+            <path d="M5 25 L8 25 L8 35 L5 35" fill="none" stroke={strokeColor} strokeWidth="0.6" />
+            <path d="M5 55 L8 55 L8 65 L5 65" fill="none" stroke={strokeColor} strokeWidth="0.6" />
+            <path d="M5 85 L8 85 L8 95 L5 95" fill="none" stroke={strokeColor} strokeWidth="0.6" />
+            <path d="M5 115 L8 115 L8 125 L5 125" fill="none" stroke={strokeColor} strokeWidth="0.6" />
             
-            {/* Right border */}
-            <path 
-              d="M95 20 Q92 40 97 60 Q100 75 97 90 Q92 110 95 130" 
-              fill="none" 
-              stroke={strokeColor} 
-              strokeWidth="0.8"
-            />
+            {/* Right border - stepped pattern */}
+            <path d="M92 15 L92 135" fill="none" stroke={strokeColor} strokeWidth="1" />
+            <path d="M95 25 L92 25 L92 35 L95 35" fill="none" stroke={strokeColor} strokeWidth="0.6" />
+            <path d="M95 55 L92 55 L92 65 L95 65" fill="none" stroke={strokeColor} strokeWidth="0.6" />
+            <path d="M95 85 L92 85 L92 95 L95 95" fill="none" stroke={strokeColor} strokeWidth="0.6" />
+            <path d="M95 115 L92 115 L92 125 L95 125" fill="none" stroke={strokeColor} strokeWidth="0.6" />
             
-            {/* Corner flourishes */}
-            <path d="M8 8 Q15 12 10 18 Q6 12 8 8" fill={fillColor} opacity="0.6" />
-            <path d="M92 8 Q85 12 90 18 Q94 12 92 8" fill={fillColor} opacity="0.6" />
-            <path d="M8 142 Q15 138 10 132 Q6 138 8 142" fill={fillColor} opacity="0.6" />
-            <path d="M92 142 Q85 138 90 132 Q94 138 92 142" fill={fillColor} opacity="0.6" />
+            {/* Corner diamonds */}
+            <path d="M8 8 L12 12 L8 16 L4 12 Z" fill={fillColor} stroke={strokeColor} strokeWidth="0.4" />
+            <path d="M92 8 L96 12 L92 16 L88 12 Z" fill={fillColor} stroke={strokeColor} strokeWidth="0.4" />
+            <path d="M8 142 L12 138 L8 134 L4 138 Z" fill={fillColor} stroke={strokeColor} strokeWidth="0.4" />
+            <path d="M92 142 L96 138 L92 134 L88 138 Z" fill={fillColor} stroke={strokeColor} strokeWidth="0.4" />
           </svg>
         );
 
