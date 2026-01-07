@@ -358,12 +358,12 @@ const Index = () => {
                 <p className="text-primary font-bold text-sm mb-4">55 Cards + 1 Memorial Easel Photo</p>
                 
                 <div className="mb-4 flex items-center gap-3 justify-center">
-                  <span className="text-2xl text-muted-foreground line-through">$125</span>
+                  <span className="text-2xl text-foreground/60 line-through">$125</span>
                   <span className="text-5xl font-bold text-foreground" style={{ fontVariantNumeric: 'lining-nums' }}>$67</span>
                   <span className="bg-green-500/20 text-green-600 text-xs font-bold px-2 py-1 rounded">Save $58</span>
                 </div>
                 
-                <p className="text-muted-foreground text-sm mb-4">
+                <p className="text-foreground/80 text-sm mb-4">
                   Need more? Add cards for just ${prayerCardPricing.perCardPrice.toFixed(2)} each
                 </p>
 
@@ -373,7 +373,7 @@ const Index = () => {
                     <ArrowRight className="ml-2 h-5 w-5" />
                   </Button>
                 </Link>
-                <p className="text-muted-foreground text-xs mt-3">Thick glossy cardstock</p>
+                <p className="text-foreground/70 text-xs mt-3">Thick glossy cardstock</p>
               </CardContent>
             </Card>
 
@@ -387,12 +387,12 @@ const Index = () => {
                 <p className="text-primary font-bold text-sm mb-4">55 Cards + 1 Memorial Easel Photo</p>
                 
                 <div className="mb-4 flex items-center gap-3 justify-center">
-                  <span className="text-2xl text-muted-foreground line-through">$175</span>
+                  <span className="text-2xl text-foreground/60 line-through">$175</span>
                   <span className="text-5xl font-bold text-foreground" style={{ fontVariantNumeric: 'lining-nums' }}>$97</span>
                   <span className="bg-green-500/20 text-green-600 text-xs font-bold px-2 py-1 rounded">Save $78</span>
                 </div>
                 
-                <p className="text-muted-foreground text-sm mb-4">
+                <p className="text-foreground/80 text-sm mb-4">
                   Additional sets of 55: $77 each
                 </p>
 
@@ -402,12 +402,12 @@ const Index = () => {
                     <ArrowRight className="ml-2 h-5 w-5" />
                   </Button>
                 </Link>
-                <p className="text-muted-foreground text-xs mt-3">Premium metal finish</p>
+                <p className="text-foreground/70 text-xs mt-3">Premium metal finish</p>
               </CardContent>
             </Card>
           </div>
 
-          <p className="text-center text-muted-foreground text-sm mt-6">
+          <p className="text-center text-foreground/70 text-sm mt-6">
             Full color both sides • 72-Hour +$10 • 48-Hour +$15 • Overnight +100%
           </p>
         </div>
