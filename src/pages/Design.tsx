@@ -158,16 +158,7 @@ const SHIPPING_PRICES: Record<ShippingSpeed, { price: number; label: string }> =
   '48hour': { price: 17, label: '48-Hour Rush Delivery' },
 };
 
-// Border designs for paper cards
-type BorderDesign = 'none' | 'classic' | 'floral' | 'ornate' | 'simple' | 'elegant';
-const BORDER_DESIGNS: { id: BorderDesign; name: string; preview: string }[] = [
-  { id: 'none', name: 'No Border', preview: '' },
-  { id: 'classic', name: 'Classic Gold', preview: 'border-4 border-amber-600' },
-  { id: 'floral', name: 'Floral Vine', preview: 'border-4 border-double border-amber-700' },
-  { id: 'ornate', name: 'Ornate Frame', preview: 'border-8 border-amber-800/50' },
-  { id: 'simple', name: 'Simple Line', preview: 'border-2 border-slate-400' },
-  { id: 'elegant', name: 'Elegant Double', preview: 'border-4 border-double border-slate-600' },
-];
+import { DecorativeBorderOverlay, DECORATIVE_BORDERS, DecorativeBorderType } from '@/components/DecorativeBorderOverlay';
 
 type CardThickness = 'standard' | 'premium';
 
@@ -224,7 +215,8 @@ const Design = () => {
   
   const [upgradeThickness, setUpgradeThickness] = useState(false);
   const [shippingSpeed, setShippingSpeed] = useState<ShippingSpeed>('72hour');
-  const [borderDesign, setBorderDesign] = useState<BorderDesign>('none');
+  const [borderDesign, setBorderDesign] = useState<DecorativeBorderType>('none');
+  const [borderColor, setBorderColor] = useState('#c9a227'); // Gold color default
   const [mainDesignSize, setMainDesignSize] = useState<PaperCardSize>('2.5x4.25'); // Size for main design
   const [additionalDesigns, setAdditionalDesigns] = useState<AdditionalDesignData[]>([]); // Additional designs with full data
   const [mainDesignQty, setMainDesignQty] = useState(72); // Quantity for main design
@@ -1523,6 +1515,11 @@ const Design = () => {
                                   </span>
                                 </div>
                               )}
+                              
+                              {/* Decorative Border Overlay - Paper cards only */}
+                              {cardType === 'paper' && borderDesign !== 'none' && (
+                                <DecorativeBorderOverlay type={borderDesign} color={borderColor} />
+                              )}
                             </div>
                           </div>
                         </div>
@@ -2212,6 +2209,11 @@ const Design = () => {
                                   )}
                                 </div>
                               </div>
+                              
+                              {/* Decorative Border Overlay - Paper cards only */}
+                              {cardType === 'paper' && borderDesign !== 'none' && (
+                                <DecorativeBorderOverlay type={borderDesign} color={borderColor} />
+                              )}
                             </div>
                           </div>
                             );
@@ -3250,23 +3252,53 @@ const Design = () => {
                       {/* Border Design Selection (paper only) - in Step 1 */}
                       <div className="space-y-3">
                         <Label className="text-slate-400 block text-sm">Border Design</Label>
-                        <div className="grid grid-cols-3 gap-2">
-                          {BORDER_DESIGNS.map((border) => (
+                        <div className="grid grid-cols-4 gap-2">
+                          {DECORATIVE_BORDERS.map((border) => (
                             <button
                               key={border.id}
                               type="button"
                               onClick={() => setBorderDesign(border.id)}
-                              className={`p-3 rounded-lg border-2 transition-all text-center ${
+                              className={`p-2 rounded-lg border-2 transition-all text-center ${
                                 borderDesign === border.id
                                   ? 'border-amber-500 bg-amber-900/20'
                                   : 'border-slate-600 hover:border-slate-500'
                               }`}
                             >
-                              <div className={`w-full aspect-[3/4] rounded mb-2 bg-slate-700 ${border.preview}`} />
+                              <div className="w-full aspect-[3/4] rounded mb-2 bg-slate-700 relative overflow-hidden">
+                                <DecorativeBorderOverlay type={border.id} color={borderColor} />
+                              </div>
                               <span className="text-xs text-slate-300">{border.name}</span>
                             </button>
                           ))}
                         </div>
+                        
+                        {/* Border Color Picker */}
+                        {borderDesign !== 'none' && (
+                          <div className="flex items-center gap-3 pt-2">
+                            <Label className="text-slate-400 text-sm">Border Color</Label>
+                            <div className="flex items-center gap-2">
+                              <input
+                                type="color"
+                                value={borderColor}
+                                onChange={(e) => setBorderColor(e.target.value)}
+                                className="w-10 h-10 rounded border border-slate-600 cursor-pointer"
+                              />
+                              <div className="flex gap-1">
+                                {['#c9a227', '#d4af37', '#8b7355', '#4a4a4a', '#f5f5f5', '#1a1a1a'].map((color) => (
+                                  <button
+                                    key={color}
+                                    type="button"
+                                    onClick={() => setBorderColor(color)}
+                                    className={`w-6 h-6 rounded border-2 transition-all ${
+                                      borderColor === color ? 'border-amber-400 scale-110' : 'border-slate-600'
+                                    }`}
+                                    style={{ backgroundColor: color }}
+                                  />
+                                ))}
+                              </div>
+                            </div>
+                          </div>
+                        )}
                       </div>
                     </div>
                   )}
