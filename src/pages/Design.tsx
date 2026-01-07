@@ -478,15 +478,15 @@ const Design = () => {
       setBackBgSampleHex(normalizedBg ?? (useLightText ? '#0b0b0f' : '#ffffff'));
 
       if (useLightText) {
-        setInLovingMemoryColor('#e4e4e7'); // zinc-200
+        setInLovingMemoryColor('#ffffffcc');
         setBackNameColor('#ffffff');
-        setBackDatesColor('#a1a1aa'); // zinc-400
+        setBackDatesColor('#ffffffb3');
         setPrayerColor('#ffffff');
       } else {
-        setInLovingMemoryColor('#71717a'); // zinc-500
-        setBackNameColor('#18181b'); // zinc-900
-        setBackDatesColor('#52525b'); // zinc-600
-        setPrayerColor('#000000');
+        setInLovingMemoryColor('#111827');
+        setBackNameColor('#111827');
+        setBackDatesColor('#111827cc');
+        setPrayerColor('#111827');
       }
     },
     []
@@ -498,6 +498,12 @@ const Design = () => {
       const imageSrc = typeof opts?.imageSrc !== 'undefined' ? opts?.imageSrc : backBgImage;
 
       if (imageSrc) {
+        // Paper card backs are always photo backgrounds — keep text consistently readable.
+        if (cardType === 'paper') {
+          applyBackTextPalette('#0b0b0f', true);
+          return;
+        }
+
         const avg = await getAverageImageHex(imageSrc);
         const withOverlay = avg ? applyBlackOverlay(avg, BACK_IMAGE_OVERLAY_ALPHA) : null;
         applyBackTextPalette(withOverlay, fallbackIsDark);
@@ -2290,7 +2296,13 @@ const Design = () => {
                                         transformOrigin: 'center center',
                                       }}
                                     />
-                                    <div className={`absolute inset-0 bg-black/20 ${cardRounding}`}></div>
+                                    <div
+                                      className={`absolute inset-0 ${cardRounding}`}
+                                      style={{
+                                        background:
+                                          'linear-gradient(180deg, hsl(0 0% 0% / 0.55) 0%, hsl(0 0% 0% / 0.18) 35%, hsl(0 0% 0% / 0.35) 70%, hsl(0 0% 0% / 0.55) 100%)',
+                                      }}
+                                    />
                                   </>
                                 )}
                                 {!backBgImage && cardType === 'metal' && (
@@ -2333,7 +2345,6 @@ const Design = () => {
                                         color: inLovingMemoryColor,
                                         fontWeight: inLovingMemoryBold ? 'bold' : 'normal',
                                         fontFamily: inLovingMemoryFont,
-                                        textShadow: '2px 2px 4px rgba(0,0,0,0.5)',
                                       }}
                                     >
                                       {inLovingMemoryText}
