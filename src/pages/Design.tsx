@@ -2687,6 +2687,141 @@ const Design = () => {
                     </TabsContent>
                   </Tabs>
 
+                  {/* Multiple Designs - only for paper cards - moved to step 1 for easy access */}
+                  {cardType === 'paper' && (
+                    <div className="bg-gradient-to-br from-amber-900/20 to-slate-800/50 rounded-xl p-5 border border-amber-500/20">
+                      <div className="flex items-center justify-between mb-3">
+                        <div>
+                          <h3 className="text-lg font-bold text-white flex items-center gap-2">
+                            <Sparkles className="h-5 w-5 text-amber-400" />
+                            Want Multiple Designs?
+                          </h3>
+                          <p className="text-slate-400 text-sm">Create additional unique cards with different photos or prayers — just ${ADDITIONAL_DESIGN_PRICE} each</p>
+                        </div>
+                        <Button
+                          type="button"
+                          onClick={() => {
+                            const newDesign = createEmptyDesign();
+                            setAdditionalDesigns([...additionalDesigns, newDesign]);
+                            setEditingDesignIndex(additionalDesigns.length);
+                          }}
+                          className="bg-amber-600 hover:bg-amber-700 text-white"
+                        >
+                          + Add Design
+                        </Button>
+                      </div>
+                      
+                      {additionalDesigns.length > 0 && (
+                        <div className="space-y-2 pt-3 border-t border-slate-600/50">
+                          {additionalDesigns.map((design, idx) => (
+                            <div key={idx} className="flex items-center gap-3 bg-slate-700/50 p-3 rounded-lg">
+                              {/* Thumbnail Preview */}
+                              <div className="w-12 h-16 bg-slate-600 rounded overflow-hidden flex-shrink-0">
+                                {design.photo ? (
+                                  <img 
+                                    src={design.photo} 
+                                    alt={`Design ${idx + 2}`} 
+                                    className="w-full h-full object-cover"
+                                    style={{
+                                      transform: `scale(${design.photoZoom})`,
+                                    }}
+                                  />
+                                ) : (
+                                  <div className="w-full h-full flex items-center justify-center">
+                                    <ImageIcon className="h-5 w-5 text-slate-400" />
+                                  </div>
+                                )}
+                              </div>
+                              
+                              <div className="flex-1 min-w-0">
+                                <div className="flex items-center gap-2 mb-1">
+                                  <span className="text-white text-sm font-medium">Design {idx + 2}</span>
+                                  {design.photo && (
+                                    <span className="text-xs text-green-400 bg-green-500/20 px-1.5 py-0.5 rounded">Photo ✓</span>
+                                  )}
+                                </div>
+                                <p className="text-slate-400 text-xs truncate">
+                                  {design.prayerText.slice(0, 40)}...
+                                </p>
+                              </div>
+                              
+                              <div className="flex items-center gap-2">
+                                <span className="text-slate-400 text-sm">Qty:</span>
+                                <input
+                                  type="number"
+                                  min="1"
+                                  value={design.qty}
+                                  onChange={(e) => {
+                                    const newDesigns = [...additionalDesigns];
+                                    newDesigns[idx].qty = Math.max(1, parseInt(e.target.value) || 1);
+                                    setAdditionalDesigns(newDesigns);
+                                  }}
+                                  className="w-14 h-8 text-sm bg-slate-800 border border-slate-500 rounded px-2 text-white"
+                                />
+                              </div>
+                              
+                              <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                onClick={() => setEditingDesignIndex(idx)}
+                                className="border-amber-600/50 text-amber-400 hover:bg-amber-600/20"
+                              >
+                                Edit
+                              </Button>
+                              
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => setAdditionalDesigns(additionalDesigns.filter((_, i) => i !== idx))}
+                                className="h-7 w-7 text-rose-400 hover:text-rose-300 hover:bg-rose-500/20"
+                              >
+                                ×
+                              </Button>
+                            </div>
+                          ))}
+                          <div className="flex items-center justify-between pt-2">
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              onClick={() => {
+                                const newDesign = createEmptyDesign();
+                                setAdditionalDesigns([...additionalDesigns, newDesign]);
+                                setEditingDesignIndex(additionalDesigns.length);
+                              }}
+                              className="border-amber-600/50 text-amber-400 hover:bg-amber-600/20"
+                            >
+                              + Add Another Design
+                            </Button>
+                            <p className="text-amber-400 text-sm font-medium">
+                              +${additionalDesigns.length * ADDITIONAL_DESIGN_PRICE} for {additionalDesigns.length} design{additionalDesigns.length > 1 ? 's' : ''}
+                            </p>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Additional Design Editor Dialog */}
+                  {editingDesignIndex !== null && (
+                    <AdditionalDesignEditor
+                      open={editingDesignIndex !== null}
+                      onOpenChange={(open) => !open && setEditingDesignIndex(null)}
+                      design={additionalDesigns[editingDesignIndex]}
+                      onSave={(updatedDesign) => {
+                        const newDesigns = [...additionalDesigns];
+                        newDesigns[editingDesignIndex] = updatedDesign;
+                        setAdditionalDesigns(newDesigns);
+                      }}
+                      designIndex={editingDesignIndex}
+                      deceasedName={deceasedName}
+                      birthDate={birthDate}
+                      deathDate={deathDate}
+                    />
+                  )}
+
                   <Button 
                     type="button" 
                     onClick={() => {
@@ -2813,121 +2948,22 @@ const Design = () => {
                     </div>
                   )}
 
-                  {/* Multiple Designs - only for paper cards */}
-                  {cardType === 'paper' && (
-                    <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-xl p-6 border border-slate-600">
-                      <div className="flex items-center justify-between mb-3">
-                        <div>
-                          <h3 className="text-lg font-bold text-white">Additional Designs</h3>
-                          <p className="text-slate-400 text-sm">${ADDITIONAL_DESIGN_PRICE} per design — upload photos, select prayers, customize each</p>
-                        </div>
-                        <Button
-                          type="button"
-                          variant="outline"
-                          size="sm"
-                          onClick={() => setAdditionalDesigns([...additionalDesigns, createEmptyDesign()])}
-                          className="border-amber-600/50 text-amber-400 hover:bg-amber-600/20"
-                        >
-                          + Add Design
-                        </Button>
-                      </div>
-                      
-                      {additionalDesigns.length > 0 && (
-                        <div className="space-y-2 pt-3 border-t border-slate-600">
-                          {additionalDesigns.map((design, idx) => (
-                            <div key={idx} className="flex items-center gap-3 bg-slate-700/50 p-3 rounded-lg">
-                              {/* Thumbnail Preview */}
-                              <div className="w-12 h-16 bg-slate-600 rounded overflow-hidden flex-shrink-0">
-                                {design.photo ? (
-                                  <img 
-                                    src={design.photo} 
-                                    alt={`Design ${idx + 2}`} 
-                                    className="w-full h-full object-cover"
-                                    style={{
-                                      transform: `scale(${design.photoZoom})`,
-                                    }}
-                                  />
-                                ) : (
-                                  <div className="w-full h-full flex items-center justify-center">
-                                    <ImageIcon className="h-5 w-5 text-slate-400" />
-                                  </div>
-                                )}
-                              </div>
-                              
-                              <div className="flex-1">
-                                <div className="flex items-center gap-2 mb-1">
-                                  <span className="text-white text-sm font-medium">Design {idx + 2}</span>
-                                  {design.photo && (
-                                    <span className="text-xs text-green-400 bg-green-500/20 px-1.5 py-0.5 rounded">Photo ✓</span>
-                                  )}
-                                </div>
-                                <p className="text-slate-400 text-xs truncate max-w-[200px]">
-                                  {design.prayerText.slice(0, 50)}...
-                                </p>
-                              </div>
-                              
-                              <div className="flex items-center gap-2">
-                                <span className="text-slate-400 text-sm">Qty:</span>
-                                <input
-                                  type="number"
-                                  min="1"
-                                  value={design.qty}
-                                  onChange={(e) => {
-                                    const newDesigns = [...additionalDesigns];
-                                    newDesigns[idx].qty = Math.max(1, parseInt(e.target.value) || 1);
-                                    setAdditionalDesigns(newDesigns);
-                                  }}
-                                  className="w-16 h-8 text-sm bg-slate-800 border border-slate-500 rounded px-2 text-white"
-                                />
-                              </div>
-                              
-                              <Button
-                                type="button"
-                                variant="outline"
-                                size="sm"
-                                onClick={() => setEditingDesignIndex(idx)}
-                                className="border-amber-600/50 text-amber-400 hover:bg-amber-600/20"
-                              >
-                                Edit
-                              </Button>
-                              
-                              <span className="text-amber-400 text-sm font-medium">+${ADDITIONAL_DESIGN_PRICE}</span>
-                              
-                              <Button
-                                type="button"
-                                variant="ghost"
-                                size="icon"
-                                onClick={() => setAdditionalDesigns(additionalDesigns.filter((_, i) => i !== idx))}
-                                className="h-7 w-7 text-rose-400 hover:text-rose-300 hover:bg-rose-500/20"
-                              >
-                                ×
-                              </Button>
-                            </div>
-                          ))}
-                          <p className="text-amber-400 text-sm font-medium pt-1">
-                            Total additional design fee: ${additionalDesigns.length * ADDITIONAL_DESIGN_PRICE}
-                          </p>
-                        </div>
-                      )}
+                  {/* Additional designs are now managed in Step 1 */}
+                  {cardType === 'paper' && additionalDesigns.length > 0 && (
+                    <div className="bg-slate-700/30 rounded-xl p-4 border border-slate-600">
+                      <p className="text-slate-300 text-sm">
+                        <span className="text-amber-400 font-semibold">{additionalDesigns.length} additional design{additionalDesigns.length > 1 ? 's' : ''}</span> added (+${additionalDesigns.length * ADDITIONAL_DESIGN_PRICE})
+                      </p>
+                      <Button
+                        type="button"
+                        variant="link"
+                        size="sm"
+                        onClick={() => setStep(1)}
+                        className="text-amber-400 hover:text-amber-300 p-0 h-auto"
+                      >
+                        ← Edit designs in Step 1
+                      </Button>
                     </div>
-                  )}
-                  
-                  {/* Additional Design Editor Dialog */}
-                  {editingDesignIndex !== null && (
-                    <AdditionalDesignEditor
-                      open={editingDesignIndex !== null}
-                      onOpenChange={(open) => !open && setEditingDesignIndex(null)}
-                      design={additionalDesigns[editingDesignIndex]}
-                      onSave={(updatedDesign) => {
-                        const newDesigns = [...additionalDesigns];
-                        newDesigns[editingDesignIndex] = updatedDesign;
-                        setAdditionalDesigns(newDesigns);
-                      }}
-                      designIndex={editingDesignIndex}
-                      deceasedName={deceasedName}
-                      birthDate={birthDate}
-                      deathDate={deathDate}
-                    />
                   )}
 
                   <div className="flex gap-3 pt-2">
