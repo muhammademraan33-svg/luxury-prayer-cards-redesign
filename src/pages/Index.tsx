@@ -432,7 +432,8 @@ const Index = () => {
               { size: '5x7', price: 17, aspect: '5/7', packSize: 12, extraPrice: 0.67 },
               { size: '8x10', price: 7, aspect: '4/5' },
               { size: '11x14', price: 17, aspect: '11/14' },
-              { size: 'Memorial Photo', price: 17, aspect: '4/5', isMemorial: true },
+              { size: '16x20', price: 17, aspect: '4/5', isMemorial: true, memorialLabel: 'Memorial Easel Photo' },
+              { size: '18x24', price: 27, aspect: '4/5', isMemorial: true, memorialLabel: 'Large Memorial Easel Photo' },
             ].map((photo) => {
               // Calculate total prints and price for pack items
               const uploads = multiPhotoUploads[photo.size] || [];
@@ -442,11 +443,10 @@ const Index = () => {
               const extraPrints = photo.packSize ? Math.max(0, totalPrints - photo.packSize) : 0;
               const extraCost = extraPrints * (photo.extraPrice || 0);
               
-              // For memorial photos, calculate based on size selections
-              const memorialTotal = (photo as any).isMemorial 
-                ? uploads.reduce((sum, p) => sum + (p.qty * (p.size === '18x24' ? 24 : 17)), 0)
-                : 0;
-              const totalPrice = (photo as any).isMemorial ? memorialTotal : (photo.price + extraCost);
+              // For memorial photos, price is now per-item
+              const totalPrice = (photo as any).isMemorial 
+                ? photo.price * (uploads.length || 0)
+                : (photo.price + extraCost);
               
               return (
               <Card key={photo.size} className="bg-card border-border">
@@ -458,17 +458,11 @@ const Index = () => {
                       </div>
                       <div>
                         <p className="text-lg font-bold text-foreground">
-                          {(photo as any).isMemorial ? 'Memorial Photo' : photo.size} {photo.packSize && <span className="text-sm font-normal text-muted-foreground">Pack of {photo.packSize}</span>}
+                          {(photo as any).memorialLabel || photo.size} {photo.packSize && <span className="text-sm font-normal text-muted-foreground">Pack of {photo.packSize}</span>}
                         </p>
-                        {(photo as any).isMemorial ? (
-                          <p className="text-primary font-bold">
-                            16x20 $17 <span className="text-muted-foreground font-normal text-sm">or</span> 18x24 $24
-                          </p>
-                        ) : (
-                          <p className="text-primary font-bold">
-                            ${photo.price.toFixed(2)} {!photo.packSize && <span className="text-muted-foreground font-normal text-sm">each</span>}
-                          </p>
-                        )}
+                        <p className="text-primary font-bold">
+                          ${photo.price.toFixed(2)} {!photo.packSize && <span className="text-muted-foreground font-normal text-sm">each</span>}
+                        </p>
                         {photo.packSize && photo.extraPrice && (
                           <p className="text-xs text-muted-foreground">+${photo.extraPrice.toFixed(2)}/print over {photo.packSize}</p>
                         )}
@@ -550,26 +544,6 @@ const Index = () => {
                                       className="w-full h-full object-cover border border-border"
                                     />
                                   </div>
-                                  
-                                  {/* Size selector for memorial photos */}
-                                  {(photo as any).isMemorial && (
-                                    <select
-                                      value={img.size || '16x20'}
-                                      onChange={(e) => {
-                                        const newSize = e.target.value as '16x20' | '18x24';
-                                        setMultiPhotoUploads(prev => ({
-                                          ...prev,
-                                          [photo.size]: prev[photo.size]?.map((p, i) => 
-                                            i === idx ? { ...p, size: newSize } : p
-                                          ) || []
-                                        }));
-                                      }}
-                                      className="h-8 text-xs border border-border rounded px-1 bg-background"
-                                    >
-                                      <option value="16x20">16x20 - $17</option>
-                                      <option value="18x24">18x24 - $24</option>
-                                    </select>
-                                  )}
                                   
                                   <div className="flex items-center gap-1 flex-1">
                                     <Label className="text-xs text-muted-foreground whitespace-nowrap">Qty:</Label>

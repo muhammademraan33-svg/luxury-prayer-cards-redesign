@@ -3246,6 +3246,28 @@ const Design = () => {
                           </div>
                         </div>
                       )}
+
+                      {/* Border Design Selection (paper only) - in Step 1 */}
+                      <div className="space-y-3">
+                        <Label className="text-slate-400 block text-sm">Border Design</Label>
+                        <div className="grid grid-cols-3 gap-2">
+                          {BORDER_DESIGNS.map((border) => (
+                            <button
+                              key={border.id}
+                              type="button"
+                              onClick={() => setBorderDesign(border.id)}
+                              className={`p-3 rounded-lg border-2 transition-all text-center ${
+                                borderDesign === border.id
+                                  ? 'border-amber-500 bg-amber-900/20'
+                                  : 'border-slate-600 hover:border-slate-500'
+                              }`}
+                            >
+                              <div className={`w-full aspect-[3/4] rounded mb-2 bg-slate-700 ${border.preview}`} />
+                              <span className="text-xs text-slate-300">{border.name}</span>
+                            </button>
+                          ))}
+                        </div>
+                      </div>
                     </div>
                   )}
 
@@ -3519,29 +3541,6 @@ const Design = () => {
                       </div>
                     )}
 
-                    {/* Border Design Selection (paper only) */}
-                    {cardType === 'paper' && (
-                      <div className="space-y-3">
-                        <Label className="text-slate-400 block text-sm">Border Design</Label>
-                        <div className="grid grid-cols-3 gap-2">
-                          {BORDER_DESIGNS.map((border) => (
-                            <button
-                              key={border.id}
-                              type="button"
-                              onClick={() => setBorderDesign(border.id)}
-                              className={`p-3 rounded-lg border-2 transition-all text-center ${
-                                borderDesign === border.id
-                                  ? 'border-amber-500 bg-amber-900/20'
-                                  : 'border-slate-600 hover:border-slate-500'
-                              }`}
-                            >
-                              <div className={`w-full aspect-[3/4] rounded mb-2 bg-slate-700 ${border.preview}`} />
-                              <span className="text-xs text-slate-300">{border.name}</span>
-                            </button>
-                          ))}
-                        </div>
-                      </div>
-                    )}
 
                     {/* Shipping Speed Selection */}
                     <div className="space-y-3">
