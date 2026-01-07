@@ -1590,34 +1590,42 @@ const Design = () => {
                               })()}
                               
                               {/* Text Overlay - Dates */}
-                              {showDatesOnFront && (
-                                <div
-                                  className="absolute touch-none select-none px-2 py-1 rounded"
-                                  style={{
-                                    left: `${datesPosition.x}%`,
-                                    top: `${datesPosition.y}%`,
-                                    transform: 'translate(-50%, -50%)',
-                                    fontFamily: datesFont,
-                                    cursor: draggingText === 'dates' || resizingText === 'dates' ? 'grabbing' : 'grab',
-                                    textShadow: '0 2px 4px rgba(0,0,0,0.5)',
-                                    boxShadow: (draggingText === 'dates' || resizingText === 'dates') ? '0 0 0 2px #d97706' : 'none',
-                                    whiteSpace: 'nowrap',
-                                    backgroundColor: deceasedPhoto ? 'hsl(0 0% 0% / 0.35)' : 'transparent',
-                                    border: deceasedPhoto ? '1px solid hsl(0 0% 100% / 0.16)' : 'none',
-                                    backdropFilter: deceasedPhoto ? 'blur(2px)' : undefined,
-                                    WebkitBackdropFilter: deceasedPhoto ? 'blur(2px)' : undefined,
-                                  }}
-                                  onPointerDown={(e) => handleTextPointerDown(e, 'dates')}
-                                  onPointerMove={handleTextPointerMove}
-                                  onPointerUp={handleTextPointerUp}
-                                  onPointerCancel={handleTextPointerUp}
-                                  onWheel={(e) => handleTextWheel(e, 'dates')}
-                                >
-                                  <span style={{ fontSize: frontDatesSize === 'auto' ? '12px' : `${frontDatesSize}px`, color: frontDatesColor, fontWeight: datesBold ? 'bold' : 'normal' }}>
-                                    {formatDates(birthDate, deathDate, frontDateFormat)}
-                                  </span>
-                                </div>
-                              )}
+                              {showDatesOnFront && (() => {
+                                // Push dates down when name has multiple lines
+                                const nameText = deceasedName || 'Name Here';
+                                const nameLineCount = nameText.split('\n').length;
+                                const datesOffset = (nameLineCount - 1) * 3;
+                                const adjustedDatesY = Math.min(95, datesPosition.y + datesOffset);
+
+                                return (
+                                  <div
+                                    className="absolute touch-none select-none px-2 py-1 rounded"
+                                    style={{
+                                      left: `${datesPosition.x}%`,
+                                      top: `${adjustedDatesY}%`,
+                                      transform: 'translate(-50%, -50%)',
+                                      fontFamily: datesFont,
+                                      cursor: draggingText === 'dates' || resizingText === 'dates' ? 'grabbing' : 'grab',
+                                      textShadow: '0 2px 4px rgba(0,0,0,0.5)',
+                                      boxShadow: (draggingText === 'dates' || resizingText === 'dates') ? '0 0 0 2px #d97706' : 'none',
+                                      whiteSpace: 'nowrap',
+                                      backgroundColor: deceasedPhoto ? 'hsl(0 0% 0% / 0.35)' : 'transparent',
+                                      border: deceasedPhoto ? '1px solid hsl(0 0% 100% / 0.16)' : 'none',
+                                      backdropFilter: deceasedPhoto ? 'blur(2px)' : undefined,
+                                      WebkitBackdropFilter: deceasedPhoto ? 'blur(2px)' : undefined,
+                                    }}
+                                    onPointerDown={(e) => handleTextPointerDown(e, 'dates')}
+                                    onPointerMove={handleTextPointerMove}
+                                    onPointerUp={handleTextPointerUp}
+                                    onPointerCancel={handleTextPointerUp}
+                                    onWheel={(e) => handleTextWheel(e, 'dates')}
+                                  >
+                                    <span style={{ fontSize: frontDatesSize === 'auto' ? '12px' : `${frontDatesSize}px`, color: frontDatesColor, fontWeight: datesBold ? 'bold' : 'normal' }}>
+                                      {formatDates(birthDate, deathDate, frontDateFormat)}
+                                    </span>
+                                  </div>
+                                );
+                              })()}
                               
                               {/* Text Overlay - Additional */}
                               {showAdditionalText && (
