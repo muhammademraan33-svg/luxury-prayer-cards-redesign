@@ -2809,7 +2809,13 @@ const Design = () => {
 
                   <Button 
                     type="button" 
-                    onClick={() => setStep(2)} 
+                    onClick={() => {
+                      if (!deceasedName.trim()) {
+                        toast.error('Please enter the name for the card');
+                        return;
+                      }
+                      setStep(2);
+                    }} 
                     className="w-full bg-amber-600 hover:bg-amber-700 text-white font-semibold"
                   >
                     Continue <ArrowRight className="h-4 w-4 ml-2" />
@@ -3271,14 +3277,7 @@ const Design = () => {
                     </Button>
                     <Button 
                       type="button" 
-                      onClick={() => {
-                        if (!deceasedName.trim()) {
-                          toast.error('Please enter the name in the card design');
-                          setStep(1);
-                          return;
-                        }
-                        setStep(4);
-                      }} 
+                      onClick={() => setStep(4)} 
                       className="flex-1 bg-amber-600 hover:bg-amber-700 text-white font-semibold"
                     >
                       Continue <ArrowRight className="h-4 w-4 ml-2" />
