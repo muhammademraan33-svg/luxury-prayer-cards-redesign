@@ -500,7 +500,7 @@ const Design = () => {
       if (imageSrc) {
         const avg = await getAverageImageHex(imageSrc);
         const withOverlay = avg ? applyBlackOverlay(avg, BACK_IMAGE_OVERLAY_ALPHA) : null;
-        applyBackTextPalette(withOverlay, true);
+        applyBackTextPalette(withOverlay, fallbackIsDark);
         return;
       }
 
