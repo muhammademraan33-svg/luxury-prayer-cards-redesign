@@ -68,11 +68,14 @@ export const DecorativeBorderOverlay: React.FC<DecorativeBorderOverlayProps> = (
 }) => {
   if (type === 'none') return null;
 
+  // Simple line border should always be fully opaque
+  const effectiveOpacity = type === 'simple-line' ? 1 : opacity;
+
   const baseStyle: React.CSSProperties = {
     position: 'absolute',
     inset: 0,
     pointerEvents: 'none',
-    opacity,
+    opacity: effectiveOpacity,
   };
 
   const svgStyle: React.CSSProperties = {
