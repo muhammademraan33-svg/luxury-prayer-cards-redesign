@@ -177,33 +177,13 @@ const Index = () => {
     },
   ];
 
-  const prayerCardPackages = [
-    {
-      id: 'starter',
-      name: 'Starter',
-      quantity: 72,
-      price: 67,
-      photos: 1,
-      description: '+ 1 FREE 16x20 Memorial Photo',
-    },
-    {
-      id: 'standard',
-      badge: 'MOST POPULAR',
-      name: 'Standard',
-      quantity: 100,
-      price: 87,
-      photos: 2,
-      description: '+ 2 FREE 16x20 Memorial Photos',
-    },
-    {
-      id: 'large',
-      name: 'Large',
-      quantity: 150,
-      price: 97,
-      photos: 2,
-      description: '+ 2 FREE 16x20 Memorial Photos',
-    },
-  ];
+  // Prayer card pricing - simple starter + per-card
+  const prayerCardPricing = {
+    starterQty: 72,
+    starterPrice: 67,
+    perCardPrice: 0.77,
+    freePhotos: 1,
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -392,7 +372,7 @@ const Index = () => {
 
       {/* Photo Prayer Cards Section - PRIMARY */}
       <section className="container mx-auto px-4 py-16" id="pricing">
-        <div className="max-w-5xl mx-auto">
+        <div className="max-w-3xl mx-auto">
           <div className="text-center mb-10">
             <h2 className="text-3xl md:text-4xl font-bold text-foreground">Photo Prayer Cards</h2>
             <p className="text-muted-foreground mt-2 max-w-xl mx-auto">
@@ -400,51 +380,45 @@ const Index = () => {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-6">
-            {prayerCardPackages.map((pkg) => (
-              <Card
-                key={pkg.id}
-                className={
-                  pkg.badge
-                    ? 'bg-primary/10 border-primary/30 relative overflow-hidden'
-                    : 'bg-card border-border relative overflow-hidden'
-                }
-              >
-                {pkg.badge && (
-                  <div className="absolute top-4 right-4 bg-primary text-primary-foreground text-xs font-bold px-3 py-1 rounded-full">
-                    {pkg.badge}
-                  </div>
-                )}
-
-                <CardContent className="p-8 text-center">
-                  <h3 className="text-2xl font-bold text-foreground mb-2">{pkg.name}</h3>
-                  <p className="text-primary font-bold text-sm mb-4">{pkg.description}</p>
+          <Card className="bg-primary/5 border-primary/20 overflow-hidden">
+            <CardContent className="p-8">
+              <div className="flex flex-col md:flex-row items-center justify-between gap-8">
+                <div className="text-center md:text-left">
+                  <h3 className="text-2xl font-bold text-foreground mb-2">Starter Set</h3>
+                  <p className="text-primary font-bold text-sm mb-4">+ 1 FREE 16x20 Memorial Photo</p>
                   
                   <div className="mb-4">
-                    <span className="text-5xl font-bold text-foreground" style={{ fontVariantNumeric: 'lining-nums' }}>${pkg.price}</span>
+                    <span className="text-5xl font-bold text-foreground" style={{ fontVariantNumeric: 'lining-nums' }}>${prayerCardPricing.starterPrice}</span>
                   </div>
                   
-                  <p className="text-lg font-semibold text-foreground mb-6">
-                    {pkg.quantity} Cards
+                  <p className="text-lg font-semibold text-foreground mb-2">
+                    {prayerCardPricing.starterQty} Cards
                   </p>
+                  <p className="text-muted-foreground text-sm">
+                    Need more? Add cards for just ${prayerCardPricing.perCardPrice.toFixed(2)} each
+                  </p>
+                </div>
 
-                  <Link to={`/design?type=paper&quantity=${pkg.quantity}`} className="block">
+                <div className="flex flex-col gap-3 w-full md:w-auto">
+                  <Link to="/design?type=paper&quantity=72" className="block">
                     <Button
                       size="lg"
-                      className="w-full font-semibold text-lg py-6"
-                      variant={pkg.badge ? 'default' : 'outline'}
+                      className="w-full font-semibold text-lg py-6 px-10"
                     >
                       Start Designing
                       <ArrowRight className="ml-2 h-5 w-5" />
                     </Button>
                   </Link>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+                  <p className="text-muted-foreground text-xs text-center">
+                    Add extra designs for $7 each
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
 
           <p className="text-center text-muted-foreground text-sm mt-6">
-            Thick glossy cardstock • Full color both sides • Add extra designs for $7 each
+            Thick glossy cardstock • Full color both sides • 72-Hour +$10 • 48-Hour +$15 • Overnight +100%
           </p>
         </div>
       </section>
