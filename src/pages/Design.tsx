@@ -1480,13 +1480,18 @@ const Design = () => {
                           <div className={`absolute inset-0 ${cardType === 'metal' ? `bg-gradient-to-br ${currentFinish.gradient} p-1` : 'bg-white'}`}>
                             <div 
                               ref={photoContainerRef}
-                              className={`w-full h-full ${cardType === 'metal' ? 'rounded-xl' : ''} overflow-hidden bg-slate-700 flex items-center justify-center touch-none relative`}
-                              style={{ cursor: deceasedPhoto && !draggingText ? (isPanning ? 'grabbing' : 'grab') : 'default' }}
+                              className={`w-full h-full ${cardType === 'metal' ? 'rounded-xl' : ''} overflow-hidden bg-slate-700 flex items-center justify-center touch-none relative ${!deceasedPhoto ? 'cursor-pointer hover:bg-slate-600 transition-colors' : ''}`}
+                              style={{ cursor: deceasedPhoto && !draggingText ? (isPanning ? 'grabbing' : 'grab') : (!deceasedPhoto ? 'pointer' : 'default') }}
                               onPointerDown={handlePhotoPointerDown}
                               onPointerMove={handlePhotoPointerMove}
                               onPointerUp={handlePhotoPointerUp}
                               onPointerCancel={handlePhotoPointerUp}
                               onWheel={handlePhotoWheel}
+                              onClick={() => {
+                                if (!deceasedPhoto) {
+                                  photoInputRef.current?.click();
+                                }
+                              }}
                             >
                               {deceasedPhoto ? (
                                 <>
@@ -1513,9 +1518,9 @@ const Design = () => {
                                   )}
                                 </>
                               ) : (
-                                <div className="text-center p-4">
-                                  <ImageIcon className="h-12 w-12 text-slate-500 mx-auto mb-2" />
-                                  <p className="text-slate-500 text-sm">Upload photo</p>
+                                <div className="text-center p-4 pointer-events-none">
+                                  <ImageIcon className="h-12 w-12 text-slate-400 mx-auto mb-2" />
+                                  <p className="text-slate-400 text-sm">Click to upload photo</p>
                                 </div>
                               )}
                               
