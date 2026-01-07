@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef, useState, useEffect } from 'react';
+import { useLayoutEffect, useRef, useState, useEffect, useCallback } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -34,7 +34,7 @@ import vintageRosesBg from '@/assets/backgrounds/vintage-roses.jpg';
 import wheatSunsetBg from '@/assets/backgrounds/wheat-sunset.jpg';
 import gardenPeaceBg from '@/assets/backgrounds/garden-peace.jpg';
 import html2canvas from 'html2canvas';
-import { relativeLuminance } from '@/lib/color';
+import { hexToRgb, pickBestTextColor, relativeLuminance, rgbToHex } from '@/lib/color';
 import { supabase } from '@/integrations/supabase/client';
 import { AdditionalDesignData, createEmptyDesign } from '@/components/AdditionalDesignEditor';
 
@@ -359,22 +359,133 @@ const Design = () => {
     }
   };
 
-  // Helper to update back text colors based on background darkness
-  const updateBackTextColors = (isDark: boolean) => {
-    if (isDark) {
-      // Light text for dark/image backgrounds
-      setInLovingMemoryColor('#e4e4e7'); // zinc-200
-      setBackNameColor('#ffffff');
-      setBackDatesColor('#a1a1aa'); // zinc-400
-      setPrayerColor('#ffffff'); // White for dark backgrounds
-    } else {
-      // Dark text for light backgrounds
-      setInLovingMemoryColor('#71717a'); // zinc-500
-      setBackNameColor('#18181b'); // zinc-900
-      setBackDatesColor('#52525b'); // zinc-600
-      setPrayerColor('#000000'); // Black for light backgrounds
-    }
+  const BACK_IMAGE_OVERLAY_ALPHA = 0.2;
+
+  const METAL_SAMPLE_HEX: Record<MetalFinish, string> = {
+    silver: '#b9bcc1',
+    gold: '#c9a227',
+    black: '#0b0b0f',
+    white: '#f5f5f5',
+    marble: '#d3d7de',
   };
+
+  const applyBlackOverlay = useCallback((hex: string, alpha: number) => {
+    const rgb = hexToRgb(hex);
+    if (!rgb) return hex;
+    return rgbToHex({
+      r: rgb.r * (1 - alpha),
+      g: rgb.g * (1 - alpha),
+      b: rgb.b * (1 - alpha),
+    });
+  }, []);
+
+  const getAverageImageHex = useCallback((src: string) => {
+    return new Promise<string | null>((resolve) => {
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+
+      img.onload = () => {
+        try {
+          const size = 32;
+          const canvas = document.createElement('canvas');
+          canvas.width = size;
+          canvas.height = size;
+          const ctx = canvas.getContext('2d');
+          if (!ctx) return resolve(null);
+
+          ctx.drawImage(img, 0, 0, size, size);
+          const { data } = ctx.getImageData(0, 0, size, size);
+
+          // Sample roughly the center area where the prayer text sits.
+          let r = 0;
+          let g = 0;
+          let b = 0;
+          let count = 0;
+          for (let y = 10; y < 22; y++) {
+            for (let x = 10; x < 22; x++) {
+              const i = (y * size + x) * 4;
+              const a = data[i + 3];
+              if (a === 0) continue;
+              r += data[i];
+              g += data[i + 1];
+              b += data[i + 2];
+              count++;
+            }
+          }
+
+          if (!count) return resolve(null);
+          resolve(rgbToHex({ r: r / count, g: g / count, b: b / count }));
+        } catch {
+          resolve(null);
+        }
+      };
+
+      img.onerror = () => resolve(null);
+      img.src = src;
+    });
+  }, []);
+
+  const applyBackTextPalette = useCallback(
+    (backgroundHex: string | null, fallbackIsDark: boolean) => {
+      const normalizedBg = backgroundHex ? backgroundHex.toLowerCase() : null;
+
+      const best = normalizedBg
+        ? pickBestTextColor(normalizedBg, ['#ffffff', '#000000'])
+        : fallbackIsDark
+          ? '#ffffff'
+          : '#000000';
+
+      const useLightText = best.toLowerCase() === '#ffffff';
+
+      setBackBgSampleHex(normalizedBg ?? (useLightText ? '#0b0b0f' : '#ffffff'));
+
+      if (useLightText) {
+        setInLovingMemoryColor('#e4e4e7'); // zinc-200
+        setBackNameColor('#ffffff');
+        setBackDatesColor('#a1a1aa'); // zinc-400
+        setPrayerColor('#ffffff');
+      } else {
+        setInLovingMemoryColor('#71717a'); // zinc-500
+        setBackNameColor('#18181b'); // zinc-900
+        setBackDatesColor('#52525b'); // zinc-600
+        setPrayerColor('#000000');
+      }
+    },
+    []
+  );
+
+  const syncBackTextColors = useCallback(
+    async (opts?: { imageSrc?: string | null; fallbackIsDark?: boolean }) => {
+      const fallbackIsDark = opts?.fallbackIsDark ?? false;
+      const imageSrc = typeof opts?.imageSrc !== 'undefined' ? opts?.imageSrc : backBgImage;
+
+      if (imageSrc) {
+        const avg = await getAverageImageHex(imageSrc);
+        const withOverlay = avg ? applyBlackOverlay(avg, BACK_IMAGE_OVERLAY_ALPHA) : null;
+        applyBackTextPalette(withOverlay, true);
+        return;
+      }
+
+      // No image selected: use a representative metal/paper background color.
+      if (cardType === 'paper') {
+        applyBackTextPalette('#ffffff', false);
+        return;
+      }
+
+      const metalHex = METAL_SAMPLE_HEX[backMetalFinish] ?? '#ffffff';
+      applyBackTextPalette(metalHex, relativeLuminance(metalHex) < 0.45);
+    },
+    [applyBackTextPalette, applyBlackOverlay, backBgImage, backMetalFinish, cardType, getAverageImageHex]
+  );
+
+  // Helper kept for existing call sites (now auto-detects instead of trusting the boolean).
+  const updateBackTextColors = (fallbackIsDark: boolean) => {
+    void syncBackTextColors({ fallbackIsDark });
+  };
+
+  useEffect(() => {
+    void syncBackTextColors();
+  }, [syncBackTextColors]);
   
   // Easel photo state - supports multiple photos with individual sizes
   const [easelPhotos, setEaselPhotos] = useState<{src: string, size: EaselPhotoSize}[]>([]);
@@ -835,7 +946,7 @@ const Design = () => {
       updateFrontTextColors(true); // Photos are treated as dark backgrounds - use light text
     } else if (type === 'back') {
       setBackBgImage(previewUrl);
-      updateBackTextColors(true); // Uploaded images are treated as dark backgrounds
+      void syncBackTextColors({ imageSrc: previewUrl, fallbackIsDark: true });
     } else if (type === 'logo') {
       setFuneralHomeLogo(previewUrl);
     }
@@ -1824,7 +1935,7 @@ const Design = () => {
                           {(() => {
                             // Determine background and if it's dark
                             const currentBackMetal = METAL_BG_OPTIONS.find(m => m.id === backMetalFinish) || METAL_BG_OPTIONS[0];
-                            const isBackDark = backBgImage ? true : currentBackMetal.isDark;
+                            const isBackDark = relativeLuminance(backBgSampleHex) < 0.45;
                             const textColorClass = isBackDark ? 'text-zinc-200' : 'text-zinc-700';
                             const mutedTextColorClass = isBackDark ? 'text-zinc-400' : 'text-zinc-600';
                             
@@ -2221,7 +2332,7 @@ const Design = () => {
                                     setBackBgPanX(0);
                                     setBackBgPanY(0);
                                     setBackBgRotation(0);
-                                    updateBackTextColors(metal.isDark);
+                                    applyBackTextPalette(METAL_SAMPLE_HEX[metal.id] ?? '#ffffff', metal.isDark);
                                   }}
                                   className={`w-12 h-16 rounded-lg overflow-hidden border-2 transition-all bg-gradient-to-br ${metal.gradient} ${
                                     !backBgImage && backMetalFinish === metal.id ? 'border-amber-500 ring-2 ring-amber-500/30' : 'border-slate-600 hover:border-slate-500'
@@ -2247,7 +2358,7 @@ const Design = () => {
                                   setBackBgPanX(0);
                                   setBackBgPanY(0);
                                   setBackBgRotation(0);
-                                  updateBackTextColors(bg.isDark);
+                                  void syncBackTextColors({ imageSrc: bg.src, fallbackIsDark: bg.isDark });
                                 }}
                                 className={`w-12 h-16 rounded-lg overflow-hidden border-2 transition-all ${
                                   backBgImage === bg.src ? 'border-amber-500 ring-2 ring-amber-500/30' : 'border-slate-600 hover:border-slate-500'
@@ -2283,7 +2394,7 @@ const Design = () => {
                                   setBackBgRotation(0);
                                   // Reset to current metal finish colors
                                   const currentMetal = METAL_BG_OPTIONS.find(m => m.id === backMetalFinish);
-                                  updateBackTextColors(currentMetal?.isDark ?? false);
+                                  applyBackTextPalette(METAL_SAMPLE_HEX[backMetalFinish] ?? '#ffffff', currentMetal?.isDark ?? false);
                                 }}
                                 className="border-slate-600 text-slate-300 hover:bg-slate-700"
                               >
@@ -2302,7 +2413,7 @@ const Design = () => {
                                 setBackBgPanX(0);
                                 setBackBgPanY(0);
                                 setBackBgRotation(0);
-                                updateBackTextColors(false); // Paper default is light
+                                applyBackTextPalette('#ffffff', false); // Paper default is light
                               }}
                               className="border-slate-600 text-slate-300 hover:bg-slate-700"
                             >
