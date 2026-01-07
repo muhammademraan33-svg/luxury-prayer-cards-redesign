@@ -216,9 +216,33 @@ const Design = () => {
   const [upgradeThickness, setUpgradeThickness] = useState(false);
   const [shippingSpeed, setShippingSpeed] = useState<ShippingSpeed>('72hour');
   const [frontBorderDesign, setFrontBorderDesign] = useState<DecorativeBorderType>('none');
-  const [frontBorderColor, setFrontBorderColor] = useState('#c9a227'); // Gold color default
+  const [frontBorderColor, setFrontBorderColor] = useState('#d4af37'); // Gold (metallic) default
   const [backBorderDesign, setBackBorderDesign] = useState<DecorativeBorderType>('none');
-  const [backBorderColor, setBackBorderColor] = useState('#c9a227'); // Gold color default
+  const [backBorderColor, setBackBorderColor] = useState('#d4af37'); // Gold (metallic) default
+
+  // Only allow the 4 metallic border colors
+  const METALLIC_BORDER_HEXES = ['#d4af37', '#c0c0c0', '#b76e79', '#f8f8f8'] as const;
+  const normalizeBorderHex = (hex: string) => {
+    const v = hex.trim().toLowerCase();
+    return v.startsWith('#') && v.length === 9 ? v.slice(0, 7) : v;
+  };
+  const isAllowedBorderHex = (hex: string) =>
+    METALLIC_BORDER_HEXES.includes(normalizeBorderHex(hex) as (typeof METALLIC_BORDER_HEXES)[number]);
+
+  useEffect(() => {
+    if (cardType !== 'paper') return;
+    if (frontBorderDesign !== 'none' && !isAllowedBorderHex(frontBorderColor)) {
+      setFrontBorderColor('#d4af37');
+    }
+  }, [cardType, frontBorderDesign]);
+
+  useEffect(() => {
+    if (cardType !== 'paper') return;
+    if (backBorderDesign !== 'none' && !isAllowedBorderHex(backBorderColor)) {
+      setBackBorderColor('#d4af37');
+    }
+  }, [cardType, backBorderDesign]);
+
   const [mainDesignSize, setMainDesignSize] = useState<PaperCardSize>('2.5x4.25'); // Size for main design
   const [additionalDesigns, setAdditionalDesigns] = useState<AdditionalDesignData[]>([]); // Additional designs with full data
   const [mainDesignQty, setMainDesignQty] = useState(55); // Quantity for main design

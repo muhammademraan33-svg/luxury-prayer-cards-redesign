@@ -19,31 +19,44 @@ interface DecorativeBorderOverlayProps {
 }
 
 export const METALLIC_COLORS: { id: MetallicColorType; name: string; value: string; gradient: string }[] = [
-  { 
-    id: 'gold', 
-    name: 'Gold', 
+  {
+    id: 'gold',
+    name: 'Gold',
     value: '#d4af37',
-    gradient: 'url(#goldGradient)'
+    gradient: 'url(#goldGradient)',
   },
-  { 
-    id: 'silver', 
-    name: 'Silver', 
+  {
+    id: 'silver',
+    name: 'Silver',
     value: '#c0c0c0',
-    gradient: 'url(#silverGradient)'
+    gradient: 'url(#silverGradient)',
   },
-  { 
-    id: 'rose-gold', 
-    name: 'Rose Gold', 
+  {
+    id: 'rose-gold',
+    name: 'Rose Gold',
     value: '#b76e79',
-    gradient: 'url(#roseGoldGradient)'
+    gradient: 'url(#rose-goldGradient)',
   },
-  { 
-    id: 'white', 
-    name: 'White', 
+  {
+    id: 'white',
+    name: 'White',
     value: '#f8f8f8',
-    gradient: 'url(#whiteGradient)'
+    gradient: 'url(#whiteGradient)',
   },
 ];
+
+const normalizeHex = (hex: string) => {
+  const v = hex.trim().toLowerCase();
+  // strip alpha if present (#RRGGBBAA)
+  return v.startsWith('#') && v.length === 9 ? v.slice(0, 7) : v;
+};
+
+// Get the metallic gradient ID based on color value
+const getMetallicGradientId = (color: string): string | null => {
+  const normalized = normalizeHex(color);
+  const metallic = METALLIC_COLORS.find((m) => normalizeHex(m.value) === normalized);
+  return metallic ? metallic.id : null;
+};
 
 export const DECORATIVE_BORDERS: { id: DecorativeBorderType; name: string }[] = [
   { id: 'none', name: 'No Border' },
@@ -56,16 +69,10 @@ export const DECORATIVE_BORDERS: { id: DecorativeBorderType; name: string }[] = 
   { id: 'baroque', name: 'Baroque' },
 ];
 
-// Get the metallic gradient ID based on color value
-const getMetallicGradientId = (color: string): string | null => {
-  const metallic = METALLIC_COLORS.find(m => m.value === color);
-  return metallic ? metallic.id : null;
-};
-
-export const DecorativeBorderOverlay: React.FC<DecorativeBorderOverlayProps> = ({ 
-  type, 
+export const DecorativeBorderOverlay: React.FC<DecorativeBorderOverlayProps> = ({
+  type,
   color,
-  opacity = 1 
+  opacity = 1,
 }) => {
   if (type === 'none') return null;
 
