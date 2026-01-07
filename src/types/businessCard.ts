@@ -4,7 +4,8 @@ import { CardElement } from './cardElements';
 export type BackgroundTexture = 
   | 'marble-white' 
   | 'marble-grey'
-  | 'marble-black' 
+  | 'marble-white-grey'
+  | 'marble-black'
   | 'brushed-gold' 
   | 'brushed-silver' 
   | 'brushed-black' 
@@ -28,6 +29,7 @@ export const backgroundTextures: { value: BackgroundTexture; name: string; previ
   { value: 'brushed-black', name: 'Gunmetal Black', preview: 'linear-gradient(135deg, #2c2c2c 0%, #4a4a4a 15%, #1a1a1a 35%, #3d3d3d 55%, #0f0f0f 75%, #333333 90%, #2c2c2c 100%)' },
   // Marble finishes with veining effect
   { value: 'marble-white', name: 'Carrara White', preview: 'linear-gradient(125deg, #fafafa 0%, #f0f0f0 20%, #e8e8e8 35%, #f5f5f5 50%, #e0e0e0 65%, #f8f8f8 80%, #ececec 100%)' },
+  { value: 'marble-white-grey', name: 'White Grey Marble', preview: 'linear-gradient(125deg, #f5f5f5 0%, #e0e0e0 15%, #d8d8d8 30%, #ebebeb 45%, #c8c8c8 60%, #e5e5e5 75%, #d0d0d0 90%, #f0f0f0 100%)' },
   { value: 'marble-grey', name: 'Grey Marble', preview: 'linear-gradient(125deg, #a8a8a8 0%, #c5c5c5 20%, #8f8f8f 35%, #b8b8b8 50%, #9a9a9a 65%, #d0d0d0 80%, #a0a0a0 100%)' },
   { value: 'marble-black', name: 'Nero Marble', preview: 'linear-gradient(125deg, #1a1a1a 0%, #2e2e2e 20%, #0f0f0f 35%, #252525 50%, #1c1c1c 65%, #383838 80%, #141414 100%)' },
   // Solid finishes with subtle metallic sheen

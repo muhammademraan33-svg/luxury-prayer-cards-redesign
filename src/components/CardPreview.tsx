@@ -37,8 +37,8 @@ export const CardPreview = ({ sideData, orientation }: CardPreviewProps) => {
 
       // Marble effect - subtle veining pattern
       if (textureName.startsWith('marble')) {
-        const isLight = textureName === 'marble-white' || textureName === 'marble-grey';
-        const veinColor = isLight ? 'rgba(180,180,180,0.15)' : 'rgba(60,60,60,0.2)';
+        const isLight = textureName === 'marble-white' || textureName === 'marble-white-grey';
+        const veinColor = textureName === 'marble-black' ? 'rgba(60,60,60,0.2)' : 'rgba(180,180,180,0.15)';
         return {
           ...base,
           backgroundImage: `
