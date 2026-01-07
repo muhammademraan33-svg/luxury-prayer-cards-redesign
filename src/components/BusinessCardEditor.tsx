@@ -8,7 +8,9 @@ import {
   createDefaultTextElement,
   createDefaultCardData,
   CardCategory,
+  colorPresets,
 } from '@/types/businessCard';
+import { getBackgroundSampleHex, pickBestTextColor } from '@/lib/color';
 import { CardElement, createImageElement } from '@/types/cardElements';
 import { PrayerTemplate } from '@/data/prayerTemplates';
 import { EditorHeader } from './editor/EditorHeader';
@@ -151,7 +153,18 @@ export const BusinessCardEditor = () => {
   };
 
   const handleBackgroundChange = (background: BackgroundStyle) => {
-    updateSide(activeSide, { background });
+    // Get the best text color for the new background
+    const bgHex = getBackgroundSampleHex(background);
+    const candidates = ['#ffffff', '#fefefe', '#f5f5f5', '#000000', '#1a1a2e', '#2c2c2c', '#333333', ...colorPresets];
+    const bestColor = pickBestTextColor(bgHex, candidates);
+    
+    // Update all text colors to the best readable color
+    const updatedTexts = sideData.texts.map((t) => ({
+      ...t,
+      style: { ...t.style, color: bestColor },
+    }));
+    
+    updateSide(activeSide, { background, texts: updatedTexts });
   };
 
   const handleSelect = (id: string | null, type: 'text' | 'element' | null) => {
