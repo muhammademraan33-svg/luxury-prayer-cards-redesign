@@ -1594,7 +1594,7 @@ const Design = () => {
                                 // Push dates down when name has multiple lines
                                 const nameText = deceasedName || 'Name Here';
                                 const nameLineCount = nameText.split('\n').length;
-                                const datesOffset = (nameLineCount - 1) * 3;
+                                const datesOffset = (nameLineCount - 1) * 6;
                                 const adjustedDatesY = Math.min(95, datesPosition.y + datesOffset);
 
                                 return (
