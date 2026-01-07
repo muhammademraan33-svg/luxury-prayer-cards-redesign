@@ -69,7 +69,7 @@ type BackBgType = 'image' | 'metal';
 const METAL_BG_OPTIONS: { id: MetalFinish; name: string; gradient: string; isDark: boolean }[] = [
   { id: 'silver', name: 'Brushed Silver', gradient: 'from-zinc-400 via-zinc-300 to-zinc-500', isDark: false },
   { id: 'gold', name: 'Polished Gold', gradient: 'from-yellow-600 via-yellow-500 to-yellow-700', isDark: false },
-  { id: 'rosegold', name: 'Rose Gold', gradient: 'from-pink-300 via-pink-200 to-pink-400', isDark: false },
+  { id: 'rosegold', name: 'Rose Gold', gradient: 'from-[#e8c4bc] via-[#d4a59a] to-[#c9968a]', isDark: false },
   { id: 'black', name: 'Matte Black', gradient: 'from-zinc-800 via-zinc-700 to-zinc-900', isDark: true },
   { id: 'white', name: 'Pearl White', gradient: 'from-gray-100 via-white to-gray-200', isDark: false },
   { id: 'marble', name: 'Silver Marble', gradient: 'from-gray-300 via-slate-100 to-gray-400', isDark: false },
@@ -92,7 +92,7 @@ type CardType = 'metal' | 'paper';
 const METAL_FINISHES: { id: MetalFinish; name: string; gradient: string }[] = [
   { id: 'silver', name: 'Brushed Silver', gradient: 'from-zinc-400 via-zinc-300 to-zinc-500' },
   { id: 'gold', name: 'Polished Gold', gradient: 'from-yellow-600 via-yellow-500 to-yellow-700' },
-  { id: 'rosegold', name: 'Rose Gold', gradient: 'from-pink-300 via-pink-200 to-pink-400' },
+  { id: 'rosegold', name: 'Rose Gold', gradient: 'from-[#e8c4bc] via-[#d4a59a] to-[#c9968a]' },
   { id: 'black', name: 'Matte Black', gradient: 'from-zinc-800 via-zinc-700 to-zinc-900' },
   { id: 'white', name: 'Pearl White', gradient: 'from-gray-100 via-white to-gray-200' },
   { id: 'marble', name: 'Silver Marble', gradient: 'from-gray-300 via-slate-100 to-gray-400' },
@@ -307,7 +307,7 @@ const Design = () => {
       case '#c0c0c0': // Silver
         return 'from-gray-200 via-gray-300 to-gray-500';
       case '#b76e79': // Rose Gold
-        return 'from-pink-200 via-pink-300 to-pink-500';
+        return 'from-[#e8c4bc] via-[#d4a59a] to-[#c9968a]';
       case '#f8f8f8': // White
         return 'from-gray-100 via-white to-gray-200';
       default:
@@ -448,7 +448,7 @@ const Design = () => {
   const METAL_SAMPLE_HEX: Record<MetalFinish, string> = {
     silver: '#b9bcc1',
     gold: '#c9a227',
-    rosegold: '#b76e79',
+    rosegold: '#d4a59a',
     black: '#0b0b0f',
     white: '#f5f5f5',
     marble: '#d3d7de',
