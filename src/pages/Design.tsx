@@ -3277,10 +3277,17 @@ const Design = () => {
                     </Button>
                     <Button 
                       type="button" 
-                      onClick={() => setStep(4)} 
+                      onClick={() => {
+                        // Navigate to memorial photo editor with package info
+                        const params = new URLSearchParams({
+                          package: selectedPackage,
+                          photos: String(currentPackage.photos),
+                        });
+                        window.location.href = `/memorial-photo?${params.toString()}`;
+                      }} 
                       className="flex-1 bg-amber-600 hover:bg-amber-700 text-white font-semibold"
                     >
-                      Continue <ArrowRight className="h-4 w-4 ml-2" />
+                      Continue to Memorial Photos <ArrowRight className="h-4 w-4 ml-2" />
                     </Button>
                   </div>
                 </div>
