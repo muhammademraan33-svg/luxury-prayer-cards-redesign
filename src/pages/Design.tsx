@@ -3071,6 +3071,110 @@ const Design = () => {
                         </div>
                       </div>
 
+                      {/* Front Border Design Selection (paper only) */}
+                      <div className="space-y-3">
+                        <Label className="text-slate-400 block text-sm">Front Border Design</Label>
+                        <div className="grid grid-cols-4 gap-2">
+                          {DECORATIVE_BORDERS.map((border) => (
+                            <button
+                              key={border.id}
+                              type="button"
+                              onClick={() => setFrontBorderDesign(border.id)}
+                              className={`p-2 rounded-lg border-2 transition-all text-center ${
+                                frontBorderDesign === border.id
+                                  ? 'border-amber-500 bg-amber-900/20'
+                                  : 'border-slate-600 hover:border-slate-500'
+                              }`}
+                            >
+                              <div className="w-full aspect-[3/4] rounded mb-2 bg-slate-700 relative overflow-hidden">
+                                <DecorativeBorderOverlay type={border.id} color={frontBorderColor} />
+                              </div>
+                              <span className="text-xs text-slate-300">{border.name}</span>
+                            </button>
+                          ))}
+                        </div>
+                        
+                        {/* Front Border Color Picker */}
+                        {frontBorderDesign !== 'none' && (
+                          <div className="flex items-center gap-3 pt-2">
+                            <Label className="text-slate-400 text-sm">Color</Label>
+                            <div className="flex items-center gap-2">
+                              <input
+                                type="color"
+                                value={frontBorderColor}
+                                onChange={(e) => setFrontBorderColor(e.target.value)}
+                                className="w-10 h-10 rounded border border-slate-600 cursor-pointer"
+                              />
+                              <div className="flex gap-1">
+                                {['#c9a227', '#d4af37', '#8b7355', '#4a4a4a', '#f5f5f5', '#1a1a1a'].map((color) => (
+                                  <button
+                                    key={color}
+                                    type="button"
+                                    onClick={() => setFrontBorderColor(color)}
+                                    className={`w-6 h-6 rounded border-2 transition-all ${
+                                      frontBorderColor === color ? 'border-amber-400 scale-110' : 'border-slate-600'
+                                    }`}
+                                    style={{ backgroundColor: color }}
+                                  />
+                                ))}
+                              </div>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                      
+                      {/* Back Border Design Selection (paper only) */}
+                      <div className="space-y-3">
+                        <Label className="text-slate-400 block text-sm">Back Border Design</Label>
+                        <div className="grid grid-cols-4 gap-2">
+                          {DECORATIVE_BORDERS.map((border) => (
+                            <button
+                              key={border.id}
+                              type="button"
+                              onClick={() => setBackBorderDesign(border.id)}
+                              className={`p-2 rounded-lg border-2 transition-all text-center ${
+                                backBorderDesign === border.id
+                                  ? 'border-amber-500 bg-amber-900/20'
+                                  : 'border-slate-600 hover:border-slate-500'
+                              }`}
+                            >
+                              <div className="w-full aspect-[3/4] rounded mb-2 bg-slate-700 relative overflow-hidden">
+                                <DecorativeBorderOverlay type={border.id} color={backBorderColor} />
+                              </div>
+                              <span className="text-xs text-slate-300">{border.name}</span>
+                            </button>
+                          ))}
+                        </div>
+                        
+                        {/* Back Border Color Picker */}
+                        {backBorderDesign !== 'none' && (
+                          <div className="flex items-center gap-3 pt-2">
+                            <Label className="text-slate-400 text-sm">Color</Label>
+                            <div className="flex items-center gap-2">
+                              <input
+                                type="color"
+                                value={backBorderColor}
+                                onChange={(e) => setBackBorderColor(e.target.value)}
+                                className="w-10 h-10 rounded border border-slate-600 cursor-pointer"
+                              />
+                              <div className="flex gap-1">
+                                {['#c9a227', '#d4af37', '#8b7355', '#4a4a4a', '#f5f5f5', '#1a1a1a'].map((color) => (
+                                  <button
+                                    key={color}
+                                    type="button"
+                                    onClick={() => setBackBorderColor(color)}
+                                    className={`w-6 h-6 rounded border-2 transition-all ${
+                                      backBorderColor === color ? 'border-amber-400 scale-110' : 'border-slate-600'
+                                    }`}
+                                    style={{ backgroundColor: color }}
+                                  />
+                                ))}
+                              </div>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+
                       {/* Additional Designs - Inline */}
                       {additionalDesigns.map((design, idx) => (
                         <div 
@@ -3262,110 +3366,6 @@ const Design = () => {
                           </div>
                         </div>
                       )}
-
-                      {/* Front Border Design Selection (paper only) */}
-                      <div className="space-y-3">
-                        <Label className="text-slate-400 block text-sm">Front Border Design</Label>
-                        <div className="grid grid-cols-4 gap-2">
-                          {DECORATIVE_BORDERS.map((border) => (
-                            <button
-                              key={border.id}
-                              type="button"
-                              onClick={() => setFrontBorderDesign(border.id)}
-                              className={`p-2 rounded-lg border-2 transition-all text-center ${
-                                frontBorderDesign === border.id
-                                  ? 'border-amber-500 bg-amber-900/20'
-                                  : 'border-slate-600 hover:border-slate-500'
-                              }`}
-                            >
-                              <div className="w-full aspect-[3/4] rounded mb-2 bg-slate-700 relative overflow-hidden">
-                                <DecorativeBorderOverlay type={border.id} color={frontBorderColor} />
-                              </div>
-                              <span className="text-xs text-slate-300">{border.name}</span>
-                            </button>
-                          ))}
-                        </div>
-                        
-                        {/* Front Border Color Picker */}
-                        {frontBorderDesign !== 'none' && (
-                          <div className="flex items-center gap-3 pt-2">
-                            <Label className="text-slate-400 text-sm">Color</Label>
-                            <div className="flex items-center gap-2">
-                              <input
-                                type="color"
-                                value={frontBorderColor}
-                                onChange={(e) => setFrontBorderColor(e.target.value)}
-                                className="w-10 h-10 rounded border border-slate-600 cursor-pointer"
-                              />
-                              <div className="flex gap-1">
-                                {['#c9a227', '#d4af37', '#8b7355', '#4a4a4a', '#f5f5f5', '#1a1a1a'].map((color) => (
-                                  <button
-                                    key={color}
-                                    type="button"
-                                    onClick={() => setFrontBorderColor(color)}
-                                    className={`w-6 h-6 rounded border-2 transition-all ${
-                                      frontBorderColor === color ? 'border-amber-400 scale-110' : 'border-slate-600'
-                                    }`}
-                                    style={{ backgroundColor: color }}
-                                  />
-                                ))}
-                              </div>
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                      
-                      {/* Back Border Design Selection (paper only) */}
-                      <div className="space-y-3">
-                        <Label className="text-slate-400 block text-sm">Back Border Design</Label>
-                        <div className="grid grid-cols-4 gap-2">
-                          {DECORATIVE_BORDERS.map((border) => (
-                            <button
-                              key={border.id}
-                              type="button"
-                              onClick={() => setBackBorderDesign(border.id)}
-                              className={`p-2 rounded-lg border-2 transition-all text-center ${
-                                backBorderDesign === border.id
-                                  ? 'border-amber-500 bg-amber-900/20'
-                                  : 'border-slate-600 hover:border-slate-500'
-                              }`}
-                            >
-                              <div className="w-full aspect-[3/4] rounded mb-2 bg-slate-700 relative overflow-hidden">
-                                <DecorativeBorderOverlay type={border.id} color={backBorderColor} />
-                              </div>
-                              <span className="text-xs text-slate-300">{border.name}</span>
-                            </button>
-                          ))}
-                        </div>
-                        
-                        {/* Back Border Color Picker */}
-                        {backBorderDesign !== 'none' && (
-                          <div className="flex items-center gap-3 pt-2">
-                            <Label className="text-slate-400 text-sm">Color</Label>
-                            <div className="flex items-center gap-2">
-                              <input
-                                type="color"
-                                value={backBorderColor}
-                                onChange={(e) => setBackBorderColor(e.target.value)}
-                                className="w-10 h-10 rounded border border-slate-600 cursor-pointer"
-                              />
-                              <div className="flex gap-1">
-                                {['#c9a227', '#d4af37', '#8b7355', '#4a4a4a', '#f5f5f5', '#1a1a1a'].map((color) => (
-                                  <button
-                                    key={color}
-                                    type="button"
-                                    onClick={() => setBackBorderColor(color)}
-                                    className={`w-6 h-6 rounded border-2 transition-all ${
-                                      backBorderColor === color ? 'border-amber-400 scale-110' : 'border-slate-600'
-                                    }`}
-                                    style={{ backgroundColor: color }}
-                                  />
-                                ))}
-                              </div>
-                            </div>
-                          </div>
-                        )}
-                      </div>
                     </div>
                   )}
 
