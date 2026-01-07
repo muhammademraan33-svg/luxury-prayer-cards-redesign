@@ -1840,7 +1840,7 @@ const Design = () => {
                                         transformOrigin: 'center center',
                                       }}
                                     />
-                                    {/* No dark overlay - match thumbnail brightness */}
+                                    <div className={`absolute inset-0 bg-black/20 ${cardRounding}`}></div>
                                   </>
                                 )}
                                 {!backBgImage && cardType === 'metal' && (
