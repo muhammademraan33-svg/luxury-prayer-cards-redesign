@@ -350,47 +350,65 @@ const Index = () => {
             </p>
           </div>
 
-          <Card className="bg-primary/5 border-primary/20 overflow-hidden">
-            <CardContent className="p-8">
-              <div className="flex flex-col md:flex-row items-center justify-between gap-8">
-                <div className="text-center md:text-left">
-                  <h3 className="text-2xl font-bold text-foreground mb-2">Starter Bundle</h3>
-                  <p className="text-primary font-bold text-sm mb-4">72 Cards + 1 Memorial Easel Photo</p>
-                  
-                  <div className="mb-4 flex items-center gap-3 justify-center md:justify-start">
-                    <span className="text-2xl text-muted-foreground line-through">$125</span>
-                    <span className="text-5xl font-bold text-foreground" style={{ fontVariantNumeric: 'lining-nums' }}>${prayerCardPricing.starterPrice}</span>
-                    <span className="bg-green-500/20 text-green-600 text-xs font-bold px-2 py-1 rounded">Save $58</span>
-                  </div>
-                  
-                  <p className="text-muted-foreground text-sm mb-2">
-                    Need more? Add cards for just ${prayerCardPricing.perCardPrice.toFixed(2)} each
-                  </p>
-                  <p className="text-muted-foreground text-sm">
-                    Upgrade to <span className="font-semibold text-foreground">metal cards</span> in the designer
-                  </p>
+          <div className="grid md:grid-cols-2 gap-6">
+            {/* Paper Cards */}
+            <Card className="bg-primary/5 border-primary/20 overflow-hidden">
+              <CardContent className="p-8 text-center">
+                <h3 className="text-2xl font-bold text-foreground mb-2">Paper Cards</h3>
+                <p className="text-primary font-bold text-sm mb-4">55 Cards + 1 Memorial Easel Photo</p>
+                
+                <div className="mb-4 flex items-center gap-3 justify-center">
+                  <span className="text-2xl text-muted-foreground line-through">$125</span>
+                  <span className="text-5xl font-bold text-foreground" style={{ fontVariantNumeric: 'lining-nums' }}>$67</span>
+                  <span className="bg-green-500/20 text-green-600 text-xs font-bold px-2 py-1 rounded">Save $58</span>
                 </div>
+                
+                <p className="text-muted-foreground text-sm mb-4">
+                  Need more? Add cards for just ${prayerCardPricing.perCardPrice.toFixed(2)} each
+                </p>
 
-                <div className="flex flex-col gap-3 w-full md:w-auto">
-                  <Link to="/design?type=paper&quantity=72" className="block">
-                    <Button
-                      size="lg"
-                      className="w-full font-semibold text-lg py-6 px-10"
-                    >
-                      Start Designing
-                      <ArrowRight className="ml-2 h-5 w-5" />
-                    </Button>
-                  </Link>
-                  <p className="text-muted-foreground text-xs text-center">
-                    Add extra designs for $7 each
-                  </p>
+                <Link to="/design?type=paper&quantity=55" className="block">
+                  <Button size="lg" className="w-full font-semibold text-lg py-6">
+                    Start Designing
+                    <ArrowRight className="ml-2 h-5 w-5" />
+                  </Button>
+                </Link>
+                <p className="text-muted-foreground text-xs mt-3">Thick glossy cardstock</p>
+              </CardContent>
+            </Card>
+
+            {/* Metal Cards */}
+            <Card className="bg-secondary/50 border-secondary overflow-hidden">
+              <CardContent className="p-8 text-center">
+                <span className="inline-block bg-secondary text-secondary-foreground text-xs font-medium px-3 py-1 rounded-full mb-3">
+                  PREMIUM
+                </span>
+                <h3 className="text-2xl font-bold text-foreground mb-2">Metal Cards</h3>
+                <p className="text-primary font-bold text-sm mb-4">55 Cards + 2 Memorial Easel Photos</p>
+                
+                <div className="mb-4 flex items-center gap-3 justify-center">
+                  <span className="text-2xl text-muted-foreground line-through">$175</span>
+                  <span className="text-5xl font-bold text-foreground" style={{ fontVariantNumeric: 'lining-nums' }}>$97</span>
+                  <span className="bg-green-500/20 text-green-600 text-xs font-bold px-2 py-1 rounded">Save $78</span>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
+                
+                <p className="text-muted-foreground text-sm mb-4">
+                  Additional sets of 55: $30 each
+                </p>
+
+                <Link to="/design?type=metal&quantity=55" className="block">
+                  <Button size="lg" variant="secondary" className="w-full font-semibold text-lg py-6">
+                    Start Designing
+                    <ArrowRight className="ml-2 h-5 w-5" />
+                  </Button>
+                </Link>
+                <p className="text-muted-foreground text-xs mt-3">Premium metal finish</p>
+              </CardContent>
+            </Card>
+          </div>
 
           <p className="text-center text-muted-foreground text-sm mt-6">
-            Thick glossy cardstock • Metal upgrade available • 72-Hour +$10 • 48-Hour +$15 • Overnight +100%
+            Full color both sides • 72-Hour +$10 • 48-Hour +$15 • Overnight +100%
           </p>
         </div>
       </section>
