@@ -149,38 +149,16 @@ const METAL_PACKAGES: Record<'good' | 'better' | 'best', PackageConfig> = {
   },
 };
 
-const PAPER_PACKAGES: Record<'starter' | 'standard' | 'large', PackageConfig> = {
+const PAPER_PACKAGES: Record<'starter', PackageConfig> = {
   starter: {
-    name: 'Starter Bundle',
+    name: 'Starter Set',
     price: 67,
     comparePrice: 125,
-    cards: 72,
+    cards: 0, // No included cards - all cards are $0.77 each
     photos: 1,
     shipping: 'Delivered in 48-72 hours',
     thickness: 'standard' as CardThickness,
-    description: '72 cards + 1 memorial easel photo',
-  },
-  standard: {
-    name: 'Standard',
-    price: 87,
-    comparePrice: 87,
-    cards: 100,
-    photos: 2,
-    shipping: 'Delivered in 48-72 hours',
-    thickness: 'standard' as CardThickness,
-    description: 'Most popular for services',
-    popular: true,
-    badge: 'MOST POPULAR',
-  },
-  large: {
-    name: 'Large',
-    price: 97,
-    comparePrice: 97,
-    cards: 150,
-    photos: 2,
-    shipping: 'Delivered in 48-72 hours',
-    thickness: 'standard' as CardThickness,
-    description: 'Extra cards for larger services',
+    description: 'Starter set + $0.77/card + $7/design',
   },
 };
 
@@ -221,7 +199,7 @@ const Design = () => {
   const packages = cardType === 'paper' ? PAPER_PACKAGES : METAL_PACKAGES;
 
   const [selectedPackage, setSelectedPackage] = useState<PackageId>(() =>
-    cardType === 'paper' ? 'standard' : 'better'
+    cardType === 'paper' ? 'starter' : 'better'
   );
 
   // If user came from pricing on the landing page, honor package/quantity params
@@ -231,14 +209,8 @@ const Design = () => {
     const qty = qtyParam ? Number(qtyParam) : undefined;
 
     if (cardType === 'paper') {
-      if (pkg === 'starter' || pkg === 'standard' || pkg === 'large') {
-        setSelectedPackage(pkg);
-        return;
-      }
-      if (qty === 72) setSelectedPackage('starter');
-      else if (qty === 100) setSelectedPackage('standard');
-      else if (qty === 150) setSelectedPackage('large');
-      else setSelectedPackage('standard');
+      // Paper only has starter set now
+      setSelectedPackage('starter');
 
       // Paper flow shouldn't carry over metal-only add-ons
       setExtraSets(0);
@@ -976,13 +948,17 @@ const Design = () => {
     (packages as Record<string, PackageConfig>)[selectedPackage] ?? Object.values(packages)[0];
 
   const calculatePrice = () => {
-    // Paper cards: package base price + $0.77 for additional cards over package quantity
+    // Paper cards: starter set + $0.77/card + $7/design
     if (cardType === 'paper') {
       const totalPaperCards = mainDesignQty + additionalDesigns.reduce((sum, d) => sum + d.qty, 0);
-      const includedCards = currentPackage.cards;
-      const additionalCards = Math.max(0, totalPaperCards - includedCards);
       
-      let total = currentPackage.price + Math.round(additionalCards * PAPER_PER_CARD_PRICE * 100) / 100;
+      // Starter set base price + all cards at $0.77 each + $7 per additional design
+      let total = currentPackage.price + Math.round(totalPaperCards * PAPER_PER_CARD_PRICE * 100) / 100;
+      
+      // Additional designs at $7 each
+      if (additionalDesigns.length > 0) {
+        total += additionalDesigns.length * ADDITIONAL_DESIGN_PRICE;
+      }
       
       // Paper card size upsell (3x4.75 instead of 2.5x4.25)
       if (paperCardSize === '3x4.75') {
