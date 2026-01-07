@@ -2303,7 +2303,11 @@ const Design = () => {
                                 )}
                                 <div 
                                   className="relative z-10 w-full h-full"
-                                  style={{ padding: backBorderDesign !== 'none' ? '12px' : '12px' }}
+                                  style={{ 
+                                    padding: backBorderDesign !== 'none' ? '8px' : '12px',
+                                    paddingTop: backBorderDesign !== 'none' ? '20px' : '12px',
+                                    paddingBottom: backBorderDesign !== 'none' ? '20px' : '12px',
+                                  }}
                                 >
                                   <div className="h-full flex flex-col text-center">
                                     {/* Header Section - Logo, In Loving Memory, Name, Dates */}
