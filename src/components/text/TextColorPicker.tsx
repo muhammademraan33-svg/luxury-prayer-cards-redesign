@@ -37,7 +37,7 @@ export const TextColorPicker = ({
   }, [value, backgroundHex]);
 
   const handleAuto = () => {
-    const auto = pickBestTextColor(backgroundHex, ["#ffffff", "#000000", "#2c2c2c", "#fefefe"]);
+    const auto = pickBestTextColor(backgroundHex, ["#ffffff", "#000000"]);
     onChange(auto);
   };
 

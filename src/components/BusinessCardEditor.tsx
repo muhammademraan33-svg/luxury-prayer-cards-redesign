@@ -155,7 +155,7 @@ export const BusinessCardEditor = () => {
   const handleBackgroundChange = (background: BackgroundStyle) => {
     // Get the best text color for the new background
     const bgHex = getBackgroundSampleHex(background);
-    const candidates = ['#ffffff', '#fefefe', '#f5f5f5', '#000000', '#1a1a2e', '#2c2c2c', '#333333', ...colorPresets];
+    const candidates = ['#ffffff', '#000000'];
     const bestColor = pickBestTextColor(bgHex, candidates);
     
     // Update all text colors to the best readable color
