@@ -2865,14 +2865,44 @@ const Design = () => {
                           <h3 className="text-xl font-bold text-white mb-2">Upgrade to Large Size</h3>
                           <p className="text-slate-300 mb-4">Bigger cards make a bigger impact. More room for your beautiful design.</p>
                           
-                          {/* Visual comparison */}
+                          {/* Visual comparison with actual design */}
                           <div className="flex items-end gap-6 justify-center mb-4">
                             <div className="flex flex-col items-center">
-                              <div className="w-12 h-16 border border-slate-500 rounded-sm bg-slate-700/50" />
+                              <div 
+                                className="w-16 h-24 border border-slate-500 rounded-sm bg-slate-700/50 overflow-hidden"
+                                style={{ aspectRatio: '2.5/4.25' }}
+                              >
+                                {deceasedPhoto && (
+                                  <img 
+                                    src={deceasedPhoto} 
+                                    alt="Your design" 
+                                    className="w-full h-full object-cover opacity-80"
+                                    style={{
+                                      transform: `translate(${photoPanX * 0.3}px, ${photoPanY * 0.3}px) scale(${photoZoom})`,
+                                      filter: `brightness(${photoBrightness}%)`,
+                                    }}
+                                  />
+                                )}
+                              </div>
                               <span className="text-xs text-slate-500 mt-2">2.5" × 4.25"</span>
                             </div>
                             <div className="flex flex-col items-center">
-                              <div className="w-14 h-20 border-2 border-amber-500 rounded-sm bg-amber-500/10" />
+                              <div 
+                                className="w-20 h-28 border-2 border-amber-500 rounded-sm bg-amber-500/10 overflow-hidden ring-2 ring-amber-500/30"
+                                style={{ aspectRatio: '3/4.75' }}
+                              >
+                                {deceasedPhoto && (
+                                  <img 
+                                    src={deceasedPhoto} 
+                                    alt="Your design enlarged" 
+                                    className="w-full h-full object-cover"
+                                    style={{
+                                      transform: `translate(${photoPanX * 0.3}px, ${photoPanY * 0.3}px) scale(${photoZoom})`,
+                                      filter: `brightness(${photoBrightness}%)`,
+                                    }}
+                                  />
+                                )}
+                              </div>
                               <span className="text-xs text-amber-400 mt-2 font-semibold">3" × 4.75"</span>
                             </div>
                           </div>
