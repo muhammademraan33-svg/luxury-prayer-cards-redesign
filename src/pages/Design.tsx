@@ -270,6 +270,33 @@ const Design = () => {
   const [metalBorderColor, setMetalBorderColor] = useState<string>('#d4af37'); // 'none' or metallic hex
   const [photoBrightness, setPhotoBrightness] = useState(100);
 
+  // Sync back of card background to match front border color
+  useEffect(() => {
+    if (cardType !== 'metal' || metalBorderColor === 'none') return;
+    
+    // Map border color to metal finish
+    let newFinish: MetalFinish;
+    switch (metalBorderColor) {
+      case '#d4af37': // Gold
+        newFinish = 'gold';
+        break;
+      case '#c0c0c0': // Silver
+        newFinish = 'silver';
+        break;
+      case '#b76e79': // Rose Gold - use gold as closest
+        newFinish = 'gold';
+        break;
+      case '#f8f8f8': // White
+        newFinish = 'white';
+        break;
+      default:
+        newFinish = 'gold';
+    }
+    
+    setBackBgImage(null);
+    setBackMetalFinish(newFinish);
+  }, [metalBorderColor, cardType]);
+
   // Metal border gradient based on color
   const getMetalBorderGradient = (color: string): string => {
     switch (color) {
