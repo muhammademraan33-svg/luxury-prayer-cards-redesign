@@ -1549,12 +1549,11 @@ const Design = () => {
                         {/* Card Preview */}
                         <div 
                           ref={cardPreviewRef}
-                          className={`${cardClass} ${cardRounding} overflow-hidden shadow-2xl relative`}
+                          className={`${cardClass} ${cardRounding} overflow-hidden shadow-2xl relative ${cardType === 'metal' && metalBorderColor !== 'none' ? `bg-gradient-to-br ${getMetalBorderGradient(metalBorderColor)} p-1` : ''}`}
                         >
-                          <div className={`absolute inset-0 ${cardType === 'metal' && metalBorderColor !== 'none' ? `bg-gradient-to-br ${getMetalBorderGradient(metalBorderColor)} p-1` : cardType === 'metal' ? '' : 'bg-white'}`}>
                             <div 
                               ref={photoContainerRef}
-                              className={`w-full h-full ${cardType === 'metal' && metalBorderColor !== 'none' ? 'rounded-xl' : ''} overflow-hidden bg-slate-700 flex items-center justify-center touch-none relative ${!deceasedPhoto ? 'cursor-pointer hover:bg-slate-600 transition-colors' : ''}`}
+                              className={`w-full h-full ${cardType === 'metal' && metalBorderColor !== 'none' ? 'rounded-lg' : ''} overflow-hidden bg-slate-700 flex items-center justify-center touch-none relative ${!deceasedPhoto ? 'cursor-pointer hover:bg-slate-600 transition-colors' : ''}`}
                               style={{ cursor: deceasedPhoto && !draggingText ? (isPanning ? 'grabbing' : 'grab') : (!deceasedPhoto ? 'pointer' : 'default') }}
                               onPointerDown={handlePhotoPointerDown}
                               onPointerMove={handlePhotoPointerMove}
@@ -1698,7 +1697,6 @@ const Design = () => {
                                 <DecorativeBorderOverlay type={frontBorderDesign} color={frontBorderColor} />
                               )}
                             </div>
-                          </div>
                         </div>
 
                         {/* Photo Upload */}
