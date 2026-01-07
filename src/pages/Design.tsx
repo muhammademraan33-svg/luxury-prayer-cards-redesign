@@ -1877,7 +1877,7 @@ const Design = () => {
                                         color: inLovingMemoryColor,
                                         fontWeight: inLovingMemoryBold ? 'bold' : 'normal',
                                         fontFamily: inLovingMemoryFont,
-                                        textShadow: '0 1px 3px rgba(0,0,0,0.4), 0 0 8px rgba(0,0,0,0.2)',
+                                        textShadow: '2px 2px 4px rgba(0,0,0,0.5)',
                                       }}
                                     >
                                       {inLovingMemoryText}
@@ -1891,7 +1891,7 @@ const Design = () => {
                                         color: backNameColor,
                                         fontWeight: backNameBold ? 'bold' : 'normal',
                                         fontFamily: backNameFont,
-                                        textShadow: '0 1px 3px rgba(0,0,0,0.4), 0 0 8px rgba(0,0,0,0.2)',
+                                        textShadow: '2px 2px 4px rgba(0,0,0,0.5)',
                                       }}
                                     >
                                       {deceasedName || 'Name Here'}
@@ -1918,7 +1918,7 @@ const Design = () => {
                                         color: backDatesColor,
                                         fontWeight: datesBold ? 'bold' : 'normal',
                                         whiteSpace: 'nowrap',
-                                        textShadow: '0 1px 3px rgba(0,0,0,0.4), 0 0 8px rgba(0,0,0,0.2)',
+                                        textShadow: '2px 2px 4px rgba(0,0,0,0.5)',
                                       }}>
                                         {formatDates(birthDate, deathDate, backDateFormat)}
                                       </span>
@@ -1949,7 +1949,7 @@ const Design = () => {
                                       overflowWrap: 'break-word',
                                       fontWeight: prayerBold ? 'bold' : 'normal',
                                       paddingBottom: '2px',
-                                      textShadow: '0 1px 3px rgba(0,0,0,0.4), 0 0 8px rgba(0,0,0,0.2)',
+                                      textShadow: '2px 2px 4px rgba(0,0,0,0.5)',
                                     }}
                                   >
                                     {preventOrphans(backText)}
