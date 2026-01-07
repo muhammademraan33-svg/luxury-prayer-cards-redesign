@@ -69,6 +69,7 @@ type BackBgType = 'image' | 'metal';
 const METAL_BG_OPTIONS: { id: MetalFinish; name: string; gradient: string; isDark: boolean }[] = [
   { id: 'silver', name: 'Brushed Silver', gradient: 'from-zinc-400 via-zinc-300 to-zinc-500', isDark: false },
   { id: 'gold', name: 'Polished Gold', gradient: 'from-yellow-600 via-yellow-500 to-yellow-700', isDark: false },
+  { id: 'rosegold', name: 'Rose Gold', gradient: 'from-pink-300 via-pink-200 to-pink-400', isDark: false },
   { id: 'black', name: 'Matte Black', gradient: 'from-zinc-800 via-zinc-700 to-zinc-900', isDark: true },
   { id: 'white', name: 'Pearl White', gradient: 'from-gray-100 via-white to-gray-200', isDark: false },
   { id: 'marble', name: 'Silver Marble', gradient: 'from-gray-300 via-slate-100 to-gray-400', isDark: false },
@@ -83,7 +84,7 @@ const FONT_OPTIONS = [
   { value: 'Montserrat', name: 'Montserrat' },
 ];
 
-type MetalFinish = 'silver' | 'gold' | 'black' | 'white' | 'marble';
+type MetalFinish = 'silver' | 'gold' | 'rosegold' | 'black' | 'white' | 'marble';
 type Orientation = 'landscape' | 'portrait';
 type CardSide = 'front' | 'back';
 type CardType = 'metal' | 'paper';
@@ -91,6 +92,7 @@ type CardType = 'metal' | 'paper';
 const METAL_FINISHES: { id: MetalFinish; name: string; gradient: string }[] = [
   { id: 'silver', name: 'Brushed Silver', gradient: 'from-zinc-400 via-zinc-300 to-zinc-500' },
   { id: 'gold', name: 'Polished Gold', gradient: 'from-yellow-600 via-yellow-500 to-yellow-700' },
+  { id: 'rosegold', name: 'Rose Gold', gradient: 'from-pink-300 via-pink-200 to-pink-400' },
   { id: 'black', name: 'Matte Black', gradient: 'from-zinc-800 via-zinc-700 to-zinc-900' },
   { id: 'white', name: 'Pearl White', gradient: 'from-gray-100 via-white to-gray-200' },
   { id: 'marble', name: 'Silver Marble', gradient: 'from-gray-300 via-slate-100 to-gray-400' },
@@ -283,8 +285,8 @@ const Design = () => {
       case '#c0c0c0': // Silver
         newFinish = 'silver';
         break;
-      case '#b76e79': // Rose Gold - use gold as closest
-        newFinish = 'gold';
+      case '#b76e79': // Rose Gold
+        newFinish = 'rosegold';
         break;
       case '#f8f8f8': // White
         newFinish = 'white';
@@ -446,6 +448,7 @@ const Design = () => {
   const METAL_SAMPLE_HEX: Record<MetalFinish, string> = {
     silver: '#b9bcc1',
     gold: '#c9a227',
+    rosegold: '#b76e79',
     black: '#0b0b0f',
     white: '#f5f5f5',
     marble: '#d3d7de',
