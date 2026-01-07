@@ -307,7 +307,7 @@ const Index = () => {
           Photo prayer cards, heirloom metal cards & celebration of life prints. Delivered in 24-72 hours.
         </p>
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-10">
-          <Link to="/design?type=paper&quantity=72">
+          <Link to="/design">
             <Button size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold text-lg px-10 py-7 shadow-xl">
               Design Your Prayer Cards
               <ArrowRight className="ml-2 h-5 w-5" />

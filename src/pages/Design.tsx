@@ -1,5 +1,5 @@
 import { useLayoutEffect, useRef, useState, useEffect, useCallback } from 'react';
-import { Link, useSearchParams } from 'react-router-dom';
+import { Link, useSearchParams, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -7,11 +7,14 @@ import { Card, CardContent } from '@/components/ui/card';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Sparkles, QrCode, Loader2, Truck, Zap, ArrowLeft, ArrowRight, ImageIcon, RotateCcw, RectangleHorizontal, RectangleVertical, Type, Book, Trash2, Package, Clock, MapPin, Layers } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { Sparkles, QrCode, Loader2, Truck, Zap, ArrowLeft, ArrowRight, ImageIcon, RotateCcw, RectangleHorizontal, RectangleVertical, Type, Book, Trash2, Package, Clock, MapPin, Layers, CheckCircle2 } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 import { Textarea } from '@/components/ui/textarea';
 import { prayerTemplates } from '@/data/prayerTemplates';
 import { toast } from 'sonner';
+import metalCardProduct from '@/assets/metal-card-product.jpg';
+import paperCardsProduct from '@/assets/paper-cards-product.jpg';
 
 import cloudsLightBg from '@/assets/backgrounds/clouds-light.jpg';
 import marbleGreyBg from '@/assets/backgrounds/marble-grey.jpg';
@@ -178,7 +181,17 @@ type EaselPhotoSize = '16x20' | '18x24';
 type PaperCardSize = '2.5x4.25' | '3x4.75';
 
 const Design = () => {
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
+
+  // Show type selection modal if no type specified
+  const urlType = searchParams.get('type');
+  const [showTypeModal, setShowTypeModal] = useState(!urlType);
+
+  const handleSelectCardType = (type: CardType) => {
+    setSearchParams({ type, quantity: type === 'paper' ? '55' : '55' });
+    setShowTypeModal(false);
+  };
 
   // Scroll to top on mount
   useEffect(() => {
@@ -1125,7 +1138,87 @@ const Design = () => {
   const cardRounding = cardType === 'paper' ? '' : 'rounded-2xl';
 
   return (
-    <div className="design-page min-h-screen bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900">
+    <>
+      {/* Card Type Selection Modal */}
+      <Dialog open={showTypeModal} onOpenChange={(open) => !open && navigate('/')}>
+        <DialogContent className="sm:max-w-2xl">
+          <DialogHeader className="text-center">
+            <DialogTitle className="text-2xl font-bold text-center">Choose Your Card Type</DialogTitle>
+            <DialogDescription className="text-center">
+              Select the type of prayer cards you'd like to design
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="grid md:grid-cols-2 gap-6 py-6">
+            {/* Paper Cards Option */}
+            <button
+              onClick={() => handleSelectCardType('paper')}
+              className="group relative overflow-hidden rounded-xl border-2 border-border hover:border-primary transition-all p-6 text-left bg-card hover:bg-accent/50"
+            >
+              <div className="aspect-[4/3] mb-4 rounded-lg overflow-hidden bg-muted">
+                <img 
+                  src={paperCardsProduct} 
+                  alt="Paper Prayer Cards" 
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                />
+              </div>
+              <h3 className="text-xl font-bold mb-1">Paper Cards</h3>
+              <p className="text-primary font-semibold mb-2">Starting at $67</p>
+              <ul className="text-sm text-muted-foreground space-y-1">
+                <li className="flex items-center gap-2">
+                  <CheckCircle2 className="h-4 w-4 text-primary" />
+                  55 Cards + Memorial Photo
+                </li>
+                <li className="flex items-center gap-2">
+                  <CheckCircle2 className="h-4 w-4 text-primary" />
+                  Thick glossy cardstock
+                </li>
+                <li className="flex items-center gap-2">
+                  <CheckCircle2 className="h-4 w-4 text-primary" />
+                  $0.77 per additional card
+                </li>
+              </ul>
+            </button>
+
+            {/* Metal Cards Option */}
+            <button
+              onClick={() => handleSelectCardType('metal')}
+              className="group relative overflow-hidden rounded-xl border-2 border-border hover:border-primary transition-all p-6 text-left bg-card hover:bg-accent/50"
+            >
+              <div className="absolute top-4 right-4 z-10">
+                <span className="bg-secondary text-secondary-foreground text-xs font-medium px-3 py-1 rounded-full">
+                  PREMIUM
+                </span>
+              </div>
+              <div className="aspect-[4/3] mb-4 rounded-lg overflow-hidden bg-muted">
+                <img 
+                  src={metalCardProduct} 
+                  alt="Metal Prayer Cards" 
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                />
+              </div>
+              <h3 className="text-xl font-bold mb-1">Metal Cards</h3>
+              <p className="text-primary font-semibold mb-2">Starting at $97</p>
+              <ul className="text-sm text-muted-foreground space-y-1">
+                <li className="flex items-center gap-2">
+                  <CheckCircle2 className="h-4 w-4 text-primary" />
+                  55 Cards + Memorial Photo
+                </li>
+                <li className="flex items-center gap-2">
+                  <CheckCircle2 className="h-4 w-4 text-primary" />
+                  Heirloom quality metal
+                </li>
+                <li className="flex items-center gap-2">
+                  <CheckCircle2 className="h-4 w-4 text-primary" />
+                  Premium finish options
+                </li>
+              </ul>
+            </button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <div className="design-page min-h-screen bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900">
       {/* Header */}
       <header className="border-b border-amber-900/30 bg-slate-900/80 backdrop-blur-sm sticky top-0 z-50">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
@@ -4006,6 +4099,7 @@ const Design = () => {
         </div>
       </footer>
     </div>
+    </>
   );
 };
 
