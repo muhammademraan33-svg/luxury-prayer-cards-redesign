@@ -148,34 +148,10 @@ const Index = () => {
 
   const cartTotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
   const cartItemCount = cart.reduce((sum, item) => sum + item.quantity, 0);
-  const metalPackages = [
-    {
-      id: 'good',
-      name: 'Essential',
-      quantity: 55,
-      price: 117,
-      photos: 2,
-      description: '+ 2 FREE 16x20 Memorial Photos',
-    },
-    {
-      id: 'better',
-      badge: 'MOST POPULAR',
-      name: 'Family',
-      quantity: 110,
-      price: 167,
-      photos: 4,
-      description: '+ 4 FREE 16x20 Memorial Photos',
-    },
-    {
-      id: 'best',
-      badge: 'BEST VALUE',
-      name: 'Legacy',
-      quantity: 165,
-      price: 247,
-      photos: 6,
-      description: '+ 6 FREE 16x20 Memorial Photos',
-    },
-  ];
+  // Metal card pricing - starter set + additional sets
+  const metalBasePrice = 97;
+  const metalAdditionalSetPrice = 87;
+  const metalCardsPerSet = 55;
 
   // Prayer card pricing - simple starter + per-card
   const prayerCardPricing = {
@@ -434,48 +410,34 @@ const Index = () => {
             <p className="text-muted-foreground mt-2">Heirloom quality keepsakes that last forever.</p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-6">
-            {metalPackages.map((pkg) => (
-              <Card
-                key={pkg.id}
-                className={
-                  pkg.badge
-                    ? 'bg-secondary/10 border-secondary/30 relative overflow-hidden'
-                    : 'bg-card border-border relative overflow-hidden'
-                }
-              >
-                {pkg.badge && (
-                  <div className="absolute top-4 right-4 bg-secondary text-secondary-foreground text-xs font-bold px-3 py-1 rounded-full">
-                    {pkg.badge}
-                  </div>
-                )}
+          <Card className="bg-card border-border max-w-md mx-auto">
+            <CardContent className="p-8 text-center">
+              <h3 className="text-2xl font-bold text-foreground mb-2">Starter Set</h3>
+              <p className="text-primary font-bold text-sm mb-4">Premium metal keepsakes</p>
+              
+              <div className="mb-4">
+                <span className="text-5xl font-bold text-foreground" style={{ fontVariantNumeric: 'lining-nums' }}>${metalBasePrice}</span>
+              </div>
+              
+              <p className="text-lg font-semibold text-foreground mb-2">
+                {metalCardsPerSet} Cards
+              </p>
+              
+              <p className="text-muted-foreground text-sm mb-6">
+                Additional sets of {metalCardsPerSet}: ${metalAdditionalSetPrice} each
+              </p>
 
-                <CardContent className="p-8 text-center">
-                  <h3 className="text-2xl font-bold text-foreground mb-2">{pkg.name}</h3>
-                  <p className="text-primary font-bold text-sm mb-4">{pkg.description}</p>
-                  
-                  <div className="mb-4">
-                    <span className="text-5xl font-bold text-foreground" style={{ fontVariantNumeric: 'lining-nums' }}>${pkg.price}</span>
-                  </div>
-                  
-                  <p className="text-lg font-semibold text-foreground mb-6">
-                    {pkg.quantity} Cards
-                  </p>
-
-                  <Link to={`/design?package=${pkg.id}`} className="block">
-                    <Button
-                      size="lg"
-                      className="w-full font-semibold text-lg py-6"
-                      variant={pkg.badge ? 'default' : 'outline'}
-                    >
-                      Start Designing
-                      <ArrowRight className="ml-2 h-5 w-5" />
-                    </Button>
-                  </Link>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+              <Link to="/design?type=metal" className="block">
+                <Button
+                  size="lg"
+                  className="w-full font-semibold text-lg py-6"
+                >
+                  Start Designing
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </Button>
+              </Link>
+            </CardContent>
+          </Card>
 
           <p className="text-center text-muted-foreground text-sm mt-6">
             Premium metal finish • Full color both sides • 72-Hour +$10 • 48-Hour +$15 • Overnight +100%
