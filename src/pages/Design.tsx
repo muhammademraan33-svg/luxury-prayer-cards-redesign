@@ -153,7 +153,7 @@ const PAPER_PACKAGES: Record<'starter' | 'standard' | 'large', PackageConfig> = 
   starter: {
     name: 'Starter',
     price: 67,
-    comparePrice: 67,
+    comparePrice: 115,
     cards: 72,
     photos: 1,
     shipping: 'Delivered in 48-72 hours',
@@ -163,7 +163,7 @@ const PAPER_PACKAGES: Record<'starter' | 'standard' | 'large', PackageConfig> = 
   standard: {
     name: 'Standard',
     price: 87,
-    comparePrice: 87,
+    comparePrice: 150,
     cards: 100,
     photos: 2,
     shipping: 'Delivered in 48-72 hours',
@@ -175,12 +175,13 @@ const PAPER_PACKAGES: Record<'starter' | 'standard' | 'large', PackageConfig> = 
   large: {
     name: 'Large',
     price: 97,
-    comparePrice: 97,
+    comparePrice: 175,
     cards: 150,
     photos: 2,
     shipping: 'Delivered in 48-72 hours',
     thickness: 'standard' as CardThickness,
     description: 'Extra cards for larger services',
+    badge: 'BEST VALUE',
   },
 };
 
