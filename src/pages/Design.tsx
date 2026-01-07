@@ -3393,10 +3393,6 @@ const Design = () => {
                                     </li>
                                     <li className="flex items-center gap-2 text-slate-300">
                                       <span className="text-amber-400">✓</span>
-                                      {pkg.photos} Easel Photos Included
-                                    </li>
-                                    <li className="flex items-center gap-2 text-slate-300">
-                                      <span className="text-amber-400">✓</span>
                                       {pkg.shipping}
                                       {pkg.shipping === 'Overnight' && <span className="text-rose-400 text-xs ml-1">⚡</span>}
                                     </li>
