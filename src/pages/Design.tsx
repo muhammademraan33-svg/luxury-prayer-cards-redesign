@@ -1877,6 +1877,7 @@ const Design = () => {
                                         color: inLovingMemoryColor,
                                         fontWeight: inLovingMemoryBold ? 'bold' : 'normal',
                                         fontFamily: inLovingMemoryFont,
+                                        textShadow: '0 1px 3px rgba(0,0,0,0.4), 0 0 8px rgba(0,0,0,0.2)',
                                       }}
                                     >
                                       {inLovingMemoryText}
@@ -1889,7 +1890,8 @@ const Design = () => {
                                         fontSize: `${backNameSize}px`,
                                         color: backNameColor,
                                         fontWeight: backNameBold ? 'bold' : 'normal',
-                                        fontFamily: backNameFont
+                                        fontFamily: backNameFont,
+                                        textShadow: '0 1px 3px rgba(0,0,0,0.4), 0 0 8px rgba(0,0,0,0.2)',
                                       }}
                                     >
                                       {deceasedName || 'Name Here'}
@@ -1915,7 +1917,8 @@ const Design = () => {
                                         fontSize: backDatesSize === 'auto' ? '9px' : `${backDatesSize}px`,
                                         color: backDatesColor,
                                         fontWeight: datesBold ? 'bold' : 'normal',
-                                        whiteSpace: 'nowrap'
+                                        whiteSpace: 'nowrap',
+                                        textShadow: '0 1px 3px rgba(0,0,0,0.4), 0 0 8px rgba(0,0,0,0.2)',
                                       }}>
                                         {formatDates(birthDate, deathDate, backDateFormat)}
                                       </span>
@@ -1946,6 +1949,7 @@ const Design = () => {
                                       overflowWrap: 'break-word',
                                       fontWeight: prayerBold ? 'bold' : 'normal',
                                       paddingBottom: '2px',
+                                      textShadow: '0 1px 3px rgba(0,0,0,0.4), 0 0 8px rgba(0,0,0,0.2)',
                                     }}
                                   >
                                     {preventOrphans(backText)}
