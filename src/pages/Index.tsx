@@ -384,7 +384,7 @@ const Index = () => {
                   PREMIUM
                 </span>
                 <h3 className="text-2xl font-bold text-foreground mb-2">Metal Cards</h3>
-                <p className="text-primary font-bold text-sm mb-4">55 Cards + 2 Memorial Easel Photos</p>
+                <p className="text-primary font-bold text-sm mb-4">55 Cards + 1 Memorial Easel Photo</p>
                 
                 <div className="mb-4 flex items-center gap-3 justify-center">
                   <span className="text-2xl text-muted-foreground line-through">$175</span>
