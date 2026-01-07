@@ -2891,8 +2891,8 @@ const Design = () => {
                               <ul className="space-y-1.5 text-sm">
                                 <li className="flex items-center gap-2 text-slate-300">
                                   <span className="text-amber-400">✓</span>
-                                  {pkg.cards} Premium Metal Cards
-                                  {pkg.thickness === 'premium' && <span className="text-amber-400 text-xs">(Premium .080")</span>}
+                                  {pkg.cards} {cardType === 'paper' ? 'Paper Prayer Cards' : 'Premium Metal Cards'}
+                                  {cardType === 'metal' && pkg.thickness === 'premium' && <span className="text-amber-400 text-xs">(Premium .080")</span>}
                                 </li>
                                 <li className="flex items-center gap-2 text-slate-300">
                                   <span className="text-amber-400">✓</span>
