@@ -287,6 +287,7 @@ const Design = () => {
   const [autoPrayerFontSize, setAutoPrayerFontSize] = useState(16);
   const [prayerLayoutNonce, setPrayerLayoutNonce] = useState(0);
   const [prayerColor, setPrayerColor] = useState('#ffffff');
+  const [backBgSampleHex, setBackBgSampleHex] = useState<string>('#ffffff');
   
   // Front card text state
   const [showNameOnFront, setShowNameOnFront] = useState(true);
