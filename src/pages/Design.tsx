@@ -151,6 +151,24 @@ const PAPER_SIZE_UPSELL = 7; // Upgrade from 2.5x4.25 to 3x4.75
 const ADDITIONAL_DESIGN_PRICE = 7; // Per additional design
 const PAPER_PER_CARD_PRICE = 0.77; // Per card price for paper cards (beyond 72)
 
+// Shipping options
+type ShippingSpeed = '72hour' | '48hour';
+const SHIPPING_PRICES: Record<ShippingSpeed, { price: number; label: string }> = {
+  '72hour': { price: 10, label: '72-Hour Delivery' },
+  '48hour': { price: 17, label: '48-Hour Rush Delivery' },
+};
+
+// Border designs for paper cards
+type BorderDesign = 'none' | 'classic' | 'floral' | 'ornate' | 'simple' | 'elegant';
+const BORDER_DESIGNS: { id: BorderDesign; name: string; preview: string }[] = [
+  { id: 'none', name: 'No Border', preview: '' },
+  { id: 'classic', name: 'Classic Gold', preview: 'border-4 border-amber-600' },
+  { id: 'floral', name: 'Floral Vine', preview: 'border-4 border-double border-amber-700' },
+  { id: 'ornate', name: 'Ornate Frame', preview: 'border-8 border-amber-800/50' },
+  { id: 'simple', name: 'Simple Line', preview: 'border-2 border-slate-400' },
+  { id: 'elegant', name: 'Elegant Double', preview: 'border-4 border-double border-slate-600' },
+];
+
 type CardThickness = 'standard' | 'premium';
 
 type EaselPhotoSize = '16x20' | '18x24';
@@ -205,6 +223,8 @@ const Design = () => {
   const [extraPhotos, setExtraPhotos] = useState(0); // Extra photos beyond package (handled by easelPhotos length)
   
   const [upgradeThickness, setUpgradeThickness] = useState(false);
+  const [shippingSpeed, setShippingSpeed] = useState<ShippingSpeed>('72hour');
+  const [borderDesign, setBorderDesign] = useState<BorderDesign>('none');
   const [mainDesignSize, setMainDesignSize] = useState<PaperCardSize>('2.5x4.25'); // Size for main design
   const [additionalDesigns, setAdditionalDesigns] = useState<AdditionalDesignData[]>([]); // Additional designs with full data
   const [mainDesignQty, setMainDesignQty] = useState(72); // Quantity for main design
@@ -921,7 +941,7 @@ const Design = () => {
     (packages as Record<string, PackageConfig>)[selectedPackage] ?? Object.values(packages)[0];
 
   const calculatePrice = () => {
-    // Paper cards: $67 for 72 cards + $0.77/additional card + $7/design for size upgrade
+    // Paper cards: $67 for 72 cards + $0.77/additional card + $7/design for size upgrade + shipping
     if (cardType === 'paper') {
       const totalPaperCards = mainDesignQty + additionalDesigns.reduce((sum, d) => sum + d.qty, 0);
       const includedCards = currentPackage.cards; // 72 cards included
@@ -945,6 +965,8 @@ const Design = () => {
         }
       });
       
+      // Add shipping cost
+      total += SHIPPING_PRICES[shippingSpeed].price;
       
       return Math.round(total);
     }
@@ -3497,6 +3519,64 @@ const Design = () => {
                       </div>
                     )}
 
+                    {/* Border Design Selection (paper only) */}
+                    {cardType === 'paper' && (
+                      <div className="space-y-3">
+                        <Label className="text-slate-400 block text-sm">Border Design</Label>
+                        <div className="grid grid-cols-3 gap-2">
+                          {BORDER_DESIGNS.map((border) => (
+                            <button
+                              key={border.id}
+                              type="button"
+                              onClick={() => setBorderDesign(border.id)}
+                              className={`p-3 rounded-lg border-2 transition-all text-center ${
+                                borderDesign === border.id
+                                  ? 'border-amber-500 bg-amber-900/20'
+                                  : 'border-slate-600 hover:border-slate-500'
+                              }`}
+                            >
+                              <div className={`w-full aspect-[3/4] rounded mb-2 bg-slate-700 ${border.preview}`} />
+                              <span className="text-xs text-slate-300">{border.name}</span>
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Shipping Speed Selection */}
+                    <div className="space-y-3">
+                      <Label className="text-slate-400 block text-sm">Shipping Speed</Label>
+                      <div className="grid grid-cols-2 gap-3">
+                        {(Object.entries(SHIPPING_PRICES) as [ShippingSpeed, { price: number; label: string }][]).map(([speed, info]) => (
+                          <button
+                            key={speed}
+                            type="button"
+                            onClick={() => setShippingSpeed(speed)}
+                            className={`p-4 rounded-lg border-2 transition-all text-left ${
+                              shippingSpeed === speed
+                                ? 'border-amber-500 bg-amber-900/20'
+                                : 'border-slate-600 hover:border-slate-500'
+                            }`}
+                          >
+                            <div className="flex items-center justify-between">
+                              <div>
+                                <p className="text-white font-medium">{info.label}</p>
+                                <p className="text-slate-400 text-sm">
+                                  {speed === '48hour' ? 'Rush delivery' : 'Standard delivery'}
+                                </p>
+                              </div>
+                              <span className="text-amber-400 font-bold">${info.price}</span>
+                            </div>
+                            {shippingSpeed === speed && (
+                              <div className="absolute top-2 right-2 w-5 h-5 bg-amber-500 rounded-full flex items-center justify-center">
+                                <span className="text-white text-xs">✓</span>
+                              </div>
+                            )}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
                   </div>
 
                   {/* Price Summary */}
@@ -3722,6 +3802,12 @@ const Design = () => {
                         </div>
                       )}
                       
+                      {/* Shipping Cost */}
+                      <div className="flex justify-between">
+                        <span className="text-slate-300">{SHIPPING_PRICES[shippingSpeed].label}</span>
+                        <span className="text-white">${SHIPPING_PRICES[shippingSpeed].price}</span>
+                      </div>
+                      
                       <div className="border-t border-slate-600 pt-3 mt-3">
                         <div className="flex justify-between text-lg font-semibold">
                           <span className="text-white">Total</span>
@@ -3761,7 +3847,7 @@ const Design = () => {
                       <span className="text-slate-400">Easel Photos:</span> {Math.max(currentPackage.photos, easelPhotos.length)} ({easelPhotos.filter(p => p.size === '18x24').length} upgraded to 18x24)
                     </p>
                     <p className="text-slate-300">
-                      <span className="text-slate-400">Shipping:</span> Delivered in 48-72 hours
+                      <span className="text-slate-400">Shipping:</span> {SHIPPING_PRICES[shippingSpeed].label}
                     </p>
                   </div>
 
