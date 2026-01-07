@@ -356,8 +356,8 @@ const Design = () => {
   const [backDatesPosition, setBackDatesPosition] = useState({ x: 50, y: 18 });
   const [backDatesAlign, setBackDatesAlign] = useState<'left' | 'center' | 'right'>('center');
   
-  // Back name styling
-  const [backNameSize, setBackNameSize] = useState(16);
+  // Back name styling - syncs with front name size
+  const backNameSize = nameSize; // Always match front name size
   const [backNameColor, setBackNameColor] = useState('#18181b');
   const [backNameBold, setBackNameBold] = useState(true);
   const [backNameFont, setBackNameFont] = useState('Great Vibes');
@@ -2502,30 +2502,7 @@ const Design = () => {
                                     className="w-7 h-7 rounded border border-slate-600 cursor-pointer"
                                   />
                                 </div>
-                                <div className="flex items-center gap-1">
-                                  <Label className="text-slate-400 text-xs">Size</Label>
-                                  <Button
-                                    type="button"
-                                    variant="outline"
-                                    size="icon"
-                                    className="h-6 w-6 border-slate-600"
-                                    onClick={() => setBackNameSize(Math.max(8, backNameSize - 2))}
-                                  >
-                                    <span className="text-xs">−</span>
-                                  </Button>
-                                  <span className="text-xs text-white bg-slate-700 px-2 py-1 rounded min-w-[40px] text-center">
-                                    {backNameSize}px
-                                  </span>
-                                  <Button
-                                    type="button"
-                                    variant="outline"
-                                    size="icon"
-                                    className="h-6 w-6 border-slate-600"
-                                    onClick={() => setBackNameSize(Math.min(36, backNameSize + 2))}
-                                  >
-                                    <span className="text-xs">+</span>
-                                  </Button>
-                                </div>
+                                <span className="text-xs text-slate-500">(Size syncs with front: {backNameSize}px)</span>
                                 <Button
                                   type="button"
                                   variant={backNameBold ? 'default' : 'outline'}
