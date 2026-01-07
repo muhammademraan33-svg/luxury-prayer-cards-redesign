@@ -443,6 +443,22 @@ const Index = () => {
             ))}
           </div>
 
+          {/* Additional Designs Option */}
+          <div className="mt-8 p-6 bg-accent/30 rounded-xl border border-border">
+            <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+              <div>
+                <h3 className="text-lg font-semibold text-foreground">Want Multiple Card Designs?</h3>
+                <p className="text-muted-foreground text-sm">Add additional unique designs for just $7 each</p>
+              </div>
+              <Link to="/design?type=paper&quantity=72&multiDesign=true">
+                <Button variant="outline" className="whitespace-nowrap">
+                  Add Multiple Designs
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
+              </Link>
+            </div>
+          </div>
+
           <p className="text-center text-muted-foreground text-sm mt-6">
             Thick glossy cardstock • Full color both sides • 72-Hour +$10 • 48-Hour +$15 • Overnight +100%
           </p>
