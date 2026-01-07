@@ -415,7 +415,7 @@ const Index = () => {
               <p className="text-primary font-bold text-sm mb-4">55 Metal Cards + 2 Memorial Easel Photos</p>
               
               <div className="mb-4 flex items-center gap-3 justify-center">
-                <span className="text-2xl text-muted-foreground line-through">$195</span>
+                <span className="text-2xl text-muted-foreground line-through">$175</span>
                 <span className="text-5xl font-bold text-foreground" style={{ fontVariantNumeric: 'lining-nums' }}>${metalBasePrice}</span>
                 <span className="bg-green-500/20 text-green-600 text-xs font-bold px-2 py-1 rounded">Save $78</span>
               </div>
