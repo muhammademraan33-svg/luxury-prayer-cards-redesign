@@ -93,9 +93,12 @@ const METAL_FINISHES: { id: MetalFinish; name: string; gradient: string }[] = [
   { id: 'marble', name: 'Silver Marble', gradient: 'from-gray-300 via-slate-100 to-gray-400' },
 ];
 
-// Package pricing - Good/Better/Best tiers
-type PackageTier = 'good' | 'better' | 'best';
+// Package pricing
 
+// Metal packages use good/better/best; paper packages use starter/standard/large
+type PackageId = 'good' | 'better' | 'best' | 'starter' | 'standard' | 'large';
+
+// Good/Better/Best tiers (metal) and Starter/Standard/Large (paper)
 interface PackageConfig {
   name: string;
   price: number;
@@ -106,39 +109,77 @@ interface PackageConfig {
   thickness: CardThickness;
   description: string;
   popular?: boolean;
+  badge?: 'MOST POPULAR' | 'BEST VALUE';
 }
 
-const PACKAGES: Record<PackageTier, PackageConfig> = {
+const METAL_PACKAGES: Record<'good' | 'better' | 'best', PackageConfig> = {
   good: {
     name: 'Essential',
-    price: 127,
+    price: 117,
     comparePrice: 195,
     cards: 55,
-    photos: 1,
+    photos: 2,
     shipping: 'Delivered in 24-72 hours',
     thickness: 'standard' as CardThickness,
     description: 'Perfect for intimate gatherings',
   },
   better: {
     name: 'Family',
-    price: 199,
+    price: 167,
     comparePrice: 295,
     cards: 110,
-    photos: 1,
+    photos: 4,
     shipping: 'Delivered in 24-72 hours',
     thickness: 'standard' as CardThickness,
     description: 'Most popular for services',
     popular: true,
+    badge: 'MOST POPULAR',
   },
   best: {
     name: 'Legacy',
-    price: 299,
+    price: 247,
     comparePrice: 450,
     cards: 165,
-    photos: 1,
+    photos: 6,
     shipping: 'Delivered in 24-72 hours',
     thickness: 'standard' as CardThickness,
     description: 'Complete memorial package',
+    badge: 'BEST VALUE',
+  },
+};
+
+const PAPER_PACKAGES: Record<'starter' | 'standard' | 'large', PackageConfig> = {
+  starter: {
+    name: 'Starter',
+    price: 67,
+    comparePrice: 67,
+    cards: 72,
+    photos: 1,
+    shipping: 'Delivered in 24-72 hours',
+    thickness: 'standard' as CardThickness,
+    description: 'Great for smaller gatherings',
+  },
+  standard: {
+    name: 'Standard',
+    price: 87,
+    comparePrice: 87,
+    cards: 100,
+    photos: 2,
+    shipping: 'Delivered in 24-72 hours',
+    thickness: 'standard' as CardThickness,
+    description: 'Most popular for services',
+    popular: true,
+    badge: 'MOST POPULAR',
+  },
+  large: {
+    name: 'Large',
+    price: 97,
+    comparePrice: 97,
+    cards: 150,
+    photos: 2,
+    shipping: 'Delivered in 24-72 hours',
+    thickness: 'standard' as CardThickness,
+    description: 'Extra cards for larger services',
   },
 };
 
@@ -171,18 +212,47 @@ const Design = () => {
   const [birthDate, setBirthDate] = useState('');
   const [deathDate, setDeathDate] = useState('');
   const [metalFinish, setMetalFinish] = useState<MetalFinish>('white');
-  const [selectedPackage, setSelectedPackage] = useState<PackageTier>('better');
 
   // Card type from URL param (metal or paper)
   const cardType: CardType = searchParams.get('type') === 'paper' ? 'paper' : 'metal';
 
-  // If user came from pricing on the landing page, honor ?package=good|better|best
+  const packages = cardType === 'paper' ? PAPER_PACKAGES : METAL_PACKAGES;
+
+  const [selectedPackage, setSelectedPackage] = useState<PackageId>(() =>
+    cardType === 'paper' ? 'standard' : 'better'
+  );
+
+  // If user came from pricing on the landing page, honor package/quantity params
   useEffect(() => {
     const pkg = searchParams.get('package');
+    const qtyParam = searchParams.get('quantity');
+    const qty = qtyParam ? Number(qtyParam) : undefined;
+
+    if (cardType === 'paper') {
+      if (pkg === 'starter' || pkg === 'standard' || pkg === 'large') {
+        setSelectedPackage(pkg);
+        return;
+      }
+      if (qty === 72) setSelectedPackage('starter');
+      else if (qty === 100) setSelectedPackage('standard');
+      else if (qty === 150) setSelectedPackage('large');
+      else setSelectedPackage('standard');
+
+      // Paper flow shouldn't carry over metal-only add-ons
+      setExtraSets(0);
+      setUpgradeThickness(false);
+      return;
+    }
+
     if (pkg === 'good' || pkg === 'better' || pkg === 'best') {
       setSelectedPackage(pkg);
+      return;
     }
-  }, [searchParams]);
+
+    if (qty === 55) setSelectedPackage('good');
+    else if (qty === 110) setSelectedPackage('better');
+    else if (qty === 165) setSelectedPackage('best');
+  }, [searchParams, cardType]);
 
   const [extraSets, setExtraSets] = useState(0); // Additional 55-card sets beyond package
   const [extraPhotos, setExtraPhotos] = useState(0); // Extra photos beyond package (handled by easelPhotos length)
@@ -783,57 +853,59 @@ const Design = () => {
     setEaselPhotos(prev => prev.filter((_, i) => i !== index));
   };
 
-  const currentPackage = PACKAGES[selectedPackage];
-  
+  const currentPackage =
+    (packages as Record<string, PackageConfig>)[selectedPackage] ?? Object.values(packages)[0];
+
   const calculatePrice = () => {
     let total = currentPackage.price;
-    
-    // Extra card sets beyond package
-    total += extraSets * ADDITIONAL_SET_PRICE;
-    
+
+    // Extra card sets beyond package (metal only)
+    if (cardType === 'metal') {
+      total += extraSets * ADDITIONAL_SET_PRICE;
+    }
+
     // Additional photos beyond package includes
     const includedPhotos = currentPackage.photos;
     const additionalPhotosCount = Math.max(0, easelPhotos.length - includedPhotos);
     total += additionalPhotosCount * ADDITIONAL_PHOTO_PRICE;
-    
+
     // 18x24 upsell - count how many photos are upgraded
-    const upgradedCount = easelPhotos.filter(p => p.size === '18x24').length;
-    // Also count included slots that should be upgraded (if user hasn't uploaded yet but has included slots)
-    const totalPhotoSlots = Math.max(includedPhotos, easelPhotos.length);
-    const upgradedSlots = upgradedCount;
-    total += upgradedSlots * EASEL_18X24_UPSELL;
-    
-    // Premium thickness upgrade (only if not already premium in package)
-    if (upgradeThickness && currentPackage.thickness !== 'premium') {
-      const totalSets = (currentPackage.cards / 55) + extraSets;
+    const upgradedCount = easelPhotos.filter((p) => p.size === '18x24').length;
+    total += upgradedCount * EASEL_18X24_UPSELL;
+
+    // Premium thickness upgrade (metal only)
+    if (cardType === 'metal' && upgradeThickness && currentPackage.thickness !== 'premium') {
+      const totalSets = currentPackage.cards / 55 + extraSets;
       total += PREMIUM_THICKNESS_PRICE * totalSets;
     }
-    
+
     // Paper card size upsell (3x4.75 instead of 2.5x4.25)
     if (cardType === 'paper' && paperCardSize === '3x4.75') {
       total += PAPER_SIZE_UPSELL;
     }
-    
-    // Additional designs ($7 each) - sum up quantities for all additional designs
-    const additionalDesignCards = additionalDesigns.reduce((sum, d) => sum + d.qty, 0);
+
+    // Additional designs ($7 each)
     if (additionalDesigns.length > 0) {
       total += additionalDesigns.length * ADDITIONAL_DESIGN_PRICE;
     }
-    
+
     // Overnight upgrade (only if not already overnight in package)
     if (upgradeToOvernight && currentPackage.shipping !== 'Overnight') {
       total = Math.round(total * 2); // 100% upcharge
     }
-    
+
     return total;
   };
-  
-  // Derived values for display
-  const totalCards = currentPackage.cards + (extraSets * 55);
-  const includedPhotos = currentPackage.photos;
-  const effectiveThickness = upgradeThickness || currentPackage.thickness === 'premium' ? 'premium' : 'standard';
-  const effectiveShipping = upgradeToOvernight || currentPackage.shipping === 'Overnight' ? 'overnight' : 'express';
 
+  // Derived values for display
+  const totalCards = currentPackage.cards + (cardType === 'metal' ? extraSets * 55 : 0);
+  const includedPhotos = currentPackage.photos;
+  const effectiveThickness: CardThickness =
+    cardType === 'metal' && (upgradeThickness || currentPackage.thickness === 'premium')
+      ? 'premium'
+      : 'standard';
+  const effectiveShipping =
+    upgradeToOvernight || currentPackage.shipping === 'Overnight' ? 'overnight' : 'express';
   const handleSubmitOrder = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!deceasedName.trim()) {
@@ -3306,7 +3378,7 @@ const Design = () => {
                         <span className="text-white">${currentPackage.price}</span>
                       </div>
                       
-                      {extraSets > 0 && (
+                      {cardType === 'metal' && extraSets > 0 && (
                         <div className="flex justify-between">
                           <span className="text-slate-300">Extra Card Sets × {extraSets}</span>
                           <span className="text-white">${extraSets * ADDITIONAL_SET_PRICE}</span>
@@ -3327,7 +3399,7 @@ const Design = () => {
                         </div>
                       )}
                       
-                      {upgradeThickness && currentPackage.thickness !== 'premium' && (
+                      {cardType === 'metal' && upgradeThickness && currentPackage.thickness !== 'premium' && (
                         <div className="flex justify-between">
                           <span className="text-slate-300">Premium Thickness Upgrade</span>
                           <span className="text-white">${PREMIUM_THICKNESS_PRICE * ((currentPackage.cards / 55) + extraSets)}</span>
@@ -3384,9 +3456,12 @@ const Design = () => {
                     <p className="text-slate-300">
                       <span className="text-slate-400">Total Cards:</span> {totalCards}
                     </p>
-                    <p className="text-slate-300">
-                      <span className="text-slate-400">Card Thickness:</span> {effectiveThickness === 'premium' ? 'Premium .080"' : 'Standard .040"'}
-                    </p>
+                    {cardType === 'metal' && (
+                      <p className="text-slate-300">
+                        <span className="text-slate-400">Card Thickness:</span>{' '}
+                        {effectiveThickness === 'premium' ? 'Premium .080"' : 'Standard .040"'}
+                      </p>
+                    )}
                     <p className="text-slate-300">
                       <span className="text-slate-400">Easel Photos:</span> {Math.max(currentPackage.photos, easelPhotos.length)} ({easelPhotos.filter(p => p.size === '18x24').length} upgraded to 18x24)
                     </p>
