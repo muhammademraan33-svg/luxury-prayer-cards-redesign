@@ -1627,50 +1627,48 @@ const Design = () => {
                           className="hidden"
                           onChange={(e) => e.target.files?.[0] && handleImageUpload(e.target.files[0], 'photo')}
                         />
-                        <div className="flex gap-2 flex-wrap justify-center">
-                          <Button
-                            type="button"
-                            variant="outline"
-                            onClick={() => photoInputRef.current?.click()}
-                            className="border-amber-600/50 text-amber-400 hover:bg-amber-600/20"
-                          >
-                            <ImageIcon className="h-4 w-4 mr-2" />
-                            {deceasedPhoto ? 'Change Photo' : 'Upload Photo'}
-                          </Button>
-                          {deceasedPhoto && (
-                            <>
-                              <Button
-                                type="button"
-                                variant="outline"
-                                onClick={() => {
-                                  setPhotoZoom(1);
-                                  setPhotoPanX(0);
-                                  setPhotoPanY(0);
-                                  setPhotoRotation(0);
-                                }}
-                                className="border-slate-600 text-slate-300 hover:bg-slate-700"
-                              >
-                                <RotateCcw className="h-4 w-4 mr-1" />
-                                Reset
-                              </Button>
-                              <Button
-                                type="button"
-                                variant="outline"
-                                onClick={() => {
-                                  setDeceasedPhoto(null);
-                                  setPhotoZoom(1);
-                                  setPhotoPanX(0);
-                                  setPhotoPanY(0);
-                                  setPhotoRotation(0);
-                                  updateFrontTextColors(false); // No photo - reset to dark text
-                                }}
-                                className="border-rose-600/50 text-rose-400 hover:bg-rose-600/20"
-                              >
-                                <Trash2 className="h-4 w-4" />
-                              </Button>
-                            </>
-                          )}
-                        </div>
+                        {deceasedPhoto && (
+                          <div className="flex gap-2 flex-wrap justify-center">
+                            <Button
+                              type="button"
+                              variant="outline"
+                              onClick={() => photoInputRef.current?.click()}
+                              className="border-amber-600/50 text-amber-400 hover:bg-amber-600/20"
+                            >
+                              <ImageIcon className="h-4 w-4 mr-2" />
+                              Change Photo
+                            </Button>
+                            <Button
+                              type="button"
+                              variant="outline"
+                              onClick={() => {
+                                setPhotoZoom(1);
+                                setPhotoPanX(0);
+                                setPhotoPanY(0);
+                                setPhotoRotation(0);
+                              }}
+                              className="border-slate-600 text-slate-300 hover:bg-slate-700"
+                            >
+                              <RotateCcw className="h-4 w-4 mr-1" />
+                              Reset
+                            </Button>
+                            <Button
+                              type="button"
+                              variant="outline"
+                              onClick={() => {
+                                setDeceasedPhoto(null);
+                                setPhotoZoom(1);
+                                setPhotoPanX(0);
+                                setPhotoPanY(0);
+                                setPhotoRotation(0);
+                                updateFrontTextColors(false); // No photo - reset to dark text
+                              }}
+                              className="border-rose-600/50 text-rose-400 hover:bg-rose-600/20"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        )}
 
                         {/* Photo Controls Panel */}
                         {deceasedPhoto && (
