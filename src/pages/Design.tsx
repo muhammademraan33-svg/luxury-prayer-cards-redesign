@@ -1141,7 +1141,7 @@ const Design = () => {
     <>
       {/* Card Type Selection Modal */}
       <Dialog open={showTypeModal} onOpenChange={(open) => !open && navigate('/')}>
-        <DialogContent className="sm:max-w-2xl">
+        <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader className="text-center">
             <DialogTitle className="text-2xl font-bold text-center">Choose Your Card Type</DialogTitle>
             <DialogDescription className="text-center">
