@@ -232,7 +232,7 @@ const Design = () => {
   const [extraPhotos, setExtraPhotos] = useState(0); // Extra photos beyond package (handled by easelPhotos length)
   const [upgradeToOvernight, setUpgradeToOvernight] = useState(false);
   const [upgradeThickness, setUpgradeThickness] = useState(false);
-  const [paperCardSize, setPaperCardSize] = useState<PaperCardSize>('2.5x4.25'); // Paper card size option
+  const [mainDesignSize, setMainDesignSize] = useState<PaperCardSize>('2.5x4.25'); // Size for main design
   const [additionalDesigns, setAdditionalDesigns] = useState<AdditionalDesignData[]>([]); // Additional designs with full data
   const [mainDesignQty, setMainDesignQty] = useState(72); // Quantity for main design
   const [activeDesignIndex, setActiveDesignIndex] = useState<number>(-1); // -1 = main design, 0+ = additional designs
@@ -948,7 +948,7 @@ const Design = () => {
     (packages as Record<string, PackageConfig>)[selectedPackage] ?? Object.values(packages)[0];
 
   const calculatePrice = () => {
-    // Paper cards: starter set + $0.77/card + $7/design
+    // Paper cards: starter set + $0.77/card + $7/design + $7/design for size upgrade
     if (cardType === 'paper') {
       const totalPaperCards = mainDesignQty + additionalDesigns.reduce((sum, d) => sum + d.qty, 0);
       
@@ -960,10 +960,15 @@ const Design = () => {
         total += additionalDesigns.length * ADDITIONAL_DESIGN_PRICE;
       }
       
-      // Paper card size upsell (3x4.75 instead of 2.5x4.25)
-      if (paperCardSize === '3x4.75') {
+      // Size upsell: $7 per design that is large size
+      if (mainDesignSize === '3x4.75') {
         total += PAPER_SIZE_UPSELL;
       }
+      additionalDesigns.forEach(d => {
+        if (d.size === '3x4.75') {
+          total += PAPER_SIZE_UPSELL;
+        }
+      });
       
       // Overnight upgrade
       if (upgradeToOvernight) {
@@ -1107,8 +1112,9 @@ const Design = () => {
   // Metal cards: 2" x 3.5" (credit card size), Paper cards: 2.5x4.25 or 3x4.75
   const getCardClass = () => {
     if (cardType === 'paper') {
-      // Paper prayer cards - aspect ratio based on size selection
-      return paperCardSize === '3x4.75' ? 'aspect-[3/4.75] w-64' : 'aspect-[2.5/4.25] w-60';
+      // Paper prayer cards - aspect ratio based on active design's size selection
+      const activeSize = activeDesignIndex === -1 ? mainDesignSize : (additionalDesigns[activeDesignIndex]?.size || '2.5x4.25');
+      return activeSize === '3x4.75' ? 'aspect-[3/4.75] w-64' : 'aspect-[2.5/4.25] w-60';
     }
     // Metal cards 2" x 3.5"
     return orientation === 'landscape' 
@@ -1159,13 +1165,23 @@ const Design = () => {
                   {/* Paper Card Size Selection - only for paper cards */}
                   {cardType === 'paper' && (
                     <div className="bg-slate-700/50 rounded-xl p-4 mb-4">
-                      <h3 className="text-lg font-semibold text-white mb-3 text-center">Choose Your Card Size</h3>
+                      <h3 className="text-lg font-semibold text-white mb-3 text-center">
+                        Card Size {activeDesignIndex >= 0 ? `(Design ${activeDesignIndex + 2})` : '(Main Design)'}
+                      </h3>
                       <div className="grid grid-cols-2 gap-4">
                         <button
                           type="button"
-                          onClick={() => setPaperCardSize('2.5x4.25')}
+                          onClick={() => {
+                            if (activeDesignIndex === -1) {
+                              setMainDesignSize('2.5x4.25');
+                            } else {
+                              const updated = [...additionalDesigns];
+                              updated[activeDesignIndex] = { ...updated[activeDesignIndex], size: '2.5x4.25' };
+                              setAdditionalDesigns(updated);
+                            }
+                          }}
                           className={`p-4 rounded-lg border-2 transition-all ${
-                            paperCardSize === '2.5x4.25'
+                            (activeDesignIndex === -1 ? mainDesignSize : additionalDesigns[activeDesignIndex]?.size) === '2.5x4.25'
                               ? 'border-amber-500 bg-amber-500/20'
                               : 'border-slate-600 hover:border-slate-500'
                           }`}
@@ -1189,9 +1205,17 @@ const Design = () => {
                         </button>
                         <button
                           type="button"
-                          onClick={() => setPaperCardSize('3x4.75')}
+                          onClick={() => {
+                            if (activeDesignIndex === -1) {
+                              setMainDesignSize('3x4.75');
+                            } else {
+                              const updated = [...additionalDesigns];
+                              updated[activeDesignIndex] = { ...updated[activeDesignIndex], size: '3x4.75' };
+                              setAdditionalDesigns(updated);
+                            }
+                          }}
                           className={`p-4 rounded-lg border-2 transition-all ${
-                            paperCardSize === '3x4.75'
+                            (activeDesignIndex === -1 ? mainDesignSize : additionalDesigns[activeDesignIndex]?.size) === '3x4.75'
                               ? 'border-amber-500 bg-amber-500/20'
                               : 'border-slate-600 hover:border-slate-500'
                           }`}
@@ -3215,9 +3239,10 @@ const Design = () => {
                           )}
                           
                           <div className="flex justify-between items-center py-2 border-b border-slate-600">
-                            <span className="text-slate-300">Card Size</span>
-                            <span className="text-white font-medium">
-                              {paperCardSize === '3x4.75' ? '3" × 4.75" (Large)' : '2.5" × 4.25" (Standard)'}
+                            <span className="text-slate-300">Card Sizes</span>
+                            <span className="text-white font-medium text-sm">
+                              {mainDesignSize === '3x4.75' ? 'Main: Large' : 'Main: Standard'}
+                              {additionalDesigns.length > 0 && `, +${additionalDesigns.filter(d => d.size === '3x4.75').length} large`}
                             </span>
                           </div>
                           
@@ -3405,41 +3430,27 @@ const Design = () => {
                       </div>
                     )}
 
-                    {/* Paper Card Size Upgrade - only show for paper cards */}
+                    {/* Paper Card Size info - size is now per-design in step 2 */}
                     {cardType === 'paper' && (
-                      <div 
-                        className={`p-4 rounded-lg border-2 cursor-pointer transition-all ${
-                          paperCardSize === '3x4.75' 
-                            ? 'bg-amber-900/30 border-amber-500' 
-                            : 'bg-slate-700/30 border-transparent hover:border-slate-500'
-                        }`}
-                        onClick={() => setPaperCardSize(paperCardSize === '3x4.75' ? '2.5x4.25' : '3x4.75')}
-                      >
-                        <div className="flex items-start justify-between gap-4">
-                          <div className="flex items-start gap-3">
-                            <input
-                              type="checkbox"
-                              checked={paperCardSize === '3x4.75'}
-                              onChange={(e) => setPaperCardSize(e.target.checked ? '3x4.75' : '2.5x4.25')}
-                              className="accent-amber-600 w-5 h-5 mt-1"
-                              onClick={(e) => e.stopPropagation()}
-                            />
-                            <div>
-                              <p className="text-white font-medium">Upgrade to Larger Size</p>
-                              <p className="text-slate-400 text-sm">3" × 4.75" instead of 2.5" × 4.25"</p>
-                              <div className="flex items-end gap-4 mt-2">
-                                <div className="flex flex-col items-center">
-                                  <div className="w-10 h-14 border border-slate-500 rounded-sm" />
-                                  <span className="text-xs text-slate-500 mt-1">2.5×4.25</span>
-                                </div>
-                                <div className="flex flex-col items-center">
-                                  <div className="w-12 h-16 border-2 border-amber-500 rounded-sm bg-amber-500/10" />
-                                  <span className="text-xs text-amber-400 mt-1 font-medium">3×4.75</span>
-                                </div>
+                      <div className="p-4 rounded-lg bg-slate-700/30 border border-slate-600">
+                        <div className="flex items-start gap-3">
+                          <div>
+                            <p className="text-white font-medium">Card Size Options</p>
+                            <p className="text-slate-400 text-sm">Each design can have its own size (+${PAPER_SIZE_UPSELL} for large)</p>
+                            <div className="flex items-end gap-4 mt-2">
+                              <div className="flex flex-col items-center">
+                                <div className="w-10 h-14 border border-slate-500 rounded-sm" />
+                                <span className="text-xs text-slate-500 mt-1">2.5×4.25</span>
+                              </div>
+                              <div className="flex flex-col items-center">
+                                <div className="w-12 h-16 border-2 border-amber-500 rounded-sm bg-amber-500/10" />
+                                <span className="text-xs text-amber-400 mt-1 font-medium">3×4.75</span>
                               </div>
                             </div>
+                            <p className="text-amber-400 text-sm mt-2">
+                              Large designs: {(mainDesignSize === '3x4.75' ? 1 : 0) + additionalDesigns.filter(d => d.size === '3x4.75').length}
+                            </p>
                           </div>
-                          <span className="text-amber-400 font-bold text-lg">+${PAPER_SIZE_UPSELL}</span>
                         </div>
                       </div>
                     )}
@@ -3678,10 +3689,10 @@ const Design = () => {
                         </div>
                       )}
                       
-                      {cardType === 'paper' && paperCardSize === '3x4.75' && (
+                      {cardType === 'paper' && ((mainDesignSize === '3x4.75' ? 1 : 0) + additionalDesigns.filter(d => d.size === '3x4.75').length) > 0 && (
                         <div className="flex justify-between">
-                          <span className="text-slate-300">Larger Card Size (3×4.75)</span>
-                          <span className="text-white">${PAPER_SIZE_UPSELL}</span>
+                          <span className="text-slate-300">Large Size Upgrades × {(mainDesignSize === '3x4.75' ? 1 : 0) + additionalDesigns.filter(d => d.size === '3x4.75').length}</span>
+                          <span className="text-white">${((mainDesignSize === '3x4.75' ? 1 : 0) + additionalDesigns.filter(d => d.size === '3x4.75').length) * PAPER_SIZE_UPSELL}</span>
                         </div>
                       )}
                       
