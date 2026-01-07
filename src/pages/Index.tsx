@@ -408,7 +408,7 @@ const Index = () => {
           </div>
 
           <p className="text-center text-foreground/70 text-sm mt-6">
-            Full color both sides • 72-Hour +$10 • 48-Hour +$15 • Overnight +100%
+            Full color both sides • 48-72 Hour Delivery
           </p>
         </div>
       </section>

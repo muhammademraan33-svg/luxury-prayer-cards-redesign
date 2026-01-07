@@ -86,7 +86,6 @@ const FONT_OPTIONS = [
 type MetalFinish = 'silver' | 'gold' | 'black' | 'white' | 'marble';
 type Orientation = 'landscape' | 'portrait';
 type CardSide = 'front' | 'back';
-type ShippingType = 'express' | 'overnight';
 type CardType = 'metal' | 'paper';
 
 const METAL_FINISHES: { id: MetalFinish; name: string; gradient: string }[] = [
@@ -147,7 +146,7 @@ const METAL_ADDITIONAL_SET_PRICE = 87; // Additional 55 metal cards
 const ADDITIONAL_PHOTO_PRICE = 17; // Additional easel photo 16x20
 const EASEL_18X24_UPSELL = 7; // Upgrade from 16x20 to 18x24
 const PREMIUM_THICKNESS_PRICE = 15; // Upgrade to .080" thick cards per set
-const OVERNIGHT_UPCHARGE_PERCENT = 100; // 100% upcharge for overnight
+
 const PAPER_SIZE_UPSELL = 7; // Upgrade from 2.5x4.25 to 3x4.75
 const ADDITIONAL_DESIGN_PRICE = 7; // Per additional design
 const PAPER_PER_CARD_PRICE = 0.77; // Per card price for paper cards (beyond 72)
@@ -204,7 +203,7 @@ const Design = () => {
 
   const [extraSets, setExtraSets] = useState(0); // Additional 55-card sets beyond package
   const [extraPhotos, setExtraPhotos] = useState(0); // Extra photos beyond package (handled by easelPhotos length)
-  const [upgradeToOvernight, setUpgradeToOvernight] = useState(false);
+  
   const [upgradeThickness, setUpgradeThickness] = useState(false);
   const [mainDesignSize, setMainDesignSize] = useState<PaperCardSize>('2.5x4.25'); // Size for main design
   const [additionalDesigns, setAdditionalDesigns] = useState<AdditionalDesignData[]>([]); // Additional designs with full data
@@ -946,10 +945,6 @@ const Design = () => {
         }
       });
       
-      // Overnight upgrade
-      if (upgradeToOvernight) {
-        total = Math.round(total * 2); // 100% upcharge
-      }
       
       return Math.round(total);
     }
@@ -980,10 +975,6 @@ const Design = () => {
       total += additionalDesigns.length * ADDITIONAL_DESIGN_PRICE;
     }
 
-    // Overnight upgrade (only if not already overnight in package)
-    if (upgradeToOvernight && currentPackage.shipping !== 'Overnight') {
-      total = Math.round(total * 2); // 100% upcharge
-    }
 
     return total;
   };
@@ -995,8 +986,7 @@ const Design = () => {
     cardType === 'metal' && (upgradeThickness || currentPackage.thickness === 'premium')
       ? 'premium'
       : 'standard';
-  const effectiveShipping =
-    upgradeToOvernight || currentPackage.shipping === 'Overnight' ? 'overnight' : 'express';
+  const effectiveShipping = 'express'; // 48-72 hours delivery
   const handleSubmitOrder = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!deceasedName.trim()) {
@@ -3507,29 +3497,6 @@ const Design = () => {
                       </div>
                     )}
 
-
-                    {/* Overnight Upgrade (only show if package doesn't include it) */}
-                    {currentPackage.shipping !== 'Overnight' && (
-                      <div className="flex items-center justify-between p-4 bg-slate-700/30 rounded-lg">
-                        <div className="flex items-center gap-3">
-                          <input
-                            type="checkbox"
-                            id="upgradeOvernight"
-                            checked={upgradeToOvernight}
-                            onChange={(e) => setUpgradeToOvernight(e.target.checked)}
-                            className="accent-amber-600 w-5 h-5"
-                          />
-                          <label htmlFor="upgradeOvernight" className="cursor-pointer">
-                            <p className="text-white font-medium flex items-center gap-2">
-                              <Clock className="h-4 w-4 text-rose-400" />
-                              Upgrade to Overnight
-                            </p>
-                            <p className="text-slate-400 text-sm">Order before 12pm for next day</p>
-                          </label>
-                        </div>
-                        <span className="text-rose-400 font-medium">+100%</span>
-                      </div>
-                    )}
                   </div>
 
                   {/* Price Summary */}
@@ -3755,13 +3722,6 @@ const Design = () => {
                         </div>
                       )}
                       
-                      {upgradeToOvernight && currentPackage.shipping !== 'Overnight' && (
-                        <div className="flex justify-between text-rose-400">
-                          <span>Overnight Rush Upgrade (+100%)</span>
-                          <span>+${Math.round(calculatePrice() / 2)}</span>
-                        </div>
-                      )}
-                      
                       <div className="border-t border-slate-600 pt-3 mt-3">
                         <div className="flex justify-between text-lg font-semibold">
                           <span className="text-white">Total</span>
@@ -3801,7 +3761,7 @@ const Design = () => {
                       <span className="text-slate-400">Easel Photos:</span> {Math.max(currentPackage.photos, easelPhotos.length)} ({easelPhotos.filter(p => p.size === '18x24').length} upgraded to 18x24)
                     </p>
                     <p className="text-slate-300">
-                      <span className="text-slate-400">Shipping:</span> {effectiveShipping === 'overnight' ? 'Overnight (24hr)' : 'Delivered in 48-72 hours'}
+                      <span className="text-slate-400">Shipping:</span> Delivered in 48-72 hours
                     </p>
                   </div>
 
@@ -3852,7 +3812,7 @@ const Design = () => {
                   <h2 className="text-2xl font-bold text-white">Thank You for Your Order!</h2>
                   <p className="text-slate-300 max-w-md mx-auto">
                     A confirmation email has been sent to <strong>{customerEmail}</strong>.
-                    Your premium metal prayer cards will be shipped within {effectiveShipping === 'overnight' ? '24 hours' : '2 business days'}.
+                    Your {cardType === 'metal' ? 'premium metal prayer cards' : 'prayer cards'} will be shipped within 2 business days.
                   </p>
                   <Link to="/">
                     <Button className="bg-amber-600 hover:bg-amber-700 text-white font-semibold mt-4">
