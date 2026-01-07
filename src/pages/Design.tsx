@@ -7,7 +7,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Sparkles, QrCode, Loader2, Truck, Zap, ArrowLeft, ArrowRight, ImageIcon, RotateCcw, RectangleHorizontal, RectangleVertical, Type, Book, Trash2, Package, Clock, MapPin } from 'lucide-react';
+import { Sparkles, QrCode, Loader2, Truck, Zap, ArrowLeft, ArrowRight, ImageIcon, RotateCcw, RectangleHorizontal, RectangleVertical, Type, Book, Trash2, Package, Clock, MapPin, Layers } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 import { Textarea } from '@/components/ui/textarea';
 import { prayerTemplates } from '@/data/prayerTemplates';
@@ -261,6 +261,7 @@ const Design = () => {
   const [upgradeThickness, setUpgradeThickness] = useState(false);
   const [paperCardSize, setPaperCardSize] = useState<PaperCardSize>('2.5x4.25'); // Paper card size option
   const [additionalDesigns, setAdditionalDesigns] = useState<AdditionalDesignData[]>([]); // Additional designs with full data
+  const [mainDesignQty, setMainDesignQty] = useState(36); // Quantity for main design
   const [editingDesignIndex, setEditingDesignIndex] = useState<number | null>(null);
   const [qrUrl, setQrUrl] = useState('');
   const [showQrCode, setShowQrCode] = useState(true);
@@ -2713,7 +2714,7 @@ const Design = () => {
                       
                       {additionalDesigns.length > 0 && (
                         <div className="space-y-2 pt-3 border-t border-slate-600/50">
-                          {additionalDesigns.map((design, idx) => (
+                              {additionalDesigns.map((design, idx) => (
                             <div key={idx} className="flex items-center gap-3 bg-slate-700/50 p-3 rounded-lg">
                               {/* Thumbnail Preview */}
                               <div className="w-12 h-16 bg-slate-600 rounded overflow-hidden flex-shrink-0">
@@ -2743,21 +2744,6 @@ const Design = () => {
                                 <p className="text-slate-400 text-xs truncate">
                                   {design.prayerText.slice(0, 40)}...
                                 </p>
-                              </div>
-                              
-                              <div className="flex items-center gap-2">
-                                <span className="text-slate-400 text-sm">Qty:</span>
-                                <input
-                                  type="number"
-                                  min="1"
-                                  value={design.qty}
-                                  onChange={(e) => {
-                                    const newDesigns = [...additionalDesigns];
-                                    newDesigns[idx].qty = Math.max(1, parseInt(e.target.value) || 1);
-                                    setAdditionalDesigns(newDesigns);
-                                  }}
-                                  className="w-14 h-8 text-sm bg-slate-800 border border-slate-500 rounded px-2 text-white"
-                                />
                               </div>
                               
                               <Button
@@ -2838,8 +2824,246 @@ const Design = () => {
                 </div>
               )}
 
-              {/* Step 2: Upsell */}
+              {/* Step 2: Quantity Allocation */}
               {step === 2 && (
+                <div className="space-y-6">
+                  <div className="text-center mb-6">
+                    <h3 className="text-xl font-bold text-white flex items-center justify-center gap-2">
+                      <Layers className="h-5 w-5 text-amber-400" />
+                      How Many of Each Design?
+                    </h3>
+                    <p className="text-slate-400 mt-2">Set quantities for each of your {1 + additionalDesigns.length} design{additionalDesigns.length > 0 ? 's' : ''}</p>
+                  </div>
+
+                  {/* All Designs Grid */}
+                  <div className="grid gap-4">
+                    {/* Main Design */}
+                    <div className="bg-gradient-to-br from-amber-900/20 to-slate-800/50 rounded-xl p-4 border border-amber-500/30">
+                      <div className="flex items-center gap-4">
+                        {/* Thumbnail */}
+                        <div className="w-20 h-28 bg-slate-700 rounded-lg overflow-hidden flex-shrink-0 shadow-lg">
+                          {deceasedPhoto ? (
+                            <img 
+                              src={deceasedPhoto} 
+                              alt="Main design" 
+                              className="w-full h-full object-cover"
+                              style={{
+                                transform: `translate(${photoPanX * 0.1}px, ${photoPanY * 0.1}px) scale(${photoZoom})`,
+                                filter: `brightness(${photoBrightness}%)`,
+                              }}
+                            />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-slate-600 to-slate-700">
+                              <ImageIcon className="h-8 w-8 text-slate-400" />
+                            </div>
+                          )}
+                        </div>
+                        
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-1">
+                            <span className="text-white font-semibold">Main Design</span>
+                            <span className="text-xs bg-amber-500/20 text-amber-400 px-2 py-0.5 rounded">Primary</span>
+                          </div>
+                          <p className="text-slate-400 text-sm mb-2">{deceasedName || 'Unnamed'}</p>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => setStep(1)}
+                            className="text-amber-400 hover:text-amber-300 hover:bg-amber-600/20 p-0 h-auto text-xs"
+                          >
+                            ← Edit design
+                          </Button>
+                        </div>
+                        
+                        <div className="flex flex-col items-end gap-2">
+                          <Label className="text-slate-400 text-xs">Quantity</Label>
+                          <div className="flex items-center gap-2">
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="icon"
+                              onClick={() => setMainDesignQty(Math.max(1, mainDesignQty - 12))}
+                              className="h-8 w-8 border-slate-600 text-slate-300"
+                            >
+                              −
+                            </Button>
+                            <input
+                              type="number"
+                              min="1"
+                              value={mainDesignQty}
+                              onChange={(e) => setMainDesignQty(Math.max(1, parseInt(e.target.value) || 1))}
+                              className="w-16 h-8 text-center text-lg font-bold bg-slate-800 border border-amber-500/50 rounded px-2 text-white"
+                            />
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="icon"
+                              onClick={() => setMainDesignQty(mainDesignQty + 12)}
+                              className="h-8 w-8 border-slate-600 text-slate-300"
+                            >
+                              +
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Additional Designs */}
+                    {additionalDesigns.map((design, idx) => (
+                      <div key={idx} className="bg-slate-800/50 rounded-xl p-4 border border-slate-600">
+                        <div className="flex items-center gap-4">
+                          {/* Thumbnail */}
+                          <div className="w-20 h-28 bg-slate-700 rounded-lg overflow-hidden flex-shrink-0 shadow-lg">
+                            {design.photo ? (
+                              <img 
+                                src={design.photo} 
+                                alt={`Design ${idx + 2}`} 
+                                className="w-full h-full object-cover"
+                                style={{
+                                  transform: `scale(${design.photoZoom})`,
+                                }}
+                              />
+                            ) : (
+                              <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-slate-600 to-slate-700">
+                                <ImageIcon className="h-8 w-8 text-slate-400" />
+                              </div>
+                            )}
+                          </div>
+                          
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2 mb-1">
+                              <span className="text-white font-semibold">Design {idx + 2}</span>
+                              {design.photo && (
+                                <span className="text-xs text-green-400 bg-green-500/20 px-1.5 py-0.5 rounded">Photo ✓</span>
+                              )}
+                            </div>
+                            <p className="text-slate-400 text-sm truncate mb-2">{design.prayerText.slice(0, 30)}...</p>
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => {
+                                setEditingDesignIndex(idx);
+                                setStep(1);
+                              }}
+                              className="text-amber-400 hover:text-amber-300 hover:bg-amber-600/20 p-0 h-auto text-xs"
+                            >
+                              ← Edit design
+                            </Button>
+                          </div>
+                          
+                          <div className="flex flex-col items-end gap-2">
+                            <Label className="text-slate-400 text-xs">Quantity</Label>
+                            <div className="flex items-center gap-2">
+                              <Button
+                                type="button"
+                                variant="outline"
+                                size="icon"
+                                onClick={() => {
+                                  const newDesigns = [...additionalDesigns];
+                                  newDesigns[idx].qty = Math.max(1, design.qty - 12);
+                                  setAdditionalDesigns(newDesigns);
+                                }}
+                                className="h-8 w-8 border-slate-600 text-slate-300"
+                              >
+                                −
+                              </Button>
+                              <input
+                                type="number"
+                                min="1"
+                                value={design.qty}
+                                onChange={(e) => {
+                                  const newDesigns = [...additionalDesigns];
+                                  newDesigns[idx].qty = Math.max(1, parseInt(e.target.value) || 1);
+                                  setAdditionalDesigns(newDesigns);
+                                }}
+                                className="w-16 h-8 text-center text-lg font-bold bg-slate-800 border border-slate-500 rounded px-2 text-white"
+                              />
+                              <Button
+                                type="button"
+                                variant="outline"
+                                size="icon"
+                                onClick={() => {
+                                  const newDesigns = [...additionalDesigns];
+                                  newDesigns[idx].qty = design.qty + 12;
+                                  setAdditionalDesigns(newDesigns);
+                                }}
+                                className="h-8 w-8 border-slate-600 text-slate-300"
+                              >
+                                +
+                              </Button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Total Cards Summary */}
+                  <div className="bg-amber-900/20 border border-amber-600/30 rounded-lg p-4">
+                    <div className="flex justify-between items-center">
+                      <div>
+                        <p className="text-slate-300 text-sm">Total Cards</p>
+                        <p className="text-white font-medium">{1 + additionalDesigns.length} design{additionalDesigns.length > 0 ? 's' : ''}</p>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-3xl font-bold text-amber-400">
+                          {mainDesignQty + additionalDesigns.reduce((sum, d) => sum + d.qty, 0)}
+                        </p>
+                        <p className="text-slate-400 text-xs">cards total</p>
+                      </div>
+                    </div>
+                    {additionalDesigns.length > 0 && (
+                      <div className="mt-3 pt-3 border-t border-amber-500/20">
+                        <p className="text-amber-400 text-sm">
+                          +${additionalDesigns.length * ADDITIONAL_DESIGN_PRICE} for {additionalDesigns.length} additional design{additionalDesigns.length > 1 ? 's' : ''}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Add more designs prompt */}
+                  {cardType === 'paper' && (
+                    <div className="text-center">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => {
+                          const newDesign = createEmptyDesign();
+                          setAdditionalDesigns([...additionalDesigns, newDesign]);
+                          setEditingDesignIndex(additionalDesigns.length);
+                          setStep(1);
+                        }}
+                        className="border-amber-600/50 text-amber-400 hover:bg-amber-600/20"
+                      >
+                        + Add Another Design (+${ADDITIONAL_DESIGN_PRICE})
+                      </Button>
+                    </div>
+                  )}
+
+                  <div className="flex gap-3 pt-2">
+                    <Button 
+                      type="button" 
+                      variant="outline" 
+                      onClick={() => setStep(1)} 
+                      className="flex-1 border-slate-600 text-slate-300 hover:bg-slate-700"
+                    >
+                      <ArrowLeft className="h-4 w-4 mr-2" /> Back
+                    </Button>
+                    <Button 
+                      type="button" 
+                      onClick={() => setStep(3)} 
+                      className="flex-1 bg-amber-600 hover:bg-amber-700 text-white font-semibold"
+                    >
+                      Continue <ArrowRight className="h-4 w-4 ml-2" />
+                    </Button>
+                  </div>
+                </div>
+              )}
+
+              {/* Step 3: Upsell */}
+              {step === 3 && (
                 <div className="space-y-6">
                   {/* Preview of their design */}
                   <div className="text-center mb-4">
@@ -2948,29 +3172,24 @@ const Design = () => {
                     </div>
                   )}
 
-                  {/* Additional designs are now managed in Step 1 */}
-                  {cardType === 'paper' && additionalDesigns.length > 0 && (
-                    <div className="bg-slate-700/30 rounded-xl p-4 border border-slate-600">
-                      <p className="text-slate-300 text-sm">
-                        <span className="text-amber-400 font-semibold">{additionalDesigns.length} additional design{additionalDesigns.length > 1 ? 's' : ''}</span> added (+${additionalDesigns.length * ADDITIONAL_DESIGN_PRICE})
-                      </p>
-                      <Button
-                        type="button"
-                        variant="link"
-                        size="sm"
-                        onClick={() => setStep(1)}
-                        className="text-amber-400 hover:text-amber-300 p-0 h-auto"
-                      >
-                        ← Edit designs in Step 1
-                      </Button>
+                  {/* Summary of designs and quantities */}
+                  <div className="bg-slate-700/30 rounded-xl p-4 border border-slate-600">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-white font-medium">{mainDesignQty + additionalDesigns.reduce((sum, d) => sum + d.qty, 0)} total cards</p>
+                        <p className="text-slate-400 text-sm">{1 + additionalDesigns.length} design{additionalDesigns.length > 0 ? 's' : ''}</p>
+                      </div>
+                      {additionalDesigns.length > 0 && (
+                        <span className="text-amber-400 font-semibold">+${additionalDesigns.length * ADDITIONAL_DESIGN_PRICE}</span>
+                      )}
                     </div>
-                  )}
+                  </div>
 
                   <div className="flex gap-3 pt-2">
                     <Button 
                       type="button" 
                       variant="outline" 
-                      onClick={() => setStep(1)} 
+                      onClick={() => setStep(2)} 
                       className="flex-1 border-slate-600 text-slate-300 hover:bg-slate-700"
                     >
                       <ArrowLeft className="h-4 w-4 mr-2" /> Back
@@ -3002,8 +3221,8 @@ const Design = () => {
                 </div>
               )}
 
-              {/* Step 3: Package Selection */}
-              {step === 3 && (
+              {/* Step 4: Package Selection */}
+              {step === 4 && (
                 <div className="space-y-6">
                   {/* Package Tier Selection */}
                   <div>
@@ -3259,7 +3478,7 @@ const Design = () => {
                     <Button 
                       type="button" 
                       variant="outline" 
-                      onClick={() => setStep(2)} 
+                      onClick={() => setStep(3)}
                       className="flex-1 border-slate-600 text-slate-300 hover:bg-slate-700"
                     >
                       <ArrowLeft className="h-4 w-4 mr-2" /> Back
@@ -3290,8 +3509,8 @@ const Design = () => {
                 </div>
               )}
 
-              {/* Step 4: Shipping Information */}
-              {step === 4 && (
+              {/* Step 5: Shipping Information */}
+              {step === 5 && (
                 <div className="space-y-6">
                   <div className="flex items-center gap-2 mb-4">
                     <MapPin className="h-5 w-5 text-amber-400" />
@@ -3384,7 +3603,7 @@ const Design = () => {
                     <Button 
                       type="button" 
                       variant="outline" 
-                      onClick={() => setStep(3)} 
+                      onClick={() => setStep(4)}
                       className="flex-1 border-slate-600 text-slate-300 hover:bg-slate-700"
                     >
                       <ArrowLeft className="h-4 w-4 mr-2" /> Back
@@ -3397,7 +3616,7 @@ const Design = () => {
                           toast.error('Please fill in all shipping fields');
                           return;
                         }
-                        setStep(5);
+                        setStep(6);
                       }} 
                       className="flex-1 bg-amber-600 hover:bg-amber-700 text-white font-semibold"
                     >
@@ -3407,8 +3626,8 @@ const Design = () => {
                 </div>
               )}
 
-              {/* Step 5: Review & Order */}
-              {step === 5 && (
+              {/* Step 6: Review & Order */}
+              {step === 6 && (
                 <div className="space-y-6">
                   {/* Order Summary */}
                   <div className="bg-slate-700/30 rounded-lg p-6 space-y-4">
@@ -3526,7 +3745,7 @@ const Design = () => {
                     <Button 
                       type="button" 
                       variant="outline" 
-                      onClick={() => setStep(4)} 
+                      onClick={() => setStep(5)}
                       className="flex-1 border-slate-600 text-slate-300 hover:bg-slate-700"
                       disabled={isSubmitting}
                     >
