@@ -413,7 +413,7 @@ const Index = () => {
           <Card className="bg-card border-border max-w-md mx-auto">
             <CardContent className="p-8 text-center">
               <h3 className="text-2xl font-bold text-foreground mb-2">Starter Set</h3>
-              <p className="text-primary font-bold text-sm mb-4">Premium metal keepsakes</p>
+              <p className="text-primary font-bold text-sm mb-4">+ 2 FREE Memorial Easel Photos</p>
               
               <div className="mb-4">
                 <span className="text-5xl font-bold text-foreground" style={{ fontVariantNumeric: 'lining-nums' }}>${metalBasePrice}</span>
