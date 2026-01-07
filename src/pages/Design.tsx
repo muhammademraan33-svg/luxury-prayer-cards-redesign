@@ -986,7 +986,7 @@ const Design = () => {
       if (error) throw error;
 
       toast.success(`Order #${data.orderId} placed successfully! Check your email for confirmation.`);
-      setStep(6); // Success step
+      setStep(5); // Success step
     } catch (error) {
       console.error('Order submission error:', error);
       toast.error('Failed to submit order. Please try again.');
@@ -1020,7 +1020,7 @@ const Design = () => {
             <span className="text-lg font-bold text-white">LuxuryPrayerCards.com</span>
           </Link>
           <div className="text-sm text-slate-400">
-            Step {step} of 4
+            Step {Math.min(step, 4)} of 4
           </div>
         </div>
       </header>
@@ -1029,19 +1029,17 @@ const Design = () => {
       <main className="container mx-auto px-4 py-8 max-w-4xl">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-white mb-2">
-            {step === 1 && `Design Your ${cardType === 'paper' ? 'Photo Prayer Card' : 'Metal Prayer Card'}`}
-            {step === 2 && 'Upgrade Your Cards'}
-            {step === 3 && 'Choose Your Package'}
-            {step === 4 && 'Shipping Information'}
-            {step === 5 && 'Review & Order'}
-            {step === 6 && 'Order Confirmed!'}
+            {step === 1 && `Design Your ${cardType === 'paper' ? 'Photo Prayer Card' : 'Metal Prayer Card'}${additionalDesigns.length > 0 ? 's' : ''}`}
+            {step === 2 && 'Choose Your Package'}
+            {step === 3 && 'Shipping Information'}
+            {step === 4 && 'Review & Order'}
+            {step === 5 && 'Order Confirmed!'}
           </h1>
           <p className="text-slate-400">
-            {step === 1 && 'Customize the front and back of your prayer card'}
-            {step === 2 && 'Make your cards even more special'}
-            {step === 3 && 'Select quantity and shipping options'}
-            {step === 4 && 'Enter your shipping details'}
-            {step === 5 && 'Confirm your order details'}
+            {step === 1 && 'Customize your cards and set quantities'}
+            {step === 2 && 'Select quantity and shipping options'}
+            {step === 3 && 'Enter your shipping details'}
+            {step === 4 && 'Confirm your order details'}
           </p>
         </div>
 
@@ -2688,103 +2686,211 @@ const Design = () => {
                     </TabsContent>
                   </Tabs>
 
-                  {/* Multiple Designs - only for paper cards - moved to step 1 for easy access */}
+                  {/* Main Design Quantity - Paper cards */}
                   {cardType === 'paper' && (
-                    <div className="bg-gradient-to-br from-amber-900/20 to-slate-800/50 rounded-xl p-5 border border-amber-500/20">
-                      <div className="flex items-center justify-between mb-3">
-                        <div>
-                          <h3 className="text-lg font-bold text-white flex items-center gap-2">
-                            <Sparkles className="h-5 w-5 text-amber-400" />
-                            Want Multiple Designs?
-                          </h3>
-                          <p className="text-slate-400 text-sm">Create additional unique cards with different photos or prayers — just ${ADDITIONAL_DESIGN_PRICE} each</p>
-                        </div>
-                        <Button
-                          type="button"
-                          onClick={() => {
-                            const newDesign = createEmptyDesign();
-                            setAdditionalDesigns([...additionalDesigns, newDesign]);
-                            setEditingDesignIndex(additionalDesigns.length);
-                          }}
-                          className="bg-amber-600 hover:bg-amber-700 text-white"
-                        >
-                          + Add Design
-                        </Button>
-                      </div>
-                      
-                      {additionalDesigns.length > 0 && (
-                        <div className="space-y-2 pt-3 border-t border-slate-600/50">
-                              {additionalDesigns.map((design, idx) => (
-                            <div key={idx} className="flex items-center gap-3 bg-slate-700/50 p-3 rounded-lg">
-                              {/* Thumbnail Preview */}
-                              <div className="w-12 h-16 bg-slate-600 rounded overflow-hidden flex-shrink-0">
-                                {design.photo ? (
-                                  <img 
-                                    src={design.photo} 
-                                    alt={`Design ${idx + 2}`} 
-                                    className="w-full h-full object-cover"
-                                    style={{
-                                      transform: `scale(${design.photoZoom})`,
-                                    }}
-                                  />
-                                ) : (
-                                  <div className="w-full h-full flex items-center justify-center">
-                                    <ImageIcon className="h-5 w-5 text-slate-400" />
-                                  </div>
-                                )}
+                    <div className="space-y-4">
+                      {/* Main Design with Quantity */}
+                      <div className="bg-gradient-to-br from-amber-900/20 to-slate-800/50 rounded-xl p-5 border border-amber-500/30">
+                        <div className="flex items-center gap-4">
+                          {/* Thumbnail */}
+                          <div className="w-20 h-28 bg-slate-700 rounded-lg overflow-hidden flex-shrink-0 shadow-lg">
+                            {deceasedPhoto ? (
+                              <img 
+                                src={deceasedPhoto} 
+                                alt="Main design" 
+                                className="w-full h-full object-cover"
+                                style={{
+                                  transform: `translate(${photoPanX * 0.1}px, ${photoPanY * 0.1}px) scale(${photoZoom})`,
+                                  filter: `brightness(${photoBrightness}%)`,
+                                }}
+                              />
+                            ) : (
+                              <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-slate-600 to-slate-700">
+                                <ImageIcon className="h-8 w-8 text-slate-400" />
                               </div>
-                              
-                              <div className="flex-1 min-w-0">
-                                <div className="flex items-center gap-2 mb-1">
-                                  <span className="text-white text-sm font-medium">Design {idx + 2}</span>
-                                  {design.photo && (
-                                    <span className="text-xs text-green-400 bg-green-500/20 px-1.5 py-0.5 rounded">Photo ✓</span>
-                                  )}
-                                </div>
-                                <p className="text-slate-400 text-xs truncate">
-                                  {design.prayerText.slice(0, 40)}...
-                                </p>
-                              </div>
-                              
+                            )}
+                          </div>
+                          
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2 mb-1">
+                              <span className="text-white font-semibold">Design 1</span>
+                              <span className="text-xs bg-amber-500/20 text-amber-400 px-2 py-0.5 rounded">Primary</span>
+                            </div>
+                            <p className="text-slate-400 text-sm">{deceasedName || 'Your Design'}</p>
+                          </div>
+                          
+                          <div className="flex flex-col items-end gap-1">
+                            <Label className="text-slate-400 text-xs">How many?</Label>
+                            <div className="flex items-center gap-2">
                               <Button
                                 type="button"
                                 variant="outline"
-                                size="sm"
-                                onClick={() => setEditingDesignIndex(idx)}
-                                className="border-amber-600/50 text-amber-400 hover:bg-amber-600/20"
+                                size="icon"
+                                onClick={() => setMainDesignQty(Math.max(1, mainDesignQty - 12))}
+                                className="h-8 w-8 border-slate-600 text-slate-300"
                               >
-                                Edit
+                                −
                               </Button>
-                              
+                              <input
+                                type="number"
+                                min="1"
+                                value={mainDesignQty}
+                                onChange={(e) => setMainDesignQty(Math.max(1, parseInt(e.target.value) || 1))}
+                                className="w-16 h-8 text-center text-lg font-bold bg-slate-800 border border-amber-500/50 rounded px-2 text-white"
+                              />
                               <Button
                                 type="button"
-                                variant="ghost"
+                                variant="outline"
                                 size="icon"
-                                onClick={() => setAdditionalDesigns(additionalDesigns.filter((_, i) => i !== idx))}
-                                className="h-7 w-7 text-rose-400 hover:text-rose-300 hover:bg-rose-500/20"
+                                onClick={() => setMainDesignQty(mainDesignQty + 12)}
+                                className="h-8 w-8 border-slate-600 text-slate-300"
                               >
-                                ×
+                                +
                               </Button>
                             </div>
-                          ))}
-                          <div className="flex items-center justify-between pt-2">
-                            <Button
-                              type="button"
-                              variant="outline"
-                              size="sm"
-                              onClick={() => {
-                                const newDesign = createEmptyDesign();
-                                setAdditionalDesigns([...additionalDesigns, newDesign]);
-                                setEditingDesignIndex(additionalDesigns.length);
-                              }}
-                              className="border-amber-600/50 text-amber-400 hover:bg-amber-600/20"
-                            >
-                              + Add Another Design
-                            </Button>
-                            <p className="text-amber-400 text-sm font-medium">
-                              +${additionalDesigns.length * ADDITIONAL_DESIGN_PRICE} for {additionalDesigns.length} design{additionalDesigns.length > 1 ? 's' : ''}
-                            </p>
                           </div>
+                        </div>
+                      </div>
+
+                      {/* Additional Designs - Inline */}
+                      {additionalDesigns.map((design, idx) => (
+                        <div key={idx} className="bg-slate-800/50 rounded-xl p-5 border border-slate-600">
+                          <div className="flex items-center gap-4">
+                            {/* Thumbnail */}
+                            <div className="w-20 h-28 bg-slate-700 rounded-lg overflow-hidden flex-shrink-0 shadow-lg">
+                              {design.photo ? (
+                                <img 
+                                  src={design.photo} 
+                                  alt={`Design ${idx + 2}`} 
+                                  className="w-full h-full object-cover"
+                                  style={{
+                                    transform: `scale(${design.photoZoom})`,
+                                  }}
+                                />
+                              ) : (
+                                <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-slate-600 to-slate-700">
+                                  <ImageIcon className="h-8 w-8 text-slate-400" />
+                                </div>
+                              )}
+                            </div>
+                            
+                            <div className="flex-1">
+                              <div className="flex items-center gap-2 mb-1">
+                                <span className="text-white font-semibold">Design {idx + 2}</span>
+                                {design.photo && (
+                                  <span className="text-xs text-green-400 bg-green-500/20 px-1.5 py-0.5 rounded">Photo ✓</span>
+                                )}
+                                <span className="text-xs text-amber-400">+${ADDITIONAL_DESIGN_PRICE}</span>
+                              </div>
+                              <p className="text-slate-400 text-sm truncate mb-2">{design.prayerText.slice(0, 30)}...</p>
+                              <div className="flex gap-2">
+                                <Button
+                                  type="button"
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => setEditingDesignIndex(idx)}
+                                  className="border-amber-600/50 text-amber-400 hover:bg-amber-600/20 text-xs h-7"
+                                >
+                                  Edit Design
+                                </Button>
+                                <Button
+                                  type="button"
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => setAdditionalDesigns(additionalDesigns.filter((_, i) => i !== idx))}
+                                  className="text-rose-400 hover:text-rose-300 hover:bg-rose-500/20 text-xs h-7"
+                                >
+                                  <Trash2 className="h-3 w-3 mr-1" /> Remove
+                                </Button>
+                              </div>
+                            </div>
+                            
+                            <div className="flex flex-col items-end gap-1">
+                              <Label className="text-slate-400 text-xs">How many?</Label>
+                              <div className="flex items-center gap-2">
+                                <Button
+                                  type="button"
+                                  variant="outline"
+                                  size="icon"
+                                  onClick={() => {
+                                    const newDesigns = [...additionalDesigns];
+                                    newDesigns[idx].qty = Math.max(1, design.qty - 12);
+                                    setAdditionalDesigns(newDesigns);
+                                  }}
+                                  className="h-8 w-8 border-slate-600 text-slate-300"
+                                >
+                                  −
+                                </Button>
+                                <input
+                                  type="number"
+                                  min="1"
+                                  value={design.qty}
+                                  onChange={(e) => {
+                                    const newDesigns = [...additionalDesigns];
+                                    newDesigns[idx].qty = Math.max(1, parseInt(e.target.value) || 1);
+                                    setAdditionalDesigns(newDesigns);
+                                  }}
+                                  className="w-16 h-8 text-center text-lg font-bold bg-slate-800 border border-slate-500 rounded px-2 text-white"
+                                />
+                                <Button
+                                  type="button"
+                                  variant="outline"
+                                  size="icon"
+                                  onClick={() => {
+                                    const newDesigns = [...additionalDesigns];
+                                    newDesigns[idx].qty = design.qty + 12;
+                                    setAdditionalDesigns(newDesigns);
+                                  }}
+                                  className="h-8 w-8 border-slate-600 text-slate-300"
+                                >
+                                  +
+                                </Button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+
+                      {/* Add Another Design Button */}
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const newDesign = createEmptyDesign();
+                          setAdditionalDesigns([...additionalDesigns, newDesign]);
+                          setEditingDesignIndex(additionalDesigns.length);
+                        }}
+                        className="w-full p-4 border-2 border-dashed border-slate-600 hover:border-amber-500/50 rounded-xl transition-all group"
+                      >
+                        <div className="flex items-center justify-center gap-3 text-slate-400 group-hover:text-amber-400">
+                          <Sparkles className="h-5 w-5" />
+                          <span className="font-medium">+ Add Another Design</span>
+                          <span className="text-sm">(+${ADDITIONAL_DESIGN_PRICE})</span>
+                        </div>
+                        <p className="text-slate-500 text-sm mt-1">Different photo, prayer, or background</p>
+                      </button>
+
+                      {/* Total Summary */}
+                      {(additionalDesigns.length > 0 || mainDesignQty > 0) && (
+                        <div className="bg-amber-900/20 border border-amber-600/30 rounded-lg p-4">
+                          <div className="flex justify-between items-center">
+                            <div>
+                              <p className="text-slate-300 text-sm">Total Cards</p>
+                              <p className="text-white font-medium">{1 + additionalDesigns.length} design{additionalDesigns.length > 0 ? 's' : ''}</p>
+                            </div>
+                            <div className="text-right">
+                              <p className="text-3xl font-bold text-amber-400">
+                                {mainDesignQty + additionalDesigns.reduce((sum, d) => sum + d.qty, 0)}
+                              </p>
+                              <p className="text-slate-400 text-xs">cards total</p>
+                            </div>
+                          </div>
+                          {additionalDesigns.length > 0 && (
+                            <div className="mt-3 pt-3 border-t border-amber-500/20">
+                              <p className="text-amber-400 text-sm">
+                                +${additionalDesigns.length * ADDITIONAL_DESIGN_PRICE} for {additionalDesigns.length} additional design{additionalDesigns.length > 1 ? 's' : ''}
+                              </p>
+                            </div>
+                          )}
                         </div>
                       )}
                     </div>
@@ -2824,405 +2930,9 @@ const Design = () => {
                 </div>
               )}
 
-              {/* Step 2: Quantity Allocation */}
+
+              {/* Step 2: Package Selection */}
               {step === 2 && (
-                <div className="space-y-6">
-                  <div className="text-center mb-6">
-                    <h3 className="text-xl font-bold text-white flex items-center justify-center gap-2">
-                      <Layers className="h-5 w-5 text-amber-400" />
-                      How Many of Each Design?
-                    </h3>
-                    <p className="text-slate-400 mt-2">Set quantities for each of your {1 + additionalDesigns.length} design{additionalDesigns.length > 0 ? 's' : ''}</p>
-                  </div>
-
-                  {/* All Designs Grid */}
-                  <div className="grid gap-4">
-                    {/* Main Design */}
-                    <div className="bg-gradient-to-br from-amber-900/20 to-slate-800/50 rounded-xl p-4 border border-amber-500/30">
-                      <div className="flex items-center gap-4">
-                        {/* Thumbnail */}
-                        <div className="w-20 h-28 bg-slate-700 rounded-lg overflow-hidden flex-shrink-0 shadow-lg">
-                          {deceasedPhoto ? (
-                            <img 
-                              src={deceasedPhoto} 
-                              alt="Main design" 
-                              className="w-full h-full object-cover"
-                              style={{
-                                transform: `translate(${photoPanX * 0.1}px, ${photoPanY * 0.1}px) scale(${photoZoom})`,
-                                filter: `brightness(${photoBrightness}%)`,
-                              }}
-                            />
-                          ) : (
-                            <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-slate-600 to-slate-700">
-                              <ImageIcon className="h-8 w-8 text-slate-400" />
-                            </div>
-                          )}
-                        </div>
-                        
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-1">
-                            <span className="text-white font-semibold">Main Design</span>
-                            <span className="text-xs bg-amber-500/20 text-amber-400 px-2 py-0.5 rounded">Primary</span>
-                          </div>
-                          <p className="text-slate-400 text-sm mb-2">{deceasedName || 'Unnamed'}</p>
-                          <Button
-                            type="button"
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => setStep(1)}
-                            className="text-amber-400 hover:text-amber-300 hover:bg-amber-600/20 p-0 h-auto text-xs"
-                          >
-                            ← Edit design
-                          </Button>
-                        </div>
-                        
-                        <div className="flex flex-col items-end gap-2">
-                          <Label className="text-slate-400 text-xs">Quantity</Label>
-                          <div className="flex items-center gap-2">
-                            <Button
-                              type="button"
-                              variant="outline"
-                              size="icon"
-                              onClick={() => setMainDesignQty(Math.max(1, mainDesignQty - 12))}
-                              className="h-8 w-8 border-slate-600 text-slate-300"
-                            >
-                              −
-                            </Button>
-                            <input
-                              type="number"
-                              min="1"
-                              value={mainDesignQty}
-                              onChange={(e) => setMainDesignQty(Math.max(1, parseInt(e.target.value) || 1))}
-                              className="w-16 h-8 text-center text-lg font-bold bg-slate-800 border border-amber-500/50 rounded px-2 text-white"
-                            />
-                            <Button
-                              type="button"
-                              variant="outline"
-                              size="icon"
-                              onClick={() => setMainDesignQty(mainDesignQty + 12)}
-                              className="h-8 w-8 border-slate-600 text-slate-300"
-                            >
-                              +
-                            </Button>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Additional Designs */}
-                    {additionalDesigns.map((design, idx) => (
-                      <div key={idx} className="bg-slate-800/50 rounded-xl p-4 border border-slate-600">
-                        <div className="flex items-center gap-4">
-                          {/* Thumbnail */}
-                          <div className="w-20 h-28 bg-slate-700 rounded-lg overflow-hidden flex-shrink-0 shadow-lg">
-                            {design.photo ? (
-                              <img 
-                                src={design.photo} 
-                                alt={`Design ${idx + 2}`} 
-                                className="w-full h-full object-cover"
-                                style={{
-                                  transform: `scale(${design.photoZoom})`,
-                                }}
-                              />
-                            ) : (
-                              <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-slate-600 to-slate-700">
-                                <ImageIcon className="h-8 w-8 text-slate-400" />
-                              </div>
-                            )}
-                          </div>
-                          
-                          <div className="flex-1">
-                            <div className="flex items-center gap-2 mb-1">
-                              <span className="text-white font-semibold">Design {idx + 2}</span>
-                              {design.photo && (
-                                <span className="text-xs text-green-400 bg-green-500/20 px-1.5 py-0.5 rounded">Photo ✓</span>
-                              )}
-                            </div>
-                            <p className="text-slate-400 text-sm truncate mb-2">{design.prayerText.slice(0, 30)}...</p>
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => {
-                                setEditingDesignIndex(idx);
-                                setStep(1);
-                              }}
-                              className="text-amber-400 hover:text-amber-300 hover:bg-amber-600/20 p-0 h-auto text-xs"
-                            >
-                              ← Edit design
-                            </Button>
-                          </div>
-                          
-                          <div className="flex flex-col items-end gap-2">
-                            <Label className="text-slate-400 text-xs">Quantity</Label>
-                            <div className="flex items-center gap-2">
-                              <Button
-                                type="button"
-                                variant="outline"
-                                size="icon"
-                                onClick={() => {
-                                  const newDesigns = [...additionalDesigns];
-                                  newDesigns[idx].qty = Math.max(1, design.qty - 12);
-                                  setAdditionalDesigns(newDesigns);
-                                }}
-                                className="h-8 w-8 border-slate-600 text-slate-300"
-                              >
-                                −
-                              </Button>
-                              <input
-                                type="number"
-                                min="1"
-                                value={design.qty}
-                                onChange={(e) => {
-                                  const newDesigns = [...additionalDesigns];
-                                  newDesigns[idx].qty = Math.max(1, parseInt(e.target.value) || 1);
-                                  setAdditionalDesigns(newDesigns);
-                                }}
-                                className="w-16 h-8 text-center text-lg font-bold bg-slate-800 border border-slate-500 rounded px-2 text-white"
-                              />
-                              <Button
-                                type="button"
-                                variant="outline"
-                                size="icon"
-                                onClick={() => {
-                                  const newDesigns = [...additionalDesigns];
-                                  newDesigns[idx].qty = design.qty + 12;
-                                  setAdditionalDesigns(newDesigns);
-                                }}
-                                className="h-8 w-8 border-slate-600 text-slate-300"
-                              >
-                                +
-                              </Button>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-
-                  {/* Total Cards Summary */}
-                  <div className="bg-amber-900/20 border border-amber-600/30 rounded-lg p-4">
-                    <div className="flex justify-between items-center">
-                      <div>
-                        <p className="text-slate-300 text-sm">Total Cards</p>
-                        <p className="text-white font-medium">{1 + additionalDesigns.length} design{additionalDesigns.length > 0 ? 's' : ''}</p>
-                      </div>
-                      <div className="text-right">
-                        <p className="text-3xl font-bold text-amber-400">
-                          {mainDesignQty + additionalDesigns.reduce((sum, d) => sum + d.qty, 0)}
-                        </p>
-                        <p className="text-slate-400 text-xs">cards total</p>
-                      </div>
-                    </div>
-                    {additionalDesigns.length > 0 && (
-                      <div className="mt-3 pt-3 border-t border-amber-500/20">
-                        <p className="text-amber-400 text-sm">
-                          +${additionalDesigns.length * ADDITIONAL_DESIGN_PRICE} for {additionalDesigns.length} additional design{additionalDesigns.length > 1 ? 's' : ''}
-                        </p>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Add more designs prompt */}
-                  {cardType === 'paper' && (
-                    <div className="text-center">
-                      <Button
-                        type="button"
-                        variant="outline"
-                        onClick={() => {
-                          const newDesign = createEmptyDesign();
-                          setAdditionalDesigns([...additionalDesigns, newDesign]);
-                          setEditingDesignIndex(additionalDesigns.length);
-                          setStep(1);
-                        }}
-                        className="border-amber-600/50 text-amber-400 hover:bg-amber-600/20"
-                      >
-                        + Add Another Design (+${ADDITIONAL_DESIGN_PRICE})
-                      </Button>
-                    </div>
-                  )}
-
-                  <div className="flex gap-3 pt-2">
-                    <Button 
-                      type="button" 
-                      variant="outline" 
-                      onClick={() => setStep(1)} 
-                      className="flex-1 border-slate-600 text-slate-300 hover:bg-slate-700"
-                    >
-                      <ArrowLeft className="h-4 w-4 mr-2" /> Back
-                    </Button>
-                    <Button 
-                      type="button" 
-                      onClick={() => setStep(3)} 
-                      className="flex-1 bg-amber-600 hover:bg-amber-700 text-white font-semibold"
-                    >
-                      Continue <ArrowRight className="h-4 w-4 ml-2" />
-                    </Button>
-                  </div>
-                </div>
-              )}
-
-              {/* Step 3: Upsell */}
-              {step === 3 && (
-                <div className="space-y-6">
-                  {/* Preview of their design */}
-                  <div className="text-center mb-4">
-                    <p className="text-slate-300 mb-4">Your design looks great! Want to make it even more special?</p>
-                  </div>
-
-                  {/* Metal Card Thickness Upsell */}
-                  {cardType === 'metal' && !upgradeThickness && (
-                    <div className="bg-gradient-to-br from-amber-900/30 to-slate-800 rounded-xl p-6 border border-amber-500/30">
-                      <div className="flex items-start gap-4">
-                        <div className="flex-1">
-                          <h3 className="text-xl font-bold text-white mb-2">Upgrade to Premium Thickness</h3>
-                          <p className="text-slate-300 mb-4">Double the thickness for a more substantial, heirloom-quality feel that lasts generations.</p>
-                          
-                          {/* Visual comparison */}
-                          <div className="flex items-end gap-6 mb-4">
-                            <div className="flex flex-col items-center">
-                              <div className="w-16 h-1.5 bg-gradient-to-b from-slate-400 to-slate-600 rounded-sm shadow" />
-                              <span className="text-xs text-slate-500 mt-2">Standard .040"</span>
-                            </div>
-                            <div className="flex flex-col items-center">
-                              <div className="w-16 h-3 bg-gradient-to-b from-amber-400 to-amber-600 rounded-sm shadow-lg" />
-                              <span className="text-xs text-amber-400 mt-2 font-semibold">Premium .080"</span>
-                            </div>
-                          </div>
-                          
-                          <Button
-                            type="button"
-                            onClick={() => setUpgradeThickness(true)}
-                            className="w-full bg-amber-600 hover:bg-amber-700 text-white font-semibold"
-                          >
-                            Upgrade for +${PREMIUM_THICKNESS_PRICE * ((currentPackage.cards / 55) + extraSets)}
-                          </Button>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Paper Card Size Upsell */}
-                  {cardType === 'paper' && paperCardSize !== '3x4.75' && (
-                    <div className="bg-gradient-to-br from-amber-900/30 to-slate-800 rounded-xl p-6 border border-amber-500/30">
-                      <div className="flex items-start gap-4">
-                        <div className="flex-1">
-                          <h3 className="text-xl font-bold text-white mb-2">Upgrade to Large Size</h3>
-                          <p className="text-slate-300 mb-4">Bigger cards make a bigger impact. More room for your beautiful design.</p>
-                          
-                          {/* Visual comparison with actual design */}
-                          <div className="flex items-end gap-6 justify-center mb-4">
-                            <div className="flex flex-col items-center">
-                              <div 
-                                className="w-16 h-24 border border-slate-500 bg-slate-700/50 overflow-hidden"
-                                style={{ aspectRatio: '2.5/4.25' }}
-                              >
-                                {deceasedPhoto && (
-                                  <img 
-                                    src={deceasedPhoto} 
-                                    alt="Your design" 
-                                    className="w-full h-full object-cover opacity-80"
-                                    style={{
-                                      transform: `translate(${photoPanX * 0.3}px, ${photoPanY * 0.3}px) scale(${photoZoom})`,
-                                      filter: `brightness(${photoBrightness}%)`,
-                                    }}
-                                  />
-                                )}
-                              </div>
-                              <span className="text-xs text-slate-500 mt-2">2.5" × 4.25"</span>
-                            </div>
-                            <div className="flex flex-col items-center">
-                              <div 
-                                className="w-20 h-28 border-2 border-amber-500 bg-amber-500/10 overflow-hidden ring-2 ring-amber-500/30"
-                                style={{ aspectRatio: '3/4.75' }}
-                              >
-                                {deceasedPhoto && (
-                                  <img 
-                                    src={deceasedPhoto} 
-                                    alt="Your design enlarged" 
-                                    className="w-full h-full object-cover"
-                                    style={{
-                                      transform: `translate(${photoPanX * 0.3}px, ${photoPanY * 0.3}px) scale(${photoZoom})`,
-                                      filter: `brightness(${photoBrightness}%)`,
-                                    }}
-                                  />
-                                )}
-                              </div>
-                              <span className="text-xs text-amber-400 mt-2 font-semibold">3" × 4.75"</span>
-                            </div>
-                          </div>
-                          
-                          <Button
-                            type="button"
-                            onClick={() => setPaperCardSize('3x4.75')}
-                            className="w-full bg-amber-600 hover:bg-amber-700 text-white font-semibold"
-                          >
-                            Upgrade for +${PAPER_SIZE_UPSELL}
-                          </Button>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Already upgraded message - only for metal */}
-                  {cardType === 'metal' && upgradeThickness && (
-                    <div className="bg-green-900/30 rounded-xl p-6 border border-green-500/30 text-center">
-                      <div className="text-green-400 text-lg font-semibold mb-2">✓ Premium Upgrade Selected!</div>
-                      <p className="text-slate-300">Your cards will be printed on premium .080" thick metal.</p>
-                    </div>
-                  )}
-
-                  {/* Summary of designs and quantities */}
-                  <div className="bg-slate-700/30 rounded-xl p-4 border border-slate-600">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-white font-medium">{mainDesignQty + additionalDesigns.reduce((sum, d) => sum + d.qty, 0)} total cards</p>
-                        <p className="text-slate-400 text-sm">{1 + additionalDesigns.length} design{additionalDesigns.length > 0 ? 's' : ''}</p>
-                      </div>
-                      {additionalDesigns.length > 0 && (
-                        <span className="text-amber-400 font-semibold">+${additionalDesigns.length * ADDITIONAL_DESIGN_PRICE}</span>
-                      )}
-                    </div>
-                  </div>
-
-                  <div className="flex gap-3 pt-2">
-                    <Button 
-                      type="button" 
-                      variant="outline" 
-                      onClick={() => setStep(2)} 
-                      className="flex-1 border-slate-600 text-slate-300 hover:bg-slate-700"
-                    >
-                      <ArrowLeft className="h-4 w-4 mr-2" /> Back
-                    </Button>
-                    <Button 
-                      type="button" 
-                      onClick={() => {
-                        // Store card data in sessionStorage for memorial photo editor
-                        sessionStorage.setItem('memorialPhotoData', JSON.stringify({
-                          deceasedName,
-                          birthDate,
-                          deathDate,
-                          deceasedPhoto,
-                          funeralHomeLogo,
-                        }));
-                        // Navigate to memorial photo editor
-                        const params = new URLSearchParams({
-                          package: selectedPackage,
-                          photos: String(currentPackage.photos),
-                          cardType,
-                        });
-                        window.location.href = `/memorial-photo?${params.toString()}`;
-                      }} 
-                      className="flex-1 bg-amber-600 hover:bg-amber-700 text-white font-semibold"
-                    >
-                      Continue to Memorial Photos <ArrowRight className="h-4 w-4 ml-2" />
-                    </Button>
-                  </div>
-                </div>
-              )}
-
-              {/* Step 4: Package Selection */}
-              {step === 4 && (
                 <div className="space-y-6">
                   {/* Package Tier Selection */}
                   <div>
@@ -3478,7 +3188,7 @@ const Design = () => {
                     <Button 
                       type="button" 
                       variant="outline" 
-                      onClick={() => setStep(3)}
+                      onClick={() => setStep(1)}
                       className="flex-1 border-slate-600 text-slate-300 hover:bg-slate-700"
                     >
                       <ArrowLeft className="h-4 w-4 mr-2" /> Back
@@ -3509,8 +3219,8 @@ const Design = () => {
                 </div>
               )}
 
-              {/* Step 5: Shipping Information */}
-              {step === 5 && (
+              {/* Step 3: Shipping Information */}
+              {step === 3 && (
                 <div className="space-y-6">
                   <div className="flex items-center gap-2 mb-4">
                     <MapPin className="h-5 w-5 text-amber-400" />
@@ -3603,7 +3313,7 @@ const Design = () => {
                     <Button 
                       type="button" 
                       variant="outline" 
-                      onClick={() => setStep(4)}
+                      onClick={() => setStep(2)}
                       className="flex-1 border-slate-600 text-slate-300 hover:bg-slate-700"
                     >
                       <ArrowLeft className="h-4 w-4 mr-2" /> Back
@@ -3616,7 +3326,7 @@ const Design = () => {
                           toast.error('Please fill in all shipping fields');
                           return;
                         }
-                        setStep(6);
+                        setStep(4);
                       }} 
                       className="flex-1 bg-amber-600 hover:bg-amber-700 text-white font-semibold"
                     >
@@ -3626,8 +3336,8 @@ const Design = () => {
                 </div>
               )}
 
-              {/* Step 6: Review & Order */}
-              {step === 6 && (
+              {/* Step 4: Review & Order */}
+              {step === 4 && (
                 <div className="space-y-6">
                   {/* Order Summary */}
                   <div className="bg-slate-700/30 rounded-lg p-6 space-y-4">
@@ -3745,7 +3455,7 @@ const Design = () => {
                     <Button 
                       type="button" 
                       variant="outline" 
-                      onClick={() => setStep(5)}
+                      onClick={() => setStep(3)}
                       className="flex-1 border-slate-600 text-slate-300 hover:bg-slate-700"
                       disabled={isSubmitting}
                     >
@@ -3769,8 +3479,8 @@ const Design = () => {
                 </div>
               )}
 
-              {/* Step 6: Order Confirmation */}
-              {step === 6 && (
+              {/* Step 5: Order Confirmation */}
+              {step === 5 && (
                 <div className="text-center space-y-6 py-8">
                   <div className="w-20 h-20 bg-green-500/20 rounded-full flex items-center justify-center mx-auto">
                     <Package className="h-10 w-10 text-green-400" />
