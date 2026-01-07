@@ -1609,10 +1609,6 @@ const Design = () => {
                                       textShadow: '0 2px 4px rgba(0,0,0,0.5)',
                                       boxShadow: (draggingText === 'dates' || resizingText === 'dates') ? '0 0 0 2px #d97706' : 'none',
                                       whiteSpace: 'nowrap',
-                                      backgroundColor: deceasedPhoto ? 'hsl(0 0% 0% / 0.35)' : 'transparent',
-                                      border: deceasedPhoto ? '1px solid hsl(0 0% 100% / 0.16)' : 'none',
-                                      backdropFilter: deceasedPhoto ? 'blur(2px)' : undefined,
-                                      WebkitBackdropFilter: deceasedPhoto ? 'blur(2px)' : undefined,
                                     }}
                                     onPointerDown={(e) => handleTextPointerDown(e, 'dates')}
                                     onPointerMove={handleTextPointerMove}
