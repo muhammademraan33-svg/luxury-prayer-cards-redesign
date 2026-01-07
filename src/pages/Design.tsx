@@ -2477,13 +2477,7 @@ const Design = () => {
                                         transformOrigin: 'center center',
                                       }}
                                     />
-                                    <div
-                                      className={`absolute inset-0 ${cardRounding}`}
-                                      style={{
-                                        background:
-                                          'linear-gradient(180deg, hsl(0 0% 0% / 0.55) 0%, hsl(0 0% 0% / 0.18) 35%, hsl(0 0% 0% / 0.35) 70%, hsl(0 0% 0% / 0.55) 100%)',
-                                      }}
-                                    />
+                                    {/* No dark overlay - relying on text shadows for readability */}
                                   </>
                                 )}
                                 {!backBgImage && cardType === 'metal' && (
@@ -2526,6 +2520,7 @@ const Design = () => {
                                         color: inLovingMemoryColor,
                                         fontWeight: inLovingMemoryBold ? 'bold' : 'normal',
                                         fontFamily: inLovingMemoryFont,
+                                        textShadow: '1px 1px 3px rgba(0,0,0,0.4)',
                                       }}
                                     >
                                       {inLovingMemoryText}
@@ -2539,6 +2534,7 @@ const Design = () => {
                                         color: backNameColor,
                                         fontWeight: backNameBold ? 'bold' : 'normal',
                                         fontFamily: backNameFont,
+                                        textShadow: '1px 1px 3px rgba(0,0,0,0.4)',
                                       }}
                                     >
                                       {deceasedName || 'Name Here'}
@@ -4547,7 +4543,7 @@ const Design = () => {
                       transformOrigin: 'center center',
                     }}
                   />
-                  <div className="absolute inset-0 bg-black/40"></div>
+                  {/* No dark overlay - relying on text shadows for readability */}
                 </>
               )}
               {/* Back content */}
