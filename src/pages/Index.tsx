@@ -299,12 +299,14 @@ const Index = () => {
 
       {/* Hero */}
       <section className="container mx-auto px-4 py-16 md:py-24 text-center">
-        <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-foreground mb-6 leading-tight tracking-tight">
-          Prayer Cards & Memorial Photos<br />
-          <span className="text-primary">Delivered in 48-72 Hours</span>
+        <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-foreground mb-4 leading-tight tracking-tight">
+          Prayer Cards & Memorial Photos
         </h1>
-        <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-8">
-          Photo prayer cards, heirloom metal cards & celebration of life prints. Delivered in 48-72 hours.
+        <p className="text-xl md:text-2xl text-primary font-medium mb-6">
+          Delivered in 48-72 Hours
+        </p>
+        <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-8">
+          Photo prayer cards, heirloom metal cards & celebration of life prints.
         </p>
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-10">
           <Link to="/design">
