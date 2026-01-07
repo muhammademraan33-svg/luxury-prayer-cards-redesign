@@ -45,23 +45,15 @@ const PRESET_BACKGROUNDS = [
   { id: 'clouds', name: 'Soft Clouds', src: cloudsLightBg, isDark: false },
   { id: 'marble', name: 'Grey Marble', src: marbleGreyBg, isDark: false },
   { id: 'sunset', name: 'Sunset Clouds', src: sunsetCloudsBg, isDark: true },
-  { id: 'lilies', name: 'White Lilies', src: liliesCreamBg, isDark: false },
   { id: 'rays', name: 'Heavenly Rays', src: heavenlyRaysBg, isDark: false },
   { id: 'ocean', name: 'Ocean Sunset', src: oceanSunsetBg, isDark: true },
   { id: 'dove', name: 'Dove Light', src: doveLightBg, isDark: false },
   { id: 'mountain', name: 'Mountain Sunrise', src: mountainSunriseBg, isDark: true },
-  { id: 'roses', name: 'Rose Garden', src: rosesGardenBg, isDark: true },
-  { id: 'forest', name: 'Forest Path', src: forestPathBg, isDark: true },
-  { id: 'stained-glass', name: 'Stained Glass', src: stainedGlassBg, isDark: true },
-  { id: 'lavender', name: 'Lavender Field', src: lavenderFieldBg, isDark: true },
-  { id: 'cherry', name: 'Cherry Blossoms', src: cherryBlossomsBg, isDark: false },
   { id: 'starry', name: 'Starry Night', src: starryNightBg, isDark: true },
   { id: 'gold-marble', name: 'Gold Marble', src: goldMarbleBg, isDark: false },
   { id: 'misty-lake', name: 'Misty Lake', src: mistyLakeBg, isDark: false },
   { id: 'feathers', name: 'White Feathers', src: whiteFeathersBg, isDark: false },
-  { id: 'vintage-roses', name: 'Vintage Roses', src: vintageRosesBg, isDark: false },
   { id: 'wheat', name: 'Wheat Sunset', src: wheatSunsetBg, isDark: true },
-  { id: 'garden', name: 'Garden Peace', src: gardenPeaceBg, isDark: true },
 ];
 
 // Metal background options for back of card
