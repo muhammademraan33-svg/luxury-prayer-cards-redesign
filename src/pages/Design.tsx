@@ -99,10 +99,10 @@ const METAL_FINISHES: { id: MetalFinish; name: string; gradient: string }[] = [
 
 // Package pricing
 
-// Metal packages use good/better/best; paper packages use starter/standard/large
-type PackageId = 'good' | 'better' | 'best' | 'starter' | 'standard' | 'large';
+// Metal packages use starter only; paper packages use starter
+type PackageId = 'starter';
 
-// Good/Better/Best tiers (metal) and Starter/Standard/Large (paper)
+// Package configuration
 interface PackageConfig {
   name: string;
   price: number;
@@ -116,39 +116,16 @@ interface PackageConfig {
   badge?: 'MOST POPULAR' | 'BEST VALUE';
 }
 
-const METAL_PACKAGES: Record<'good' | 'better' | 'best', PackageConfig> = {
-  good: {
-    name: 'Essential',
-    price: 117,
-    comparePrice: 195,
+const METAL_PACKAGES: Record<'starter', PackageConfig> = {
+  starter: {
+    name: 'Starter Set',
+    price: 97,
+    comparePrice: 150,
     cards: 55,
-    photos: 2,
+    photos: 0,
     shipping: 'Delivered in 48-72 hours',
     thickness: 'standard' as CardThickness,
-    description: 'Perfect for intimate gatherings',
-  },
-  better: {
-    name: 'Family',
-    price: 167,
-    comparePrice: 295,
-    cards: 110,
-    photos: 4,
-    shipping: 'Delivered in 48-72 hours',
-    thickness: 'standard' as CardThickness,
-    description: 'Most popular for services',
-    popular: true,
-    badge: 'MOST POPULAR',
-  },
-  best: {
-    name: 'Legacy',
-    price: 247,
-    comparePrice: 450,
-    cards: 165,
-    photos: 6,
-    shipping: 'Delivered in 48-72 hours',
-    thickness: 'standard' as CardThickness,
-    description: 'Complete memorial package',
-    badge: 'BEST VALUE',
+    description: '55 premium metal cards',
   },
 };
 
@@ -157,23 +134,23 @@ const PAPER_PACKAGES: Record<'starter', PackageConfig> = {
     name: 'Starter Set',
     price: 67,
     comparePrice: 125,
-    cards: 0, // No included cards - all cards are $0.77 each
-    photos: 1,
+    cards: 72,
+    photos: 0,
     shipping: 'Delivered in 48-72 hours',
     thickness: 'standard' as CardThickness,
-    description: 'Starter set + $0.77/card + $7/design',
+    description: '72 prayer cards + $0.77/additional card',
   },
 };
 
 // Add-on pricing
-const ADDITIONAL_SET_PRICE = 79; // Additional 55 cards
+const METAL_ADDITIONAL_SET_PRICE = 87; // Additional 55 metal cards
 const ADDITIONAL_PHOTO_PRICE = 17; // Additional easel photo 16x20
 const EASEL_18X24_UPSELL = 7; // Upgrade from 16x20 to 18x24
 const PREMIUM_THICKNESS_PRICE = 15; // Upgrade to .080" thick cards per set
 const OVERNIGHT_UPCHARGE_PERCENT = 100; // 100% upcharge for overnight
 const PAPER_SIZE_UPSELL = 7; // Upgrade from 2.5x4.25 to 3x4.75
-const ADDITIONAL_DESIGN_PRICE = 7; // Per additional design (metal only)
-const PAPER_PER_CARD_PRICE = 0.77; // Per card price for paper cards
+const ADDITIONAL_DESIGN_PRICE = 7; // Per additional design
+const PAPER_PER_CARD_PRICE = 0.77; // Per card price for paper cards (beyond 72)
 
 type CardThickness = 'standard' | 'premium';
 
@@ -211,34 +188,18 @@ const Design = () => {
 
   const packages = cardType === 'paper' ? PAPER_PACKAGES : METAL_PACKAGES;
 
-  const [selectedPackage, setSelectedPackage] = useState<PackageId>(() =>
-    cardType === 'paper' ? 'starter' : 'better'
-  );
+  const [selectedPackage, setSelectedPackage] = useState<PackageId>('starter');
 
   // If user came from pricing on the landing page, honor package/quantity params
   useEffect(() => {
-    const pkg = searchParams.get('package');
-    const qtyParam = searchParams.get('quantity');
-    const qty = qtyParam ? Number(qtyParam) : undefined;
+    // Both metal and paper only have starter set now
+    setSelectedPackage('starter');
 
     if (cardType === 'paper') {
-      // Paper only has starter set now
-      setSelectedPackage('starter');
-
       // Paper flow shouldn't carry over metal-only add-ons
       setExtraSets(0);
       setUpgradeThickness(false);
-      return;
     }
-
-    if (pkg === 'good' || pkg === 'better' || pkg === 'best') {
-      setSelectedPackage(pkg);
-      return;
-    }
-
-    if (qty === 55) setSelectedPackage('good');
-    else if (qty === 110) setSelectedPackage('better');
-    else if (qty === 165) setSelectedPackage('best');
   }, [searchParams, cardType]);
 
   const [extraSets, setExtraSets] = useState(0); // Additional 55-card sets beyond package
@@ -961,12 +922,14 @@ const Design = () => {
     (packages as Record<string, PackageConfig>)[selectedPackage] ?? Object.values(packages)[0];
 
   const calculatePrice = () => {
-    // Paper cards: starter set + $0.77/card + $7/design + $7/design for size upgrade
+    // Paper cards: $67 for 72 cards + $0.77/additional card + $7/design for size upgrade
     if (cardType === 'paper') {
       const totalPaperCards = mainDesignQty + additionalDesigns.reduce((sum, d) => sum + d.qty, 0);
+      const includedCards = currentPackage.cards; // 72 cards included
+      const additionalCards = Math.max(0, totalPaperCards - includedCards);
       
-      // Starter set base price + all cards at $0.77 each + $7 per additional design
-      let total = currentPackage.price + Math.round(totalPaperCards * PAPER_PER_CARD_PRICE * 100) / 100;
+      // Starter set base price ($67 for 72 cards) + additional cards at $0.77 each
+      let total = currentPackage.price + Math.round(additionalCards * PAPER_PER_CARD_PRICE * 100) / 100;
       
       // Additional designs at $7 each
       if (additionalDesigns.length > 0) {
@@ -995,7 +958,7 @@ const Design = () => {
     let total = currentPackage.price;
 
     // Extra card sets beyond package
-    total += extraSets * ADDITIONAL_SET_PRICE;
+    total += extraSets * METAL_ADDITIONAL_SET_PRICE;
 
     // Additional photos beyond package includes
     const includedPhotos = currentPackage.photos;
@@ -3433,7 +3396,7 @@ const Design = () => {
                       <div className="flex items-center justify-between p-4 bg-slate-700/30 rounded-lg">
                         <div>
                           <p className="text-white font-medium">Extra Card Sets (+55 each)</p>
-                          <p className="text-slate-400 text-sm">${ADDITIONAL_SET_PRICE} per set</p>
+                          <p className="text-slate-400 text-sm">${METAL_ADDITIONAL_SET_PRICE} per set</p>
                         </div>
                         <div className="flex items-center gap-2">
                           <Button
@@ -3753,7 +3716,7 @@ const Design = () => {
                       {cardType === 'metal' && extraSets > 0 && (
                         <div className="flex justify-between">
                           <span className="text-slate-300">Extra Card Sets × {extraSets}</span>
-                          <span className="text-white">${extraSets * ADDITIONAL_SET_PRICE}</span>
+                          <span className="text-white">${extraSets * METAL_ADDITIONAL_SET_PRICE}</span>
                         </div>
                       )}
                       
