@@ -2869,7 +2869,7 @@ const Design = () => {
                           <div className="flex items-end gap-6 justify-center mb-4">
                             <div className="flex flex-col items-center">
                               <div 
-                                className="w-16 h-24 border border-slate-500 rounded-sm bg-slate-700/50 overflow-hidden"
+                                className="w-16 h-24 border border-slate-500 bg-slate-700/50 overflow-hidden"
                                 style={{ aspectRatio: '2.5/4.25' }}
                               >
                                 {deceasedPhoto && (
@@ -2888,7 +2888,7 @@ const Design = () => {
                             </div>
                             <div className="flex flex-col items-center">
                               <div 
-                                className="w-20 h-28 border-2 border-amber-500 rounded-sm bg-amber-500/10 overflow-hidden ring-2 ring-amber-500/30"
+                                className="w-20 h-28 border-2 border-amber-500 bg-amber-500/10 overflow-hidden ring-2 ring-amber-500/30"
                                 style={{ aspectRatio: '3/4.75' }}
                               >
                                 {deceasedPhoto && (
