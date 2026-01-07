@@ -2845,23 +2845,42 @@ const Design = () => {
                         }}
                       >
                         <div className="flex items-center gap-4">
-                          {/* Thumbnail */}
-                          <div className="w-20 h-28 bg-slate-700 rounded-lg overflow-hidden flex-shrink-0 shadow-lg">
-                            {deceasedPhoto ? (
-                              <img 
-                                src={deceasedPhoto} 
-                                alt="Main design" 
-                                className="w-full h-full object-cover"
-                                style={{
-                                  transform: `translate(${photoPanX * 0.1}px, ${photoPanY * 0.1}px) scale(${photoZoom})`,
-                                  filter: `brightness(${photoBrightness}%)`,
-                                }}
-                              />
-                            ) : (
-                              <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-slate-600 to-slate-700">
-                                <ImageIcon className="h-8 w-8 text-slate-400" />
+                          {/* Thumbnails - Front & Back */}
+                          <div className="flex gap-1 flex-shrink-0">
+                            {/* Front Thumbnail */}
+                            <div className="w-14 h-20 bg-slate-700 rounded-lg overflow-hidden shadow-lg relative">
+                              {deceasedPhoto ? (
+                                <img 
+                                  src={deceasedPhoto} 
+                                  alt="Main design front" 
+                                  className="w-full h-full object-cover"
+                                  style={{
+                                    transform: `translate(${photoPanX * 0.1}px, ${photoPanY * 0.1}px) scale(${photoZoom})`,
+                                    filter: `brightness(${photoBrightness}%)`,
+                                  }}
+                                />
+                              ) : (
+                                <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-slate-600 to-slate-700">
+                                  <ImageIcon className="h-5 w-5 text-slate-400" />
+                                </div>
+                              )}
+                              <span className="absolute bottom-0.5 left-0.5 text-[8px] bg-black/50 text-white px-1 rounded">F</span>
+                            </div>
+                            {/* Back Thumbnail */}
+                            <div 
+                              className="w-14 h-20 bg-slate-700 rounded-lg overflow-hidden shadow-lg relative"
+                              style={{
+                                backgroundImage: backBgImage ? `url(${backBgImage})` : undefined,
+                                backgroundSize: 'cover',
+                                backgroundPosition: 'center',
+                                backgroundColor: !backBgImage ? (backMetalFinish === 'white' ? '#f8f8f8' : backMetalFinish === 'gold' ? '#d4af37' : backMetalFinish === 'silver' ? '#c0c0c0' : '#18181b') : undefined,
+                              }}
+                            >
+                              <div className="absolute inset-0 bg-black/40 flex items-center justify-center p-1">
+                                <span className="text-[6px] text-white text-center leading-tight line-clamp-4">{backText.slice(0, 60)}...</span>
                               </div>
-                            )}
+                              <span className="absolute bottom-0.5 left-0.5 text-[8px] bg-black/50 text-white px-1 rounded">B</span>
+                            </div>
                           </div>
                           
                           <div className="flex-1">
@@ -2945,22 +2964,45 @@ const Design = () => {
                           }}
                         >
                           <div className="flex items-center gap-4">
-                            {/* Thumbnail */}
-                            <div className="w-20 h-28 bg-slate-700 rounded-lg overflow-hidden flex-shrink-0 shadow-lg">
-                              {design.photo ? (
-                                <img 
-                                  src={design.photo} 
-                                  alt={`Design ${idx + 2}`} 
-                                  className="w-full h-full object-cover"
-                                  style={{
-                                    transform: `scale(${design.photoZoom})`,
-                                  }}
-                                />
-                              ) : (
-                                <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-slate-600 to-slate-700">
-                                  <ImageIcon className="h-8 w-8 text-slate-400" />
+                            {/* Thumbnails - Front & Back */}
+                            <div className="flex gap-1 flex-shrink-0">
+                              {/* Front Thumbnail */}
+                              <div className="w-14 h-20 bg-slate-700 rounded-lg overflow-hidden shadow-lg relative">
+                                {design.photo ? (
+                                  <img 
+                                    src={design.photo} 
+                                    alt={`Design ${idx + 2} front`} 
+                                    className="w-full h-full object-cover"
+                                    style={{
+                                      transform: `scale(${design.photoZoom})`,
+                                    }}
+                                  />
+                                ) : (
+                                  <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-slate-600 to-slate-700">
+                                    <ImageIcon className="h-5 w-5 text-slate-400" />
+                                  </div>
+                                )}
+                                <span className="absolute bottom-0.5 left-0.5 text-[8px] bg-black/50 text-white px-1 rounded">F</span>
+                              </div>
+                              {/* Back Thumbnail */}
+                              <div 
+                                className="w-14 h-20 bg-slate-700 rounded-lg overflow-hidden shadow-lg relative"
+                                style={{
+                                  backgroundImage: design.backgroundId 
+                                    ? `url(${PRESET_BACKGROUNDS.find(b => b.id === design.backgroundId)?.src || ''})` 
+                                    : design.customBackground 
+                                      ? `url(${design.customBackground})` 
+                                      : undefined,
+                                  backgroundSize: 'cover',
+                                  backgroundPosition: 'center',
+                                  backgroundColor: !design.backgroundId && !design.customBackground ? '#f8f8f8' : undefined,
+                                }}
+                              >
+                                <div className="absolute inset-0 bg-black/40 flex items-center justify-center p-1">
+                                  <span className="text-[6px] text-white text-center leading-tight line-clamp-4">{design.prayerText.slice(0, 60)}...</span>
                                 </div>
-                              )}
+                                <span className="absolute bottom-0.5 left-0.5 text-[8px] bg-black/50 text-white px-1 rounded">B</span>
+                              </div>
                             </div>
                             
                             <div className="flex-1">
