@@ -1080,7 +1080,7 @@ const Design = () => {
                           <div className="text-center">
                             <div className="text-xl font-bold text-white mb-1">3" × 4.75"</div>
                             <div className="text-slate-400 text-sm">Large Size</div>
-                            <div className="text-amber-400 font-semibold mt-2">+$17</div>
+                            <div className="text-amber-400 font-semibold mt-2">+${PAPER_SIZE_UPSELL}</div>
                           </div>
                         </button>
                       </div>
