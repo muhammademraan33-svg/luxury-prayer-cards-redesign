@@ -243,6 +243,16 @@ const Design = () => {
     }
   }, [cardType, backBorderDesign]);
 
+  // Keep front dates safely inside paper borders
+  useEffect(() => {
+    if (cardType !== 'paper') return;
+    if (frontBorderDesign === 'none') return;
+
+    // Mirrors the drag bounds (maxY = 95 - 8)
+    const SAFE_MAX_Y = 87;
+    setDatesPosition((prev) => ({ ...prev, y: Math.min(prev.y, SAFE_MAX_Y) }));
+  }, [cardType, frontBorderDesign]);
+
   const [mainDesignSize, setMainDesignSize] = useState<PaperCardSize>('2.5x4.25'); // Size for main design
   const [additionalDesigns, setAdditionalDesigns] = useState<AdditionalDesignData[]>([]); // Additional designs with full data
   const [mainDesignQty, setMainDesignQty] = useState(55); // Quantity for main design
