@@ -286,6 +286,7 @@ const Design = () => {
   const [prayerTextSize, setPrayerTextSize] = useState<number | 'auto'>('auto');
   const [autoPrayerFontSize, setAutoPrayerFontSize] = useState(16);
   const [prayerLayoutNonce, setPrayerLayoutNonce] = useState(0);
+  const [prayerColor, setPrayerColor] = useState('#ffffff');
   
   // Front card text state
   const [showNameOnFront, setShowNameOnFront] = useState(true);
@@ -365,11 +366,13 @@ const Design = () => {
       setInLovingMemoryColor('#e4e4e7'); // zinc-200
       setBackNameColor('#ffffff');
       setBackDatesColor('#a1a1aa'); // zinc-400
+      setPrayerColor('#ffffff'); // White for dark backgrounds
     } else {
       // Dark text for light backgrounds
       setInLovingMemoryColor('#71717a'); // zinc-500
       setBackNameColor('#18181b'); // zinc-900
       setBackDatesColor('#52525b'); // zinc-600
+      setPrayerColor('#000000'); // Black for light backgrounds
     }
   };
   
@@ -1934,8 +1937,9 @@ const Design = () => {
                                 >
                                   <p 
                                     ref={prayerTextRef}
-                                    className={`font-serif italic ${textColorClass} whitespace-pre-line text-center w-full`}
+                                    className="font-serif italic whitespace-pre-line text-center w-full"
                                     style={{
+                                      color: prayerColor,
                                       fontSize: `${(
                                         prayerTextSize === 'auto'
                                           ? autoPrayerFontSize
@@ -2655,6 +2659,33 @@ const Design = () => {
                               >
                                 B
                               </Button>
+                              <div className="flex items-center gap-1 ml-2">
+                                <Label className="text-slate-400 text-xs">Color:</Label>
+                                <input
+                                  type="color"
+                                  value={prayerColor}
+                                  onChange={(e) => setPrayerColor(e.target.value)}
+                                  className="w-7 h-7 rounded border border-slate-600 cursor-pointer bg-transparent"
+                                />
+                                <Button
+                                  type="button"
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => setPrayerColor('#ffffff')}
+                                  className={`h-7 px-2 text-xs ${prayerColor === '#ffffff' ? 'bg-white text-black border-amber-500' : 'border-slate-600 text-slate-300'}`}
+                                >
+                                  White
+                                </Button>
+                                <Button
+                                  type="button"
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => setPrayerColor('#000000')}
+                                  className={`h-7 px-2 text-xs ${prayerColor === '#000000' ? 'bg-black text-white border-amber-500' : 'border-slate-600 text-slate-300'}`}
+                                >
+                                  Black
+                                </Button>
+                              </div>
                             </div>
                           </div>
                         </div>
