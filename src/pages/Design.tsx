@@ -261,7 +261,7 @@ const Design = () => {
   const [upgradeThickness, setUpgradeThickness] = useState(false);
   const [paperCardSize, setPaperCardSize] = useState<PaperCardSize>('2.5x4.25'); // Paper card size option
   const [additionalDesigns, setAdditionalDesigns] = useState<AdditionalDesignData[]>([]); // Additional designs with full data
-  const [mainDesignQty, setMainDesignQty] = useState(36); // Quantity for main design
+  const [mainDesignQty, setMainDesignQty] = useState(72); // Quantity for main design
   const [editingDesignIndex, setEditingDesignIndex] = useState<number | null>(null);
   const [qrUrl, setQrUrl] = useState('');
   const [showQrCode, setShowQrCode] = useState(true);
