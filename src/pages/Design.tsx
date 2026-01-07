@@ -1840,7 +1840,7 @@ const Design = () => {
                                         transformOrigin: 'center center',
                                       }}
                                     />
-                                    <div className={`absolute inset-0 bg-black/40 ${cardRounding}`}></div>
+                                    {/* No dark overlay - match thumbnail brightness */}
                                   </>
                                 )}
                                 {!backBgImage && cardType === 'metal' && (
@@ -2768,7 +2768,7 @@ const Design = () => {
                                 value={mainDesignQty}
                                 onClick={(e) => e.stopPropagation()}
                                 onChange={(e) => setMainDesignQty(Math.max(1, parseInt(e.target.value) || 1))}
-                                className="w-16 h-8 text-center text-lg font-bold bg-slate-800 border border-amber-500/50 rounded px-2 text-white"
+                                className="w-20 h-8 text-center text-lg font-bold bg-slate-800 border border-amber-500/50 rounded px-2 text-white"
                               />
                               <Button
                                 type="button"
@@ -2893,7 +2893,7 @@ const Design = () => {
                                     newDesigns[idx].qty = Math.max(1, parseInt(e.target.value) || 1);
                                     setAdditionalDesigns(newDesigns);
                                   }}
-                                  className="w-16 h-8 text-center text-lg font-bold bg-slate-800 border border-slate-500 rounded px-2 text-white"
+                                  className="w-20 h-8 text-center text-lg font-bold bg-slate-800 border border-slate-500 rounded px-2 text-white"
                                 />
                                 <Button
                                   type="button"
