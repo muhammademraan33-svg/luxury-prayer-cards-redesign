@@ -301,10 +301,10 @@ const Index = () => {
       <section className="container mx-auto px-4 py-16 md:py-24 text-center">
         <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-foreground mb-6 leading-tight tracking-tight">
           Prayer Cards & Memorial Photos<br />
-          <span className="text-primary">Delivered in 24-72 Hours</span>
+          <span className="text-primary">Delivered in 48-72 Hours</span>
         </h1>
         <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-8">
-          Photo prayer cards, heirloom metal cards & celebration of life prints. Delivered in 24-72 hours.
+          Photo prayer cards, heirloom metal cards & celebration of life prints. Delivered in 48-72 hours.
         </p>
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-10">
           <Link to="/design">
@@ -691,7 +691,7 @@ const Index = () => {
                 </div>
                 <div>
                   <h3 className="text-lg font-semibold text-foreground mb-2">Fast Delivery</h3>
-                  <p className="text-muted-foreground text-sm">Choose from delivered in 24-72 hours.</p>
+                  <p className="text-muted-foreground text-sm">Choose from 48-72 hour delivery options.</p>
                 </div>
               </CardContent>
             </Card>
