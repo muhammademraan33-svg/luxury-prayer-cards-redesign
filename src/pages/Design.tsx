@@ -143,8 +143,8 @@ const PAPER_PACKAGES: Record<'starter', PackageConfig> = {
 
 // Add-on pricing
 const METAL_ADDITIONAL_SET_PRICE = 87; // Additional 55 metal cards
-const ADDITIONAL_PHOTO_PRICE = 17; // Additional easel photo 16x20
-const EASEL_18X24_UPSELL = 7; // Upgrade from 16x20 to 18x24
+const ADDITIONAL_PHOTO_PRICE = 17; // Additional memorial photo 16x20
+const PHOTO_18X24_UPSELL = 7; // Upgrade from 16x20 to 18x24
 const PREMIUM_THICKNESS_PRICE = 15; // Upgrade to .080" thick cards per set
 
 const PAPER_SIZE_UPSELL = 7; // Upgrade from 2.5x4.25 to 3x4.75
@@ -1066,7 +1066,7 @@ const Design = () => {
 
     // 18x24 upsell - count how many photos are upgraded
     const upgradedCount = easelPhotos.filter((p) => p.size === '18x24').length;
-    total += upgradedCount * EASEL_18X24_UPSELL;
+    total += upgradedCount * PHOTO_18X24_UPSELL;
 
     // Premium thickness upgrade
     if (upgradeThickness && currentPackage.thickness !== 'premium') {
@@ -3666,7 +3666,7 @@ const Design = () => {
                           </div>
                           
                           <div className="flex justify-between items-center py-2 border-b border-slate-600">
-                            <span className="text-slate-300">Memorial Easel Photo</span>
+                            <span className="text-slate-300">Memorial Photo</span>
                             <span className="text-white font-medium">1 included</span>
                           </div>
                           
@@ -3810,7 +3810,7 @@ const Design = () => {
                       <div className="p-4 bg-slate-700/30 rounded-lg">
                         <div className="flex items-center justify-between">
                           <div>
-                            <p className="text-white font-medium">Extra Easel Photos</p>
+                            <p className="text-white font-medium">Extra Memorial Photos</p>
                             <p className="text-slate-400 text-sm">${ADDITIONAL_PHOTO_PRICE} each (beyond {currentPackage.photos} included)</p>
                           </div>
                           <div className="text-right">
@@ -4117,8 +4117,8 @@ const Design = () => {
                       
                       {easelPhotos.some(p => p.size === '18x24') && (
                         <div className="flex justify-between">
-                          <span className="text-slate-300">18×24 Easel Photo Upgrade × {easelPhotos.filter(p => p.size === '18x24').length}</span>
-                          <span className="text-white">${EASEL_18X24_UPSELL * easelPhotos.filter(p => p.size === '18x24').length}</span>
+                          <span className="text-slate-300">18×24 Memorial Photo Upgrade × {easelPhotos.filter(p => p.size === '18x24').length}</span>
+                          <span className="text-white">${PHOTO_18X24_UPSELL * easelPhotos.filter(p => p.size === '18x24').length}</span>
                         </div>
                       )}
                       

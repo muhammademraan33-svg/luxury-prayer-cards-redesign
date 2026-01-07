@@ -335,7 +335,7 @@ const Index = () => {
           </div>
           <div className="flex items-center gap-2">
             <CheckCircle2 className="h-5 w-5 text-primary" />
-            <span className="text-sm font-medium">Photo Boards Included</span>
+            <span className="text-sm font-medium">Memorial Photo Included</span>
           </div>
         </div>
       </section>
@@ -357,7 +357,7 @@ const Index = () => {
             <Card className="bg-primary/5 border-primary/20 overflow-hidden">
               <CardContent className="p-8 text-center">
                 <h3 className="text-2xl font-bold text-foreground mb-2">Paper Cards</h3>
-                <p className="text-primary font-bold text-sm mb-4">55 Cards + 1 Memorial Easel Photo</p>
+                <p className="text-primary font-bold text-sm mb-4">55 Cards + 1 Memorial Photo</p>
                 
                 <div className="mb-4 flex items-center gap-3 justify-center">
                   <span className="text-2xl text-foreground/60 line-through">$125</span>
@@ -386,7 +386,7 @@ const Index = () => {
                   PREMIUM
                 </span>
                 <h3 className="text-2xl font-bold text-foreground mb-2">Metal Cards</h3>
-                <p className="text-primary font-bold text-sm mb-4">55 Cards + 1 Memorial Easel Photo</p>
+                <p className="text-primary font-bold text-sm mb-4">55 Cards + 1 Memorial Photo</p>
                 
                 <div className="mb-4 flex items-center gap-3 justify-center">
                   <span className="text-2xl text-foreground/60 line-through">$175</span>
@@ -434,8 +434,8 @@ const Index = () => {
               { size: '5x7', price: 17, aspect: '5/7', packSize: 12, extraPrice: 0.67 },
               { size: '8x10', price: 7, aspect: '4/5' },
               { size: '11x14', price: 17, aspect: '11/14' },
-              { size: '16x20', price: 17, aspect: '4/5', isMemorial: true, memorialLabel: 'Memorial Easel Photo' },
-              { size: '18x24', price: 27, aspect: '4/5', isMemorial: true, memorialLabel: 'Large Memorial Easel Photo' },
+              { size: '16x20', price: 17, aspect: '4/5', isMemorial: true, memorialLabel: 'Memorial Photo' },
+              { size: '18x24', price: 27, aspect: '4/5', isMemorial: true, memorialLabel: 'Large Memorial Photo' },
             ].map((photo) => {
               // Calculate total prints and price for pack items
               const uploads = multiPhotoUploads[photo.size] || [];
