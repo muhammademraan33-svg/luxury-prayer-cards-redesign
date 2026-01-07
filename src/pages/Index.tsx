@@ -393,7 +393,7 @@ const Index = () => {
                 </div>
                 
                 <p className="text-muted-foreground text-sm mb-4">
-                  Additional sets of 55: $30 each
+                  Additional sets of 55: $77 each
                 </p>
 
                 <Link to="/design?type=metal&quantity=55" className="block">
