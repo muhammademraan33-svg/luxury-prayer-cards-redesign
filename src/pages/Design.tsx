@@ -120,7 +120,7 @@ const METAL_PACKAGES: Record<'good' | 'better' | 'best', PackageConfig> = {
     comparePrice: 195,
     cards: 55,
     photos: 2,
-    shipping: 'Delivered in 24-72 hours',
+    shipping: 'Delivered in 48-72 hours',
     thickness: 'standard' as CardThickness,
     description: 'Perfect for intimate gatherings',
   },
@@ -130,7 +130,7 @@ const METAL_PACKAGES: Record<'good' | 'better' | 'best', PackageConfig> = {
     comparePrice: 295,
     cards: 110,
     photos: 4,
-    shipping: 'Delivered in 24-72 hours',
+    shipping: 'Delivered in 48-72 hours',
     thickness: 'standard' as CardThickness,
     description: 'Most popular for services',
     popular: true,
@@ -142,7 +142,7 @@ const METAL_PACKAGES: Record<'good' | 'better' | 'best', PackageConfig> = {
     comparePrice: 450,
     cards: 165,
     photos: 6,
-    shipping: 'Delivered in 24-72 hours',
+    shipping: 'Delivered in 48-72 hours',
     thickness: 'standard' as CardThickness,
     description: 'Complete memorial package',
     badge: 'BEST VALUE',
@@ -156,7 +156,7 @@ const PAPER_PACKAGES: Record<'starter' | 'standard' | 'large', PackageConfig> = 
     comparePrice: 67,
     cards: 72,
     photos: 1,
-    shipping: 'Delivered in 24-72 hours',
+    shipping: 'Delivered in 48-72 hours',
     thickness: 'standard' as CardThickness,
     description: 'Great for smaller gatherings',
   },
@@ -166,7 +166,7 @@ const PAPER_PACKAGES: Record<'starter' | 'standard' | 'large', PackageConfig> = 
     comparePrice: 87,
     cards: 100,
     photos: 2,
-    shipping: 'Delivered in 24-72 hours',
+    shipping: 'Delivered in 48-72 hours',
     thickness: 'standard' as CardThickness,
     description: 'Most popular for services',
     popular: true,
@@ -178,7 +178,7 @@ const PAPER_PACKAGES: Record<'starter' | 'standard' | 'large', PackageConfig> = 
     comparePrice: 97,
     cards: 150,
     photos: 2,
-    shipping: 'Delivered in 24-72 hours',
+    shipping: 'Delivered in 48-72 hours',
     thickness: 'standard' as CardThickness,
     description: 'Extra cards for larger services',
   },
@@ -3215,7 +3215,7 @@ const Design = () => {
                           
                           <div className="flex justify-between items-center py-2">
                             <span className="text-slate-300">Shipping</span>
-                            <span className="text-white font-medium">Delivered in 24-72 hours</span>
+                            <span className="text-white font-medium">Delivered in 48-72 hours</span>
                           </div>
                         </div>
                       </div>
@@ -3730,7 +3730,7 @@ const Design = () => {
                       <span className="text-slate-400">Easel Photos:</span> {Math.max(currentPackage.photos, easelPhotos.length)} ({easelPhotos.filter(p => p.size === '18x24').length} upgraded to 18x24)
                     </p>
                     <p className="text-slate-300">
-                      <span className="text-slate-400">Shipping:</span> {effectiveShipping === 'overnight' ? 'Overnight (24hr)' : 'Delivered in 24-72 hours'}
+                      <span className="text-slate-400">Shipping:</span> {effectiveShipping === 'overnight' ? 'Overnight (24hr)' : 'Delivered in 48-72 hours'}
                     </p>
                   </div>
 
