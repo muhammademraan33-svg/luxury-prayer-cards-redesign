@@ -121,8 +121,11 @@ const MemorialPhotoEditor = () => {
     setTextColor(bg.isDark ? '#ffffff' : '#18181b');
   };
 
+  const basePrice = 17;
+  const upsellPrice = 7;
+  
   const getPrice = () => {
-    return photoSize === '16x20' ? 17 : 24;
+    return photoSize === '16x20' ? basePrice : basePrice + upsellPrice;
   };
 
   const aspectRatio = photoSize === '16x20' ? '4/5' : '3/4';
@@ -526,40 +529,58 @@ const MemorialPhotoEditor = () => {
                   <Label className="text-white font-semibold">Order</Label>
                 </div>
                 
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <Label className="text-slate-400 text-xs">Size</Label>
-                    <Select value={photoSize} onValueChange={(v) => setPhotoSize(v as PhotoSize)}>
-                      <SelectTrigger className="bg-slate-700 border-slate-600 text-white mt-1">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent className="bg-slate-700 border-slate-600">
-                        <SelectItem value="16x20">16x20 - $17</SelectItem>
-                        <SelectItem value="18x24">18x24 - $24</SelectItem>
-                      </SelectContent>
-                    </Select>
+                {/* Size Selection with Upsell */}
+                <div className="space-y-3">
+                  <Label className="text-slate-400 text-xs">Size</Label>
+                  <div className="grid grid-cols-2 gap-3">
+                    <button
+                      onClick={() => setPhotoSize('16x20')}
+                      className={`p-4 rounded-lg border-2 transition-all text-left ${
+                        photoSize === '16x20'
+                          ? 'border-amber-500 bg-amber-500/10'
+                          : 'border-slate-600 hover:border-slate-500'
+                      }`}
+                    >
+                      <div className="text-white font-semibold">16x20</div>
+                      <div className="text-amber-400 text-lg font-bold">${basePrice}</div>
+                    </button>
+                    <button
+                      onClick={() => setPhotoSize('18x24')}
+                      className={`p-4 rounded-lg border-2 transition-all text-left relative overflow-hidden ${
+                        photoSize === '18x24'
+                          ? 'border-amber-500 bg-amber-500/10'
+                          : 'border-slate-600 hover:border-slate-500'
+                      }`}
+                    >
+                      <div className="absolute top-0 right-0 bg-green-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-bl">
+                        UPGRADE
+                      </div>
+                      <div className="text-white font-semibold">18x24</div>
+                      <div className="text-amber-400 text-lg font-bold">${basePrice + upsellPrice} <span className="text-green-400 text-sm font-normal">(+${upsellPrice})</span></div>
+                    </button>
                   </div>
-                  <div>
-                    <Label className="text-slate-400 text-xs">Quantity</Label>
-                    <div className="flex items-center gap-2 mt-1">
-                      <Button
-                        variant="outline"
-                        size="icon"
-                        onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                        className="border-slate-600 text-slate-300 h-10 w-10"
-                      >
-                        <Minus className="h-4 w-4" />
-                      </Button>
-                      <span className="text-white font-semibold w-8 text-center">{quantity}</span>
-                      <Button
-                        variant="outline"
-                        size="icon"
-                        onClick={() => setQuantity(quantity + 1)}
-                        className="border-slate-600 text-slate-300 h-10 w-10"
-                      >
-                        <Plus className="h-4 w-4" />
-                      </Button>
-                    </div>
+                </div>
+                
+                <div>
+                  <Label className="text-slate-400 text-xs">Quantity</Label>
+                  <div className="flex items-center gap-2 mt-1">
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                      className="border-slate-600 text-slate-300 h-10 w-10"
+                    >
+                      <Minus className="h-4 w-4" />
+                    </Button>
+                    <span className="text-white font-semibold w-8 text-center">{quantity}</span>
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      onClick={() => setQuantity(quantity + 1)}
+                      className="border-slate-600 text-slate-300 h-10 w-10"
+                    >
+                      <Plus className="h-4 w-4" />
+                    </Button>
                   </div>
                 </div>
                 
