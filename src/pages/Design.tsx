@@ -291,6 +291,49 @@ const Design = () => {
   const [datesFont, setDatesFont] = useState('Cormorant Garamond');
   const [namePosition, setNamePosition] = useState({ x: 50, y: 85 });
   const [datesPosition, setDatesPosition] = useState({ x: 50, y: 92 });
+
+  // Prevent name/dates from overlapping (especially when borders constrain the safe area)
+  useEffect(() => {
+    if (cardType !== 'paper') return;
+    if (frontBorderDesign === 'none') return;
+    if (!showNameOnFront || !showDatesOnFront) return;
+
+    const SAFE_MAX_Y = 87; // mirrors drag bounds when border is active
+    const MIN_GAP_Y = 6; // percent gap between name and dates
+
+    const nameText = deceasedName || 'Name Here';
+    const lineCount = nameText.split('\n').length;
+    const lineOffset = (lineCount - 1) * 3;
+    const effectiveNameY = namePosition.y - lineOffset;
+
+    const minDatesY = effectiveNameY + MIN_GAP_Y;
+
+    // Prefer moving dates down; if border max prevents it, move name up.
+    const clampedDatesY = Math.min(datesPosition.y, SAFE_MAX_Y);
+    let nextDatesY = Math.max(clampedDatesY, minDatesY);
+    nextDatesY = Math.min(nextDatesY, SAFE_MAX_Y);
+
+    let nextNameY = namePosition.y;
+    if (nextDatesY < minDatesY) {
+      nextNameY = (nextDatesY - MIN_GAP_Y) + lineOffset;
+    }
+
+    if (nextDatesY !== datesPosition.y) {
+      setDatesPosition((prev) => ({ ...prev, y: nextDatesY }));
+    }
+    if (nextNameY !== namePosition.y) {
+      setNamePosition((prev) => ({ ...prev, y: nextNameY }));
+    }
+  }, [
+    cardType,
+    frontBorderDesign,
+    showNameOnFront,
+    showDatesOnFront,
+    deceasedName,
+    namePosition.y,
+    datesPosition.y,
+  ]);
+
   const [nameColor, setNameColor] = useState('#ffffff');
   const [frontDatesColor, setFrontDatesColor] = useState('#ffffffcc');
   const [backDatesColor, setBackDatesColor] = useState('#666666');
