@@ -1191,9 +1191,14 @@ const Design = () => {
                               : 'border-slate-600 hover:border-slate-500'
                           }`}
                         >
-                          <div className="text-center">
+                          <div className="flex flex-col items-center">
+                            {/* Proportional card silhouette - 2.5:4.25 ratio */}
+                            <div 
+                              className="bg-white/20 rounded-sm border border-white/40 mb-3"
+                              style={{ width: '40px', height: '68px' }}
+                            />
                             <div className="text-xl font-bold text-white mb-1">2.5" × 4.25"</div>
-                            <div className="text-slate-400 text-sm">Standard Size</div>
+                            <div className="text-slate-300 text-sm">Standard Size</div>
                             <div className="text-amber-400 font-semibold mt-2">Included</div>
                           </div>
                         </button>
@@ -1206,9 +1211,14 @@ const Design = () => {
                               : 'border-slate-600 hover:border-slate-500'
                           }`}
                         >
-                          <div className="text-center">
+                          <div className="flex flex-col items-center">
+                            {/* Proportional card silhouette - 3:4.75 ratio (~40% larger area) */}
+                            <div 
+                              className="bg-white/20 rounded-sm border border-white/40 mb-3"
+                              style={{ width: '48px', height: '76px' }}
+                            />
                             <div className="text-xl font-bold text-white mb-1">3" × 4.75"</div>
-                            <div className="text-slate-400 text-sm">Large Size</div>
+                            <div className="text-slate-300 text-sm">Large Size</div>
                             <div className="text-amber-400 font-semibold mt-2">+${PAPER_SIZE_UPSELL}</div>
                           </div>
                         </button>
