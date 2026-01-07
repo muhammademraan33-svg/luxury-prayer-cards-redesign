@@ -2934,66 +2934,75 @@ const Design = () => {
                     </h3>
                     
                     <div className="grid grid-cols-1 gap-4">
-                      {(Object.entries(PACKAGES) as [PackageTier, typeof PACKAGES.good][]).map(([tier, pkg]) => (
-                        <button
-                          key={tier}
-                          type="button"
-                          onClick={() => setSelectedPackage(tier)}
-                          className={`relative p-5 rounded-xl border-2 transition-all text-left ${
-                            selectedPackage === tier
-                              ? 'border-amber-500 bg-gradient-to-br from-amber-600/20 to-amber-900/10'
-                              : 'border-slate-600 hover:border-amber-500/50'
-                          }`}
-                        >
-                          {pkg.popular && (
-                            <div className="absolute -top-3 left-4 bg-gradient-to-r from-amber-600 to-amber-500 text-white text-xs font-bold px-3 py-1 rounded-full">
-                              MOST POPULAR
-                            </div>
-                          )}
-                          
-                          <div className="flex items-start justify-between gap-4">
-                            <div className="flex-1">
-                              <div className="flex items-center gap-3 mb-2">
-                                <h4 className="text-xl font-bold text-white">{pkg.name}</h4>
-                                {tier === 'best' && (
-                                  <span className="text-xs bg-amber-500/20 text-amber-400 px-2 py-0.5 rounded">BEST VALUE</span>
+                      {Object.entries(packages).map(([id, pkg]) => {
+                        const showCompare = pkg.comparePrice > pkg.price;
+                        return (
+                          <button
+                            key={id}
+                            type="button"
+                            onClick={() => setSelectedPackage(id as PackageId)}
+                            className={`relative p-5 rounded-xl border-2 transition-all text-left ${
+                              selectedPackage === (id as PackageId)
+                                ? 'border-amber-500 bg-gradient-to-br from-amber-600/20 to-amber-900/10'
+                                : 'border-slate-600 hover:border-amber-500/50'
+                            }`}
+                          >
+                            {pkg.popular && (
+                              <div className="absolute -top-3 left-4 bg-gradient-to-r from-amber-600 to-amber-500 text-white text-xs font-bold px-3 py-1 rounded-full">
+                                MOST POPULAR
+                              </div>
+                            )}
+
+                            <div className="flex items-start justify-between gap-4">
+                              <div className="flex-1">
+                                <div className="flex items-center gap-3 mb-2">
+                                  <h4 className="text-xl font-bold text-white">{pkg.name}</h4>
+                                  {pkg.badge === 'BEST VALUE' && (
+                                    <span className="text-xs bg-amber-500/20 text-amber-400 px-2 py-0.5 rounded">BEST VALUE</span>
+                                  )}
+                                </div>
+                                <p className="text-slate-400 text-sm mb-3">{pkg.description}</p>
+                                <ul className="space-y-1.5 text-sm">
+                                  <li className="flex items-center gap-2 text-slate-300">
+                                    <span className="text-amber-400">✓</span>
+                                    {pkg.cards} {cardType === 'paper' ? 'Photo Prayer Cards' : 'Premium Metal Cards'}
+                                    {cardType === 'metal' && pkg.thickness === 'premium' && (
+                                      <span className="text-amber-400 text-xs">(Premium .080\")</span>
+                                    )}
+                                  </li>
+                                  <li className="flex items-center gap-2 text-slate-300">
+                                    <span className="text-amber-400">✓</span>
+                                    {pkg.photos} Easel Photos Included
+                                  </li>
+                                  <li className="flex items-center gap-2 text-slate-300">
+                                    <span className="text-amber-400">✓</span>
+                                    {pkg.shipping}
+                                    {pkg.shipping === 'Overnight' && <span className="text-rose-400 text-xs ml-1">⚡</span>}
+                                  </li>
+                                </ul>
+                              </div>
+
+                              <div className="text-right">
+                                <div className="flex items-baseline gap-1">
+                                  <span className="text-3xl font-bold text-white">${pkg.price}</span>
+                                </div>
+                                {showCompare && (
+                                  <>
+                                    <span className="text-slate-500 line-through text-sm">${pkg.comparePrice}</span>
+                                    <p className="text-amber-400 text-xs font-medium">Save ${pkg.comparePrice - pkg.price}</p>
+                                  </>
                                 )}
                               </div>
-                              <p className="text-slate-400 text-sm mb-3">{pkg.description}</p>
-                              <ul className="space-y-1.5 text-sm">
-                                <li className="flex items-center gap-2 text-slate-300">
-                                  <span className="text-amber-400">✓</span>
-                                  {pkg.cards} {cardType === 'paper' ? 'Paper Prayer Cards' : 'Premium Metal Cards'}
-                                  {cardType === 'metal' && pkg.thickness === 'premium' && <span className="text-amber-400 text-xs">(Premium .080")</span>}
-                                </li>
-                                <li className="flex items-center gap-2 text-slate-300">
-                                  <span className="text-amber-400">✓</span>
-                                  {pkg.photos} Easel Photos Included
-                                </li>
-                                <li className="flex items-center gap-2 text-slate-300">
-                                  <span className="text-amber-400">✓</span>
-                                  {pkg.shipping}
-                                  {pkg.shipping === 'Overnight' && <span className="text-rose-400 text-xs ml-1">⚡</span>}
-                                </li>
-                              </ul>
                             </div>
-                            
-                            <div className="text-right">
-                              <div className="flex items-baseline gap-1">
-                                <span className="text-3xl font-bold text-white">${pkg.price}</span>
+
+                            {selectedPackage === (id as PackageId) && (
+                              <div className="absolute top-4 right-4 w-6 h-6 bg-amber-500 rounded-full flex items-center justify-center">
+                                <span className="text-white text-sm">✓</span>
                               </div>
-                              <span className="text-slate-500 line-through text-sm">${pkg.comparePrice}</span>
-                              <p className="text-amber-400 text-xs font-medium">Save ${pkg.comparePrice - pkg.price}</p>
-                            </div>
-                          </div>
-                          
-                          {selectedPackage === tier && (
-                            <div className="absolute top-4 right-4 w-6 h-6 bg-amber-500 rounded-full flex items-center justify-center">
-                              <span className="text-white text-sm">✓</span>
-                            </div>
-                          )}
-                        </button>
-                      ))}
+                            )}
+                          </button>
+                        );
+                      })}
                     </div>
                   </div>
 
@@ -3001,34 +3010,36 @@ const Design = () => {
                   <div className="space-y-4">
                     <Label className="text-slate-400 block text-sm">Customize (Optional)</Label>
                     
-                    {/* Additional Card Sets */}
-                    <div className="flex items-center justify-between p-4 bg-slate-700/30 rounded-lg">
-                      <div>
-                        <p className="text-white font-medium">Extra Card Sets (+55 each)</p>
-                        <p className="text-slate-400 text-sm">${ADDITIONAL_SET_PRICE} per set</p>
+                    {/* Additional Card Sets (metal only) */}
+                    {cardType === 'metal' && (
+                      <div className="flex items-center justify-between p-4 bg-slate-700/30 rounded-lg">
+                        <div>
+                          <p className="text-white font-medium">Extra Card Sets (+55 each)</p>
+                          <p className="text-slate-400 text-sm">${ADDITIONAL_SET_PRICE} per set</p>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="icon"
+                            onClick={() => setExtraSets(Math.max(0, extraSets - 1))}
+                            className="h-8 w-8 border-slate-600"
+                          >
+                            −
+                          </Button>
+                          <span className="text-white w-8 text-center">{extraSets}</span>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="icon"
+                            onClick={() => setExtraSets(extraSets + 1)}
+                            className="h-8 w-8 border-slate-600"
+                          >
+                            +
+                          </Button>
+                        </div>
                       </div>
-                      <div className="flex items-center gap-2">
-                        <Button
-                          type="button"
-                          variant="outline"
-                          size="icon"
-                          onClick={() => setExtraSets(Math.max(0, extraSets - 1))}
-                          className="h-8 w-8 border-slate-600"
-                        >
-                          −
-                        </Button>
-                        <span className="text-white w-8 text-center">{extraSets}</span>
-                        <Button
-                          type="button"
-                          variant="outline"
-                          size="icon"
-                          onClick={() => setExtraSets(extraSets + 1)}
-                          className="h-8 w-8 border-slate-600"
-                        >
-                          +
-                        </Button>
-                      </div>
-                    </div>
+                    )}
 
                     {/* Additional Photos beyond package */}
                     {easelPhotos.length > currentPackage.photos && (
@@ -3046,8 +3057,8 @@ const Design = () => {
                       </div>
                     )}
 
-                    {/* Premium Thickness Upgrade (only show if package doesn't include it) */}
-                    {currentPackage.thickness !== 'premium' && (
+                    {/* Premium Thickness Upgrade (metal only, only if package doesn't include it) */}
+                    {cardType === 'metal' && currentPackage.thickness !== 'premium' && (
                       <div 
                         className={`p-4 rounded-lg border-2 cursor-pointer transition-all ${
                           upgradeThickness 
@@ -3064,6 +3075,7 @@ const Design = () => {
                               checked={upgradeThickness}
                               onChange={(e) => setUpgradeThickness(e.target.checked)}
                               className="accent-amber-600 w-5 h-5 mt-1"
+                              onClick={(e) => e.stopPropagation()}
                             />
                             <div>
                               <p className="text-white font-medium">Upgrade to Premium Thickness</p>
@@ -3074,12 +3086,12 @@ const Design = () => {
                                 <div className="flex flex-col items-center">
                                   <div className="w-14 h-1 bg-slate-500 rounded-sm shadow-md" />
                                   <span className="text-xs text-slate-500 mt-1.5">Standard</span>
-                                  <span className="text-[10px] text-slate-600">.040"</span>
+                                  <span className="text-[10px] text-slate-600">.040\"</span>
                                 </div>
                                 <div className="flex flex-col items-center">
                                   <div className="w-14 h-2.5 bg-gradient-to-b from-amber-400 to-amber-600 rounded-sm shadow-lg" />
                                   <span className="text-xs text-amber-400 mt-1.5 font-medium">Premium</span>
-                                  <span className="text-[10px] text-amber-500">.080"</span>
+                                  <span className="text-[10px] text-amber-500">.080\"</span>
                                 </div>
                               </div>
                             </div>
