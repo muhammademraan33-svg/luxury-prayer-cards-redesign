@@ -2981,86 +2981,68 @@ const Design = () => {
                         {/* Front Border Color Picker */}
                         {frontBorderDesign !== 'none' && (
                           <div className="flex flex-col gap-3 pt-2">
-                            <Label className="text-slate-400 text-sm">Color</Label>
+                            <Label className="text-slate-400 text-sm">Border Color</Label>
                             <div className="flex items-center gap-2 flex-wrap">
                               {/* Gold */}
                               <button
                                 type="button"
                                 onClick={() => setFrontBorderColor('#d4af37')}
-                                className={`w-10 h-10 rounded-lg border-2 transition-all overflow-hidden ${
-                                  frontBorderColor === '#d4af37' || frontBorderColor === '#c9a227' ? 'border-amber-400 scale-110 ring-2 ring-amber-400/50' : 'border-slate-600'
+                                className={`w-12 h-12 rounded-lg border-2 transition-all overflow-hidden relative ${
+                                  frontBorderColor === '#d4af37' ? 'border-amber-400 scale-110 ring-2 ring-amber-400/50' : 'border-slate-600 hover:border-slate-500'
                                 }`}
                                 title="Gold"
                               >
                                 <div className="w-full h-full" style={{
-                                  background: 'linear-gradient(135deg, #f5d67a 0%, #d4af37 25%, #a67c00 50%, #d4af37 75%, #f5d67a 100%)',
-                                  boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.5), inset 0 -1px 2px rgba(0,0,0,0.2)'
+                                  background: 'linear-gradient(135deg, #fff9e6 0%, #ffd700 15%, #d4af37 30%, #b8860b 50%, #d4af37 70%, #ffd700 85%, #fff9e6 100%)',
+                                  boxShadow: 'inset 0 2px 4px rgba(255,255,255,0.6), inset 0 -2px 4px rgba(0,0,0,0.2)'
                                 }} />
+                                <span className="absolute bottom-0 left-0 right-0 text-[8px] text-center bg-black/50 text-white py-0.5">Gold</span>
                               </button>
                               {/* Silver */}
                               <button
                                 type="button"
                                 onClick={() => setFrontBorderColor('#c0c0c0')}
-                                className={`w-10 h-10 rounded-lg border-2 transition-all overflow-hidden ${
-                                  frontBorderColor === '#c0c0c0' || frontBorderColor === '#a8a8a8' ? 'border-amber-400 scale-110 ring-2 ring-amber-400/50' : 'border-slate-600'
+                                className={`w-12 h-12 rounded-lg border-2 transition-all overflow-hidden relative ${
+                                  frontBorderColor === '#c0c0c0' ? 'border-amber-400 scale-110 ring-2 ring-amber-400/50' : 'border-slate-600 hover:border-slate-500'
                                 }`}
                                 title="Silver"
                               >
                                 <div className="w-full h-full" style={{
-                                  background: 'linear-gradient(135deg, #f5f5f5 0%, #c0c0c0 25%, #8a8a8a 50%, #c0c0c0 75%, #f5f5f5 100%)',
-                                  boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.7), inset 0 -1px 2px rgba(0,0,0,0.15)'
+                                  background: 'linear-gradient(135deg, #ffffff 0%, #e8e8e8 15%, #c0c0c0 30%, #a8a8a8 50%, #c0c0c0 70%, #e8e8e8 85%, #ffffff 100%)',
+                                  boxShadow: 'inset 0 2px 4px rgba(255,255,255,0.8), inset 0 -2px 4px rgba(0,0,0,0.15)'
                                 }} />
+                                <span className="absolute bottom-0 left-0 right-0 text-[8px] text-center bg-black/50 text-white py-0.5">Silver</span>
                               </button>
-                              {/* White/Pearl */}
+                              {/* Rose Gold */}
+                              <button
+                                type="button"
+                                onClick={() => setFrontBorderColor('#b76e79')}
+                                className={`w-12 h-12 rounded-lg border-2 transition-all overflow-hidden relative ${
+                                  frontBorderColor === '#b76e79' ? 'border-amber-400 scale-110 ring-2 ring-amber-400/50' : 'border-slate-600 hover:border-slate-500'
+                                }`}
+                                title="Rose Gold"
+                              >
+                                <div className="w-full h-full" style={{
+                                  background: 'linear-gradient(135deg, #fce4e4 0%, #e8b4b8 15%, #b76e79 30%, #9e5a65 50%, #b76e79 70%, #e8b4b8 85%, #fce4e4 100%)',
+                                  boxShadow: 'inset 0 2px 4px rgba(255,255,255,0.5), inset 0 -2px 4px rgba(0,0,0,0.2)'
+                                }} />
+                                <span className="absolute bottom-0 left-0 right-0 text-[8px] text-center bg-black/50 text-white py-0.5">Rose Gold</span>
+                              </button>
+                              {/* White */}
                               <button
                                 type="button"
                                 onClick={() => setFrontBorderColor('#f8f8f8')}
-                                className={`w-10 h-10 rounded-lg border-2 transition-all overflow-hidden ${
-                                  frontBorderColor === '#f8f8f8' || frontBorderColor === '#f5f5f5' || frontBorderColor === '#ffffff' ? 'border-amber-400 scale-110 ring-2 ring-amber-400/50' : 'border-slate-600'
+                                className={`w-12 h-12 rounded-lg border-2 transition-all overflow-hidden relative ${
+                                  frontBorderColor === '#f8f8f8' ? 'border-amber-400 scale-110 ring-2 ring-amber-400/50' : 'border-slate-600 hover:border-slate-500'
                                 }`}
-                                title="Pearl White"
+                                title="White"
                               >
                                 <div className="w-full h-full" style={{
-                                  background: 'linear-gradient(135deg, #ffffff 0%, #f8f8f8 30%, #e8e8e8 50%, #f8f8f8 70%, #ffffff 100%)',
-                                  boxShadow: 'inset 0 1px 3px rgba(255,255,255,1), inset 0 -1px 2px rgba(0,0,0,0.05)'
+                                  background: 'linear-gradient(135deg, #ffffff 0%, #fafafa 25%, #f0f0f0 50%, #fafafa 75%, #ffffff 100%)',
+                                  boxShadow: 'inset 0 2px 4px rgba(255,255,255,1), inset 0 -2px 4px rgba(0,0,0,0.05)'
                                 }} />
+                                <span className="absolute bottom-0 left-0 right-0 text-[8px] text-center bg-black/50 text-white py-0.5">White</span>
                               </button>
-                              {/* Bronze */}
-                              <button
-                                type="button"
-                                onClick={() => setFrontBorderColor('#8b7355')}
-                                className={`w-10 h-10 rounded-lg border-2 transition-all overflow-hidden ${
-                                  frontBorderColor === '#8b7355' ? 'border-amber-400 scale-110 ring-2 ring-amber-400/50' : 'border-slate-600'
-                                }`}
-                                title="Bronze"
-                              >
-                                <div className="w-full h-full" style={{
-                                  background: 'linear-gradient(135deg, #c9a87c 0%, #8b7355 30%, #6b5344 50%, #8b7355 70%, #c9a87c 100%)',
-                                  boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.2)'
-                                }} />
-                              </button>
-                              {/* Black */}
-                              <button
-                                type="button"
-                                onClick={() => setFrontBorderColor('#1a1a1a')}
-                                className={`w-10 h-10 rounded-lg border-2 transition-all overflow-hidden ${
-                                  frontBorderColor === '#1a1a1a' || frontBorderColor === '#4a4a4a' ? 'border-amber-400 scale-110 ring-2 ring-amber-400/50' : 'border-slate-600'
-                                }`}
-                                title="Black"
-                              >
-                                <div className="w-full h-full" style={{
-                                  background: 'linear-gradient(135deg, #3a3a3a 0%, #1a1a1a 30%, #0a0a0a 50%, #1a1a1a 70%, #3a3a3a 100%)',
-                                  boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.1), inset 0 -1px 2px rgba(0,0,0,0.3)'
-                                }} />
-                              </button>
-                              {/* Custom color picker */}
-                              <input
-                                type="color"
-                                value={frontBorderColor}
-                                onChange={(e) => setFrontBorderColor(e.target.value)}
-                                className="w-10 h-10 rounded-lg border-2 border-slate-600 cursor-pointer"
-                                title="Custom Color"
-                              />
                             </div>
                           </div>
                         )}
@@ -3094,86 +3076,68 @@ const Design = () => {
                         {/* Back Border Color Picker */}
                         {backBorderDesign !== 'none' && (
                           <div className="flex flex-col gap-3 pt-2">
-                            <Label className="text-slate-400 text-sm">Color</Label>
+                            <Label className="text-slate-400 text-sm">Border Color</Label>
                             <div className="flex items-center gap-2 flex-wrap">
                               {/* Gold */}
                               <button
                                 type="button"
                                 onClick={() => setBackBorderColor('#d4af37')}
-                                className={`w-10 h-10 rounded-lg border-2 transition-all overflow-hidden ${
-                                  backBorderColor === '#d4af37' || backBorderColor === '#c9a227' ? 'border-amber-400 scale-110 ring-2 ring-amber-400/50' : 'border-slate-600'
+                                className={`w-12 h-12 rounded-lg border-2 transition-all overflow-hidden relative ${
+                                  backBorderColor === '#d4af37' ? 'border-amber-400 scale-110 ring-2 ring-amber-400/50' : 'border-slate-600 hover:border-slate-500'
                                 }`}
                                 title="Gold"
                               >
                                 <div className="w-full h-full" style={{
-                                  background: 'linear-gradient(135deg, #f5d67a 0%, #d4af37 25%, #a67c00 50%, #d4af37 75%, #f5d67a 100%)',
-                                  boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.5), inset 0 -1px 2px rgba(0,0,0,0.2)'
+                                  background: 'linear-gradient(135deg, #fff9e6 0%, #ffd700 15%, #d4af37 30%, #b8860b 50%, #d4af37 70%, #ffd700 85%, #fff9e6 100%)',
+                                  boxShadow: 'inset 0 2px 4px rgba(255,255,255,0.6), inset 0 -2px 4px rgba(0,0,0,0.2)'
                                 }} />
+                                <span className="absolute bottom-0 left-0 right-0 text-[8px] text-center bg-black/50 text-white py-0.5">Gold</span>
                               </button>
                               {/* Silver */}
                               <button
                                 type="button"
                                 onClick={() => setBackBorderColor('#c0c0c0')}
-                                className={`w-10 h-10 rounded-lg border-2 transition-all overflow-hidden ${
-                                  backBorderColor === '#c0c0c0' || backBorderColor === '#a8a8a8' ? 'border-amber-400 scale-110 ring-2 ring-amber-400/50' : 'border-slate-600'
+                                className={`w-12 h-12 rounded-lg border-2 transition-all overflow-hidden relative ${
+                                  backBorderColor === '#c0c0c0' ? 'border-amber-400 scale-110 ring-2 ring-amber-400/50' : 'border-slate-600 hover:border-slate-500'
                                 }`}
                                 title="Silver"
                               >
                                 <div className="w-full h-full" style={{
-                                  background: 'linear-gradient(135deg, #f5f5f5 0%, #c0c0c0 25%, #8a8a8a 50%, #c0c0c0 75%, #f5f5f5 100%)',
-                                  boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.7), inset 0 -1px 2px rgba(0,0,0,0.15)'
+                                  background: 'linear-gradient(135deg, #ffffff 0%, #e8e8e8 15%, #c0c0c0 30%, #a8a8a8 50%, #c0c0c0 70%, #e8e8e8 85%, #ffffff 100%)',
+                                  boxShadow: 'inset 0 2px 4px rgba(255,255,255,0.8), inset 0 -2px 4px rgba(0,0,0,0.15)'
                                 }} />
+                                <span className="absolute bottom-0 left-0 right-0 text-[8px] text-center bg-black/50 text-white py-0.5">Silver</span>
                               </button>
-                              {/* White/Pearl */}
+                              {/* Rose Gold */}
+                              <button
+                                type="button"
+                                onClick={() => setBackBorderColor('#b76e79')}
+                                className={`w-12 h-12 rounded-lg border-2 transition-all overflow-hidden relative ${
+                                  backBorderColor === '#b76e79' ? 'border-amber-400 scale-110 ring-2 ring-amber-400/50' : 'border-slate-600 hover:border-slate-500'
+                                }`}
+                                title="Rose Gold"
+                              >
+                                <div className="w-full h-full" style={{
+                                  background: 'linear-gradient(135deg, #fce4e4 0%, #e8b4b8 15%, #b76e79 30%, #9e5a65 50%, #b76e79 70%, #e8b4b8 85%, #fce4e4 100%)',
+                                  boxShadow: 'inset 0 2px 4px rgba(255,255,255,0.5), inset 0 -2px 4px rgba(0,0,0,0.2)'
+                                }} />
+                                <span className="absolute bottom-0 left-0 right-0 text-[8px] text-center bg-black/50 text-white py-0.5">Rose Gold</span>
+                              </button>
+                              {/* White */}
                               <button
                                 type="button"
                                 onClick={() => setBackBorderColor('#f8f8f8')}
-                                className={`w-10 h-10 rounded-lg border-2 transition-all overflow-hidden ${
-                                  backBorderColor === '#f8f8f8' || backBorderColor === '#f5f5f5' || backBorderColor === '#ffffff' ? 'border-amber-400 scale-110 ring-2 ring-amber-400/50' : 'border-slate-600'
+                                className={`w-12 h-12 rounded-lg border-2 transition-all overflow-hidden relative ${
+                                  backBorderColor === '#f8f8f8' ? 'border-amber-400 scale-110 ring-2 ring-amber-400/50' : 'border-slate-600 hover:border-slate-500'
                                 }`}
-                                title="Pearl White"
+                                title="White"
                               >
                                 <div className="w-full h-full" style={{
-                                  background: 'linear-gradient(135deg, #ffffff 0%, #f8f8f8 30%, #e8e8e8 50%, #f8f8f8 70%, #ffffff 100%)',
-                                  boxShadow: 'inset 0 1px 3px rgba(255,255,255,1), inset 0 -1px 2px rgba(0,0,0,0.05)'
+                                  background: 'linear-gradient(135deg, #ffffff 0%, #fafafa 25%, #f0f0f0 50%, #fafafa 75%, #ffffff 100%)',
+                                  boxShadow: 'inset 0 2px 4px rgba(255,255,255,1), inset 0 -2px 4px rgba(0,0,0,0.05)'
                                 }} />
+                                <span className="absolute bottom-0 left-0 right-0 text-[8px] text-center bg-black/50 text-white py-0.5">White</span>
                               </button>
-                              {/* Bronze */}
-                              <button
-                                type="button"
-                                onClick={() => setBackBorderColor('#8b7355')}
-                                className={`w-10 h-10 rounded-lg border-2 transition-all overflow-hidden ${
-                                  backBorderColor === '#8b7355' ? 'border-amber-400 scale-110 ring-2 ring-amber-400/50' : 'border-slate-600'
-                                }`}
-                                title="Bronze"
-                              >
-                                <div className="w-full h-full" style={{
-                                  background: 'linear-gradient(135deg, #c9a87c 0%, #8b7355 30%, #6b5344 50%, #8b7355 70%, #c9a87c 100%)',
-                                  boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.2)'
-                                }} />
-                              </button>
-                              {/* Black */}
-                              <button
-                                type="button"
-                                onClick={() => setBackBorderColor('#1a1a1a')}
-                                className={`w-10 h-10 rounded-lg border-2 transition-all overflow-hidden ${
-                                  backBorderColor === '#1a1a1a' || backBorderColor === '#4a4a4a' ? 'border-amber-400 scale-110 ring-2 ring-amber-400/50' : 'border-slate-600'
-                                }`}
-                                title="Black"
-                              >
-                                <div className="w-full h-full" style={{
-                                  background: 'linear-gradient(135deg, #3a3a3a 0%, #1a1a1a 30%, #0a0a0a 50%, #1a1a1a 70%, #3a3a3a 100%)',
-                                  boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.1), inset 0 -1px 2px rgba(0,0,0,0.3)'
-                                }} />
-                              </button>
-                              {/* Custom color picker */}
-                              <input
-                                type="color"
-                                value={backBorderColor}
-                                onChange={(e) => setBackBorderColor(e.target.value)}
-                                className="w-10 h-10 rounded-lg border-2 border-slate-600 cursor-pointer"
-                                title="Custom Color"
-                              />
                             </div>
                           </div>
                         )}
