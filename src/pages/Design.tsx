@@ -267,6 +267,7 @@ const Design = () => {
   const [photoPanY, setPhotoPanY] = useState(0);
   const [photoRotation, setPhotoRotation] = useState(0);
   const [photoFade, setPhotoFade] = useState(false);
+  const [showMetalBorder, setShowMetalBorder] = useState(true);
   const [photoBrightness, setPhotoBrightness] = useState(100);
   const [isPanning, setIsPanning] = useState(false);
   const [backBgImage, setBackBgImage] = useState<string | null>(null);
@@ -1507,10 +1508,10 @@ const Design = () => {
                           ref={cardPreviewRef}
                           className={`${cardClass} ${cardRounding} overflow-hidden shadow-2xl relative`}
                         >
-                          <div className={`absolute inset-0 ${cardType === 'metal' ? `bg-gradient-to-br ${currentFinish.gradient} p-1` : 'bg-white'}`}>
+                          <div className={`absolute inset-0 ${cardType === 'metal' && showMetalBorder ? `bg-gradient-to-br ${currentFinish.gradient} p-1` : cardType === 'metal' ? '' : 'bg-white'}`}>
                             <div 
                               ref={photoContainerRef}
-                              className={`w-full h-full ${cardType === 'metal' ? 'rounded-xl' : ''} overflow-hidden bg-slate-700 flex items-center justify-center touch-none relative ${!deceasedPhoto ? 'cursor-pointer hover:bg-slate-600 transition-colors' : ''}`}
+                              className={`w-full h-full ${cardType === 'metal' && showMetalBorder ? 'rounded-xl' : ''} overflow-hidden bg-slate-700 flex items-center justify-center touch-none relative ${!deceasedPhoto ? 'cursor-pointer hover:bg-slate-600 transition-colors' : ''}`}
                               style={{ cursor: deceasedPhoto && !draggingText ? (isPanning ? 'grabbing' : 'grab') : (!deceasedPhoto ? 'pointer' : 'default') }}
                               onPointerDown={handlePhotoPointerDown}
                               onPointerMove={handlePhotoPointerMove}
@@ -1787,6 +1788,20 @@ const Design = () => {
                                 <span className="text-slate-300 text-xs">{photoFade ? 'On' : 'Off'}</span>
                               </label>
                             </div>
+                            {cardType === 'metal' && (
+                              <div className="flex items-center justify-between pt-2 border-t border-slate-600">
+                                <Label className="text-slate-400 text-xs">Metal Border Frame</Label>
+                                <label className="flex items-center gap-2 cursor-pointer">
+                                  <input 
+                                    type="checkbox" 
+                                    checked={showMetalBorder} 
+                                    onChange={(e) => setShowMetalBorder(e.target.checked)}
+                                    className="accent-amber-600"
+                                  />
+                                  <span className="text-slate-300 text-xs">{showMetalBorder ? 'On' : 'Off'}</span>
+                                </label>
+                              </div>
+                            )}
                             <Button
                               type="button"
                               variant="outline"
@@ -4300,10 +4315,10 @@ const Design = () => {
           }}
         >
           <div 
-            className={`w-full h-full rounded-lg overflow-hidden relative bg-gradient-to-br ${currentFinish.gradient}`}
-            style={{ padding: '4px' }}
+            className={`w-full h-full rounded-lg overflow-hidden relative ${showMetalBorder ? `bg-gradient-to-br ${currentFinish.gradient}` : ''}`}
+            style={{ padding: showMetalBorder ? '4px' : '0' }}
           >
-            <div className="w-full h-full rounded-lg overflow-hidden bg-slate-700 relative">
+            <div className={`w-full h-full ${showMetalBorder ? 'rounded-lg' : ''} overflow-hidden bg-slate-700 relative`}>
               {deceasedPhoto && (
                 <>
                   <img
@@ -4378,11 +4393,11 @@ const Design = () => {
           }}
         >
           <div 
-            className={`w-full h-full rounded-lg overflow-hidden relative bg-gradient-to-br ${currentFinish.gradient}`}
-            style={{ padding: '4px' }}
+            className={`w-full h-full rounded-lg overflow-hidden relative ${showMetalBorder ? `bg-gradient-to-br ${currentFinish.gradient}` : ''}`}
+            style={{ padding: showMetalBorder ? '4px' : '0' }}
           >
             <div 
-              className="w-full h-full rounded-lg overflow-hidden relative flex flex-col"
+              className={`w-full h-full ${showMetalBorder ? 'rounded-lg' : ''} overflow-hidden relative flex flex-col`}
               style={{
                 backgroundColor: backBgImage ? 'transparent' : '#ffffff',
               }}
