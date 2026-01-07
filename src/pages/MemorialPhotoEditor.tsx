@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ArrowLeft, Upload, RotateCcw, Image as ImageIcon, Type, Trash2, ShoppingCart, Plus, Minus } from 'lucide-react';
+import { ArrowLeft, Upload, RotateCcw, Image as ImageIcon, Type, Trash2, ShoppingCart, Plus, Minus, Copy } from 'lucide-react';
 import { toast } from 'sonner';
 
 // Import all backgrounds
@@ -61,9 +61,48 @@ const FONT_OPTIONS = [
   { value: 'Cinzel', name: 'Cinzel' },
   { value: 'Lora', name: 'Lora' },
   { value: 'Raleway', name: 'Raleway' },
+  { value: 'Montserrat', name: 'Montserrat' },
+];
+
+const COLOR_PRESETS = [
+  '#ffffff', '#f5f5f5', '#e0e0e0', // Whites
+  '#18181b', '#3f3f46', '#71717a', // Blacks/Grays  
+  '#d4af37', '#c9a227', '#b8860b', // Golds
+  '#f472b6', '#ec4899', '#db2777', // Pinks
 ];
 
 type PhotoSize = '16x20' | '18x24';
+
+interface TextBox {
+  id: string;
+  content: string;
+  x: number; // percentage from left
+  y: number; // percentage from top
+  fontFamily: string;
+  fontSize: number;
+  color: string;
+}
+
+const createDefaultTextBoxes = (): TextBox[] => [
+  {
+    id: 'name',
+    content: 'John Doe',
+    x: 50,
+    y: 80,
+    fontFamily: 'Great Vibes',
+    fontSize: 32,
+    color: '#ffffff',
+  },
+  {
+    id: 'dates',
+    content: '1950 - 2024',
+    x: 50,
+    y: 90,
+    fontFamily: 'Cormorant Garamond',
+    fontSize: 18,
+    color: '#ffffff',
+  },
+];
 
 const MemorialPhotoEditor = () => {
   // Photo state
@@ -76,15 +115,11 @@ const MemorialPhotoEditor = () => {
   const [selectedBg, setSelectedBg] = useState(BACKGROUNDS[0]);
   const [customBg, setCustomBg] = useState<string | null>(null);
   
-  // Text state
-  const [name, setName] = useState('');
-  const [dates, setDates] = useState('');
-  const [nameFont, setNameFont] = useState('Great Vibes');
-  const [datesFont, setDatesFont] = useState('Cormorant Garamond');
-  const [nameSize, setNameSize] = useState(32);
-  const [datesSize, setDatesSize] = useState(18);
-  const [textColor, setTextColor] = useState('#ffffff');
-  const [showText, setShowText] = useState(true);
+  // Text boxes state
+  const [textBoxes, setTextBoxes] = useState<TextBox[]>(createDefaultTextBoxes());
+  const [selectedTextId, setSelectedTextId] = useState<string | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
   
   // Order state
   const [photoSize, setPhotoSize] = useState<PhotoSize>('16x20');
@@ -92,6 +127,7 @@ const MemorialPhotoEditor = () => {
   
   const photoInputRef = useRef<HTMLInputElement>(null);
   const bgInputRef = useRef<HTMLInputElement>(null);
+  const canvasRef = useRef<HTMLDivElement>(null);
 
   const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -117,9 +153,94 @@ const MemorialPhotoEditor = () => {
   const selectBackground = (bg: typeof BACKGROUNDS[0]) => {
     setSelectedBg(bg);
     setCustomBg(null);
-    // Auto-adjust text color based on background
-    setTextColor(bg.isDark ? '#ffffff' : '#18181b');
   };
+
+  // Text box handlers
+  const addTextBox = () => {
+    const newTextBox: TextBox = {
+      id: `text-${Date.now()}`,
+      content: 'New Text',
+      x: 50,
+      y: 50,
+      fontFamily: 'Playfair Display',
+      fontSize: 20,
+      color: '#ffffff',
+    };
+    setTextBoxes([...textBoxes, newTextBox]);
+    setSelectedTextId(newTextBox.id);
+    toast.success('Text box added!');
+  };
+
+  const updateTextBox = (id: string, updates: Partial<TextBox>) => {
+    setTextBoxes(textBoxes.map(tb => 
+      tb.id === id ? { ...tb, ...updates } : tb
+    ));
+  };
+
+  const deleteTextBox = (id: string) => {
+    setTextBoxes(textBoxes.filter(tb => tb.id !== id));
+    if (selectedTextId === id) {
+      setSelectedTextId(null);
+    }
+    toast.success('Text deleted');
+  };
+
+  const duplicateTextBox = (id: string) => {
+    const original = textBoxes.find(tb => tb.id === id);
+    if (original) {
+      const newTextBox: TextBox = {
+        ...original,
+        id: `text-${Date.now()}`,
+        x: Math.min(original.x + 5, 95),
+        y: Math.min(original.y + 5, 95),
+      };
+      setTextBoxes([...textBoxes, newTextBox]);
+      setSelectedTextId(newTextBox.id);
+      toast.success('Text duplicated');
+    }
+  };
+
+  // Drag handlers
+  const handleTextPointerDown = (e: React.PointerEvent, textBox: TextBox) => {
+    e.stopPropagation();
+    setSelectedTextId(textBox.id);
+    setIsDragging(true);
+    
+    if (canvasRef.current) {
+      const rect = canvasRef.current.getBoundingClientRect();
+      const percentX = ((e.clientX - rect.left) / rect.width) * 100;
+      const percentY = ((e.clientY - rect.top) / rect.height) * 100;
+      setDragOffset({
+        x: textBox.x - percentX,
+        y: textBox.y - percentY,
+      });
+    }
+  };
+
+  const handleCanvasPointerMove = (e: React.PointerEvent) => {
+    if (!isDragging || !selectedTextId || !canvasRef.current) return;
+    
+    const rect = canvasRef.current.getBoundingClientRect();
+    const percentX = ((e.clientX - rect.left) / rect.width) * 100;
+    const percentY = ((e.clientY - rect.top) / rect.height) * 100;
+    
+    const newX = Math.max(5, Math.min(95, percentX + dragOffset.x));
+    const newY = Math.max(5, Math.min(95, percentY + dragOffset.y));
+    
+    updateTextBox(selectedTextId, { x: newX, y: newY });
+  };
+
+  const handleCanvasPointerUp = () => {
+    setIsDragging(false);
+  };
+
+  const handleCanvasClick = (e: React.MouseEvent) => {
+    if (e.target === e.currentTarget || (e.target as HTMLElement).classList.contains('canvas-background')) {
+      setSelectedTextId(null);
+    }
+  };
+
+  const selectedTextBox = textBoxes.find(tb => tb.id === selectedTextId);
 
   const basePrice = 17;
   const upsellPrice = 7;
@@ -149,28 +270,43 @@ const MemorialPhotoEditor = () => {
 
       <div className="container mx-auto px-4 py-8">
         <div className="grid lg:grid-cols-2 gap-8">
-          {/* Preview */}
+          {/* Preview Canvas */}
           <div className="space-y-4">
-            <Label className="text-white text-lg font-semibold">Preview</Label>
+            <div className="flex items-center justify-between">
+              <Label className="text-white text-lg font-semibold">Preview</Label>
+              <Button 
+                onClick={addTextBox}
+                size="sm"
+                className="bg-amber-600 hover:bg-amber-700"
+              >
+                <Plus className="h-4 w-4 mr-1" />
+                Add Text
+              </Button>
+            </div>
             <div 
-              className="relative mx-auto bg-slate-800 rounded-lg overflow-hidden shadow-2xl"
+              ref={canvasRef}
+              className="relative mx-auto bg-slate-800 rounded-lg overflow-hidden shadow-2xl select-none"
               style={{ 
                 aspectRatio,
                 maxWidth: photoSize === '16x20' ? '400px' : '375px',
               }}
+              onPointerMove={handleCanvasPointerMove}
+              onPointerUp={handleCanvasPointerUp}
+              onPointerLeave={handleCanvasPointerUp}
+              onClick={handleCanvasClick}
             >
               {/* Background */}
-              <div className="absolute inset-0">
+              <div className="absolute inset-0 canvas-background">
                 <img 
                   src={customBg || selectedBg.src} 
                   alt="Background" 
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover pointer-events-none"
                 />
               </div>
               
               {/* Photo */}
               {photo && (
-                <div className="absolute inset-0 flex items-center justify-center">
+                <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                   <div 
                     className="w-3/4 h-3/4 rounded-lg overflow-hidden shadow-xl border-4 border-white/20"
                     style={{
@@ -186,43 +322,36 @@ const MemorialPhotoEditor = () => {
                 </div>
               )}
               
-              {/* Text Overlay */}
-              {showText && (name || dates) && (
-                <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/60 to-transparent">
-                  {name && (
-                    <h2 
-                      className="text-center mb-1"
-                      style={{ 
-                        fontFamily: nameFont, 
-                        fontSize: `${nameSize}px`,
-                        color: textColor,
-                        textShadow: '0 2px 4px rgba(0,0,0,0.5)',
-                      }}
-                    >
-                      {name}
-                    </h2>
-                  )}
-                  {dates && (
-                    <p 
-                      className="text-center"
-                      style={{ 
-                        fontFamily: datesFont, 
-                        fontSize: `${datesSize}px`,
-                        color: textColor,
-                        opacity: 0.9,
-                        textShadow: '0 1px 2px rgba(0,0,0,0.5)',
-                      }}
-                    >
-                      {dates}
-                    </p>
-                  )}
+              {/* Draggable Text Boxes */}
+              {textBoxes.map((textBox) => (
+                <div
+                  key={textBox.id}
+                  className={`absolute cursor-move transition-all ${
+                    selectedTextId === textBox.id 
+                      ? 'ring-2 ring-amber-400 ring-offset-2 ring-offset-transparent' 
+                      : 'hover:ring-1 hover:ring-white/50'
+                  }`}
+                  style={{
+                    left: `${textBox.x}%`,
+                    top: `${textBox.y}%`,
+                    transform: 'translate(-50%, -50%)',
+                    fontFamily: textBox.fontFamily,
+                    fontSize: `${textBox.fontSize}px`,
+                    color: textBox.color,
+                    textShadow: '0 2px 8px rgba(0,0,0,0.8), 0 1px 3px rgba(0,0,0,0.9)',
+                    whiteSpace: 'nowrap',
+                    padding: '4px 8px',
+                  }}
+                  onPointerDown={(e) => handleTextPointerDown(e, textBox)}
+                >
+                  {textBox.content}
                 </div>
-              )}
+              ))}
               
               {/* Upload prompt if no photo */}
               {!photo && (
                 <div 
-                  className="absolute inset-0 flex items-center justify-center cursor-pointer hover:bg-black/20 transition-colors"
+                  className="absolute inset-0 flex items-center justify-center cursor-pointer hover:bg-black/20 transition-colors z-10"
                   onClick={() => photoInputRef.current?.click()}
                 >
                   <div className="text-center text-white/70">
@@ -388,133 +517,149 @@ const MemorialPhotoEditor = () => {
               </CardContent>
             </Card>
 
-            {/* Text Controls */}
+            {/* Text Properties Panel */}
             <Card className="bg-slate-800 border-slate-700">
               <CardContent className="p-6 space-y-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <Type className="h-5 w-5 text-amber-400" />
-                    <Label className="text-white font-semibold">Text Overlay</Label>
+                    <Label className="text-white font-semibold">Text Properties</Label>
                   </div>
-                  <label className="flex items-center gap-2 cursor-pointer">
-                    <input 
-                      type="checkbox" 
-                      checked={showText} 
-                      onChange={(e) => setShowText(e.target.checked)}
-                      className="accent-amber-600"
-                    />
-                    <span className="text-slate-300 text-sm">{showText ? 'On' : 'Off'}</span>
-                  </label>
+                  <Button 
+                    onClick={addTextBox}
+                    size="sm"
+                    variant="outline"
+                    className="border-amber-600/50 text-amber-400 hover:bg-amber-600/20"
+                  >
+                    <Plus className="h-4 w-4 mr-1" />
+                    Add Text
+                  </Button>
                 </div>
                 
-                {showText && (
+                {selectedTextBox ? (
                   <div className="space-y-4">
+                    {/* Content */}
                     <div>
-                      <Label className="text-slate-400 text-xs">Name</Label>
+                      <Label className="text-slate-400 text-xs">Text Content</Label>
                       <Input 
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
-                        placeholder="John Doe"
+                        value={selectedTextBox.content}
+                        onChange={(e) => updateTextBox(selectedTextBox.id, { content: e.target.value })}
+                        placeholder="Enter text..."
                         className="bg-slate-700 border-slate-600 text-white mt-1"
                       />
                     </div>
                     
+                    {/* Font */}
                     <div>
-                      <Label className="text-slate-400 text-xs">Dates</Label>
-                      <Input 
-                        value={dates}
-                        onChange={(e) => setDates(e.target.value)}
-                        placeholder="1950 - 2024"
-                        className="bg-slate-700 border-slate-600 text-white mt-1"
+                      <Label className="text-slate-400 text-xs">Font</Label>
+                      <Select 
+                        value={selectedTextBox.fontFamily} 
+                        onValueChange={(value) => updateTextBox(selectedTextBox.id, { fontFamily: value })}
+                      >
+                        <SelectTrigger className="bg-slate-700 border-slate-600 text-white mt-1">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent className="bg-slate-700 border-slate-600">
+                          {FONT_OPTIONS.map((font) => (
+                            <SelectItem 
+                              key={font.value} 
+                              value={font.value}
+                              style={{ fontFamily: font.value }}
+                            >
+                              {font.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    
+                    {/* Font Size */}
+                    <div>
+                      <Label className="text-slate-400 text-xs">Size: {selectedTextBox.fontSize}px</Label>
+                      <input
+                        type="range"
+                        min="12"
+                        max="72"
+                        value={selectedTextBox.fontSize}
+                        onChange={(e) => updateTextBox(selectedTextBox.id, { fontSize: parseInt(e.target.value) })}
+                        className="w-full accent-amber-600 mt-1"
                       />
                     </div>
                     
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <Label className="text-slate-400 text-xs">Name Font</Label>
-                        <Select value={nameFont} onValueChange={setNameFont}>
-                          <SelectTrigger className="bg-slate-700 border-slate-600 text-white mt-1">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent className="bg-slate-700 border-slate-600">
-                            {FONT_OPTIONS.map((font) => (
-                              <SelectItem 
-                                key={font.value} 
-                                value={font.value}
-                                style={{ fontFamily: font.value }}
-                              >
-                                {font.name}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
-                      <div>
-                        <Label className="text-slate-400 text-xs">Dates Font</Label>
-                        <Select value={datesFont} onValueChange={setDatesFont}>
-                          <SelectTrigger className="bg-slate-700 border-slate-600 text-white mt-1">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent className="bg-slate-700 border-slate-600">
-                            {FONT_OPTIONS.map((font) => (
-                              <SelectItem 
-                                key={font.value} 
-                                value={font.value}
-                                style={{ fontFamily: font.value }}
-                              >
-                                {font.name}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
-                    </div>
-                    
-                    <div className="flex items-center gap-4">
-                      <div className="flex-1">
-                        <Label className="text-slate-400 text-xs">Name Size</Label>
-                        <input
-                          type="range"
-                          min="18"
-                          max="48"
-                          value={nameSize}
-                          onChange={(e) => setNameSize(parseInt(e.target.value))}
-                          className="w-full accent-amber-600 mt-1"
-                        />
-                      </div>
-                      <div className="flex-1">
-                        <Label className="text-slate-400 text-xs">Dates Size</Label>
-                        <input
-                          type="range"
-                          min="12"
-                          max="28"
-                          value={datesSize}
-                          onChange={(e) => setDatesSize(parseInt(e.target.value))}
-                          className="w-full accent-amber-600 mt-1"
-                        />
-                      </div>
-                    </div>
-                    
+                    {/* Color */}
                     <div>
-                      <Label className="text-slate-400 text-xs">Text Color</Label>
-                      <div className="flex gap-2 mt-1">
-                        {['#ffffff', '#18181b', '#fbbf24', '#f472b6'].map((color) => (
+                      <Label className="text-slate-400 text-xs">Color</Label>
+                      <div className="flex gap-2 mt-1 flex-wrap">
+                        {COLOR_PRESETS.map((color) => (
                           <button
                             key={color}
-                            onClick={() => setTextColor(color)}
+                            onClick={() => updateTextBox(selectedTextBox.id, { color })}
                             className={`w-8 h-8 rounded-full border-2 transition-all ${
-                              textColor === color ? 'border-amber-500 ring-2 ring-amber-500/30' : 'border-slate-600'
+                              selectedTextBox.color === color 
+                                ? 'border-amber-500 ring-2 ring-amber-500/30' 
+                                : 'border-slate-600'
                             }`}
                             style={{ backgroundColor: color }}
                           />
                         ))}
                         <input 
                           type="color" 
-                          value={textColor}
-                          onChange={(e) => setTextColor(e.target.value)}
+                          value={selectedTextBox.color}
+                          onChange={(e) => updateTextBox(selectedTextBox.id, { color: e.target.value })}
                           className="w-8 h-8 rounded cursor-pointer"
                         />
                       </div>
+                    </div>
+                    
+                    {/* Actions */}
+                    <div className="flex gap-2 pt-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => duplicateTextBox(selectedTextBox.id)}
+                        className="flex-1 border-slate-600 text-slate-300 hover:bg-slate-700"
+                      >
+                        <Copy className="h-4 w-4 mr-1" />
+                        Duplicate
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => deleteTextBox(selectedTextBox.id)}
+                        className="flex-1 border-rose-600/50 text-rose-400 hover:bg-rose-600/20"
+                      >
+                        <Trash2 className="h-4 w-4 mr-1" />
+                        Delete
+                      </Button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="text-center py-6 text-slate-400">
+                    <Type className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                    <p className="text-sm">Select a text box to edit</p>
+                    <p className="text-xs mt-1">Click on text in the preview, or add new text</p>
+                  </div>
+                )}
+                
+                {/* Text box list */}
+                {textBoxes.length > 0 && (
+                  <div className="pt-4 border-t border-slate-600">
+                    <Label className="text-slate-400 text-xs mb-2 block">All Text Boxes</Label>
+                    <div className="space-y-1">
+                      {textBoxes.map((tb) => (
+                        <button
+                          key={tb.id}
+                          onClick={() => setSelectedTextId(tb.id)}
+                          className={`w-full text-left px-3 py-2 rounded text-sm transition-all ${
+                            selectedTextId === tb.id
+                              ? 'bg-amber-600/20 text-amber-400'
+                              : 'text-slate-300 hover:bg-slate-700'
+                          }`}
+                          style={{ fontFamily: tb.fontFamily }}
+                        >
+                          {tb.content || 'Empty text'}
+                        </button>
+                      ))}
                     </div>
                   </div>
                 )}
