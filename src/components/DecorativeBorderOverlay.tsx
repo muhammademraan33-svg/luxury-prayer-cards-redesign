@@ -2,6 +2,7 @@ import React from 'react';
 
 export type DecorativeBorderType = 
   | 'none' 
+  | 'elegant-scroll' 
   | 'simple-line' 
   | 'ornate-frame';
 
@@ -55,6 +56,7 @@ const getMetallicGradientId = (color: string): string | null => {
 
 export const DECORATIVE_BORDERS: { id: DecorativeBorderType; name: string }[] = [
   { id: 'none', name: 'No Border' },
+  { id: 'elegant-scroll', name: 'Elegant Scroll' },
   { id: 'simple-line', name: 'Simple Line' },
   { id: 'ornate-frame', name: 'Ornate Frame' },
 ];
@@ -134,6 +136,37 @@ export const DecorativeBorderOverlay: React.FC<DecorativeBorderOverlayProps> = (
 
   const renderBorder = () => {
     switch (type) {
+      case 'elegant-scroll':
+        return (
+          <svg style={svgStyle} viewBox="0 0 100 150" preserveAspectRatio="none">
+            <MetallicGradients />
+            {/* Elegant scrollwork corners */}
+            {/* Top Left */}
+            <path d="M5 25 Q5 5 25 5" fill="none" stroke={strokeColor} strokeWidth="1.2" />
+            <path d="M8 20 Q8 8 20 8" fill="none" stroke={strokeColor} strokeWidth="0.6" />
+            <path d="M5 18 C3 12 8 8 14 10 C10 6 16 2 20 5" fill="none" stroke={strokeColor} strokeWidth="0.8" />
+            <circle cx="12" cy="12" r="1.5" fill={fillColor} />
+            
+            {/* Top Right */}
+            <path d="M95 25 Q95 5 75 5" fill="none" stroke={strokeColor} strokeWidth="1.2" />
+            <path d="M92 20 Q92 8 80 8" fill="none" stroke={strokeColor} strokeWidth="0.6" />
+            <path d="M95 18 C97 12 92 8 86 10 C90 6 84 2 80 5" fill="none" stroke={strokeColor} strokeWidth="0.8" />
+            <circle cx="88" cy="12" r="1.5" fill={fillColor} />
+            
+            {/* Bottom Left */}
+            <path d="M5 125 Q5 145 25 145" fill="none" stroke={strokeColor} strokeWidth="1.2" />
+            <path d="M8 130 Q8 142 20 142" fill="none" stroke={strokeColor} strokeWidth="0.6" />
+            <path d="M5 132 C3 138 8 142 14 140 C10 144 16 148 20 145" fill="none" stroke={strokeColor} strokeWidth="0.8" />
+            <circle cx="12" cy="138" r="1.5" fill={fillColor} />
+            
+            {/* Bottom Right */}
+            <path d="M95 125 Q95 145 75 145" fill="none" stroke={strokeColor} strokeWidth="1.2" />
+            <path d="M92 130 Q92 142 80 142" fill="none" stroke={strokeColor} strokeWidth="0.6" />
+            <path d="M95 132 C97 138 92 142 86 140 C90 144 84 148 80 145" fill="none" stroke={strokeColor} strokeWidth="0.8" />
+            <circle cx="88" cy="138" r="1.5" fill={fillColor} />
+          </svg>
+        );
+
       case 'simple-line':
         return (
           <svg style={svgStyle} viewBox="0 0 100 150" preserveAspectRatio="none">
