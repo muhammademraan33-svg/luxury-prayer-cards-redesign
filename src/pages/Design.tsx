@@ -36,7 +36,7 @@ import gardenPeaceBg from '@/assets/backgrounds/garden-peace.jpg';
 import html2canvas from 'html2canvas';
 import { relativeLuminance } from '@/lib/color';
 import { supabase } from '@/integrations/supabase/client';
-import { AdditionalDesignEditor, AdditionalDesignData, createEmptyDesign } from '@/components/AdditionalDesignEditor';
+import { AdditionalDesignData, createEmptyDesign } from '@/components/AdditionalDesignEditor';
 
 const PRESET_BACKGROUNDS = [
   { id: 'clouds', name: 'Soft Clouds', src: cloudsLightBg, isDark: false },
@@ -262,7 +262,7 @@ const Design = () => {
   const [paperCardSize, setPaperCardSize] = useState<PaperCardSize>('2.5x4.25'); // Paper card size option
   const [additionalDesigns, setAdditionalDesigns] = useState<AdditionalDesignData[]>([]); // Additional designs with full data
   const [mainDesignQty, setMainDesignQty] = useState(72); // Quantity for main design
-  const [editingDesignIndex, setEditingDesignIndex] = useState<number | null>(null);
+  const [activeDesignIndex, setActiveDesignIndex] = useState<number>(-1); // -1 = main design, 0+ = additional designs
   const [qrUrl, setQrUrl] = useState('');
   const [showQrCode, setShowQrCode] = useState(true);
   const [orientation, setOrientation] = useState<Orientation>('portrait');
@@ -2690,7 +2690,17 @@ const Design = () => {
                   {cardType === 'paper' && (
                     <div className="space-y-4">
                       {/* Main Design with Quantity */}
-                      <div className="bg-gradient-to-br from-amber-900/20 to-slate-800/50 rounded-xl p-5 border border-amber-500/30">
+                      <div 
+                        className={`rounded-xl p-5 border cursor-pointer transition-all ${
+                          activeDesignIndex === -1 
+                            ? 'bg-gradient-to-br from-amber-900/20 to-slate-800/50 border-amber-500/50' 
+                            : 'bg-slate-800/50 border-slate-600 hover:border-slate-500'
+                        }`}
+                        onClick={() => {
+                          setActiveDesignIndex(-1);
+                          window.scrollTo({ top: 0, behavior: 'smooth' });
+                        }}
+                      >
                         <div className="flex items-center gap-4">
                           {/* Thumbnail */}
                           <div className="w-20 h-28 bg-slate-700 rounded-lg overflow-hidden flex-shrink-0 shadow-lg">
@@ -2715,8 +2725,26 @@ const Design = () => {
                             <div className="flex items-center gap-2 mb-1">
                               <span className="text-white font-semibold">Design 1</span>
                               <span className="text-xs bg-amber-500/20 text-amber-400 px-2 py-0.5 rounded">Primary</span>
+                              {activeDesignIndex === -1 && (
+                                <span className="text-xs bg-amber-500/30 text-amber-300 px-2 py-0.5 rounded">Editing</span>
+                              )}
                             </div>
                             <p className="text-slate-400 text-sm">{deceasedName || 'Your Design'}</p>
+                            {activeDesignIndex !== -1 && (
+                              <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setActiveDesignIndex(-1);
+                                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                                }}
+                                className="border-amber-600/50 text-amber-400 hover:bg-amber-600/20 text-xs h-7 mt-2"
+                              >
+                                Edit Design
+                              </Button>
+                            )}
                           </div>
                           
                           <div className="flex flex-col items-end gap-1">
@@ -2726,7 +2754,10 @@ const Design = () => {
                                 type="button"
                                 variant="outline"
                                 size="icon"
-                                onClick={() => setMainDesignQty(Math.max(1, mainDesignQty - 12))}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setMainDesignQty(Math.max(1, mainDesignQty - 12));
+                                }}
                                 className="h-8 w-8 border-slate-600 text-slate-300"
                               >
                                 −
@@ -2735,6 +2766,7 @@ const Design = () => {
                                 type="number"
                                 min="1"
                                 value={mainDesignQty}
+                                onClick={(e) => e.stopPropagation()}
                                 onChange={(e) => setMainDesignQty(Math.max(1, parseInt(e.target.value) || 1))}
                                 className="w-16 h-8 text-center text-lg font-bold bg-slate-800 border border-amber-500/50 rounded px-2 text-white"
                               />
@@ -2742,7 +2774,10 @@ const Design = () => {
                                 type="button"
                                 variant="outline"
                                 size="icon"
-                                onClick={() => setMainDesignQty(mainDesignQty + 12)}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setMainDesignQty(mainDesignQty + 12);
+                                }}
                                 className="h-8 w-8 border-slate-600 text-slate-300"
                               >
                                 +
@@ -2754,7 +2789,18 @@ const Design = () => {
 
                       {/* Additional Designs - Inline */}
                       {additionalDesigns.map((design, idx) => (
-                        <div key={idx} className="bg-slate-800/50 rounded-xl p-5 border border-slate-600">
+                        <div 
+                          key={idx} 
+                          className={`rounded-xl p-5 border cursor-pointer transition-all ${
+                            activeDesignIndex === idx 
+                              ? 'bg-gradient-to-br from-amber-900/20 to-slate-800/50 border-amber-500/50' 
+                              : 'bg-slate-800/50 border-slate-600 hover:border-slate-500'
+                          }`}
+                          onClick={() => {
+                            setActiveDesignIndex(idx);
+                            window.scrollTo({ top: 0, behavior: 'smooth' });
+                          }}
+                        >
                           <div className="flex items-center gap-4">
                             {/* Thumbnail */}
                             <div className="w-20 h-28 bg-slate-700 rounded-lg overflow-hidden flex-shrink-0 shadow-lg">
@@ -2781,6 +2827,9 @@ const Design = () => {
                                   <span className="text-xs text-green-400 bg-green-500/20 px-1.5 py-0.5 rounded">Photo ✓</span>
                                 )}
                                 <span className="text-xs text-amber-400">+${ADDITIONAL_DESIGN_PRICE}</span>
+                                {activeDesignIndex === idx && (
+                                  <span className="text-xs bg-amber-500/30 text-amber-300 px-2 py-0.5 rounded">Editing</span>
+                                )}
                               </div>
                               <p className="text-slate-400 text-sm truncate mb-2">{design.prayerText.slice(0, 30)}...</p>
                               <div className="flex gap-2">
@@ -2788,7 +2837,11 @@ const Design = () => {
                                   type="button"
                                   variant="outline"
                                   size="sm"
-                                  onClick={() => setEditingDesignIndex(idx)}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setActiveDesignIndex(idx);
+                                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                                  }}
                                   className="border-amber-600/50 text-amber-400 hover:bg-amber-600/20 text-xs h-7"
                                 >
                                   Edit Design
@@ -2797,7 +2850,15 @@ const Design = () => {
                                   type="button"
                                   variant="ghost"
                                   size="sm"
-                                  onClick={() => setAdditionalDesigns(additionalDesigns.filter((_, i) => i !== idx))}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setAdditionalDesigns(additionalDesigns.filter((_, i) => i !== idx));
+                                    if (activeDesignIndex === idx) {
+                                      setActiveDesignIndex(-1);
+                                    } else if (activeDesignIndex > idx) {
+                                      setActiveDesignIndex(activeDesignIndex - 1);
+                                    }
+                                  }}
                                   className="text-rose-400 hover:text-rose-300 hover:bg-rose-500/20 text-xs h-7"
                                 >
                                   <Trash2 className="h-3 w-3 mr-1" /> Remove
@@ -2812,7 +2873,8 @@ const Design = () => {
                                   type="button"
                                   variant="outline"
                                   size="icon"
-                                  onClick={() => {
+                                  onClick={(e) => {
+                                    e.stopPropagation();
                                     const newDesigns = [...additionalDesigns];
                                     newDesigns[idx].qty = Math.max(1, design.qty - 12);
                                     setAdditionalDesigns(newDesigns);
@@ -2825,6 +2887,7 @@ const Design = () => {
                                   type="number"
                                   min="1"
                                   value={design.qty}
+                                  onClick={(e) => e.stopPropagation()}
                                   onChange={(e) => {
                                     const newDesigns = [...additionalDesigns];
                                     newDesigns[idx].qty = Math.max(1, parseInt(e.target.value) || 1);
@@ -2836,7 +2899,8 @@ const Design = () => {
                                   type="button"
                                   variant="outline"
                                   size="icon"
-                                  onClick={() => {
+                                  onClick={(e) => {
+                                    e.stopPropagation();
                                     const newDesigns = [...additionalDesigns];
                                     newDesigns[idx].qty = design.qty + 12;
                                     setAdditionalDesigns(newDesigns);
@@ -2857,7 +2921,8 @@ const Design = () => {
                         onClick={() => {
                           const newDesign = createEmptyDesign();
                           setAdditionalDesigns([...additionalDesigns, newDesign]);
-                          setEditingDesignIndex(additionalDesigns.length);
+                          setActiveDesignIndex(additionalDesigns.length);
+                          window.scrollTo({ top: 0, behavior: 'smooth' });
                         }}
                         className="w-full p-4 border-2 border-dashed border-slate-600 hover:border-amber-500/50 rounded-xl transition-all group"
                       >
@@ -2894,24 +2959,6 @@ const Design = () => {
                         </div>
                       )}
                     </div>
-                  )}
-
-                  {/* Additional Design Editor Dialog */}
-                  {editingDesignIndex !== null && (
-                    <AdditionalDesignEditor
-                      open={editingDesignIndex !== null}
-                      onOpenChange={(open) => !open && setEditingDesignIndex(null)}
-                      design={additionalDesigns[editingDesignIndex]}
-                      onSave={(updatedDesign) => {
-                        const newDesigns = [...additionalDesigns];
-                        newDesigns[editingDesignIndex] = updatedDesign;
-                        setAdditionalDesigns(newDesigns);
-                      }}
-                      designIndex={editingDesignIndex}
-                      deceasedName={deceasedName}
-                      birthDate={birthDate}
-                      deathDate={deathDate}
-                    />
                   )}
 
                   <Button 
