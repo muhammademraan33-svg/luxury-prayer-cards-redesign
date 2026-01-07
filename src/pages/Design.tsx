@@ -3183,8 +3183,15 @@ const Design = () => {
                       <div className="bg-slate-800/50 rounded-xl p-5 border border-slate-600">
                         <h3 className="text-white font-semibold text-lg mb-4 flex items-center gap-2">
                           <Package className="h-5 w-5 text-amber-400" />
-                          Your Order
+                          Starter Bundle
                         </h3>
+                        
+                        {/* Retail Value Display */}
+                        <div className="flex items-center gap-3 mb-4 pb-4 border-b border-slate-600">
+                          <span className="text-slate-400 line-through text-lg">$125</span>
+                          <span className="text-2xl font-bold text-white">$67</span>
+                          <span className="bg-green-500/20 text-green-400 text-xs font-bold px-2 py-1 rounded">Save $58</span>
+                        </div>
                         
                         <div className="space-y-3">
                           <div className="flex justify-between items-center py-2 border-b border-slate-600">
@@ -3195,8 +3202,8 @@ const Design = () => {
                           </div>
                           
                           <div className="flex justify-between items-center py-2 border-b border-slate-600">
-                            <span className="text-slate-300">Price per card</span>
-                            <span className="text-white font-medium">${PAPER_PER_CARD_PRICE.toFixed(2)}</span>
+                            <span className="text-slate-300">Memorial Easel Photo</span>
+                            <span className="text-white font-medium">1 included</span>
                           </div>
                           
                           {additionalDesigns.length > 0 && (
