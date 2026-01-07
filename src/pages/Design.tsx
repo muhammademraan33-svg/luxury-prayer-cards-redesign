@@ -219,7 +219,7 @@ const Design = () => {
   const [borderColor, setBorderColor] = useState('#c9a227'); // Gold color default
   const [mainDesignSize, setMainDesignSize] = useState<PaperCardSize>('2.5x4.25'); // Size for main design
   const [additionalDesigns, setAdditionalDesigns] = useState<AdditionalDesignData[]>([]); // Additional designs with full data
-  const [mainDesignQty, setMainDesignQty] = useState(72); // Quantity for main design
+  const [mainDesignQty, setMainDesignQty] = useState(55); // Quantity for main design
   const [activeDesignIndex, setActiveDesignIndex] = useState<number>(-1); // -1 = main design, 0+ = additional designs
   const [qrUrl, setQrUrl] = useState('');
   const [showQrCode, setShowQrCode] = useState(true);
