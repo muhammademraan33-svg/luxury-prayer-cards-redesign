@@ -308,7 +308,7 @@ const MemorialPhotoEditor = () => {
               {photo && (
                 <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                   <div 
-                    className="w-3/4 h-3/4 rounded-lg overflow-hidden shadow-xl border-4 border-white/20"
+                    className="w-3/4 h-3/4 overflow-hidden shadow-xl border-4 border-white/20"
                     style={{
                       transform: `scale(${photoZoom}) translate(${photoPanX}px, ${photoPanY}px)`,
                     }}
