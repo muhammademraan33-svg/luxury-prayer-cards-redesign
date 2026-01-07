@@ -2,7 +2,6 @@ import React from 'react';
 
 export type DecorativeBorderType = 
   | 'none' 
-  | 'classic-corners' 
   | 'simple-line' 
   | 'ornate-frame';
 
@@ -56,7 +55,6 @@ const getMetallicGradientId = (color: string): string | null => {
 
 export const DECORATIVE_BORDERS: { id: DecorativeBorderType; name: string }[] = [
   { id: 'none', name: 'No Border' },
-  { id: 'classic-corners', name: 'Classic Corners' },
   { id: 'simple-line', name: 'Simple Line' },
   { id: 'ornate-frame', name: 'Ornate Frame' },
 ];
@@ -136,32 +134,6 @@ export const DecorativeBorderOverlay: React.FC<DecorativeBorderOverlayProps> = (
 
   const renderBorder = () => {
     switch (type) {
-      case 'classic-corners':
-        return (
-          <svg style={svgStyle} viewBox="0 0 100 150" preserveAspectRatio="none">
-            <MetallicGradients />
-            {/* Top Left Corner */}
-            <path d="M0 20 L0 0 L20 0" fill="none" stroke={strokeColor} strokeWidth="1.5" />
-            <path d="M0 15 L0 5 L5 5 L5 0 L15 0" fill="none" stroke={strokeColor} strokeWidth="0.5" />
-            <circle cx="5" cy="5" r="2" fill={fillColor} />
-            
-            {/* Top Right Corner */}
-            <path d="M100 20 L100 0 L80 0" fill="none" stroke={strokeColor} strokeWidth="1.5" />
-            <path d="M100 15 L100 5 L95 5 L95 0 L85 0" fill="none" stroke={strokeColor} strokeWidth="0.5" />
-            <circle cx="95" cy="5" r="2" fill={fillColor} />
-            
-            {/* Bottom Left Corner */}
-            <path d="M0 130 L0 150 L20 150" fill="none" stroke={strokeColor} strokeWidth="1.5" />
-            <path d="M0 135 L0 145 L5 145 L5 150 L15 150" fill="none" stroke={strokeColor} strokeWidth="0.5" />
-            <circle cx="5" cy="145" r="2" fill={fillColor} />
-            
-            {/* Bottom Right Corner */}
-            <path d="M100 130 L100 150 L80 150" fill="none" stroke={strokeColor} strokeWidth="1.5" />
-            <path d="M100 135 L100 145 L95 145 L95 150 L85 150" fill="none" stroke={strokeColor} strokeWidth="0.5" />
-            <circle cx="95" cy="145" r="2" fill={fillColor} />
-          </svg>
-        );
-
       case 'simple-line':
         return (
           <svg style={svgStyle} viewBox="0 0 100 150" preserveAspectRatio="none">
