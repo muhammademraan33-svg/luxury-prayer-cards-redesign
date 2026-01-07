@@ -306,8 +306,8 @@ const Design = () => {
   const [showDatesOnBack, setShowDatesOnBack] = useState(true);
   const [nameFont, setNameFont] = useState('Great Vibes');
   const [datesFont, setDatesFont] = useState('Cormorant Garamond');
-  const [namePosition, setNamePosition] = useState({ x: 50, y: 85 });
-  const [datesPosition, setDatesPosition] = useState({ x: 50, y: cardType === 'metal' ? 89 : 92 });
+  const [namePosition, setNamePosition] = useState({ x: 50, y: 80 });
+  const [datesPosition, setDatesPosition] = useState({ x: 50, y: cardType === 'metal' ? 91 : 92 });
 
   // Prevent name/dates from overlapping (especially when borders constrain the safe area)
   useEffect(() => {
