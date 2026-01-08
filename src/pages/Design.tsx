@@ -8,7 +8,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
-import { Sparkles, QrCode, Loader2, Truck, Zap, ArrowLeft, ArrowRight, ImageIcon, RotateCcw, RectangleHorizontal, RectangleVertical, Type, Book, Trash2, Package, Clock, MapPin, Layers, CheckCircle2 } from 'lucide-react';
+import { Sparkles, QrCode, Loader2, Truck, Zap, ArrowLeft, ArrowRight, ImageIcon, RotateCcw, RectangleHorizontal, RectangleVertical, Type, Book, Trash2, Package, Clock, MapPin, Layers, CheckCircle2, Plus } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 import { Textarea } from '@/components/ui/textarea';
 import { prayerTemplates } from '@/data/prayerTemplates';
@@ -2566,6 +2566,29 @@ const Design = () => {
                           </div>
                         )}
 
+                        {/* Add Another Design CTA - Paper cards only */}
+                        {cardType === 'paper' && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const newDesign = createEmptyDesign();
+                              setAdditionalDesigns([...additionalDesigns, newDesign]);
+                              setActiveDesignIndex(additionalDesigns.length);
+                            }}
+                            className="w-full mt-4 p-4 bg-gradient-to-r from-amber-600/20 to-amber-500/10 border-2 border-dashed border-amber-500/50 hover:border-amber-400 hover:from-amber-600/30 hover:to-amber-500/20 rounded-xl transition-all group"
+                          >
+                            <div className="flex items-center justify-center gap-3">
+                              <div className="w-8 h-8 rounded-full bg-amber-500/20 flex items-center justify-center group-hover:bg-amber-500/30 transition-colors">
+                                <Plus className="h-5 w-5 text-amber-400" />
+                              </div>
+                              <div className="text-left">
+                                <span className="font-semibold text-amber-400 group-hover:text-amber-300 block">Add Another Design</span>
+                                <span className="text-slate-400 text-xs">Different photo or prayer • Only <span className="text-amber-400 font-semibold">$7</span></span>
+                              </div>
+                            </div>
+                          </button>
+                        )}
+
 
                         <p className="text-slate-400 text-xs text-center">The photo fills the entire front of the card with a metal border frame</p>
                       </div>
@@ -3875,7 +3898,7 @@ const Design = () => {
                         </div>
                       ))}
 
-                      {/* Add Another Design Button */}
+                      {/* Add Another Design Button - smaller version at bottom */}
                       <button
                         type="button"
                         onClick={() => {
@@ -3884,13 +3907,13 @@ const Design = () => {
                           setActiveDesignIndex(additionalDesigns.length);
                           window.scrollTo({ top: 0, behavior: 'smooth' });
                         }}
-                        className="w-full p-4 border-2 border-dashed border-slate-600 hover:border-amber-500/50 rounded-xl transition-all group"
+                        className="w-full p-3 border border-dashed border-slate-600 hover:border-amber-500/50 rounded-lg transition-all group"
                       >
-                        <div className="flex items-center justify-center gap-3 text-slate-400 group-hover:text-amber-400">
-                          <Sparkles className="h-5 w-5" />
-                          <span className="font-medium">+ Add Another Design</span>
+                        <div className="flex items-center justify-center gap-2 text-slate-400 group-hover:text-amber-400">
+                          <Plus className="h-4 w-4" />
+                          <span className="text-sm">Add Another Design</span>
+                          <span className="text-amber-400 text-xs font-semibold">+$7</span>
                         </div>
-                        <p className="text-slate-500 text-sm mt-1">Different photo, prayer, or background</p>
                       </button>
 
                       {/* Total Summary */}
