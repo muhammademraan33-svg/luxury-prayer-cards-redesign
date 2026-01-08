@@ -51,7 +51,12 @@ export function AutoFitSingleLineText({
     <div
       ref={containerRef}
       className={className}
-      style={{ maxWidth, display: "flex", justifyContent: "center" }}
+      style={{ 
+        maxWidth, 
+        display: "flex", 
+        justifyContent: "center",
+        overflow: "visible",
+      }}
     >
       <span
         ref={textRef}
@@ -59,9 +64,10 @@ export function AutoFitSingleLineText({
           ...style,
           display: "inline-block",
           whiteSpace: "nowrap",
-          lineHeight: 1,
+          lineHeight: 1.2,
           transform: `scale(${scale})`,
-          transformOrigin: "center",
+          transformOrigin: "center center",
+          overflow: "visible",
         }}
       >
         {text}
