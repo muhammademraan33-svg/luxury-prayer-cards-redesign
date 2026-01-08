@@ -153,17 +153,17 @@ export const DecorativeBorderOverlay: React.FC<DecorativeBorderOverlayProps> = (
             <path d="M97 10 C98 7 95 5 92 6 C94 4 91 2 88 3" fill="none" stroke={strokeColor} strokeWidth="0.7" />
             <circle cx="93" cy="7" r="1.2" fill={fillColor} />
             
-            {/* Bottom Left */}
-            <path d="M3 135 Q3 147 15 147" fill="none" stroke={strokeColor} strokeWidth="1.2" />
-            <path d="M5 138 Q5 145 12 145" fill="none" stroke={strokeColor} strokeWidth="0.6" />
-            <path d="M3 140 C2 143 5 145 8 144 C6 146 9 148 12 147" fill="none" stroke={strokeColor} strokeWidth="0.7" />
-            <circle cx="7" cy="143" r="1.2" fill={fillColor} />
+            {/* Bottom Left - adjusted to be more visible */}
+            <path d="M3 135 Q3 145 15 145" fill="none" stroke={strokeColor} strokeWidth="1.2" />
+            <path d="M5 137 Q5 143 12 143" fill="none" stroke={strokeColor} strokeWidth="0.6" />
+            <path d="M3 138 C2 141 5 143 8 142 C6 144 9 146 12 145" fill="none" stroke={strokeColor} strokeWidth="0.7" />
+            <circle cx="7" cy="141" r="1.2" fill={fillColor} />
             
-            {/* Bottom Right */}
-            <path d="M97 135 Q97 147 85 147" fill="none" stroke={strokeColor} strokeWidth="1.2" />
-            <path d="M95 138 Q95 145 88 145" fill="none" stroke={strokeColor} strokeWidth="0.6" />
-            <path d="M97 140 C98 143 95 145 92 144 C94 146 91 148 88 147" fill="none" stroke={strokeColor} strokeWidth="0.7" />
-            <circle cx="93" cy="143" r="1.2" fill={fillColor} />
+            {/* Bottom Right - adjusted to be more visible */}
+            <path d="M97 135 Q97 145 85 145" fill="none" stroke={strokeColor} strokeWidth="1.2" />
+            <path d="M95 137 Q95 143 88 143" fill="none" stroke={strokeColor} strokeWidth="0.6" />
+            <path d="M97 138 C98 141 95 143 92 142 C94 144 91 146 88 145" fill="none" stroke={strokeColor} strokeWidth="0.7" />
+            <circle cx="93" cy="141" r="1.2" fill={fillColor} />
           </svg>
         );
 
@@ -171,7 +171,7 @@ export const DecorativeBorderOverlay: React.FC<DecorativeBorderOverlayProps> = (
         return (
           <svg style={svgStyle} viewBox="0 0 100 150" preserveAspectRatio="none">
             <MetallicGradients />
-            {/* Elegant double-line border */}
+            {/* Elegant double-line border - pulled in from edges */}
             <rect x="4" y="5" width="92" height="140" fill="none" stroke={strokeColor} strokeWidth="1.2" rx="1" />
             <rect x="7" y="8" width="86" height="134" fill="none" stroke={strokeColor} strokeWidth="0.5" rx="1" />
           </svg>
@@ -181,36 +181,36 @@ export const DecorativeBorderOverlay: React.FC<DecorativeBorderOverlayProps> = (
         return (
           <svg style={svgStyle} viewBox="0 0 100 150" preserveAspectRatio="none">
             <MetallicGradients />
-            {/* Outer frame - stays close to edges */}
-            <rect x="2" y="2" width="96" height="146" fill="none" stroke={strokeColor} strokeWidth="0.5" />
-            <rect x="4" y="4" width="92" height="142" fill="none" stroke={strokeColor} strokeWidth="0.8" />
+            {/* Outer frame - stays close to edges but with margin */}
+            <rect x="3" y="3" width="94" height="144" fill="none" stroke={strokeColor} strokeWidth="0.5" />
+            <rect x="5" y="5" width="90" height="140" fill="none" stroke={strokeColor} strokeWidth="0.8" />
             
             {/* Corner ornaments - compact and in corners only */}
             {/* Top Left */}
-            <path d="M2 10 Q5 7 8 10 Q5 13 2 10" fill={fillColor} />
-            <path d="M10 2 Q7 5 10 8 Q13 5 10 2" fill={fillColor} />
-            <circle cx="6" cy="6" r="2" fill="none" stroke={strokeColor} strokeWidth="0.6" />
+            <path d="M3 11 Q6 8 9 11 Q6 14 3 11" fill={fillColor} />
+            <path d="M11 3 Q8 6 11 9 Q14 6 11 3" fill={fillColor} />
+            <circle cx="7" cy="7" r="2" fill="none" stroke={strokeColor} strokeWidth="0.6" />
             
             {/* Top Right */}
-            <path d="M98 10 Q95 7 92 10 Q95 13 98 10" fill={fillColor} />
-            <path d="M90 2 Q93 5 90 8 Q87 5 90 2" fill={fillColor} />
-            <circle cx="94" cy="6" r="2" fill="none" stroke={strokeColor} strokeWidth="0.6" />
+            <path d="M97 11 Q94 8 91 11 Q94 14 97 11" fill={fillColor} />
+            <path d="M89 3 Q92 6 89 9 Q86 6 89 3" fill={fillColor} />
+            <circle cx="93" cy="7" r="2" fill="none" stroke={strokeColor} strokeWidth="0.6" />
             
-            {/* Bottom Left */}
-            <path d="M2 140 Q5 143 8 140 Q5 137 2 140" fill={fillColor} />
-            <path d="M10 148 Q7 145 10 142 Q13 145 10 148" fill={fillColor} />
-            <circle cx="6" cy="144" r="2" fill="none" stroke={strokeColor} strokeWidth="0.6" />
+            {/* Bottom Left - adjusted upward */}
+            <path d="M3 139 Q6 142 9 139 Q6 136 3 139" fill={fillColor} />
+            <path d="M11 145 Q8 142 11 139 Q14 142 11 145" fill={fillColor} />
+            <circle cx="7" cy="142" r="2" fill="none" stroke={strokeColor} strokeWidth="0.6" />
             
-            {/* Bottom Right */}
-            <path d="M98 140 Q95 143 92 140 Q95 137 98 140" fill={fillColor} />
-            <path d="M90 148 Q93 145 90 142 Q87 145 90 148" fill={fillColor} />
-            <circle cx="94" cy="144" r="2" fill="none" stroke={strokeColor} strokeWidth="0.6" />
+            {/* Bottom Right - adjusted upward */}
+            <path d="M97 139 Q94 142 91 139 Q94 136 97 139" fill={fillColor} />
+            <path d="M89 145 Q92 142 89 139 Q86 142 89 145" fill={fillColor} />
+            <circle cx="93" cy="142" r="2" fill="none" stroke={strokeColor} strokeWidth="0.6" />
             
             {/* Center top ornament - smaller */}
-            <path d="M47 2 Q50 5 53 2 Q50 8 47 2" fill={fillColor} />
+            <path d="M47 3 Q50 6 53 3 Q50 9 47 3" fill={fillColor} />
             
-            {/* Center bottom ornament - smaller */}
-            <path d="M47 148 Q50 145 53 148 Q50 142 47 148" fill={fillColor} />
+            {/* Center bottom ornament - adjusted upward */}
+            <path d="M47 145 Q50 142 53 145 Q50 139 47 145" fill={fillColor} />
           </svg>
         );
 
