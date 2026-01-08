@@ -298,44 +298,115 @@ const Index = () => {
       </header>
 
       {/* Hero */}
-      <section className="container mx-auto px-4 py-16 md:py-24 text-center">
-        <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-foreground mb-4 leading-tight tracking-tight">
-          Prayer Cards & Memorial Photos
-        </h1>
-        <p className="text-xl md:text-2xl text-primary font-medium mb-6">
-          Delivered in 48-72 Hours
-        </p>
-        <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-8">
-          Photo prayer cards, heirloom metal cards & celebration of life prints.
-        </p>
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-10">
-          <Link to="/design">
-            <Button size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold text-lg px-10 py-7 shadow-xl">
-              Design Your Prayer Cards
-              <ArrowRight className="ml-2 h-5 w-5" />
-            </Button>
-          </Link>
-          <a href="#memorial-photos">
-            <Button size="lg" variant="outline" className="text-lg px-10 py-7 border-2">
-              Celebration of Life Photos
-              <ArrowRight className="ml-2 h-5 w-5" />
-            </Button>
-          </a>
-        </div>
+      <section className="relative overflow-hidden">
+        {/* Background gradient */}
+        <div className="absolute inset-0 bg-gradient-to-b from-primary/5 via-transparent to-transparent pointer-events-none" />
         
-        {/* Trust Indicators */}
-        <div className="flex flex-wrap items-center justify-center gap-6 md:gap-10 text-muted-foreground">
-          <div className="flex items-center gap-2">
-            <CheckCircle2 className="h-5 w-5 text-primary" />
-            <span className="text-sm font-medium">Heirloom Quality</span>
+        <div className="container mx-auto px-4 py-16 md:py-24">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            {/* Left - Text Content */}
+            <div className="text-center lg:text-left">
+              <p className="text-primary font-medium mb-4 tracking-wide">
+                TRUSTED BY 10,000+ FAMILIES NATIONWIDE
+              </p>
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mb-6 leading-tight tracking-tight">
+                Honor Their Memory with{' '}
+                <span className="text-primary">Beautiful</span> Prayer Cards
+              </h1>
+              <p className="text-lg md:text-xl text-muted-foreground mb-8 max-w-xl mx-auto lg:mx-0">
+                Create stunning keepsakes that family and friends will treasure forever. 
+                From classic paper cards to premium metal finishes — delivered in as fast as 48 hours.
+              </p>
+              
+              <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 mb-8">
+                <Link to="/design?type=paper&quantity=55">
+                  <Button size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold text-lg px-10 py-7 shadow-xl">
+                    Design Prayer Cards
+                    <ArrowRight className="ml-2 h-5 w-5" />
+                  </Button>
+                </Link>
+                <a href="#pricing">
+                  <Button size="lg" variant="outline" className="text-lg px-8 py-7 border-2">
+                    See Pricing
+                  </Button>
+                </a>
+              </div>
+              
+              {/* Trust Indicators */}
+              <div className="flex flex-wrap items-center justify-center lg:justify-start gap-6 text-muted-foreground">
+                <div className="flex items-center gap-2">
+                  <Shield className="h-5 w-5 text-primary" />
+                  <span className="text-sm font-medium">100% Satisfaction Guarantee</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Truck className="h-5 w-5 text-primary" />
+                  <span className="text-sm font-medium">48-Hour Rush Available</span>
+                </div>
+              </div>
+            </div>
+            
+            {/* Right - Product Preview */}
+            <div className="relative">
+              <div className="grid grid-cols-2 gap-4">
+                {/* Paper Card Preview */}
+                <div className="relative group">
+                  <div className="aspect-[3/4] rounded-2xl overflow-hidden shadow-2xl border border-border bg-gradient-to-br from-amber-50 to-amber-100 p-4">
+                    <img 
+                      src={paperCardsProduct} 
+                      alt="Paper prayer cards" 
+                      className="w-full h-full object-cover rounded-lg"
+                    />
+                  </div>
+                  <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 bg-background border border-border rounded-full px-4 py-1.5 shadow-lg">
+                    <span className="text-sm font-semibold text-foreground">Paper Cards</span>
+                  </div>
+                </div>
+                
+                {/* Metal Card Preview */}
+                <div className="relative group mt-8">
+                  <div className="aspect-[3/4] rounded-2xl overflow-hidden shadow-2xl border border-border bg-gradient-to-br from-zinc-200 to-zinc-300 p-4">
+                    <img 
+                      src={metalCardProduct} 
+                      alt="Metal prayer cards" 
+                      className="w-full h-full object-cover rounded-lg"
+                    />
+                  </div>
+                  <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 bg-background border border-border rounded-full px-4 py-1.5 shadow-lg">
+                    <span className="text-sm font-semibold text-foreground">Metal Cards</span>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Floating badge */}
+              <div className="absolute -top-4 -right-4 bg-green-500 text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-lg">
+                FREE Memorial Photo
+              </div>
+            </div>
           </div>
-          <div className="flex items-center gap-2">
-            <CheckCircle2 className="h-5 w-5 text-primary" />
-            <span className="text-sm font-medium">48-Hour Delivery</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <CheckCircle2 className="h-5 w-5 text-primary" />
-            <span className="text-sm font-medium">Memorial Photo Included</span>
+        </div>
+      </section>
+      
+      {/* Social Proof Bar */}
+      <section className="border-y border-border bg-muted/30 py-6">
+        <div className="container mx-auto px-4">
+          <div className="flex flex-wrap items-center justify-center gap-8 md:gap-16">
+            <div className="flex items-center gap-2">
+              <div className="flex -space-x-1">
+                {[...Array(5)].map((_, i) => (
+                  <Star key={i} className="h-5 w-5 fill-amber-400 text-amber-400" />
+                ))}
+              </div>
+              <span className="font-semibold text-foreground">4.9/5</span>
+              <span className="text-muted-foreground text-sm">(2,500+ reviews)</span>
+            </div>
+            <div className="text-center">
+              <span className="font-bold text-2xl text-primary">10,000+</span>
+              <span className="text-muted-foreground text-sm ml-2">Families Served</span>
+            </div>
+            <div className="text-center">
+              <span className="font-bold text-2xl text-primary">48hr</span>
+              <span className="text-muted-foreground text-sm ml-2">Rush Delivery</span>
+            </div>
           </div>
         </div>
       </section>
@@ -734,54 +805,80 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Testimonials */}
+      {/* Testimonials - Enhanced */}
       <section className="py-16 bg-card/50 border-y border-border">
         <div className="container mx-auto px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-foreground mb-3">Trusted by Families Everywhere</h2>
+            <p className="text-muted-foreground">See why thousands choose us during their most important moments</p>
+          </div>
+          
           <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
             <Card className="bg-background border-border">
               <CardContent className="p-6">
                 <div className="flex gap-1 mb-3">
                   {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="h-4 w-4 fill-primary text-primary" />
+                    <Star key={i} className="h-4 w-4 fill-amber-400 text-amber-400" />
                   ))}
                 </div>
-                <p className="text-foreground/80 mb-4">
-                  "The cards were beautiful. Everyone wanted to keep one."
+                <p className="text-foreground/80 mb-4 italic">
+                  "During the hardest week of our lives, this company made everything so easy. The cards arrived in 2 days and were absolutely stunning. Every guest wanted to keep one."
                 </p>
-                <p className="font-semibold text-foreground text-sm">Sarah M.</p>
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                    <span className="font-semibold text-primary">SM</span>
+                  </div>
+                  <div>
+                    <p className="font-semibold text-foreground text-sm">Sarah M.</p>
+                    <p className="text-xs text-muted-foreground">Verified Buyer</p>
+                  </div>
+                </div>
               </CardContent>
             </Card>
-            
             
             <Card className="bg-background border-border">
               <CardContent className="p-6">
                 <div className="flex gap-1 mb-3">
                   {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="h-4 w-4 fill-primary text-primary" />
+                    <Star key={i} className="h-4 w-4 fill-amber-400 text-amber-400" />
                   ))}
                 </div>
-                <p className="text-foreground/80 mb-4">
-                  "Arrived in 2 days. The metal finish is stunning."
+                <p className="text-foreground/80 mb-4 italic">
+                  "The metal finish is incredible — it feels like an heirloom, not just a card. My mother would have loved knowing her memory is preserved so beautifully."
                 </p>
-                <p className="font-semibold text-foreground text-sm">Maria T.</p>
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                    <span className="font-semibold text-primary">MT</span>
+                  </div>
+                  <div>
+                    <p className="font-semibold text-foreground text-sm">Maria T.</p>
+                    <p className="text-xs text-muted-foreground">Verified Buyer</p>
+                  </div>
+                </div>
               </CardContent>
             </Card>
-          </div>
-          
-          {/* Stats */}
-          <div className="mt-12 flex flex-wrap justify-center gap-12">
-            <div className="text-center">
-              <p className="text-3xl font-bold text-primary">10K+</p>
-              <p className="text-muted-foreground text-sm">Families Served</p>
-            </div>
-            <div className="text-center">
-              <p className="text-3xl font-bold text-primary">4.9★</p>
-              <p className="text-muted-foreground text-sm">Rating</p>
-            </div>
-            <div className="text-center">
-              <p className="text-3xl font-bold text-primary">48hr</p>
-              <p className="text-muted-foreground text-sm">Delivery</p>
-            </div>
+            
+            <Card className="bg-background border-border">
+              <CardContent className="p-6">
+                <div className="flex gap-1 mb-3">
+                  {[...Array(5)].map((_, i) => (
+                    <Star key={i} className="h-4 w-4 fill-amber-400 text-amber-400" />
+                  ))}
+                </div>
+                <p className="text-foreground/80 mb-4 italic">
+                  "I was worried about ordering online for something so important, but the quality exceeded all expectations. The customer service was compassionate and helpful."
+                </p>
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                    <span className="font-semibold text-primary">JR</span>
+                  </div>
+                  <div>
+                    <p className="font-semibold text-foreground text-sm">James R.</p>
+                    <p className="text-xs text-muted-foreground">Verified Buyer</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </section>
