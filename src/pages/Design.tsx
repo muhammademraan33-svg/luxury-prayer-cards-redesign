@@ -1574,79 +1574,78 @@ const Design = () => {
                   </div>
                   
                   {/* Right Column: All Controls */}
-                  <div className="flex-1 space-y-6 min-w-0">
+                  <div className="flex-1 space-y-3 min-w-0">
 
                   {/* Border Style Selection - Paper cards only, at top for easy access on desktop */}
                   {cardType === 'paper' && (
-                    <div className="hidden md:block bg-slate-700/50 rounded-xl p-4">
-                      <h3 className="text-lg font-semibold text-white mb-3 text-center">Border Style</h3>
-                      <div className="flex justify-center gap-2 flex-wrap mb-3">
-                        {DECORATIVE_BORDERS.map((border) => (
+                    <div className="hidden md:block bg-slate-700/50 rounded-lg p-3">
+                      <div className="flex items-center justify-between gap-4">
+                        <h3 className="text-sm font-semibold text-white whitespace-nowrap">Border Style</h3>
+                        <div className="flex items-center gap-1.5 flex-wrap justify-center">
+                          {DECORATIVE_BORDERS.map((border) => (
+                            <button
+                              key={border.id}
+                              type="button"
+                              onClick={() => setFrontBorderDesign(border.id)}
+                              className={`w-10 h-10 rounded border-2 transition-all overflow-hidden relative ${
+                                frontBorderDesign === border.id
+                                  ? 'border-amber-500 ring-1 ring-amber-500/30 scale-105'
+                                  : 'border-slate-600 hover:border-slate-400'
+                              }`}
+                              title={border.name}
+                            >
+                              <div 
+                                className="absolute inset-0"
+                                style={{
+                                  background: deceasedPhoto 
+                                    ? `url(${deceasedPhoto}) center/cover` 
+                                    : 'linear-gradient(135deg, #f8f5f0, #ebe6df)'
+                                }}
+                              />
+                              <div className="absolute inset-0 scale-[5] origin-top-left">
+                                <DecorativeBorderOverlay type={border.id} color={frontBorderColor} />
+                              </div>
+                            </button>
+                          ))}
+                          <div className="w-px h-8 bg-slate-600 mx-1" />
+                          {/* Border Colors inline */}
                           <button
-                            key={border.id}
                             type="button"
-                            onClick={() => setFrontBorderDesign(border.id)}
-                            className={`w-14 h-14 rounded-lg border-2 transition-all overflow-hidden relative ${
-                              frontBorderDesign === border.id
-                                ? 'border-amber-500 ring-2 ring-amber-500/30 scale-105'
-                                : 'border-slate-600 hover:border-slate-400'
+                            onClick={() => setFrontBorderColor('#d4af37')}
+                            className={`w-6 h-6 rounded-full border-2 transition-all ${
+                              frontBorderColor === '#d4af37' ? 'border-amber-400 ring-1 ring-amber-400/40 scale-110' : 'border-slate-500'
                             }`}
-                            title={border.name}
-                          >
-                            {/* Show card background with corner of border */}
-                            <div 
-                              className="absolute inset-0"
-                              style={{
-                                background: deceasedPhoto 
-                                  ? `url(${deceasedPhoto}) center/cover` 
-                                  : 'linear-gradient(135deg, #f8f5f0, #ebe6df)'
-                              }}
-                            />
-                            {/* Border overlay scaled to show top-left corner detail */}
-                            <div className="absolute inset-0 scale-[5] origin-top-left">
-                              <DecorativeBorderOverlay type={border.id} color={frontBorderColor} />
-                            </div>
-                          </button>
-                        ))}
-                      </div>
-                      {/* Border Color Selection */}
-                      <div className="flex justify-center gap-3">
-                        <button
-                          type="button"
-                          onClick={() => setFrontBorderColor('#d4af37')}
-                          className={`w-8 h-8 rounded-full border-2 transition-all ${
-                            frontBorderColor === '#d4af37' ? 'border-amber-400 ring-2 ring-amber-400/40 scale-110' : 'border-slate-500'
-                          }`}
-                          style={{ background: 'linear-gradient(135deg, #ffd700, #b8860b)' }}
-                          title="Gold"
-                        />
-                        <button
-                          type="button"
-                          onClick={() => setFrontBorderColor('#c0c0c0')}
-                          className={`w-8 h-8 rounded-full border-2 transition-all ${
-                            frontBorderColor === '#c0c0c0' ? 'border-amber-400 ring-2 ring-amber-400/40 scale-110' : 'border-slate-500'
-                          }`}
-                          style={{ background: 'linear-gradient(135deg, #e8e8e8, #a8a8a8)' }}
-                          title="Silver"
-                        />
-                        <button
-                          type="button"
-                          onClick={() => setFrontBorderColor('#b76e79')}
-                          className={`w-8 h-8 rounded-full border-2 transition-all ${
-                            frontBorderColor === '#b76e79' ? 'border-amber-400 ring-2 ring-amber-400/40 scale-110' : 'border-slate-500'
-                          }`}
-                          style={{ background: 'linear-gradient(135deg, #e8b4b8, #9e5a65)' }}
-                          title="Rose Gold"
-                        />
-                        <button
-                          type="button"
-                          onClick={() => setFrontBorderColor('#f8f8f8')}
-                          className={`w-8 h-8 rounded-full border-2 transition-all ${
-                            frontBorderColor === '#f8f8f8' ? 'border-amber-400 ring-2 ring-amber-400/40 scale-110' : 'border-slate-500'
-                          }`}
-                          style={{ background: 'linear-gradient(135deg, #ffffff, #e0e0e0)' }}
-                          title="White"
-                        />
+                            style={{ background: 'linear-gradient(135deg, #ffd700, #b8860b)' }}
+                            title="Gold"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => setFrontBorderColor('#c0c0c0')}
+                            className={`w-6 h-6 rounded-full border-2 transition-all ${
+                              frontBorderColor === '#c0c0c0' ? 'border-amber-400 ring-1 ring-amber-400/40 scale-110' : 'border-slate-500'
+                            }`}
+                            style={{ background: 'linear-gradient(135deg, #e8e8e8, #a8a8a8)' }}
+                            title="Silver"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => setFrontBorderColor('#b76e79')}
+                            className={`w-6 h-6 rounded-full border-2 transition-all ${
+                              frontBorderColor === '#b76e79' ? 'border-amber-400 ring-1 ring-amber-400/40 scale-110' : 'border-slate-500'
+                            }`}
+                            style={{ background: 'linear-gradient(135deg, #e8b4b8, #9e5a65)' }}
+                            title="Rose Gold"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => setFrontBorderColor('#f8f8f8')}
+                            className={`w-6 h-6 rounded-full border-2 transition-all ${
+                              frontBorderColor === '#f8f8f8' ? 'border-amber-400 ring-1 ring-amber-400/40 scale-110' : 'border-slate-500'
+                            }`}
+                            style={{ background: 'linear-gradient(135deg, #ffffff, #e0e0e0)' }}
+                            title="White"
+                          />
+                        </div>
                       </div>
                     </div>
                   )}
@@ -2216,26 +2215,36 @@ const Design = () => {
                           </div>
                         )}
 
-                        {/* Text Controls - MOVED BEFORE BORDER */}
-                        <div className="w-full space-y-4 border-t border-slate-700 pt-4">
-                          <div className="flex items-center gap-2 mb-2">
-                            <Type className="h-4 w-4 text-slate-400" />
-                            <Label className="text-slate-400 font-medium">Front Card Text</Label>
+                        {/* Text Controls - Compact layout */}
+                        <div className="w-full space-y-2 border-t border-slate-700 pt-3">
+                          <div className="flex items-center gap-2">
+                            <Type className="h-3 w-3 text-slate-400" />
+                            <Label className="text-slate-400 text-xs font-medium">Front Card Text</Label>
                           </div>
                           
-                          {/* Name Controls */}
-                          <div className="space-y-2 p-3 bg-slate-700/30 rounded-lg">
-                            <Label className="text-white text-sm font-medium">Name</Label>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                              <Textarea
-                                placeholder="John David&#10;Smith"
+                          {/* Name Controls - Compact */}
+                          <div className="p-2 bg-slate-700/30 rounded-lg space-y-1.5">
+                            <div className="flex items-center justify-between">
+                              <Label className="text-white text-xs font-medium">Name</Label>
+                              <label className="flex items-center gap-1.5 cursor-pointer">
+                                <input 
+                                  type="checkbox" 
+                                  checked={showNameOnFront} 
+                                  onChange={(e) => setShowNameOnFront(e.target.checked)}
+                                  className="accent-amber-600 w-3 h-3"
+                                />
+                                <span className="text-slate-400 text-xs">Show</span>
+                              </label>
+                            </div>
+                            <div className="flex gap-2">
+                              <Input
+                                placeholder="Name"
                                 value={deceasedName}
                                 onChange={(e) => setDeceasedName(e.target.value)}
-                                className="bg-slate-700 border-slate-600 text-white resize-none min-h-[60px]"
-                                rows={2}
+                                className="bg-slate-700 border-slate-600 text-white h-8 text-sm flex-1"
                               />
                               <Select value={nameFont} onValueChange={setNameFont}>
-                                <SelectTrigger className="bg-slate-700 border-slate-600 text-white">
+                                <SelectTrigger className="bg-slate-700 border-slate-600 text-white h-8 w-[100px]">
                                   <SelectValue placeholder="Font" />
                                 </SelectTrigger>
                                 <SelectContent>
@@ -2247,33 +2256,29 @@ const Design = () => {
                                 </SelectContent>
                               </Select>
                             </div>
-                            <div className="flex items-center gap-3 flex-wrap">
-                              <div className="flex items-center gap-2">
-                                <Label className="text-slate-400 text-xs">Color</Label>
-                                <input
-                                  type="color"
-                                  value={nameColor}
-                                  onChange={(e) => setNameColor(e.target.value)}
-                                  className="w-8 h-8 rounded border border-slate-600 cursor-pointer"
-                                />
-                              </div>
-                              <div className="flex items-center gap-1">
-                                <Label className="text-slate-400 text-xs">Size</Label>
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <input
+                                type="color"
+                                value={nameColor}
+                                onChange={(e) => setNameColor(e.target.value)}
+                                className="w-6 h-6 rounded border border-slate-600 cursor-pointer"
+                              />
+                              <div className="flex items-center gap-0.5">
                                 <Button
                                   type="button"
                                   variant="outline"
                                   size="icon"
-                                  className="h-6 w-6 border-slate-600"
+                                  className="h-5 w-5 border-slate-600"
                                   onClick={() => setNameSize(Math.max(8, nameSize - 2))}
                                 >
                                   <span className="text-xs">−</span>
                                 </Button>
-                                <span className="text-xs text-white bg-slate-700 px-2 py-1 rounded min-w-[40px] text-center">{Math.round(nameSize)}px</span>
+                                <span className="text-xs text-white bg-slate-700 px-1.5 py-0.5 rounded min-w-[32px] text-center">{Math.round(nameSize)}px</span>
                                 <Button
                                   type="button"
                                   variant="outline"
                                   size="icon"
-                                  className="h-6 w-6 border-slate-600"
+                                  className="h-5 w-5 border-slate-600"
                                   onClick={() => setNameSize(Math.min(48, nameSize + 2))}
                                 >
                                   <span className="text-xs">+</span>
@@ -2283,43 +2288,47 @@ const Design = () => {
                                 type="button"
                                 variant={nameBold ? 'default' : 'outline'}
                                 size="sm"
-                                className={`h-7 px-3 text-xs font-bold ${nameBold ? 'bg-amber-600 text-white' : 'border-slate-600 text-slate-300'}`}
+                                className={`h-5 px-2 text-xs font-bold ${nameBold ? 'bg-amber-600 text-white' : 'border-slate-600 text-slate-300'}`}
                                 onClick={() => setNameBold(!nameBold)}
                               >
                                 B
                               </Button>
-                              <label className="flex items-center gap-2 cursor-pointer ml-auto">
-                                <input 
-                                  type="checkbox" 
-                                  checked={showNameOnFront} 
-                                  onChange={(e) => setShowNameOnFront(e.target.checked)}
-                                  className="accent-amber-600"
-                                />
-                                <span className="text-slate-400 text-xs">Show</span>
-                              </label>
                             </div>
                           </div>
 
-                          {/* Dates Controls */}
-                          <div className="space-y-2 p-3 bg-slate-700/30 rounded-lg">
-                            <Label className="text-white text-sm font-medium">Dates</Label>
-                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                          {/* Dates Controls - Compact */}
+                          <div className="p-2 bg-slate-700/30 rounded-lg space-y-1.5">
+                            <div className="flex items-center justify-between">
+                              <Label className="text-white text-xs font-medium">Dates</Label>
+                              <label className="flex items-center gap-1.5 cursor-pointer">
+                                <input 
+                                  type="checkbox" 
+                                  checked={showDatesOnFront} 
+                                  onChange={(e) => setShowDatesOnFront(e.target.checked)}
+                                  className="accent-amber-600 w-3 h-3"
+                                />
+                                <span className="text-slate-400 text-xs">Show on Front</span>
+                              </label>
+                            </div>
+                            <div className="flex gap-2">
                               <Input
                                 type="text"
                                 placeholder="mm/dd/yyyy"
                                 value={birthDate}
                                 onChange={(e) => setBirthDate(e.target.value)}
-                                className="bg-slate-700 border-slate-600 text-white placeholder:text-slate-400"
+                                className="bg-slate-700 border-slate-600 text-white placeholder:text-slate-400 h-8 text-sm"
                               />
                               <Input
                                 type="text"
                                 placeholder="mm/dd/yyyy"
                                 value={deathDate}
                                 onChange={(e) => setDeathDate(e.target.value)}
-                                className="bg-slate-700 border-slate-600 text-white placeholder:text-slate-400"
+                                className="bg-slate-700 border-slate-600 text-white placeholder:text-slate-400 h-8 text-sm"
                               />
+                            </div>
+                            <div className="flex items-center gap-2 flex-wrap">
                               <Select value={datesFont} onValueChange={setDatesFont}>
-                                <SelectTrigger className="bg-slate-700 border-slate-600 text-white">
+                                <SelectTrigger className="bg-slate-700 border-slate-600 text-white h-7 text-xs w-[90px]">
                                   <SelectValue placeholder="Font" />
                                 </SelectTrigger>
                                 <SelectContent>
@@ -2330,25 +2339,12 @@ const Design = () => {
                                   ))}
                                 </SelectContent>
                               </Select>
-                            </div>
-                            
-                            {/* Front Dates Row */}
-                            <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-slate-600/50">
-                              <label className="flex items-center gap-2 cursor-pointer min-w-[60px]">
-                                <input 
-                                  type="checkbox" 
-                                  checked={showDatesOnFront} 
-                                  onChange={(e) => setShowDatesOnFront(e.target.checked)}
-                                  className="accent-amber-600"
-                                />
-                                <span className="text-slate-400 text-xs font-medium">Front</span>
-                              </label>
                               <Select 
                                 value={frontDateFormat} 
                                 onValueChange={(v) => setFrontDateFormat(v as 'full' | 'short-month' | 'mmm-dd-yyyy' | 'numeric' | 'year')}
                                 disabled={!showDatesOnFront}
                               >
-                                <SelectTrigger className="bg-slate-700 border-slate-600 text-white h-7 text-xs w-[130px]">
+                                <SelectTrigger className="bg-slate-700 border-slate-600 text-white h-6 text-xs w-[100px]">
                                   <SelectValue placeholder="Format" />
                                 </SelectTrigger>
                                 <SelectContent>
@@ -2363,15 +2359,15 @@ const Design = () => {
                                 type="color"
                                 value={frontDatesColor.replace('cc', '')}
                                 onChange={(e) => setFrontDatesColor(e.target.value)}
-                                className="w-7 h-7 rounded border border-slate-600 cursor-pointer"
+                                className="w-6 h-6 rounded border border-slate-600 cursor-pointer"
                                 disabled={!showDatesOnFront}
                               />
-                              <div className="flex items-center gap-1">
+                              <div className="flex items-center gap-0.5">
                                 <Button
                                   type="button"
                                   variant={frontDatesSize === 'auto' ? 'default' : 'outline'}
                                   size="sm"
-                                  className={`h-7 px-2 text-xs ${frontDatesSize === 'auto' ? 'bg-amber-600' : 'border-slate-600'}`}
+                                  className={`h-5 px-1.5 text-xs ${frontDatesSize === 'auto' ? 'bg-amber-600' : 'border-slate-600'}`}
                                   onClick={() => setFrontDatesSize('auto')}
                                   disabled={!showDatesOnFront}
                                 >
@@ -2381,20 +2377,20 @@ const Design = () => {
                                   type="button"
                                   variant="outline"
                                   size="icon"
-                                  className="h-6 w-6 border-slate-600"
+                                  className="h-5 w-5 border-slate-600"
                                   onClick={() => setFrontDatesSize(typeof frontDatesSize === 'number' ? Math.max(8, frontDatesSize - 2) : 10)}
                                   disabled={!showDatesOnFront}
                                 >
                                   <span className="text-xs">−</span>
                                 </Button>
-                                <span className="text-xs text-white bg-slate-700 px-1 py-0.5 rounded min-w-[35px] text-center">
-                                  {frontDatesSize === 'auto' ? 'auto' : `${frontDatesSize}px`}
+                                <span className="text-xs text-white bg-slate-700 px-1 py-0.5 rounded min-w-[28px] text-center">
+                                  {frontDatesSize === 'auto' ? 'A' : `${frontDatesSize}`}
                                 </span>
                                 <Button
                                   type="button"
                                   variant="outline"
                                   size="icon"
-                                  className="h-6 w-6 border-slate-600"
+                                  className="h-5 w-5 border-slate-600"
                                   onClick={() => setFrontDatesSize(typeof frontDatesSize === 'number' ? Math.min(48, frontDatesSize + 2) : 14)}
                                   disabled={!showDatesOnFront}
                                 >
@@ -2404,114 +2400,40 @@ const Design = () => {
                                   type="button"
                                   variant={datesBold ? 'default' : 'outline'}
                                   size="sm"
-                                  className={`h-7 px-3 text-xs font-bold ${datesBold ? 'bg-amber-600 text-white' : 'border-slate-600 text-slate-300'}`}
+                                  className={`h-5 px-2 text-xs font-bold ${datesBold ? 'bg-amber-600 text-white' : 'border-slate-600 text-slate-300'}`}
                                   onClick={() => setDatesBold(!datesBold)}
                                 >
                                   B
                                 </Button>
                               </div>
                             </div>
-
-                            {/* Back Dates Row - only show when viewing back side */}
-                            {cardSide === 'back' && (
-                              <div className="flex flex-wrap items-center gap-2">
-                                <label className="flex items-center gap-2 cursor-pointer min-w-[60px]">
-                                  <input 
-                                    type="checkbox" 
-                                    checked={showDatesOnBack} 
-                                    onChange={(e) => setShowDatesOnBack(e.target.checked)}
-                                    className="accent-amber-600"
-                                  />
-                                  <span className="text-slate-400 text-xs font-medium">Back</span>
-                                </label>
-                                <Select 
-                                  value={backDateFormat} 
-                                  onValueChange={(v) => setBackDateFormat(v as 'full' | 'short-month' | 'mmm-dd-yyyy' | 'numeric' | 'year')}
-                                  disabled={!showDatesOnBack}
-                                >
-                                  <SelectTrigger className="bg-slate-700 border-slate-600 text-white h-7 text-xs w-[130px]">
-                                    <SelectValue placeholder="Format" />
-                                  </SelectTrigger>
-                                  <SelectContent>
-                                    <SelectItem value="full">January 1, 2025</SelectItem>
-                                    <SelectItem value="short-month">Jan 1, 2025</SelectItem>
-                                    <SelectItem value="mmm-dd-yyyy">Jan 01, 2025</SelectItem>
-                                    <SelectItem value="numeric">01/01/2025</SelectItem>
-                                    <SelectItem value="year">Years Only</SelectItem>
-                                  </SelectContent>
-                                </Select>
-                                <input
-                                  type="color"
-                                  value={backDatesColor.replace('cc', '')}
-                                  onChange={(e) => setBackDatesColor(e.target.value)}
-                                  className="w-7 h-7 rounded border border-slate-600 cursor-pointer"
-                                  disabled={!showDatesOnBack}
-                                />
-                                <div className="flex items-center gap-1">
-                                  <Button
-                                    type="button"
-                                    variant={backDatesSize === 'auto' ? 'default' : 'outline'}
-                                    size="sm"
-                                    className={`h-7 px-2 text-xs ${backDatesSize === 'auto' ? 'bg-amber-600' : 'border-slate-600'}`}
-                                    onClick={() => setBackDatesSize('auto')}
-                                    disabled={!showDatesOnBack}
-                                  >
-                                    Auto
-                                  </Button>
-                                  <Button
-                                    type="button"
-                                    variant="outline"
-                                    size="icon"
-                                    className="h-6 w-6 border-slate-600"
-                                    onClick={() => setBackDatesSize(typeof backDatesSize === 'number' ? Math.max(8, backDatesSize - 2) : 10)}
-                                    disabled={!showDatesOnBack}
-                                  >
-                                    <span className="text-xs">−</span>
-                                  </Button>
-                                  <span className="text-xs text-white bg-slate-700 px-1 py-0.5 rounded min-w-[35px] text-center">
-                                    {backDatesSize === 'auto' ? 'auto' : `${backDatesSize}px`}
-                                  </span>
-                                  <Button
-                                    type="button"
-                                    variant="outline"
-                                    size="icon"
-                                    className="h-6 w-6 border-slate-600"
-                                    onClick={() => setBackDatesSize(typeof backDatesSize === 'number' ? Math.min(48, backDatesSize + 2) : 14)}
-                                    disabled={!showDatesOnBack}
-                                  >
-                                    <span className="text-xs">+</span>
-                                  </Button>
-                                </div>
-                              </div>
-                            )}
                           </div>
                           
-                          {/* Additional Text Controls */}
-                          <div className="space-y-2 p-3 bg-slate-700/30 rounded-lg">
+                          {/* Additional Text Controls - Compact */}
+                          <div className="p-2 bg-slate-700/30 rounded-lg space-y-1.5">
                             <div className="flex items-center justify-between">
-                              <Label className="text-white text-sm font-medium">Additional Text</Label>
-                              <label className="flex items-center gap-2 cursor-pointer">
+                              <Label className="text-white text-xs font-medium">Additional Text</Label>
+                              <label className="flex items-center gap-1.5 cursor-pointer">
                                 <input 
                                   type="checkbox" 
                                   checked={showAdditionalText} 
                                   onChange={(e) => setShowAdditionalText(e.target.checked)}
-                                  className="accent-amber-600"
+                                  className="accent-amber-600 w-3 h-3"
                                 />
                                 <span className="text-slate-400 text-xs">Show</span>
                               </label>
                             </div>
                             {showAdditionalText && (
                               <>
-                                <Textarea
+                                <Input
                                   placeholder="Additional text..."
                                   value={additionalText}
                                   onChange={(e) => setAdditionalText(e.target.value)}
-                                  className="bg-slate-700 border-slate-600 text-white min-h-[60px]"
-                                  rows={2}
+                                  className="bg-slate-700 border-slate-600 text-white h-8 text-sm"
                                 />
-                                <div className="grid grid-cols-2 gap-3">
+                                <div className="flex items-center gap-2 flex-wrap">
                                   <Select value={additionalTextFont} onValueChange={setAdditionalTextFont}>
-                                    <SelectTrigger className="bg-slate-700 border-slate-600 text-white">
+                                    <SelectTrigger className="bg-slate-700 border-slate-600 text-white h-7 text-xs w-[90px]">
                                       <SelectValue placeholder="Font" />
                                     </SelectTrigger>
                                     <SelectContent>
@@ -2522,44 +2444,41 @@ const Design = () => {
                                       ))}
                                     </SelectContent>
                                   </Select>
-                                  <div className="flex items-center gap-2 flex-wrap">
-                                    <Label className="text-slate-400 text-xs">Color</Label>
-                                    <input
-                                      type="color"
-                                      value={additionalTextColor}
-                                      onChange={(e) => setAdditionalTextColor(e.target.value)}
-                                      className="w-8 h-8 rounded border border-slate-600 cursor-pointer"
-                                    />
-                                    <div className="flex items-center gap-1">
-                                      <Button
-                                        type="button"
-                                        variant="outline"
-                                        size="icon"
-                                        className="h-6 w-6 border-slate-600"
-                                        onClick={() => setAdditionalTextSize(Math.max(8, additionalTextSize - 2))}
-                                      >
-                                        <span className="text-xs">−</span>
-                                      </Button>
-                                      <span className="text-xs text-white bg-slate-700 px-2 py-1 rounded min-w-[40px] text-center">{Math.round(additionalTextSize)}px</span>
-                                      <Button
-                                        type="button"
-                                        variant="outline"
-                                        size="icon"
-                                        className="h-6 w-6 border-slate-600"
-                                        onClick={() => setAdditionalTextSize(Math.min(48, additionalTextSize + 2))}
-                                      >
-                                        <span className="text-xs">+</span>
-                                      </Button>
-                                      <Button
-                                        type="button"
-                                        variant={additionalTextBold ? 'default' : 'outline'}
-                                        size="sm"
-                                        className={`h-7 px-3 text-xs font-bold ${additionalTextBold ? 'bg-amber-600 text-white' : 'border-slate-600 text-slate-300'}`}
-                                        onClick={() => setAdditionalTextBold(!additionalTextBold)}
-                                      >
-                                        B
-                                      </Button>
-                                    </div>
+                                  <input
+                                    type="color"
+                                    value={additionalTextColor}
+                                    onChange={(e) => setAdditionalTextColor(e.target.value)}
+                                    className="w-6 h-6 rounded border border-slate-600 cursor-pointer"
+                                  />
+                                  <div className="flex items-center gap-0.5">
+                                    <Button
+                                      type="button"
+                                      variant="outline"
+                                      size="icon"
+                                      className="h-5 w-5 border-slate-600"
+                                      onClick={() => setAdditionalTextSize(Math.max(8, additionalTextSize - 2))}
+                                    >
+                                      <span className="text-xs">−</span>
+                                    </Button>
+                                    <span className="text-xs text-white bg-slate-700 px-1.5 py-0.5 rounded min-w-[32px] text-center">{Math.round(additionalTextSize)}px</span>
+                                    <Button
+                                      type="button"
+                                      variant="outline"
+                                      size="icon"
+                                      className="h-5 w-5 border-slate-600"
+                                      onClick={() => setAdditionalTextSize(Math.min(48, additionalTextSize + 2))}
+                                    >
+                                      <span className="text-xs">+</span>
+                                    </Button>
+                                    <Button
+                                      type="button"
+                                      variant={additionalTextBold ? 'default' : 'outline'}
+                                      size="sm"
+                                      className={`h-5 px-2 text-xs font-bold ${additionalTextBold ? 'bg-amber-600 text-white' : 'border-slate-600 text-slate-300'}`}
+                                      onClick={() => setAdditionalTextBold(!additionalTextBold)}
+                                    >
+                                      B
+                                    </Button>
                                   </div>
                                 </div>
                               </>
