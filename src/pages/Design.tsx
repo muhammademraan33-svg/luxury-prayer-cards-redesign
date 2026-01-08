@@ -1375,16 +1375,16 @@ const Design = () => {
       </header>
 
       {/* Main Content */}
-      <main className={`container mx-auto px-4 py-8 ${step === 1 ? 'max-w-6xl' : 'max-w-4xl'}`}>
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-white mb-2">
+      <main className={`container mx-auto px-3 py-3 ${step === 1 ? 'max-w-6xl' : 'max-w-4xl'}`}>
+        <div className="text-center mb-3">
+          <h1 className="text-xl font-bold text-white mb-1">
             {step === 1 && `Design Your ${cardType === 'paper' ? 'Photo Prayer Card' : 'Metal Prayer Card'}${additionalDesigns.length > 0 ? 's' : ''}`}
             {step === 2 && (cardType === 'paper' ? 'Review Your Order' : 'Choose Your Package')}
             {step === 3 && 'Shipping Information'}
             {step === 4 && 'Review & Order'}
             {step === 5 && 'Order Confirmed!'}
           </h1>
-          <p className="text-slate-400">
+          <p className="text-slate-400 text-sm">
             {step === 1 && 'Customize your cards and set quantities'}
             {step === 2 && (cardType === 'paper' ? 'Confirm your card selection and options' : 'Select quantity and shipping options')}
             {step === 3 && 'Enter your shipping details'}
@@ -1393,15 +1393,15 @@ const Design = () => {
         </div>
 
         <Card className="bg-slate-800/50 border-slate-700">
-          <CardContent className="p-6">
+          <CardContent className="p-3">
             <form onSubmit={handleSubmitOrder}>
               {/* Step 1: Card Design */}
               {step === 1 && (
-                <div className="md:flex md:gap-6">
+                <div className="md:flex md:gap-4">
                   {/* Left Column: Preview (sticky on medium+ screens) */}
-                  <div className="hidden md:flex md:flex-col md:items-center md:w-[280px] md:flex-shrink-0 md:sticky md:top-4 md:self-start">
+                  <div className="hidden md:flex md:flex-col md:items-center md:w-[240px] md:flex-shrink-0 md:sticky md:top-14 md:self-start">
                     {/* Front/Back Toggle - Above the card */}
-                    <div className="flex justify-center gap-2 mb-4">
+                    <div className="flex justify-center gap-1 mb-2">
                       <Button
                         type="button"
                         variant={cardSide === 'front' ? 'default' : 'outline'}
@@ -2231,14 +2231,14 @@ const Design = () => {
                         )}
 
                         {/* Text Controls - Compact layout */}
-                        <div className="w-full space-y-2 border-t border-slate-700 pt-3">
+                        <div className="w-full space-y-1.5 border-t border-slate-700 pt-2">
                           <div className="flex items-center gap-2">
                             <Type className="h-3 w-3 text-slate-400" />
                             <Label className="text-slate-400 text-xs font-medium">Front Card Text</Label>
                           </div>
                           
                           {/* Name Controls - Compact */}
-                          <div className="p-2 bg-slate-700/30 rounded-lg space-y-1.5">
+                          <div className="p-1.5 bg-slate-700/30 rounded-lg space-y-1">
                             <div className="flex items-center justify-between">
                               <Label className="text-white text-xs font-medium">Name</Label>
                               <label className="flex items-center gap-1.5 cursor-pointer">
@@ -2322,7 +2322,7 @@ const Design = () => {
                           </div>
 
                           {/* Dates Controls - Compact */}
-                          <div className="p-2 bg-slate-700/30 rounded-lg space-y-1.5">
+                          <div className="p-1.5 bg-slate-700/30 rounded-lg space-y-1">
                             <div className="flex items-center justify-between">
                               <Label className="text-white text-xs font-medium">Dates</Label>
                               <label className="flex items-center gap-1.5 cursor-pointer">
@@ -2446,7 +2446,7 @@ const Design = () => {
                           </div>
                           
                           {/* Additional Text Controls - Compact */}
-                          <div className="p-2 bg-slate-700/30 rounded-lg space-y-1.5">
+                          <div className="p-1.5 bg-slate-700/30 rounded-lg space-y-1">
                             <div className="flex items-center justify-between">
                               <Label className="text-white text-xs font-medium">Additional Text</Label>
                               <label className="flex items-center gap-1.5 cursor-pointer">
@@ -2532,14 +2532,13 @@ const Design = () => {
                           </div>
                         </div>
 
-                        
                         {/* Paper Card Size Selection - moved after border */}
                         {cardType === 'paper' && (
-                          <div className="bg-slate-700/50 rounded-xl p-3 border-t border-slate-700 mt-4">
-                            <h3 className="text-sm font-semibold text-white mb-2 text-center">
+                          <div className="bg-slate-700/50 rounded-lg p-2 border-t border-slate-700 mt-2">
+                            <h3 className="text-xs font-semibold text-white mb-1 text-center">
                               Card Size {activeDesignIndex >= 0 ? `(Design ${activeDesignIndex + 2})` : ''}
                             </h3>
-                            <div className="grid grid-cols-2 gap-2">
+                            <div className="grid grid-cols-2 gap-1.5">
                               <button
                                 type="button"
                                 onClick={() => {
@@ -2551,27 +2550,27 @@ const Design = () => {
                                     setAdditionalDesigns(updated);
                                   }
                                 }}
-                                className={`p-2 rounded-lg border-2 transition-all ${
+                                className={`p-1.5 rounded-lg border-2 transition-all ${
                                   (activeDesignIndex === -1 ? mainDesignSize : additionalDesigns[activeDesignIndex]?.size) === '2.5x4.25'
                                     ? 'border-amber-500 bg-amber-500/20'
                                     : 'border-slate-600 hover:border-slate-500'
                                 }`}
                               >
-                                <div className="flex flex-col items-center">
-                                  {/* Proportional card silhouette - 2.5:4.25 ratio */}
+                                <div className="flex items-center gap-2">
                                   <div 
-                                    className="border-2 border-white/60 mb-2 shadow-lg"
+                                    className="border border-white/60 shadow"
                                     style={{ 
-                                      width: '28px', 
-                                      height: '48px',
+                                      width: '18px', 
+                                      height: '30px',
                                       backgroundImage: `url(${cloudsLightBg})`,
                                       backgroundSize: 'cover',
                                       backgroundPosition: 'center'
                                     }}
                                   />
-                                  <div className="text-sm font-bold text-white mb-0.5">2.5" × 4.25"</div>
-                                  <div className="text-slate-300 text-xs">Standard</div>
-                                  <div className="text-amber-400 font-semibold text-xs mt-1">Included</div>
+                                  <div className="text-left">
+                                    <div className="text-xs font-bold text-white">2.5"×4.25"</div>
+                                    <div className="text-amber-400 font-semibold text-xs">Included</div>
+                                  </div>
                                 </div>
                               </button>
                               <button
@@ -2585,27 +2584,27 @@ const Design = () => {
                                     setAdditionalDesigns(updated);
                                   }
                                 }}
-                                className={`p-2 rounded-lg border-2 transition-all ${
+                                className={`p-1.5 rounded-lg border-2 transition-all ${
                                   (activeDesignIndex === -1 ? mainDesignSize : additionalDesigns[activeDesignIndex]?.size) === '3x4.75'
                                     ? 'border-amber-500 bg-amber-500/20'
                                     : 'border-slate-600 hover:border-slate-500'
                                 }`}
                               >
-                                <div className="flex flex-col items-center">
-                                  {/* Proportional card silhouette - 3:4.75 ratio (~40% larger area) */}
+                                <div className="flex items-center gap-2">
                                   <div 
-                                    className="border-2 border-white/60 mb-2 shadow-lg"
+                                    className="border border-white/60 shadow"
                                     style={{ 
-                                      width: '34px', 
-                                      height: '54px',
+                                      width: '22px', 
+                                      height: '35px',
                                       backgroundImage: `url(${cloudsLightBg})`,
                                       backgroundSize: 'cover',
                                       backgroundPosition: 'center'
                                     }}
                                   />
-                                  <div className="text-sm font-bold text-white mb-0.5">3" × 4.75"</div>
-                                  <div className="text-slate-300 text-xs">Large</div>
-                                  <div className="text-amber-400 font-semibold text-xs mt-1">+${PAPER_SIZE_UPSELL}</div>
+                                  <div className="text-left">
+                                    <div className="text-xs font-bold text-white">3"×4.75"</div>
+                                    <div className="text-amber-400 font-semibold text-xs">+${PAPER_SIZE_UPSELL}</div>
+                                  </div>
                                 </div>
                               </button>
                             </div>
@@ -2621,22 +2620,17 @@ const Design = () => {
                               setAdditionalDesigns([...additionalDesigns, newDesign]);
                               setActiveDesignIndex(additionalDesigns.length);
                             }}
-                            className="w-full mt-4 p-4 bg-gradient-to-r from-amber-600/20 to-amber-500/10 border-2 border-dashed border-amber-500/50 hover:border-amber-400 hover:from-amber-600/30 hover:to-amber-500/20 rounded-xl transition-all group"
+                            className="w-full mt-2 p-2 bg-gradient-to-r from-amber-600/20 to-amber-500/10 border border-dashed border-amber-500/50 hover:border-amber-400 hover:from-amber-600/30 hover:to-amber-500/20 rounded-lg transition-all group"
                           >
-                            <div className="flex items-center justify-center gap-3">
-                              <div className="w-8 h-8 rounded-full bg-amber-500/20 flex items-center justify-center group-hover:bg-amber-500/30 transition-colors">
-                                <Plus className="h-5 w-5 text-amber-400" />
-                              </div>
-                              <div className="text-left">
-                                <span className="font-semibold text-amber-400 group-hover:text-amber-300 block">Add Another Design</span>
-                                <span className="text-slate-400 text-xs">Different photo & prayer • Only <span className="text-amber-400 font-semibold">$7</span></span>
-                              </div>
+                            <div className="flex items-center justify-center gap-2">
+                              <Plus className="h-4 w-4 text-amber-400" />
+                              <span className="font-medium text-amber-400 text-sm">Add Design</span>
+                              <span className="text-slate-400 text-xs">+$7</span>
                             </div>
                           </button>
                         )}
 
-
-                        <p className="text-slate-400 text-xs text-center">The photo fills the entire front of the card with a metal border frame</p>
+                        <p className="text-slate-500 text-xs text-center mt-1">Photo fills entire front with metal border frame</p>
                       </div>
                     </TabsContent>
 
