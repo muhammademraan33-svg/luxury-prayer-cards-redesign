@@ -756,18 +756,32 @@ const Design = () => {
   };
 
   const formatDates = (birth: string, death: string, format: 'full' | 'short-month' | 'mmm-dd-yyyy' | 'numeric' | 'year'): string => {
-    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const monthsFull = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+    const monthsShort = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
     
-    // Parse mm/dd/yyyy format and convert to "Mmm DD, YYYY"
+    // Parse mm/dd/yyyy format and format based on selected format
     const parseToDisplay = (dateStr: string): string => {
       if (!dateStr) return '';
       const match = dateStr.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
       if (match) {
         const monthIdx = parseInt(match[1], 10) - 1;
-        const day = match[2].padStart(2, '0');
+        const day = parseInt(match[2], 10);
+        const dayPadded = match[2].padStart(2, '0');
         const year = match[3];
         if (monthIdx >= 0 && monthIdx < 12) {
-          return `${months[monthIdx]} ${day}, ${year}`;
+          switch (format) {
+            case 'year':
+              return year;
+            case 'numeric':
+              return `${match[1].padStart(2, '0')}/${dayPadded}/${year}`;
+            case 'mmm-dd-yyyy':
+              return `${monthsShort[monthIdx]} ${dayPadded}, ${year}`;
+            case 'short-month':
+              return `${monthsShort[monthIdx]} ${day}, ${year}`;
+            case 'full':
+            default:
+              return `${monthsFull[monthIdx]} ${day}, ${year}`;
+          }
         }
       }
       return dateStr; // Return as-is if not in expected format
