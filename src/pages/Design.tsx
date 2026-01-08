@@ -15,6 +15,7 @@ import { prayerTemplates } from '@/data/prayerTemplates';
 import { toast } from 'sonner';
 import metalCardProduct from '@/assets/metal-card-product.jpg';
 import paperCardsProduct from '@/assets/paper-cards-product.jpg';
+import { AutoFitSingleLineText } from '@/components/AutoFitSingleLineText';
 
 import cloudsLightBg from '@/assets/backgrounds/clouds-light.jpg';
 import marbleGreyBg from '@/assets/backgrounds/marble-grey.jpg';
@@ -328,7 +329,7 @@ const Design = () => {
   const [showDatesOnFront, setShowDatesOnFront] = useState(true);
   const [showDatesOnBack, setShowDatesOnBack] = useState(true);
   const [nameFont, setNameFont] = useState('Great Vibes');
-  const [datesFont, setDatesFont] = useState('Cormorant Garamond');
+  const [datesFont, setDatesFont] = useState(cardType === 'paper' ? 'Montserrat' : 'Cormorant Garamond');
   const [namePosition, setNamePosition] = useState({ x: 50, y: 80 });
   const [datesPosition, setDatesPosition] = useState({ x: 50, y: cardType === 'metal' ? 91 : 92 });
 
@@ -1523,9 +1524,22 @@ const Design = () => {
                                   textShadow: datesTextShadow ? '0 1px 2px rgba(0,0,0,0.5)' : 'none',
                                 }}
                               >
-                                <span style={{ fontSize: frontDatesSize === 'auto' ? '8px' : `${Math.max(7, (typeof frontDatesSize === 'number' ? frontDatesSize : 12) * 0.65)}px`, color: frontDatesColor, fontWeight: datesBold ? 'bold' : 'normal', textAlign: 'center', whiteSpace: 'nowrap', fontFamily: "'Montserrat', sans-serif" }}>
-                                  {formatDates(birthDate, deathDate, frontDateFormat)}
-                                </span>
+                                <AutoFitSingleLineText
+                                  text={formatDates(birthDate, deathDate, frontDateFormat)}
+                                  maxWidth="90%"
+                                  style={{
+                                    fontSize:
+                                      frontDatesSize === 'auto'
+                                        ? '8px'
+                                        : `${Math.max(
+                                            7,
+                                            (typeof frontDatesSize === 'number' ? frontDatesSize : 12) * 0.65
+                                          )}px`,
+                                    color: frontDatesColor,
+                                    fontWeight: datesBold ? 'bold' : 'normal',
+                                    textAlign: 'center',
+                                  }}
+                                />
                               </div>
                             )}
                             
@@ -1898,9 +1912,16 @@ const Design = () => {
                                     onPointerCancel={handleTextPointerUp}
                                     onWheel={(e) => handleTextWheel(e, 'dates')}
                                   >
-                                    <span style={{ fontSize: frontDatesSize === 'auto' ? '12px' : `${frontDatesSize}px`, color: frontDatesColor, fontWeight: datesBold ? 'bold' : 'normal' }}>
-                                      {formatDates(birthDate, deathDate, frontDateFormat)}
-                                    </span>
+                                    <AutoFitSingleLineText
+                                      text={formatDates(birthDate, deathDate, frontDateFormat)}
+                                      maxWidth="90%"
+                                      style={{
+                                        fontSize: frontDatesSize === 'auto' ? '12px' : `${frontDatesSize}px`,
+                                        color: frontDatesColor,
+                                        fontWeight: datesBold ? 'bold' : 'normal',
+                                        textAlign: 'center',
+                                      }}
+                                    />
                                   </div>
                                 );
                               })()}
@@ -4670,9 +4691,16 @@ const Design = () => {
                     color: frontDatesColor,
                     fontWeight: datesBold ? 'bold' : 'normal',
                     textShadow: datesTextShadow ? '0 1px 2px rgba(0,0,0,0.5)' : 'none',
+                    width: '90%',
+                    textAlign: 'center',
                   }}
                 >
-                  {formatDates(birthDate, deathDate, frontDateFormat)}
+                  <AutoFitSingleLineText
+                    text={formatDates(birthDate, deathDate, frontDateFormat)}
+                    maxWidth="100%"
+                    minScale={0.6}
+                    style={{ font: 'inherit', color: 'inherit', fontWeight: 'inherit' }}
+                  />
                 </div>
               )}
             </div>
