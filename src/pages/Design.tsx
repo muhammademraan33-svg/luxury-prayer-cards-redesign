@@ -1380,9 +1380,9 @@ const Design = () => {
             <form onSubmit={handleSubmitOrder}>
               {/* Step 1: Card Design */}
               {step === 1 && (
-                <div className="lg:flex lg:gap-8">
-                  {/* Left Column: Preview (sticky on large screens) */}
-                  <div className="hidden lg:flex lg:flex-col lg:w-[320px] lg:flex-shrink-0 lg:sticky lg:top-24 lg:self-start">
+                <div className="md:flex md:gap-6">
+                  {/* Left Column: Preview (sticky on medium+ screens) */}
+                  <div className="hidden md:flex md:flex-col md:w-[280px] md:flex-shrink-0 md:sticky md:top-24 md:self-start">
                     {/* Front/Back Toggle - Above the card */}
                     <div className="flex justify-center gap-2 mb-4">
                       <Button
@@ -1569,7 +1569,7 @@ const Design = () => {
                   </div>
                   
                   {/* Right Column: All Controls */}
-                  <div className="flex-1 space-y-6">
+                  <div className="flex-1 space-y-6 min-w-0">
                   {/* Paper Card Size Selection - only for paper cards */}
                   {cardType === 'paper' && (
                     <div className="bg-slate-700/50 rounded-xl p-4 mb-4">
