@@ -261,6 +261,8 @@ const Design = () => {
   const [photoPanY, setPhotoPanY] = useState(0);
   const [photoRotation, setPhotoRotation] = useState(0);
   const [photoFade, setPhotoFade] = useState(false);
+  const [fadeColor, setFadeColor] = useState('#000000');
+  const [fadeShape, setFadeShape] = useState<'rectangle' | 'circle'>('rectangle');
   const [metalBorderColor, setMetalBorderColor] = useState<string>('#d4af37'); // 'none' or metallic hex
   const [photoBrightness, setPhotoBrightness] = useState(100);
 
@@ -1449,14 +1451,21 @@ const Design = () => {
                                     filter: `brightness(${photoBrightness}%)`,
                                   }}
                                 />
-                                {photoFade && (
-                                  <div 
-                                    className="absolute inset-0 pointer-events-none"
-                                    style={{
-                                      background: 'linear-gradient(to bottom, transparent 40%, rgba(0,0,0,0.3) 70%, rgba(0,0,0,0.6) 100%)',
-                                    }}
-                                  />
-                                )}
+                                {photoFade && (() => {
+                                  const hex = fadeColor;
+                                  const r = parseInt(hex.slice(1,3), 16);
+                                  const g = parseInt(hex.slice(3,5), 16);
+                                  const b = parseInt(hex.slice(5,7), 16);
+                                  const fadeStyle = fadeShape === 'circle'
+                                    ? { background: `radial-gradient(ellipse at center, transparent 30%, rgba(${r},${g},${b},0.3) 60%, rgba(${r},${g},${b},0.7) 100%)` }
+                                    : { background: `linear-gradient(to bottom, transparent 40%, rgba(${r},${g},${b},0.3) 70%, rgba(${r},${g},${b},0.6) 100%)` };
+                                  return (
+                                    <div 
+                                      className="absolute inset-0 pointer-events-none"
+                                      style={fadeStyle}
+                                    />
+                                  );
+                                })()}
                               </>
                             ) : (
                               <div className="text-center p-4 pointer-events-none">
@@ -1780,14 +1789,21 @@ const Design = () => {
                                     }}
                                   />
                                   {/* Fade overlay */}
-                                  {photoFade && (
-                                    <div 
-                                      className="absolute inset-0 pointer-events-none"
-                                      style={{
-                                        background: 'linear-gradient(to bottom, transparent 40%, rgba(0,0,0,0.3) 70%, rgba(0,0,0,0.6) 100%)',
-                                      }}
-                                    />
-                                  )}
+                                  {photoFade && (() => {
+                                    const hex = fadeColor;
+                                    const r = parseInt(hex.slice(1,3), 16);
+                                    const g = parseInt(hex.slice(3,5), 16);
+                                    const b = parseInt(hex.slice(5,7), 16);
+                                    const fadeStyle = fadeShape === 'circle'
+                                      ? { background: `radial-gradient(ellipse at center, transparent 30%, rgba(${r},${g},${b},0.3) 60%, rgba(${r},${g},${b},0.7) 100%)` }
+                                      : { background: `linear-gradient(to bottom, transparent 40%, rgba(${r},${g},${b},0.3) 70%, rgba(${r},${g},${b},0.6) 100%)` };
+                                    return (
+                                      <div 
+                                        className="absolute inset-0 pointer-events-none"
+                                        style={fadeStyle}
+                                      />
+                                    );
+                                  })()}
                                 </>
                               ) : (
                                 <div className="text-center p-4 pointer-events-none">
@@ -2095,17 +2111,65 @@ const Design = () => {
                               />
                               <span className="text-xs text-slate-400 min-w-[40px]">{photoBrightness}%</span>
                             </div>
-                            <div className="flex items-center justify-between pt-2 border-t border-slate-600">
-                              <Label className="text-slate-400 text-xs">Photo Fade Effect</Label>
-                              <label className="flex items-center gap-2 cursor-pointer">
-                                <input 
-                                  type="checkbox" 
-                                  checked={photoFade} 
-                                  onChange={(e) => setPhotoFade(e.target.checked)}
-                                  className="accent-amber-600"
-                                />
-                                <span className="text-slate-300 text-xs">{photoFade ? 'On' : 'Off'}</span>
-                              </label>
+                            <div className="pt-2 border-t border-slate-600 space-y-2">
+                              <div className="flex items-center justify-between">
+                                <Label className="text-slate-400 text-xs">Photo Fade Effect</Label>
+                                <label className="flex items-center gap-2 cursor-pointer">
+                                  <input 
+                                    type="checkbox" 
+                                    checked={photoFade} 
+                                    onChange={(e) => setPhotoFade(e.target.checked)}
+                                    className="accent-amber-600"
+                                  />
+                                  <span className="text-slate-300 text-xs">{photoFade ? 'On' : 'Off'}</span>
+                                </label>
+                              </div>
+                              {photoFade && (
+                                <div className="flex items-center gap-3">
+                                  {/* Shape toggle */}
+                                  <div className="flex gap-1">
+                                    <button
+                                      type="button"
+                                      onClick={() => setFadeShape('rectangle')}
+                                      className={`p-1.5 rounded transition-all ${fadeShape === 'rectangle' ? 'bg-amber-600 text-white' : 'bg-slate-600 text-slate-300 hover:bg-slate-500'}`}
+                                      title="Rectangle fade (bottom)"
+                                    >
+                                      <RectangleHorizontal className="h-4 w-4" />
+                                    </button>
+                                    <button
+                                      type="button"
+                                      onClick={() => setFadeShape('circle')}
+                                      className={`p-1.5 rounded transition-all ${fadeShape === 'circle' ? 'bg-amber-600 text-white' : 'bg-slate-600 text-slate-300 hover:bg-slate-500'}`}
+                                      title="Circle fade (vignette)"
+                                    >
+                                      <div className="h-4 w-4 rounded-full border-2 border-current" />
+                                    </button>
+                                  </div>
+                                  {/* Color picker */}
+                                  <div className="flex items-center gap-2 flex-1">
+                                    <Label className="text-slate-400 text-xs">Color</Label>
+                                    <div className="flex gap-1">
+                                      {['#000000', '#1a1a2e', '#2d3436', '#4a3c31', '#1e3a5f'].map((color) => (
+                                        <button
+                                          key={color}
+                                          type="button"
+                                          onClick={() => setFadeColor(color)}
+                                          className={`w-6 h-6 rounded-full border-2 transition-all ${fadeColor === color ? 'border-amber-400 scale-110' : 'border-slate-500'}`}
+                                          style={{ backgroundColor: color }}
+                                          title={color}
+                                        />
+                                      ))}
+                                      <input
+                                        type="color"
+                                        value={fadeColor}
+                                        onChange={(e) => setFadeColor(e.target.value)}
+                                        className="w-6 h-6 rounded cursor-pointer border-0 p-0"
+                                        title="Custom color"
+                                      />
+                                    </div>
+                                  </div>
+                                </div>
+                              )}
                             </div>
                             {cardType === 'metal' && (
                               <div className="pt-2 border-t border-slate-600">
@@ -4652,14 +4716,21 @@ const Design = () => {
                       filter: `brightness(${photoBrightness}%)`,
                     }}
                   />
-                  {photoFade && (
-                    <div 
-                      className="absolute inset-0 pointer-events-none"
-                      style={{
-                        background: 'linear-gradient(to bottom, transparent 40%, rgba(0,0,0,0.3) 70%, rgba(0,0,0,0.6) 100%)',
-                      }}
-                    />
-                  )}
+                  {photoFade && (() => {
+                    const hex = fadeColor;
+                    const r = parseInt(hex.slice(1,3), 16);
+                    const g = parseInt(hex.slice(3,5), 16);
+                    const b = parseInt(hex.slice(5,7), 16);
+                    const fadeStyle = fadeShape === 'circle'
+                      ? { background: `radial-gradient(ellipse at center, transparent 30%, rgba(${r},${g},${b},0.3) 60%, rgba(${r},${g},${b},0.7) 100%)` }
+                      : { background: `linear-gradient(to bottom, transparent 40%, rgba(${r},${g},${b},0.3) 70%, rgba(${r},${g},${b},0.6) 100%)` };
+                    return (
+                      <div 
+                        className="absolute inset-0 pointer-events-none"
+                        style={fadeStyle}
+                      />
+                    );
+                  })()}
                 </>
               )}
               {showNameOnFront && (
