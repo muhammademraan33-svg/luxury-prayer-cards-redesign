@@ -1529,7 +1529,7 @@ const Design = () => {
                                     }}
                                   />
                                   {/* Border overlay scaled to show top-left corner detail */}
-                                  <div className="absolute inset-0 scale-[4] origin-top-left">
+                                  <div className="absolute inset-0 scale-[5] origin-top-left">
                                     <DecorativeBorderOverlay type={border.id} color={frontBorderColor} />
                                   </div>
                                 </button>
@@ -1919,7 +1919,7 @@ const Design = () => {
                                   }}
                                 />
                                 {/* Border overlay scaled to show top-left corner detail */}
-                                <div className="absolute inset-0 scale-[4] origin-top-left">
+                                <div className="absolute inset-0 scale-[5] origin-top-left">
                                   <DecorativeBorderOverlay type={border.id} color={frontBorderColor} />
                                 </div>
                               </button>
