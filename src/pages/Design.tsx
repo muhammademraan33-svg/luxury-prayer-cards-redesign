@@ -1382,7 +1382,7 @@ const Design = () => {
               {step === 1 && (
                 <div className="md:flex md:gap-6">
                   {/* Left Column: Preview (sticky on medium+ screens) */}
-                  <div className="hidden md:flex md:flex-col md:w-[280px] md:flex-shrink-0 md:sticky md:top-24 md:self-start">
+                  <div className="hidden md:flex md:flex-col md:w-[320px] md:flex-shrink-0 md:sticky md:top-4 md:self-start md:max-h-[calc(100vh-2rem)]">
                     {/* Front/Back Toggle - Above the card */}
                     <div className="flex justify-center gap-2 mb-4">
                       <Button
@@ -1716,9 +1716,9 @@ const Design = () => {
                     </div>
                   )}
 
-                  {/* Front/Back Tabs - Mobile only (desktop uses left column preview) */}
-                  <Tabs value={cardSide} onValueChange={(v) => setCardSide(v as CardSide)} className="w-full md:hidden">
-                    <TabsList className="grid w-full grid-cols-2 bg-slate-700">
+                  {/* Front/Back Tabs */}
+                  <Tabs value={cardSide} onValueChange={(v) => setCardSide(v as CardSide)} className="w-full">
+                    <TabsList className="grid w-full grid-cols-2 bg-slate-700 md:hidden">
                       <TabsTrigger value="front" className="data-[state=active]:bg-amber-600 data-[state=active]:text-white">
                         Front (Photo)
                       </TabsTrigger>
@@ -1728,12 +1728,12 @@ const Design = () => {
                     </TabsList>
 
                     {/* Front Card */}
-                    <TabsContent value="front" className="mt-4">
+                    <TabsContent value="front" className="mt-4 md:mt-0">
                       <div className="flex flex-col items-center gap-4">
                         {/* Card Preview */}
                         <div 
                           ref={cardPreviewRef}
-                          className={`${cardClass} ${cardRounding} overflow-hidden shadow-2xl relative ${cardType === 'metal' && metalBorderColor !== 'none' ? `bg-gradient-to-br ${getMetalBorderGradient(metalBorderColor)} p-1` : ''}`}
+                          className={`md:hidden ${cardClass} ${cardRounding} overflow-hidden shadow-2xl relative ${cardType === 'metal' && metalBorderColor !== 'none' ? `bg-gradient-to-br ${getMetalBorderGradient(metalBorderColor)} p-1` : ''}`}
                         >
                             <div 
                               ref={photoContainerRef}
@@ -1883,6 +1883,8 @@ const Design = () => {
                             </div>
                         </div>
 
+                      {/* Controls Section - Always Visible */}
+                      <div className="flex flex-col items-center gap-4">
                         {/* Photo Upload */}
                         <input
                           ref={photoInputRef}
@@ -2629,8 +2631,8 @@ const Design = () => {
                     </TabsContent>
 
                     {/* Back Card */}
-                    <TabsContent value="back" className="mt-4">
-                      <div className="flex flex-col items-center gap-4">
+                    <TabsContent value="back" className="mt-4 md:mt-0">
+                      <div className="flex flex-col items-center gap-4 md:hidden">
                         {/* Card Preview */}
                         <div 
                           ref={cardPreviewRef}
@@ -2824,7 +2826,10 @@ const Design = () => {
                             );
                           })()}
                         </div>
+                      </div>
 
+                      {/* Controls Section - Always Visible */}
+                      <div className="flex flex-col items-center gap-4">
                         {/* Name on Back Controls */}
                         <div className="w-full max-w-md space-y-3 p-3 bg-slate-700/30 rounded-lg">
                           <div className="flex items-center justify-between">
