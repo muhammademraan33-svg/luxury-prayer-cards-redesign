@@ -1716,8 +1716,8 @@ const Design = () => {
                     </div>
                   )}
 
-                  {/* Front/Back Tabs */}
-                  <Tabs value={cardSide} onValueChange={(v) => setCardSide(v as CardSide)} className="w-full">
+                  {/* Front/Back Tabs - Mobile only (desktop uses left column preview) */}
+                  <Tabs value={cardSide} onValueChange={(v) => setCardSide(v as CardSide)} className="w-full md:hidden">
                     <TabsList className="grid w-full grid-cols-2 bg-slate-700">
                       <TabsTrigger value="front" className="data-[state=active]:bg-amber-600 data-[state=active]:text-white">
                         Front (Photo)
