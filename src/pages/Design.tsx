@@ -1523,7 +1523,7 @@ const Design = () => {
                                   textShadow: datesTextShadow ? '0 1px 2px rgba(0,0,0,0.5)' : 'none',
                                 }}
                               >
-                                <span style={{ fontSize: frontDatesSize === 'auto' ? '9px' : `${Math.max(8, (typeof frontDatesSize === 'number' ? frontDatesSize : 12) * 0.7)}px`, color: frontDatesColor, fontWeight: datesBold ? 'bold' : 'normal', textAlign: 'center', maxWidth: '90%' }}>
+                                <span style={{ fontSize: frontDatesSize === 'auto' ? '9px' : `${Math.max(8, (typeof frontDatesSize === 'number' ? frontDatesSize : 12) * 0.7)}px`, color: frontDatesColor, fontWeight: datesBold ? 'bold' : 'normal', textAlign: 'center', maxWidth: '90%', lineHeight: 1.1, display: 'block' }}>
                                   {formatDates(birthDate, deathDate, frontDateFormat)}
                                 </span>
                               </div>
@@ -1890,6 +1890,7 @@ const Design = () => {
                                       boxShadow: (draggingText === 'dates' || resizingText === 'dates') ? '0 0 0 2px #d97706' : 'none',
                                       textAlign: 'center',
                                       maxWidth: '90%',
+                                      lineHeight: 1.1,
                                     }}
                                     onPointerDown={(e) => handleTextPointerDown(e, 'dates')}
                                     onPointerMove={handleTextPointerMove}
@@ -2843,6 +2844,7 @@ const Design = () => {
                                         fontWeight: datesBold ? 'bold' : 'normal',
                                         textAlign: 'center',
                                         textShadow: '2px 2px 4px rgba(0,0,0,0.5)',
+                                        lineHeight: 1.1,
                                       }}>
                                         {formatDates(birthDate, deathDate, backDateFormat)}
                                       </span>
@@ -4748,6 +4750,7 @@ const Design = () => {
                       fontSize: `${(typeof backDatesSize === 'number' ? backDatesSize : 10) * 3}px`,
                       color: backDatesColor,
                       textAlign: 'center',
+                      lineHeight: 1.1,
                     }}
                   >
                     {formatDates(birthDate, deathDate, backDateFormat)}
