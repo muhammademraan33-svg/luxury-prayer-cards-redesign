@@ -1585,16 +1585,16 @@ const Design = () => {
 
                   {/* Border Style Selection - Paper cards only, at top for easy access on desktop */}
                   {cardType === 'paper' && (
-                    <div className="hidden md:block bg-slate-700/50 rounded-lg p-3">
-                      <div className="flex items-center justify-between gap-4">
-                        <h3 className="text-sm font-semibold text-white whitespace-nowrap">Border Style</h3>
-                        <div className="flex items-center gap-1.5 flex-wrap justify-center">
+                    <div className="hidden md:block bg-slate-700/50 rounded-lg p-2">
+                      <div className="flex items-center gap-3">
+                        <h3 className="text-xs font-semibold text-white whitespace-nowrap">Border</h3>
+                        <div className="flex items-center gap-1 flex-wrap">
                           {DECORATIVE_BORDERS.map((border) => (
                             <button
                               key={border.id}
                               type="button"
                               onClick={() => setFrontBorderDesign(border.id)}
-                              className={`w-10 h-10 rounded border-2 transition-all overflow-hidden relative ${
+                              className={`w-8 h-8 rounded border-2 transition-all overflow-hidden relative ${
                                 frontBorderDesign === border.id
                                   ? 'border-amber-500 ring-1 ring-amber-500/30 scale-105'
                                   : 'border-slate-600 hover:border-slate-400'
@@ -1614,12 +1614,13 @@ const Design = () => {
                               </div>
                             </button>
                           ))}
-                          <div className="w-px h-8 bg-slate-600 mx-1" />
-                          {/* Border Colors inline */}
+                        </div>
+                        <div className="w-px h-6 bg-slate-600" />
+                        <div className="flex items-center gap-1">
                           <button
                             type="button"
                             onClick={() => setFrontBorderColor('#d4af37')}
-                            className={`w-6 h-6 rounded-full border-2 transition-all ${
+                            className={`w-5 h-5 rounded-full border-2 transition-all ${
                               frontBorderColor === '#d4af37' ? 'border-amber-400 ring-1 ring-amber-400/40 scale-110' : 'border-slate-500'
                             }`}
                             style={{ background: 'linear-gradient(135deg, #ffd700, #b8860b)' }}
@@ -1628,7 +1629,7 @@ const Design = () => {
                           <button
                             type="button"
                             onClick={() => setFrontBorderColor('#c0c0c0')}
-                            className={`w-6 h-6 rounded-full border-2 transition-all ${
+                            className={`w-5 h-5 rounded-full border-2 transition-all ${
                               frontBorderColor === '#c0c0c0' ? 'border-amber-400 ring-1 ring-amber-400/40 scale-110' : 'border-slate-500'
                             }`}
                             style={{ background: 'linear-gradient(135deg, #e8e8e8, #a8a8a8)' }}
@@ -1637,7 +1638,7 @@ const Design = () => {
                           <button
                             type="button"
                             onClick={() => setFrontBorderColor('#b76e79')}
-                            className={`w-6 h-6 rounded-full border-2 transition-all ${
+                            className={`w-5 h-5 rounded-full border-2 transition-all ${
                               frontBorderColor === '#b76e79' ? 'border-amber-400 ring-1 ring-amber-400/40 scale-110' : 'border-slate-500'
                             }`}
                             style={{ background: 'linear-gradient(135deg, #e8b4b8, #9e5a65)' }}
@@ -1646,7 +1647,7 @@ const Design = () => {
                           <button
                             type="button"
                             onClick={() => setFrontBorderColor('#f8f8f8')}
-                            className={`w-6 h-6 rounded-full border-2 transition-all ${
+                            className={`w-5 h-5 rounded-full border-2 transition-all ${
                               frontBorderColor === '#f8f8f8' ? 'border-amber-400 ring-1 ring-amber-400/40 scale-110' : 'border-slate-500'
                             }`}
                             style={{ background: 'linear-gradient(135deg, #ffffff, #e0e0e0)' }}
