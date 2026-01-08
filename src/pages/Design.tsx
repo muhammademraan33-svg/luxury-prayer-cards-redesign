@@ -1882,6 +1882,7 @@ const Design = () => {
                               )}
                             </div>
                         </div>
+                      </div>
 
                       {/* Controls Section - Always Visible */}
                       <div className="flex flex-col items-center gap-4">
