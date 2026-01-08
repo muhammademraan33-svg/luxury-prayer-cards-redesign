@@ -1249,18 +1249,28 @@ const Design = () => {
   const currentFinish = METAL_FINISHES.find(f => f.id === metalFinish) || METAL_FINISHES[0];
 
   // Metal cards: 2" x 3.5" (credit card size), Paper cards: 2.5x4.25 or 3x4.75
-  const getCardClass = () => {
+  const getCardClass = (forSidebar = false) => {
     if (cardType === 'paper') {
       // Paper prayer cards - aspect ratio based on active design's size selection
       const activeSize = activeDesignIndex === -1 ? mainDesignSize : (additionalDesigns[activeDesignIndex]?.size || '2.5x4.25');
+      // Smaller size for sidebar to fit without scrolling
+      if (forSidebar) {
+        return activeSize === '3x4.75' ? 'aspect-[3/4.75] w-48' : 'aspect-[2.5/4.25] w-44';
+      }
       return activeSize === '3x4.75' ? 'aspect-[3/4.75] w-64' : 'aspect-[2.5/4.25] w-60';
     }
     // Metal cards 2" x 3.5"
+    if (forSidebar) {
+      return orientation === 'landscape' 
+        ? 'aspect-[3.5/2] w-56' 
+        : 'aspect-[2/3.5] w-40';
+    }
     return orientation === 'landscape' 
       ? 'aspect-[3.5/2] w-80' 
       : 'aspect-[2/3.5] w-56';
   };
   const cardClass = getCardClass();
+  const sidebarCardClass = getCardClass(true);
   const cardRounding = cardType === 'paper' ? '' : 'rounded-2xl';
 
   return (
@@ -1382,7 +1392,7 @@ const Design = () => {
               {step === 1 && (
                 <div className="md:flex md:gap-6">
                   {/* Left Column: Preview (sticky on medium+ screens) */}
-                  <div className="hidden md:flex md:flex-col md:w-[320px] md:flex-shrink-0 md:sticky md:top-4 md:self-start md:max-h-[calc(100vh-2rem)]">
+                  <div className="hidden md:flex md:flex-col md:items-center md:w-[280px] md:flex-shrink-0 md:sticky md:top-4 md:self-start">
                     {/* Front/Back Toggle - Above the card */}
                     <div className="flex justify-center gap-2 mb-4">
                       <Button
@@ -1413,10 +1423,11 @@ const Design = () => {
                     {cardSide === 'front' && (
                       <div className="flex flex-col items-center gap-2">
                         <div 
-                          className={`${cardClass} ${cardRounding} overflow-hidden shadow-2xl relative ${cardType === 'metal' && metalBorderColor !== 'none' ? `bg-gradient-to-br ${getMetalBorderGradient(metalBorderColor)} p-1` : ''}`}
+                          className={`${sidebarCardClass} ${cardRounding} overflow-hidden shadow-2xl relative cursor-pointer ${cardType === 'metal' && metalBorderColor !== 'none' ? `bg-gradient-to-br ${getMetalBorderGradient(metalBorderColor)} p-1` : ''}`}
+                          onClick={() => !deceasedPhoto && photoInputRef.current?.click()}
                         >
                           <div 
-                            className={`w-full h-full ${cardType === 'metal' && metalBorderColor !== 'none' ? 'rounded-lg' : ''} overflow-hidden bg-slate-700 flex items-center justify-center relative`}
+                            className={`w-full h-full ${cardType === 'metal' && metalBorderColor !== 'none' ? 'rounded-lg' : ''} overflow-hidden bg-slate-700 flex items-center justify-center relative ${!deceasedPhoto ? 'hover:bg-slate-600 transition-colors' : ''}`}
                           >
                             {deceasedPhoto ? (
                               <>
@@ -1442,24 +1453,24 @@ const Design = () => {
                               </>
                             ) : (
                               <div className="text-center p-4 pointer-events-none">
-                                <ImageIcon className="h-12 w-12 text-slate-400 mx-auto mb-2" />
-                                <p className="text-slate-400 text-sm">Upload photo</p>
+                                <ImageIcon className="h-10 w-10 text-slate-400 mx-auto mb-2" />
+                                <p className="text-slate-400 text-xs">Click to upload</p>
                               </div>
                             )}
                             
                             {/* Text Overlay - Name */}
                             {showNameOnFront && (
                               <div
-                                className="absolute px-2 py-1"
+                                className="absolute px-1 py-0.5"
                                 style={{
                                   left: `${namePosition.x}%`,
                                   top: `${namePosition.y}%`,
                                   transform: 'translate(-50%, -50%)',
                                   fontFamily: nameFont,
-                                  textShadow: '0 2px 4px rgba(0,0,0,0.5)',
+                                  textShadow: '0 1px 2px rgba(0,0,0,0.5)',
                                 }}
                               >
-                                <span style={{ fontSize: `${nameSize}px`, color: nameColor, fontWeight: nameBold ? 'bold' : 'normal', whiteSpace: 'pre', textAlign: 'center' }}>
+                                <span style={{ fontSize: `${Math.max(8, nameSize * 0.7)}px`, color: nameColor, fontWeight: nameBold ? 'bold' : 'normal', whiteSpace: 'nowrap', textAlign: 'center' }}>
                                   {deceasedName || 'Name Here'}
                                 </span>
                               </div>
@@ -1468,16 +1479,16 @@ const Design = () => {
                             {/* Text Overlay - Dates */}
                             {showDatesOnFront && (
                               <div
-                                className="absolute px-2 py-1"
+                                className="absolute px-1 py-0.5"
                                 style={{
                                   left: `${datesPosition.x}%`,
                                   top: `${datesPosition.y}%`,
                                   transform: 'translate(-50%, -50%)',
                                   fontFamily: datesFont,
-                                  textShadow: '0 2px 4px rgba(0,0,0,0.5)',
+                                  textShadow: '0 1px 2px rgba(0,0,0,0.5)',
                                 }}
                               >
-                                <span style={{ fontSize: frontDatesSize === 'auto' ? '12px' : `${frontDatesSize}px`, color: frontDatesColor, fontWeight: datesBold ? 'bold' : 'normal' }}>
+                                <span style={{ fontSize: frontDatesSize === 'auto' ? '9px' : `${Math.max(8, (typeof frontDatesSize === 'number' ? frontDatesSize : 12) * 0.7)}px`, color: frontDatesColor, fontWeight: datesBold ? 'bold' : 'normal', whiteSpace: 'nowrap' }}>
                                   {formatDates(birthDate, deathDate, frontDateFormat)}
                                 </span>
                               </div>
@@ -1497,7 +1508,7 @@ const Design = () => {
                     {cardSide === 'back' && (
                       <div className="flex flex-col items-center gap-2">
                         <div 
-                          className={`${cardClass} ${cardRounding} shadow-2xl relative overflow-hidden`}
+                          className={`${sidebarCardClass} ${cardRounding} shadow-2xl relative overflow-hidden`}
                         >
                           {(() => {
                             const currentBackMetal = METAL_BG_OPTIONS.find(m => m.id === backMetalFinish) || METAL_BG_OPTIONS[0];
@@ -1572,11 +1583,11 @@ const Design = () => {
                   <div className="flex-1 space-y-6 min-w-0">
                   {/* Paper Card Size Selection - only for paper cards */}
                   {cardType === 'paper' && (
-                    <div className="bg-slate-700/50 rounded-xl p-4 mb-4">
-                      <h3 className="text-lg font-semibold text-white mb-3 text-center">
-                        Card Size {activeDesignIndex >= 0 ? `(Design ${activeDesignIndex + 2})` : '(Main Design)'}
+                    <div className="bg-slate-700/50 rounded-xl p-3 mb-4">
+                      <h3 className="text-sm font-semibold text-white mb-2 text-center">
+                        Card Size {activeDesignIndex >= 0 ? `(Design ${activeDesignIndex + 2})` : ''}
                       </h3>
-                      <div className="grid grid-cols-2 gap-4">
+                      <div className="grid grid-cols-2 gap-2">
                         <button
                           type="button"
                           onClick={() => {
@@ -1588,7 +1599,7 @@ const Design = () => {
                               setAdditionalDesigns(updated);
                             }
                           }}
-                          className={`p-4 rounded-lg border-2 transition-all ${
+                          className={`p-2 rounded-lg border-2 transition-all ${
                             (activeDesignIndex === -1 ? mainDesignSize : additionalDesigns[activeDesignIndex]?.size) === '2.5x4.25'
                               ? 'border-amber-500 bg-amber-500/20'
                               : 'border-slate-600 hover:border-slate-500'
@@ -1597,18 +1608,18 @@ const Design = () => {
                           <div className="flex flex-col items-center">
                             {/* Proportional card silhouette - 2.5:4.25 ratio */}
                             <div 
-                              className="border-2 border-white/60 mb-3 shadow-lg"
+                              className="border-2 border-white/60 mb-2 shadow-lg"
                               style={{ 
-                                width: '40px', 
-                                height: '68px',
+                                width: '28px', 
+                                height: '48px',
                                 backgroundImage: `url(${cloudsLightBg})`,
                                 backgroundSize: 'cover',
                                 backgroundPosition: 'center'
                               }}
                             />
-                            <div className="text-xl font-bold text-white mb-1">2.5" × 4.25"</div>
-                            <div className="text-slate-300 text-sm">Standard Size</div>
-                            <div className="text-amber-400 font-semibold mt-2">Included</div>
+                            <div className="text-sm font-bold text-white mb-0.5">2.5" × 4.25"</div>
+                            <div className="text-slate-300 text-xs">Standard</div>
+                            <div className="text-amber-400 font-semibold text-xs mt-1">Included</div>
                           </div>
                         </button>
                         <button
@@ -1622,7 +1633,7 @@ const Design = () => {
                               setAdditionalDesigns(updated);
                             }
                           }}
-                          className={`p-4 rounded-lg border-2 transition-all ${
+                          className={`p-2 rounded-lg border-2 transition-all ${
                             (activeDesignIndex === -1 ? mainDesignSize : additionalDesigns[activeDesignIndex]?.size) === '3x4.75'
                               ? 'border-amber-500 bg-amber-500/20'
                               : 'border-slate-600 hover:border-slate-500'
@@ -1631,18 +1642,18 @@ const Design = () => {
                           <div className="flex flex-col items-center">
                             {/* Proportional card silhouette - 3:4.75 ratio (~40% larger area) */}
                             <div 
-                              className="border-2 border-white/60 mb-3 shadow-lg"
+                              className="border-2 border-white/60 mb-2 shadow-lg"
                               style={{ 
-                                width: '48px', 
-                                height: '76px',
+                                width: '34px', 
+                                height: '54px',
                                 backgroundImage: `url(${cloudsLightBg})`,
                                 backgroundSize: 'cover',
                                 backgroundPosition: 'center'
                               }}
                             />
-                            <div className="text-xl font-bold text-white mb-1">3" × 4.75"</div>
-                            <div className="text-slate-300 text-sm">Large Size</div>
-                            <div className="text-amber-400 font-semibold mt-2">+${PAPER_SIZE_UPSELL}</div>
+                            <div className="text-sm font-bold text-white mb-0.5">3" × 4.75"</div>
+                            <div className="text-slate-300 text-xs">Large</div>
+                            <div className="text-amber-400 font-semibold text-xs mt-1">+${PAPER_SIZE_UPSELL}</div>
                           </div>
                         </button>
                       </div>
