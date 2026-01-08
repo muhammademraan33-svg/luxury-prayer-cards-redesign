@@ -893,13 +893,7 @@ const Index = () => {
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link to="/design">
               <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90 font-semibold text-lg px-10 py-7 shadow-xl">
-                Metal Cards
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Button>
-            </Link>
-            <Link to="/design?type=paper&quantity=72">
-              <Button size="lg" variant="outline" className="font-semibold text-lg px-10 py-7 border-2">
-                Photo Prayer Cards
+                Start Designing
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
             </Link>

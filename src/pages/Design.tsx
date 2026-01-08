@@ -2698,21 +2698,23 @@ const Design = () => {
                               setAdditionalDesigns([...additionalDesigns, newDesign]);
                               setActiveDesignIndex(additionalDesigns.length);
                             }}
-                            className="w-full mt-2 p-3 bg-gradient-to-r from-amber-600/30 via-amber-500/20 to-amber-600/30 border-2 border-amber-500/60 hover:border-amber-400 hover:from-amber-600/40 hover:via-amber-500/30 hover:to-amber-600/40 rounded-lg transition-all group relative overflow-hidden"
+                            className="w-full mt-2 p-2.5 bg-gradient-to-r from-amber-600/20 via-amber-500/10 to-amber-600/20 border border-amber-500/40 hover:border-amber-400 rounded-lg transition-all group"
                           >
-                            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-amber-400/10 to-transparent animate-pulse" />
-                            <div className="relative flex flex-col items-center gap-0.5">
-                              <div className="flex items-center gap-2">
-                                <Layers className="h-4 w-4 text-amber-400" />
-                                <span className="font-bold text-amber-300 text-sm">Add Variety!</span>
-                                <span className="bg-amber-500 text-black text-xs font-bold px-1.5 py-0.5 rounded">Only $7</span>
+                            <div className="flex items-center justify-center gap-3">
+                              {/* Mini card mockup */}
+                              <div className="w-6 h-9 bg-gradient-to-br from-slate-200 to-slate-400 rounded-sm shadow-md flex items-center justify-center">
+                                <div className="w-4 h-5 bg-slate-300 rounded-[1px]" />
                               </div>
-                              <span className="text-slate-400 text-xs">Different photo or prayer for some guests</span>
+                              <div className="flex flex-col items-start">
+                                <div className="flex items-center gap-2">
+                                  <span className="font-semibold text-amber-300 text-sm">Add Style</span>
+                                  <span className="bg-amber-500 text-black text-[10px] font-bold px-1.5 py-0.5 rounded">$7</span>
+                                </div>
+                                <span className="text-slate-500 text-[10px]">New background or prayer</span>
+                              </div>
                             </div>
                           </button>
                         )}
-
-                        <p className="text-slate-500 text-xs text-center mt-1">Photo fills entire front with metal border frame</p>
                       </div>
                     </TabsContent>
 
@@ -4029,15 +4031,22 @@ const Design = () => {
                           setActiveDesignIndex(additionalDesigns.length);
                           window.scrollTo({ top: 0, behavior: 'smooth' });
                         }}
-                        className="w-full p-4 bg-gradient-to-r from-amber-600/20 via-amber-500/10 to-amber-600/20 border-2 border-dashed border-amber-500/50 hover:border-amber-400 hover:from-amber-600/30 hover:via-amber-500/20 hover:to-amber-600/30 rounded-lg transition-all group"
+                        className="w-full p-4 bg-gradient-to-r from-amber-600/15 via-amber-500/10 to-amber-600/15 border border-dashed border-amber-500/40 hover:border-amber-400 rounded-lg transition-all group"
                       >
-                        <div className="flex flex-col items-center gap-1">
-                          <div className="flex items-center gap-2">
-                            <Layers className="h-5 w-5 text-amber-400" />
-                            <span className="font-bold text-amber-300">Want Variety?</span>
-                            <span className="bg-amber-500 text-black text-xs font-bold px-2 py-0.5 rounded">Only $7</span>
+                        <div className="flex items-center justify-center gap-4">
+                          {/* Mini card mockups showing variety */}
+                          <div className="flex -space-x-2">
+                            <div className="w-8 h-12 bg-gradient-to-br from-blue-200 to-blue-400 rounded-sm shadow-md border border-white/50" />
+                            <div className="w-8 h-12 bg-gradient-to-br from-rose-200 to-rose-400 rounded-sm shadow-md border border-white/50" />
+                            <div className="w-8 h-12 bg-gradient-to-br from-amber-200 to-amber-400 rounded-sm shadow-md border border-white/50" />
                           </div>
-                          <span className="text-slate-400 text-sm">Add a different photo or prayer for some cards</span>
+                          <div className="flex flex-col items-start">
+                            <div className="flex items-center gap-2">
+                              <span className="font-bold text-amber-300">Add Another Style</span>
+                              <span className="bg-amber-500 text-black text-xs font-bold px-2 py-0.5 rounded">Only $7</span>
+                            </div>
+                            <span className="text-slate-400 text-sm">Different background, prayer, or layout</span>
+                          </div>
                         </div>
                       </button>
 
