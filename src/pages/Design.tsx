@@ -338,14 +338,14 @@ const Design = () => {
     if (cardType !== 'paper') return;
     if (!showNameOnFront || !showDatesOnFront) return;
 
-    // Safe max Y depends on whether border is active
-    const SAFE_MAX_Y = frontBorderDesign === 'none' ? 96 : 87;
+    // Safe max Y depends on whether border is active - reduced to prevent cutoff
+    const SAFE_MAX_Y = frontBorderDesign === 'none' ? 93 : 84;
     
-    // Dynamic gap based on line count - very tight spacing
+    // Dynamic gap based on line count - tighter spacing
     const nameText = deceasedName || 'Name Here';
     const lineCount = nameText.split('\n').length;
-    // Base gap of 2%, plus 1.5% per additional line
-    const MIN_GAP_Y = 2 + (lineCount - 1) * 1.5;
+    // Base gap of 1.5%, plus 1% per additional line
+    const MIN_GAP_Y = 1.5 + (lineCount - 1) * 1;
 
     const lineOffset = (lineCount - 1) * 3;
     const effectiveNameY = namePosition.y - lineOffset;
@@ -1294,7 +1294,23 @@ const Design = () => {
   };
   const cardClass = getCardClass();
   const sidebarCardClass = getCardClass(true);
-  const cardRounding = cardType === 'paper' ? '' : 'rounded-2xl';
+  
+  // Paper corner radius state
+  const [paperCornerRadius, setPaperCornerRadius] = useState<'none' | 'small' | 'medium' | 'large'>('none');
+  
+  const getCardRounding = () => {
+    if (cardType === 'metal') return 'rounded-2xl';
+    if (cardType === 'paper') {
+      switch (paperCornerRadius) {
+        case 'small': return 'rounded-sm';
+        case 'medium': return 'rounded-lg';
+        case 'large': return 'rounded-2xl';
+        default: return '';
+      }
+    }
+    return '';
+  };
+  const cardRounding = getCardRounding();
 
   return (
     <>
@@ -1515,18 +1531,20 @@ const Design = () => {
                             {/* Text Overlay - Dates */}
                             {showDatesOnFront && (
                               <div
-                                className="absolute px-1 py-0.5"
+                                className="absolute px-1"
                                 style={{
                                   left: `${datesPosition.x}%`,
                                   top: `${datesPosition.y}%`,
                                   transform: 'translate(-50%, -50%)',
                                   fontFamily: datesFont,
                                   textShadow: datesTextShadow ? '0 1px 2px rgba(0,0,0,0.5)' : 'none',
+                                  width: '90%',
+                                  overflow: 'visible',
                                 }}
                               >
                                 <AutoFitSingleLineText
                                   text={formatDates(birthDate, deathDate, frontDateFormat)}
-                                  maxWidth="90%"
+                                  maxWidth="100%"
                                   style={{
                                     fontSize:
                                       frontDatesSize === 'auto'
@@ -1703,6 +1721,36 @@ const Design = () => {
                               />
                             );
                           })}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Corner Radius Selection - Paper cards only */}
+                  {cardType === 'paper' && (
+                    <div className="hidden md:block bg-slate-700/50 rounded-lg p-2">
+                      <div className="flex items-center gap-3">
+                        <h3 className="text-xs font-semibold text-white whitespace-nowrap">Corners</h3>
+                        <div className="flex items-center gap-1">
+                          {([
+                            { id: 'none', label: 'Sharp' },
+                            { id: 'small', label: 'Small' },
+                            { id: 'medium', label: 'Medium' },
+                            { id: 'large', label: 'Round' },
+                          ] as const).map((option) => (
+                            <button
+                              key={option.id}
+                              type="button"
+                              onClick={() => setPaperCornerRadius(option.id)}
+                              className={`px-2 py-1 text-xs rounded transition-all ${
+                                paperCornerRadius === option.id
+                                  ? 'bg-amber-500 text-white'
+                                  : 'bg-slate-600 text-slate-300 hover:bg-slate-500'
+                              }`}
+                            >
+                              {option.label}
+                            </button>
+                          ))}
                         </div>
                       </div>
                     </div>
@@ -1893,7 +1941,7 @@ const Design = () => {
 
                                 return (
                                   <div
-                                    className="absolute touch-none select-none px-2 py-1 rounded"
+                                    className="absolute touch-none select-none px-2 rounded"
                                     style={{
                                       left: `${datesPosition.x}%`,
                                       top: `${adjustedDatesY}%`,
@@ -1903,8 +1951,8 @@ const Design = () => {
                                       textShadow: datesTextShadow ? '0 2px 4px rgba(0,0,0,0.5)' : 'none',
                                       boxShadow: (draggingText === 'dates' || resizingText === 'dates') ? '0 0 0 2px #d97706' : 'none',
                                       textAlign: 'center',
-                                      maxWidth: '90%',
-                                      lineHeight: 1.1,
+                                      width: '90%',
+                                      overflow: 'visible',
                                     }}
                                     onPointerDown={(e) => handleTextPointerDown(e, 'dates')}
                                     onPointerMove={handleTextPointerMove}
@@ -1914,7 +1962,7 @@ const Design = () => {
                                   >
                                     <AutoFitSingleLineText
                                       text={formatDates(birthDate, deathDate, frontDateFormat)}
-                                      maxWidth="90%"
+                                      maxWidth="100%"
                                       style={{
                                         fontSize: frontDatesSize === 'auto' ? '12px' : `${frontDatesSize}px`,
                                         color: frontDatesColor,
@@ -4693,6 +4741,7 @@ const Design = () => {
                     textShadow: datesTextShadow ? '0 1px 2px rgba(0,0,0,0.5)' : 'none',
                     width: '90%',
                     textAlign: 'center',
+                    overflow: 'visible',
                   }}
                 >
                   <AutoFitSingleLineText
