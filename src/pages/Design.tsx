@@ -332,18 +332,19 @@ const Design = () => {
   const [namePosition, setNamePosition] = useState({ x: 50, y: 80 });
   const [datesPosition, setDatesPosition] = useState({ x: 50, y: cardType === 'metal' ? 91 : 92 });
 
-  // Prevent name/dates from overlapping (especially when borders constrain the safe area)
+  // Prevent name/dates from overlapping (works for both bordered and non-bordered cases)
   useEffect(() => {
     if (cardType !== 'paper') return;
-    if (frontBorderDesign === 'none') return;
     if (!showNameOnFront || !showDatesOnFront) return;
 
-    const SAFE_MAX_Y = 87; // mirrors drag bounds when border is active
+    // Safe max Y depends on whether border is active
+    const SAFE_MAX_Y = frontBorderDesign === 'none' ? 96 : 87;
+    
     // Dynamic gap based on line count - tighter spacing
     const nameText = deceasedName || 'Name Here';
     const lineCount = nameText.split('\n').length;
-    // Base gap of 3%, plus 1.5% per additional line
-    const MIN_GAP_Y = 3 + (lineCount - 1) * 1.5;
+    // Base gap of 4%, plus 2% per additional line
+    const MIN_GAP_Y = 4 + (lineCount - 1) * 2;
 
     const lineOffset = (lineCount - 1) * 3;
     const effectiveNameY = namePosition.y - lineOffset;
@@ -382,8 +383,8 @@ const Design = () => {
   const [nameSize, setNameSize] = useState(24);
   const [frontDatesSize, setFrontDatesSize] = useState<number | 'auto'>(16);
   const [backDatesSize, setBackDatesSize] = useState<number | 'auto'>(14);
-  const [frontDateFormat, setFrontDateFormat] = useState<'full' | 'short-month' | 'mmm-dd-yyyy' | 'numeric' | 'year'>('mmm-dd-yyyy');
-  const [backDateFormat, setBackDateFormat] = useState<'full' | 'short-month' | 'mmm-dd-yyyy' | 'numeric' | 'year'>('mmm-dd-yyyy');
+  const [frontDateFormat, setFrontDateFormat] = useState<'full' | 'short-month' | 'mmm-dd-yyyy' | 'numeric' | 'year'>(cardType === 'paper' ? 'full' : 'mmm-dd-yyyy');
+  const [backDateFormat, setBackDateFormat] = useState<'full' | 'short-month' | 'mmm-dd-yyyy' | 'numeric' | 'year'>(cardType === 'paper' ? 'full' : 'mmm-dd-yyyy');
   const [additionalText, setAdditionalText] = useState('');
   const [additionalTextPosition, setAdditionalTextPosition] = useState({ x: 50, y: 70 });
   const [additionalTextColor, setAdditionalTextColor] = useState('#ffffff');
@@ -836,15 +837,18 @@ const Design = () => {
     const recompute = () => {
       if (disposed) return;
 
-      const minPx = 3;
-      const maxPx = 22;
+      const minPx = 10;
+      const maxPx = 28;
 
       // Compute available space inside the prayer container (clientHeight/Width includes padding)
       const cs = window.getComputedStyle(container);
       const padY = (parseFloat(cs.paddingTop) || 0) + (parseFloat(cs.paddingBottom) || 0);
       const padX = (parseFloat(cs.paddingLeft) || 0) + (parseFloat(cs.paddingRight) || 0);
-      const availH = Math.max(0, container.clientHeight - padY);
-      const availW = Math.max(0, container.clientWidth - padX);
+      
+      // Account for border padding when calculating available space
+      const borderPadding = backBorderDesign !== 'none' ? 16 : 0;
+      const availH = Math.max(0, container.clientHeight - padY - borderPadding);
+      const availW = Math.max(0, container.clientWidth - padX - borderPadding);
 
       // Temporarily remove clipping while measuring (clipping can make scrollHeight unreliable on some browsers)
       const prev = {
@@ -2331,11 +2335,12 @@ const Design = () => {
                               </label>
                             </div>
                             <div className="flex gap-2">
-                              <Input
+                              <Textarea
                                 placeholder="Name"
                                 value={deceasedName}
                                 onChange={(e) => setDeceasedName(e.target.value)}
-                                className="bg-slate-700 border-slate-600 text-white h-8 text-sm flex-1"
+                                rows={2}
+                                className="bg-slate-700 border-slate-600 text-white text-sm flex-1 resize-none min-h-[40px]"
                               />
                               <Select value={nameFont} onValueChange={setNameFont}>
                                 <SelectTrigger className="bg-slate-700 border-slate-600 text-white h-8 w-[100px]">
