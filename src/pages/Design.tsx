@@ -2290,14 +2290,14 @@ const Design = () => {
                             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                               <Input
                                 type="text"
-                                placeholder="Birth (e.g. Jan 1, 1940)"
+                                placeholder="mm/dd/yyyy"
                                 value={birthDate}
                                 onChange={(e) => setBirthDate(e.target.value)}
                                 className="bg-slate-700 border-slate-600 text-white placeholder:text-slate-400"
                               />
                               <Input
                                 type="text"
-                                placeholder="Death (e.g. Dec 25, 2024)"
+                                placeholder="mm/dd/yyyy"
                                 value={deathDate}
                                 onChange={(e) => setDeathDate(e.target.value)}
                                 className="bg-slate-700 border-slate-600 text-white placeholder:text-slate-400"
