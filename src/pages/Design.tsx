@@ -16,6 +16,7 @@ import { toast } from 'sonner';
 import metalCardProduct from '@/assets/metal-card-product.jpg';
 import paperCardsProduct from '@/assets/paper-cards-product.jpg';
 import { AutoFitSingleLineText } from '@/components/AutoFitSingleLineText';
+import { PrintPreviewSample } from '@/components/PrintPreviewSample';
 
 import cloudsLightBg from '@/assets/backgrounds/clouds-light.jpg';
 import marbleGreyBg from '@/assets/backgrounds/marble-grey.jpg';
@@ -214,6 +215,7 @@ const Design = () => {
   const [frontBorderColor, setFrontBorderColor] = useState('#d4af37'); // Gold (metallic) default
   const [backBorderDesign, setBackBorderDesign] = useState<DecorativeBorderType>('none');
   const [backBorderColor, setBackBorderColor] = useState('#d4af37'); // Gold (metallic) default
+  const [showPrintPreview, setShowPrintPreview] = useState(false);
 
   // Only allow the 4 metallic border colors
   const METALLIC_BORDER_HEXES = ['#d4af37', '#c0c0c0', '#b76e79', '#f8f8f8'] as const;
@@ -1295,19 +1297,12 @@ const Design = () => {
   const cardClass = getCardClass();
   const sidebarCardClass = getCardClass(true);
   
-  // Paper corner radius state
-  const [paperCornerRadius, setPaperCornerRadius] = useState<'none' | 'small' | 'medium' | 'large'>('none');
+  // Paper corner radius state - simple toggle
+  const [paperCornerRadius, setPaperCornerRadius] = useState<'none' | 'medium'>('none');
   
   const getCardRounding = () => {
     if (cardType === 'metal') return 'rounded-2xl';
-    if (cardType === 'paper') {
-      switch (paperCornerRadius) {
-        case 'small': return 'rounded-sm';
-        case 'medium': return 'rounded-lg';
-        case 'large': return 'rounded-2xl';
-        default: return '';
-      }
-    }
+    if (cardType === 'paper' && paperCornerRadius === 'medium') return 'rounded-lg';
     return '';
   };
   const cardRounding = getCardRounding();
@@ -1726,32 +1721,23 @@ const Design = () => {
                     </div>
                   )}
 
-                  {/* Corner Radius Selection - Paper cards only */}
+                  {/* Rounded Corners Toggle - Paper cards only */}
                   {cardType === 'paper' && (
                     <div className="hidden md:block bg-slate-700/50 rounded-lg p-2">
                       <div className="flex items-center gap-3">
                         <h3 className="text-xs font-semibold text-white whitespace-nowrap">Corners</h3>
-                        <div className="flex items-center gap-1">
-                          {([
-                            { id: 'none', label: 'Sharp' },
-                            { id: 'small', label: 'Small' },
-                            { id: 'medium', label: 'Medium' },
-                            { id: 'large', label: 'Round' },
-                          ] as const).map((option) => (
-                            <button
-                              key={option.id}
-                              type="button"
-                              onClick={() => setPaperCornerRadius(option.id)}
-                              className={`px-2 py-1 text-xs rounded transition-all ${
-                                paperCornerRadius === option.id
-                                  ? 'bg-amber-500 text-white'
-                                  : 'bg-slate-600 text-slate-300 hover:bg-slate-500'
-                              }`}
-                            >
-                              {option.label}
-                            </button>
-                          ))}
-                        </div>
+                        <button
+                          type="button"
+                          onClick={() => setPaperCornerRadius(paperCornerRadius === 'none' ? 'medium' : 'none')}
+                          className={`px-3 py-1 text-xs rounded transition-all flex items-center gap-2 ${
+                            paperCornerRadius !== 'none'
+                              ? 'bg-amber-500 text-white'
+                              : 'bg-slate-600 text-slate-300 hover:bg-slate-500'
+                          }`}
+                        >
+                          <div className={`w-3 h-3 border ${paperCornerRadius !== 'none' ? 'rounded border-white' : 'border-slate-400'}`} />
+                          Rounded
+                        </button>
                       </div>
                     </div>
                   )}
@@ -4090,7 +4076,23 @@ const Design = () => {
                             <span className="text-slate-300">Shipping</span>
                             <span className="text-white font-medium">Delivered in 48-72 hours</span>
                           </div>
+                          
+                          <div className="flex justify-between items-center py-2 border-t border-slate-600 mt-2 pt-3">
+                            <span className="text-slate-300">Corners</span>
+                            <span className="text-white font-medium">{paperCornerRadius !== 'none' ? 'Rounded' : 'Square'}</span>
+                          </div>
                         </div>
+                        
+                        {/* Preview Print Output Button */}
+                        <Button
+                          type="button"
+                          variant="outline"
+                          onClick={() => setShowPrintPreview(true)}
+                          className="w-full mt-4 border-amber-500/50 text-amber-400 hover:bg-amber-500/10"
+                        >
+                          <Layers className="h-4 w-4 mr-2" />
+                          Preview Print Output (Signs365 Specs)
+                        </Button>
                       </div>
                     </>
                   ) : (
@@ -4869,6 +4871,15 @@ const Design = () => {
         </div>
       </footer>
     </div>
+    
+    {/* Print Preview Sample Modal */}
+    <PrintPreviewSample
+      open={showPrintPreview}
+      onClose={() => setShowPrintPreview(false)}
+      hasRoundedCorners={paperCornerRadius !== 'none'}
+      cardWidth={mainDesignSize === '3x4.75' ? '3' : '2.5'}
+      cardHeight={mainDesignSize === '3x4.75' ? '4.75' : '4.25'}
+    />
     </>
   );
 };
