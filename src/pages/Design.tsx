@@ -747,7 +747,24 @@ const Design = () => {
   };
 
   const formatDates = (birth: string, death: string, format: 'full' | 'short-month' | 'mmm-dd-yyyy' | 'numeric' | 'year'): string => {
-    // If user typed dates directly, just display them as entered
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    
+    // Parse mm/dd/yyyy format and convert to "Mmm DD, YYYY"
+    const parseToDisplay = (dateStr: string): string => {
+      if (!dateStr) return '';
+      const match = dateStr.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+      if (match) {
+        const monthIdx = parseInt(match[1], 10) - 1;
+        const day = match[2].padStart(2, '0');
+        const year = match[3];
+        if (monthIdx >= 0 && monthIdx < 12) {
+          return `${months[monthIdx]} ${day}, ${year}`;
+        }
+      }
+      return dateStr; // Return as-is if not in expected format
+    };
+    
+    // If no dates provided, show placeholder
     if (!birth && !death) {
       switch (format) {
         case 'year': return '1945 – 2025';
@@ -758,9 +775,8 @@ const Design = () => {
       }
     }
     
-    // Display text as user entered it
-    const birthDisplay = birth || 'Birth Date';
-    const deathDisplay = death || 'Death Date';
+    const birthDisplay = birth ? parseToDisplay(birth) : 'Birth Date';
+    const deathDisplay = death ? parseToDisplay(death) : 'Death Date';
     
     return `${birthDisplay} – ${deathDisplay}`;
   };
