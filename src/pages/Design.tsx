@@ -410,6 +410,11 @@ const Design = () => {
   const [inLovingMemoryBold, setInLovingMemoryBold] = useState(false);
   const [prayerBold, setPrayerBold] = useState(false);
   
+  // Text shadow options
+  const [nameTextShadow, setNameTextShadow] = useState(true);
+  const [datesTextShadow, setDatesTextShadow] = useState(true);
+  const [additionalTextShadow, setAdditionalTextShadow] = useState(true);
+  
   // "In Loving Memory" customization
   const [inLovingMemoryText, setInLovingMemoryText] = useState('In Loving Memory');
   const [inLovingMemoryColor, setInLovingMemoryColor] = useState('#a1a1aa');
@@ -1463,7 +1468,7 @@ const Design = () => {
                                   top: `${namePosition.y}%`,
                                   transform: 'translate(-50%, -50%)',
                                   fontFamily: nameFont,
-                                  textShadow: '0 1px 2px rgba(0,0,0,0.5)',
+                                  textShadow: nameTextShadow ? '0 1px 2px rgba(0,0,0,0.5)' : 'none',
                                 }}
                               >
                                 <span style={{ fontSize: `${Math.max(8, nameSize * 0.7)}px`, color: nameColor, fontWeight: nameBold ? 'bold' : 'normal', whiteSpace: 'nowrap', textAlign: 'center' }}>
@@ -1481,7 +1486,7 @@ const Design = () => {
                                   top: `${datesPosition.y}%`,
                                   transform: 'translate(-50%, -50%)',
                                   fontFamily: datesFont,
-                                  textShadow: '0 1px 2px rgba(0,0,0,0.5)',
+                                  textShadow: datesTextShadow ? '0 1px 2px rgba(0,0,0,0.5)' : 'none',
                                 }}
                               >
                                 <span style={{ fontSize: frontDatesSize === 'auto' ? '9px' : `${Math.max(8, (typeof frontDatesSize === 'number' ? frontDatesSize : 12) * 0.7)}px`, color: frontDatesColor, fontWeight: datesBold ? 'bold' : 'normal', whiteSpace: 'nowrap' }}>
@@ -1802,7 +1807,7 @@ const Design = () => {
                                       transform: 'translate(-50%, -50%)',
                                       fontFamily: nameFont,
                                       cursor: draggingText === 'name' || resizingText === 'name' ? 'grabbing' : 'grab',
-                                      textShadow: '0 2px 4px rgba(0,0,0,0.5)',
+                                      textShadow: nameTextShadow ? '0 2px 4px rgba(0,0,0,0.5)' : 'none',
                                       boxShadow: (draggingText === 'name' || resizingText === 'name') ? '0 0 0 2px #d97706' : 'none',
                                       whiteSpace: 'nowrap',
                                     }}
@@ -1837,7 +1842,7 @@ const Design = () => {
                                       transform: 'translate(-50%, -50%)',
                                       fontFamily: datesFont,
                                       cursor: draggingText === 'dates' || resizingText === 'dates' ? 'grabbing' : 'grab',
-                                      textShadow: '0 2px 4px rgba(0,0,0,0.5)',
+                                      textShadow: datesTextShadow ? '0 2px 4px rgba(0,0,0,0.5)' : 'none',
                                       boxShadow: (draggingText === 'dates' || resizingText === 'dates') ? '0 0 0 2px #d97706' : 'none',
                                       whiteSpace: 'nowrap',
                                     }}
@@ -1864,7 +1869,7 @@ const Design = () => {
                                     transform: 'translate(-50%, -50%)',
                                     fontFamily: additionalTextFont,
                                     cursor: draggingText === 'additional' || resizingText === 'additional' ? 'grabbing' : 'grab',
-                                    textShadow: '0 2px 4px rgba(0,0,0,0.5)',
+                                    textShadow: additionalTextShadow ? '0 2px 4px rgba(0,0,0,0.5)' : 'none',
                                     boxShadow: (draggingText === 'additional' || resizingText === 'additional') ? '0 0 0 2px #d97706' : 'none',
                                     maxWidth: '80%',
                                   }}
@@ -2296,6 +2301,16 @@ const Design = () => {
                               >
                                 B
                               </Button>
+                              <Button
+                                type="button"
+                                variant={nameTextShadow ? 'default' : 'outline'}
+                                size="sm"
+                                className={`h-5 px-2 text-xs ${nameTextShadow ? 'bg-amber-600 text-white' : 'border-slate-600 text-slate-300'}`}
+                                onClick={() => setNameTextShadow(!nameTextShadow)}
+                                title="Text Shadow"
+                              >
+                                S
+                              </Button>
                             </div>
                           </div>
 
@@ -2408,6 +2423,17 @@ const Design = () => {
                                 >
                                   B
                                 </Button>
+                                <Button
+                                  type="button"
+                                  variant={datesTextShadow ? 'default' : 'outline'}
+                                  size="sm"
+                                  className={`h-5 px-2 text-xs ${datesTextShadow ? 'bg-amber-600 text-white' : 'border-slate-600 text-slate-300'}`}
+                                  onClick={() => setDatesTextShadow(!datesTextShadow)}
+                                  disabled={!showDatesOnFront}
+                                  title="Text Shadow"
+                                >
+                                  S
+                                </Button>
                               </div>
                             </div>
                           </div>
@@ -2481,6 +2507,16 @@ const Design = () => {
                                       onClick={() => setAdditionalTextBold(!additionalTextBold)}
                                     >
                                       B
+                                    </Button>
+                                    <Button
+                                      type="button"
+                                      variant={additionalTextShadow ? 'default' : 'outline'}
+                                      size="sm"
+                                      className={`h-5 px-2 text-xs ${additionalTextShadow ? 'bg-amber-600 text-white' : 'border-slate-600 text-slate-300'}`}
+                                      onClick={() => setAdditionalTextShadow(!additionalTextShadow)}
+                                      title="Text Shadow"
+                                    >
+                                      S
                                     </Button>
                                   </div>
                                 </div>
@@ -4636,7 +4672,7 @@ const Design = () => {
                     fontSize: `${nameSize * 3}px`,
                     color: nameColor,
                     fontWeight: nameBold ? 'bold' : 'normal',
-                    textShadow: '0 2px 4px rgba(0,0,0,0.5)',
+                    textShadow: nameTextShadow ? '0 2px 4px rgba(0,0,0,0.5)' : 'none',
                     whiteSpace: 'pre-line',
                     textAlign: 'center',
                   }}
@@ -4655,7 +4691,7 @@ const Design = () => {
                     fontSize: `${(typeof frontDatesSize === 'number' ? frontDatesSize : 12) * 3}px`,
                     color: frontDatesColor,
                     fontWeight: datesBold ? 'bold' : 'normal',
-                    textShadow: '0 1px 2px rgba(0,0,0,0.5)',
+                    textShadow: datesTextShadow ? '0 1px 2px rgba(0,0,0,0.5)' : 'none',
                   }}
                 >
                   {formatDates(birthDate, deathDate, frontDateFormat)}
