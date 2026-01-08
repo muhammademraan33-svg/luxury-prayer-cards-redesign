@@ -1693,11 +1693,7 @@ const Design = () => {
                               )}
                             </div>
                         </div>
-                          <p className="text-slate-400 text-xs text-center lg:hidden">The photo fills the entire front of the card</p>
-                        </div>
 
-                        {/* Options Panel - Right on large screens */}
-                        <div className="flex-1 flex flex-col items-center gap-4 lg:items-stretch">
                         {/* Photo Upload */}
                         <input
                           ref={photoInputRef}
@@ -2438,17 +2434,14 @@ const Design = () => {
                             )}
                           </div>
                         </div>
-                        </div>
 
-                        <p className="text-slate-400 text-xs text-center hidden lg:block">The photo fills the entire front of the card with a metal border frame</p>
+                        <p className="text-slate-400 text-xs text-center">The photo fills the entire front of the card with a metal border frame</p>
                       </div>
                     </TabsContent>
 
                     {/* Back Card */}
                     <TabsContent value="back" className="mt-4">
-                      <div className="flex flex-col lg:flex-row lg:items-start gap-6">
-                        {/* Card Preview - Left on large screens */}
-                        <div className="flex flex-col items-center gap-4 lg:sticky lg:top-24">
+                      <div className="flex flex-col items-center gap-4">
                         {/* Card Preview */}
                         <div 
                           ref={cardPreviewRef}
@@ -2642,10 +2635,7 @@ const Design = () => {
                             );
                           })()}
                         </div>
-                        </div>
 
-                        {/* Options Panel - Right on large screens */}
-                        <div className="flex-1 flex flex-col items-center gap-4 lg:items-stretch">
                         {/* Name on Back Controls */}
                         <div className="w-full max-w-md space-y-3 p-3 bg-slate-700/30 rounded-lg">
                           <div className="flex items-center justify-between">
@@ -3335,7 +3325,6 @@ const Design = () => {
                             disabled={!showQrCode}
                           />
                           <p className="text-xs text-slate-500">Enter URL to generate QR code on card</p>
-                        </div>
                         </div>
                       </div>
                     </TabsContent>
