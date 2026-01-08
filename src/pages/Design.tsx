@@ -1382,8 +1382,8 @@ const Design = () => {
               {step === 1 && (
                 <div className="lg:flex lg:gap-8">
                   {/* Left Column: Preview (sticky on large screens) */}
-                  <div className="hidden lg:block lg:w-[320px] lg:flex-shrink-0 lg:sticky lg:top-24 lg:self-start">
-                    {/* Front/Back Toggle */}
+                  <div className="hidden lg:flex lg:flex-col lg:w-[320px] lg:flex-shrink-0 lg:sticky lg:top-24 lg:self-start">
+                    {/* Front/Back Toggle - Above the card */}
                     <div className="flex justify-center gap-2 mb-4">
                       <Button
                         type="button"
