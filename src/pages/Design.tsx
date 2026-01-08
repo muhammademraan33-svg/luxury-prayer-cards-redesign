@@ -1358,7 +1358,7 @@ const Design = () => {
       </header>
 
       {/* Main Content */}
-      <main className="container mx-auto px-4 py-8 max-w-4xl">
+      <main className={`container mx-auto px-4 py-8 ${step === 1 ? 'max-w-6xl' : 'max-w-4xl'}`}>
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-white mb-2">
             {step === 1 && `Design Your ${cardType === 'paper' ? 'Photo Prayer Card' : 'Metal Prayer Card'}${additionalDesigns.length > 0 ? 's' : ''}`}
@@ -1380,7 +1380,196 @@ const Design = () => {
             <form onSubmit={handleSubmitOrder}>
               {/* Step 1: Card Design */}
               {step === 1 && (
-                <div className="space-y-6">
+                <div className="lg:flex lg:gap-8">
+                  {/* Left Column: Preview (sticky on large screens) */}
+                  <div className="hidden lg:block lg:w-[320px] lg:flex-shrink-0 lg:sticky lg:top-24 lg:self-start">
+                    {/* Front/Back Toggle */}
+                    <div className="flex justify-center gap-2 mb-4">
+                      <Button
+                        type="button"
+                        variant={cardSide === 'front' ? 'default' : 'outline'}
+                        onClick={() => setCardSide('front')}
+                        className={cardSide === 'front' 
+                          ? 'bg-amber-600 hover:bg-amber-700 !text-white' 
+                          : 'border-slate-600 text-slate-300 hover:bg-slate-700'}
+                        size="sm"
+                      >
+                        Front
+                      </Button>
+                      <Button
+                        type="button"
+                        variant={cardSide === 'back' ? 'default' : 'outline'}
+                        onClick={() => setCardSide('back')}
+                        className={cardSide === 'back' 
+                          ? 'bg-amber-600 hover:bg-amber-700 !text-white' 
+                          : 'border-slate-600 text-slate-300 hover:bg-slate-700'}
+                        size="sm"
+                      >
+                        Back
+                      </Button>
+                    </div>
+                    
+                    {/* Card Preview - Front */}
+                    {cardSide === 'front' && (
+                      <div className="flex flex-col items-center gap-2">
+                        <div 
+                          className={`${cardClass} ${cardRounding} overflow-hidden shadow-2xl relative ${cardType === 'metal' && metalBorderColor !== 'none' ? `bg-gradient-to-br ${getMetalBorderGradient(metalBorderColor)} p-1` : ''}`}
+                        >
+                          <div 
+                            className={`w-full h-full ${cardType === 'metal' && metalBorderColor !== 'none' ? 'rounded-lg' : ''} overflow-hidden bg-slate-700 flex items-center justify-center relative`}
+                          >
+                            {deceasedPhoto ? (
+                              <>
+                                <img
+                                  src={deceasedPhoto}
+                                  alt="Deceased"
+                                  draggable={false}
+                                  className="w-full h-full object-cover pointer-events-none select-none"
+                                  style={{
+                                    transform: `translate(${photoPanX}px, ${photoPanY}px) scale(${photoZoom}) rotate(${photoRotation}deg)`,
+                                    transformOrigin: 'center',
+                                    filter: `brightness(${photoBrightness}%)`,
+                                  }}
+                                />
+                                {photoFade && (
+                                  <div 
+                                    className="absolute inset-0 pointer-events-none"
+                                    style={{
+                                      background: 'linear-gradient(to bottom, transparent 40%, rgba(0,0,0,0.3) 70%, rgba(0,0,0,0.6) 100%)',
+                                    }}
+                                  />
+                                )}
+                              </>
+                            ) : (
+                              <div className="text-center p-4 pointer-events-none">
+                                <ImageIcon className="h-12 w-12 text-slate-400 mx-auto mb-2" />
+                                <p className="text-slate-400 text-sm">Upload photo</p>
+                              </div>
+                            )}
+                            
+                            {/* Text Overlay - Name */}
+                            {showNameOnFront && (
+                              <div
+                                className="absolute px-2 py-1"
+                                style={{
+                                  left: `${namePosition.x}%`,
+                                  top: `${namePosition.y}%`,
+                                  transform: 'translate(-50%, -50%)',
+                                  fontFamily: nameFont,
+                                  textShadow: '0 2px 4px rgba(0,0,0,0.5)',
+                                }}
+                              >
+                                <span style={{ fontSize: `${nameSize}px`, color: nameColor, fontWeight: nameBold ? 'bold' : 'normal', whiteSpace: 'pre', textAlign: 'center' }}>
+                                  {deceasedName || 'Name Here'}
+                                </span>
+                              </div>
+                            )}
+                            
+                            {/* Text Overlay - Dates */}
+                            {showDatesOnFront && (
+                              <div
+                                className="absolute px-2 py-1"
+                                style={{
+                                  left: `${datesPosition.x}%`,
+                                  top: `${datesPosition.y}%`,
+                                  transform: 'translate(-50%, -50%)',
+                                  fontFamily: datesFont,
+                                  textShadow: '0 2px 4px rgba(0,0,0,0.5)',
+                                }}
+                              >
+                                <span style={{ fontSize: frontDatesSize === 'auto' ? '12px' : `${frontDatesSize}px`, color: frontDatesColor, fontWeight: datesBold ? 'bold' : 'normal' }}>
+                                  {formatDates(birthDate, deathDate, frontDateFormat)}
+                                </span>
+                              </div>
+                            )}
+                            
+                            {/* Decorative Border Overlay */}
+                            {cardType === 'paper' && frontBorderDesign !== 'none' && (
+                              <DecorativeBorderOverlay type={frontBorderDesign} color={frontBorderColor} />
+                            )}
+                          </div>
+                        </div>
+                        <p className="text-slate-500 text-xs text-center">Front of card</p>
+                      </div>
+                    )}
+                    
+                    {/* Card Preview - Back */}
+                    {cardSide === 'back' && (
+                      <div className="flex flex-col items-center gap-2">
+                        <div 
+                          className={`${cardClass} ${cardRounding} shadow-2xl relative overflow-hidden`}
+                        >
+                          {(() => {
+                            const currentBackMetal = METAL_BG_OPTIONS.find(m => m.id === backMetalFinish) || METAL_BG_OPTIONS[0];
+                            const isBackDark = relativeLuminance(backBgSampleHex) < 0.45;
+                            
+                            return (
+                              <div 
+                                className={`absolute inset-0 ${cardRounding} overflow-hidden ${!backBgImage ? (cardType === 'metal' ? `bg-gradient-to-br ${currentBackMetal.gradient}` : 'bg-white') : ''}`}
+                              >
+                                {backBgImage && (
+                                  <img 
+                                    src={backBgImage}
+                                    alt="Background"
+                                    className="absolute w-full h-full object-cover"
+                                    style={{
+                                      transform: `scale(${backBgZoom}) translate(${backBgPanX}%, ${backBgPanY}%) rotate(${backBgRotation}deg)`,
+                                      transformOrigin: 'center center',
+                                    }}
+                                  />
+                                )}
+                                <div 
+                                  className={`relative z-10 h-full flex flex-col items-center justify-center p-4 text-center ${cardRounding}`}
+                                >
+                                  <div className={`text-xs mb-1 ${isBackDark ? 'text-zinc-300' : 'text-zinc-600'}`} style={{ fontFamily: 'Cinzel' }}>
+                                    In Loving Memory
+                                  </div>
+                                  <div className={`text-base font-semibold mb-1 ${isBackDark ? 'text-white' : 'text-zinc-800'}`} style={{ fontFamily: nameFont }}>
+                                    {deceasedName || 'Name Here'}
+                                  </div>
+                                  {showDatesOnBack && (
+                                    <div 
+                                      className="text-xs mb-3"
+                                      style={{ 
+                                        fontFamily: datesFont, 
+                                        color: backDatesColor,
+                                        fontSize: backDatesSize === 'auto' ? '10px' : `${backDatesSize}px`
+                                      }}
+                                    >
+                                      {formatDates(birthDate, deathDate, backDateFormat)}
+                                    </div>
+                                  )}
+                                  <div 
+                                    className={`text-xs leading-relaxed max-w-[90%] flex-1 overflow-hidden ${isBackDark ? 'text-zinc-200' : 'text-zinc-700'}`} 
+                                    style={{ 
+                                      fontFamily: 'Cormorant Garamond',
+                                      fontSize: `${prayerTextSize === 'auto' ? autoPrayerFontSize : Math.min(prayerTextSize, autoPrayerFontSize)}px`,
+                                      color: prayerColor,
+                                      fontWeight: prayerBold ? 'bold' : 'normal',
+                                    }}
+                                  >
+                                    {backText}
+                                  </div>
+                                  {showQrCode && qrUrl && (
+                                    <div className="mt-2 bg-white p-1.5 rounded">
+                                      <QRCodeSVG value={qrUrl} size={40} />
+                                    </div>
+                                  )}
+                                </div>
+                                {cardType === 'paper' && backBorderDesign !== 'none' && (
+                                  <DecorativeBorderOverlay type={backBorderDesign} color={backBorderColor} />
+                                )}
+                              </div>
+                            );
+                          })()}
+                        </div>
+                        <p className="text-slate-500 text-xs text-center">Back of card</p>
+                      </div>
+                    )}
+                  </div>
+                  
+                  {/* Right Column: All Controls */}
+                  <div className="flex-1 space-y-6">
                   {/* Paper Card Size Selection - only for paper cards */}
                   {cardType === 'paper' && (
                     <div className="bg-slate-700/50 rounded-xl p-4 mb-4">
@@ -3783,19 +3972,20 @@ const Design = () => {
                     </div>
                   )}
 
-                  <Button 
-                    type="button" 
-                    onClick={() => {
-                      if (!deceasedName.trim()) {
-                        toast.error('Please enter the name for the card');
-                        return;
-                      }
-                      setStep(2);
-                    }} 
-                    className="w-full bg-amber-600 hover:bg-amber-700 text-white font-semibold"
-                  >
-                    Continue <ArrowRight className="h-4 w-4 ml-2" />
-                  </Button>
+                    <Button 
+                      type="button" 
+                      onClick={() => {
+                        if (!deceasedName.trim()) {
+                          toast.error('Please enter the name for the card');
+                          return;
+                        }
+                        setStep(2);
+                      }} 
+                      className="w-full bg-amber-600 hover:bg-amber-700 text-white font-semibold"
+                    >
+                      Continue <ArrowRight className="h-4 w-4 ml-2" />
+                    </Button>
+                  </div>
                 </div>
               )}
 
