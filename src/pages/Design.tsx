@@ -1528,8 +1528,8 @@ const Design = () => {
                                         : 'linear-gradient(135deg, #f8f5f0, #ebe6df)'
                                     }}
                                   />
-                                  {/* Border overlay scaled to show top-left corner */}
-                                  <div className="absolute inset-0 scale-[2.5] origin-top-left">
+                                  {/* Border overlay scaled to show top-left corner detail */}
+                                  <div className="absolute inset-0 scale-[4] origin-top-left">
                                     <DecorativeBorderOverlay type={border.id} color={frontBorderColor} />
                                   </div>
                                 </button>
@@ -1918,8 +1918,8 @@ const Design = () => {
                                       : 'linear-gradient(135deg, #f8f5f0, #ebe6df)'
                                   }}
                                 />
-                                {/* Border overlay scaled to show top-left corner */}
-                                <div className="absolute inset-0 scale-[2.5] origin-top-left">
+                                {/* Border overlay scaled to show top-left corner detail */}
+                                <div className="absolute inset-0 scale-[4] origin-top-left">
                                   <DecorativeBorderOverlay type={border.id} color={frontBorderColor} />
                                 </div>
                               </button>
