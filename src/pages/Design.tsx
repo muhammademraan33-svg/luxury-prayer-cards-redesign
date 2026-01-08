@@ -340,11 +340,11 @@ const Design = () => {
     // Safe max Y depends on whether border is active
     const SAFE_MAX_Y = frontBorderDesign === 'none' ? 96 : 87;
     
-    // Dynamic gap based on line count - tighter spacing
+    // Dynamic gap based on line count - very tight spacing
     const nameText = deceasedName || 'Name Here';
     const lineCount = nameText.split('\n').length;
-    // Base gap of 4%, plus 2% per additional line
-    const MIN_GAP_Y = 4 + (lineCount - 1) * 2;
+    // Base gap of 2%, plus 1.5% per additional line
+    const MIN_GAP_Y = 2 + (lineCount - 1) * 1.5;
 
     const lineOffset = (lineCount - 1) * 3;
     const effectiveNameY = namePosition.y - lineOffset;
