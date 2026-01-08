@@ -2583,7 +2583,7 @@ const Design = () => {
                               </div>
                               <div className="text-left">
                                 <span className="font-semibold text-amber-400 group-hover:text-amber-300 block">Add Another Design</span>
-                                <span className="text-slate-400 text-xs">Different photo or prayer • Only <span className="text-amber-400 font-semibold">$7</span></span>
+                                <span className="text-slate-400 text-xs">Different photo & prayer • Only <span className="text-amber-400 font-semibold">$7</span></span>
                               </div>
                             </div>
                           </button>
