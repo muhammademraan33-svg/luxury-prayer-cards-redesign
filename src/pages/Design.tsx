@@ -1502,71 +1502,78 @@ const Design = () => {
                         </div>
                         <p className="text-slate-500 text-xs text-center">Front of card</p>
                         
-                        {/* Front Border Design - compact corner previews */}
+                        {/* Front Border Design - corner close-ups with card background */}
                         {cardType === 'paper' && (
                           <div className="w-full mt-3 space-y-2">
-                            <Label className="text-slate-400 block text-xs text-center">Border</Label>
-                            <div className="flex justify-center gap-1.5 flex-wrap">
+                            <Label className="text-slate-400 block text-xs text-center">Border Style</Label>
+                            <div className="flex justify-center gap-2 flex-wrap">
                               {DECORATIVE_BORDERS.map((border) => (
                                 <button
                                   key={border.id}
                                   type="button"
                                   onClick={() => setFrontBorderDesign(border.id)}
-                                  className={`w-10 h-10 rounded border-2 transition-all overflow-hidden relative ${
+                                  className={`w-12 h-12 rounded-lg border-2 transition-all overflow-hidden relative ${
                                     frontBorderDesign === border.id
-                                      ? 'border-amber-500 bg-amber-900/20 scale-105'
-                                      : 'border-slate-600 hover:border-slate-500 bg-slate-700'
+                                      ? 'border-amber-500 ring-2 ring-amber-500/30 scale-105'
+                                      : 'border-slate-600 hover:border-slate-400'
                                   }`}
                                   title={border.name}
                                 >
-                                  {/* Show only top-left corner of border */}
-                                  <div className="absolute inset-0 scale-[2] origin-top-left">
+                                  {/* Show card background with corner of border */}
+                                  <div 
+                                    className="absolute inset-0"
+                                    style={{
+                                      background: deceasedPhoto 
+                                        ? `url(${deceasedPhoto}) center/cover` 
+                                        : 'linear-gradient(135deg, #f8f5f0, #ebe6df)'
+                                    }}
+                                  />
+                                  {/* Border overlay scaled to show top-left corner */}
+                                  <div className="absolute inset-0 scale-[2.5] origin-top-left">
                                     <DecorativeBorderOverlay type={border.id} color={frontBorderColor} />
                                   </div>
                                 </button>
                               ))}
                             </div>
-                            {/* Border Color - inline small swatches */}
-                            {frontBorderDesign !== 'none' && (
-                              <div className="flex justify-center gap-1 pt-1">
-                                <button
-                                  type="button"
-                                  onClick={() => setFrontBorderColor('#d4af37')}
-                                  className={`w-6 h-6 rounded border transition-all ${
-                                    frontBorderColor === '#d4af37' ? 'border-amber-400 scale-110' : 'border-slate-600'
-                                  }`}
-                                  style={{ background: 'linear-gradient(135deg, #ffd700, #b8860b)' }}
-                                  title="Gold"
-                                />
-                                <button
-                                  type="button"
-                                  onClick={() => setFrontBorderColor('#c0c0c0')}
-                                  className={`w-6 h-6 rounded border transition-all ${
-                                    frontBorderColor === '#c0c0c0' ? 'border-amber-400 scale-110' : 'border-slate-600'
-                                  }`}
-                                  style={{ background: 'linear-gradient(135deg, #e8e8e8, #a8a8a8)' }}
-                                  title="Silver"
-                                />
-                                <button
-                                  type="button"
-                                  onClick={() => setFrontBorderColor('#b76e79')}
-                                  className={`w-6 h-6 rounded border transition-all ${
-                                    frontBorderColor === '#b76e79' ? 'border-amber-400 scale-110' : 'border-slate-600'
-                                  }`}
-                                  style={{ background: 'linear-gradient(135deg, #e8b4b8, #9e5a65)' }}
-                                  title="Rose Gold"
-                                />
-                                <button
-                                  type="button"
-                                  onClick={() => setFrontBorderColor('#f8f8f8')}
-                                  className={`w-6 h-6 rounded border transition-all ${
-                                    frontBorderColor === '#f8f8f8' ? 'border-amber-400 scale-110' : 'border-slate-600'
-                                  }`}
-                                  style={{ background: 'linear-gradient(135deg, #ffffff, #e0e0e0)' }}
-                                  title="White"
-                                />
-                              </div>
-                            )}
+                            {/* Border Color Selection */}
+                            <div className="flex justify-center gap-2 pt-1">
+                              <button
+                                type="button"
+                                onClick={() => setFrontBorderColor('#d4af37')}
+                                className={`w-7 h-7 rounded-full border-2 transition-all ${
+                                  frontBorderColor === '#d4af37' ? 'border-amber-400 ring-2 ring-amber-400/40 scale-110' : 'border-slate-500'
+                                }`}
+                                style={{ background: 'linear-gradient(135deg, #ffd700, #b8860b)' }}
+                                title="Gold"
+                              />
+                              <button
+                                type="button"
+                                onClick={() => setFrontBorderColor('#c0c0c0')}
+                                className={`w-7 h-7 rounded-full border-2 transition-all ${
+                                  frontBorderColor === '#c0c0c0' ? 'border-amber-400 ring-2 ring-amber-400/40 scale-110' : 'border-slate-500'
+                                }`}
+                                style={{ background: 'linear-gradient(135deg, #e8e8e8, #a8a8a8)' }}
+                                title="Silver"
+                              />
+                              <button
+                                type="button"
+                                onClick={() => setFrontBorderColor('#b76e79')}
+                                className={`w-7 h-7 rounded-full border-2 transition-all ${
+                                  frontBorderColor === '#b76e79' ? 'border-amber-400 ring-2 ring-amber-400/40 scale-110' : 'border-slate-500'
+                                }`}
+                                style={{ background: 'linear-gradient(135deg, #e8b4b8, #9e5a65)' }}
+                                title="Rose Gold"
+                              />
+                              <button
+                                type="button"
+                                onClick={() => setFrontBorderColor('#f8f8f8')}
+                                className={`w-7 h-7 rounded-full border-2 transition-all ${
+                                  frontBorderColor === '#f8f8f8' ? 'border-amber-400 ring-2 ring-amber-400/40 scale-110' : 'border-slate-500'
+                                }`}
+                                style={{ background: 'linear-gradient(135deg, #ffffff, #e0e0e0)' }}
+                                title="White"
+                              />
+                            </div>
                           </div>
                         )}
                       </div>
@@ -1888,68 +1895,75 @@ const Design = () => {
                       {/* Mobile Border Selector - Paper cards only */}
                       {cardType === 'paper' && (
                         <div className="md:hidden w-full max-w-xs mx-auto mt-3 space-y-2">
-                          <Label className="text-slate-400 block text-xs text-center">Border</Label>
-                          <div className="flex justify-center gap-1.5 flex-wrap">
+                          <Label className="text-slate-400 block text-xs text-center">Border Style</Label>
+                          <div className="flex justify-center gap-2 flex-wrap">
                             {DECORATIVE_BORDERS.map((border) => (
                               <button
                                 key={border.id}
                                 type="button"
                                 onClick={() => setFrontBorderDesign(border.id)}
-                                className={`w-10 h-10 rounded border-2 transition-all overflow-hidden relative ${
+                                className={`w-12 h-12 rounded-lg border-2 transition-all overflow-hidden relative ${
                                   frontBorderDesign === border.id
-                                    ? 'border-amber-500 bg-amber-900/20 scale-105'
-                                    : 'border-slate-600 hover:border-slate-500 bg-slate-700'
+                                    ? 'border-amber-500 ring-2 ring-amber-500/30 scale-105'
+                                    : 'border-slate-600 hover:border-slate-400'
                                 }`}
                                 title={border.name}
                               >
-                                {/* Show only top-left corner of border */}
-                                <div className="absolute inset-0 scale-[2] origin-top-left">
+                                {/* Show card background with corner of border */}
+                                <div 
+                                  className="absolute inset-0"
+                                  style={{
+                                    background: deceasedPhoto 
+                                      ? `url(${deceasedPhoto}) center/cover` 
+                                      : 'linear-gradient(135deg, #f8f5f0, #ebe6df)'
+                                  }}
+                                />
+                                {/* Border overlay scaled to show top-left corner */}
+                                <div className="absolute inset-0 scale-[2.5] origin-top-left">
                                   <DecorativeBorderOverlay type={border.id} color={frontBorderColor} />
                                 </div>
                               </button>
                             ))}
                           </div>
-                          {/* Border Color - inline small swatches */}
-                          {frontBorderDesign !== 'none' && (
-                            <div className="flex justify-center gap-1 pt-1">
-                              <button
-                                type="button"
-                                onClick={() => setFrontBorderColor('#d4af37')}
-                                className={`w-6 h-6 rounded border transition-all ${
-                                  frontBorderColor === '#d4af37' ? 'border-amber-400 scale-110' : 'border-slate-600'
-                                }`}
-                                style={{ background: 'linear-gradient(135deg, #ffd700, #b8860b)' }}
-                                title="Gold"
-                              />
-                              <button
-                                type="button"
-                                onClick={() => setFrontBorderColor('#c0c0c0')}
-                                className={`w-6 h-6 rounded border transition-all ${
-                                  frontBorderColor === '#c0c0c0' ? 'border-amber-400 scale-110' : 'border-slate-600'
-                                }`}
-                                style={{ background: 'linear-gradient(135deg, #e8e8e8, #a8a8a8)' }}
-                                title="Silver"
-                              />
-                              <button
-                                type="button"
-                                onClick={() => setFrontBorderColor('#b76e79')}
-                                className={`w-6 h-6 rounded border transition-all ${
-                                  frontBorderColor === '#b76e79' ? 'border-amber-400 scale-110' : 'border-slate-600'
-                                }`}
-                                style={{ background: 'linear-gradient(135deg, #e8b4b8, #9e5a65)' }}
-                                title="Rose Gold"
-                              />
-                              <button
-                                type="button"
-                                onClick={() => setFrontBorderColor('#f8f8f8')}
-                                className={`w-6 h-6 rounded border transition-all ${
-                                  frontBorderColor === '#f8f8f8' ? 'border-amber-400 scale-110' : 'border-slate-600'
-                                }`}
-                                style={{ background: 'linear-gradient(135deg, #ffffff, #e0e0e0)' }}
-                                title="White"
-                              />
-                            </div>
-                          )}
+                          {/* Border Color Selection */}
+                          <div className="flex justify-center gap-2 pt-1">
+                            <button
+                              type="button"
+                              onClick={() => setFrontBorderColor('#d4af37')}
+                              className={`w-7 h-7 rounded-full border-2 transition-all ${
+                                frontBorderColor === '#d4af37' ? 'border-amber-400 ring-2 ring-amber-400/40 scale-110' : 'border-slate-500'
+                              }`}
+                              style={{ background: 'linear-gradient(135deg, #ffd700, #b8860b)' }}
+                              title="Gold"
+                            />
+                            <button
+                              type="button"
+                              onClick={() => setFrontBorderColor('#c0c0c0')}
+                              className={`w-7 h-7 rounded-full border-2 transition-all ${
+                                frontBorderColor === '#c0c0c0' ? 'border-amber-400 ring-2 ring-amber-400/40 scale-110' : 'border-slate-500'
+                              }`}
+                              style={{ background: 'linear-gradient(135deg, #e8e8e8, #a8a8a8)' }}
+                              title="Silver"
+                            />
+                            <button
+                              type="button"
+                              onClick={() => setFrontBorderColor('#b76e79')}
+                              className={`w-7 h-7 rounded-full border-2 transition-all ${
+                                frontBorderColor === '#b76e79' ? 'border-amber-400 ring-2 ring-amber-400/40 scale-110' : 'border-slate-500'
+                              }`}
+                              style={{ background: 'linear-gradient(135deg, #e8b4b8, #9e5a65)' }}
+                              title="Rose Gold"
+                            />
+                            <button
+                              type="button"
+                              onClick={() => setFrontBorderColor('#f8f8f8')}
+                              className={`w-7 h-7 rounded-full border-2 transition-all ${
+                                frontBorderColor === '#f8f8f8' ? 'border-amber-400 ring-2 ring-amber-400/40 scale-110' : 'border-slate-500'
+                              }`}
+                              style={{ background: 'linear-gradient(135deg, #ffffff, #e0e0e0)' }}
+                              title="White"
+                            />
+                          </div>
                         </div>
                       )}
 
