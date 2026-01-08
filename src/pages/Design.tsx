@@ -337,10 +337,12 @@ const Design = () => {
     if (!showNameOnFront || !showDatesOnFront) return;
 
     const SAFE_MAX_Y = 87; // mirrors drag bounds when border is active
-    const MIN_GAP_Y = 6; // percent gap between name and dates
-
+    // Dynamic gap based on line count - tighter spacing
     const nameText = deceasedName || 'Name Here';
     const lineCount = nameText.split('\n').length;
+    // Base gap of 3%, plus 1.5% per additional line
+    const MIN_GAP_Y = 3 + (lineCount - 1) * 1.5;
+
     const lineOffset = (lineCount - 1) * 3;
     const effectiveNameY = namePosition.y - lineOffset;
 
@@ -1819,10 +1821,11 @@ const Design = () => {
                               
                               {/* Text Overlay - Dates */}
                               {showDatesOnFront && (() => {
-                                // Push dates down when name has multiple lines
+                                // Dynamic spacing based on name lines - tighter gap
                                 const nameText = deceasedName || 'Name Here';
                                 const nameLineCount = nameText.split('\n').length;
-                                const datesOffset = (nameLineCount - 1) * 4;
+                                // Smaller offset per line for tighter spacing
+                                const datesOffset = (nameLineCount - 1) * 2;
                                 const adjustedDatesY = Math.min(96, datesPosition.y + datesOffset);
 
                                 return (
