@@ -1495,81 +1495,6 @@ const Design = () => {
                           </div>
                         </div>
                         <p className="text-slate-500 text-xs text-center">Front of card</p>
-                        
-                        {/* Front Border Design - corner close-ups with card background */}
-                        {cardType === 'paper' && (
-                          <div className="w-full mt-3 space-y-2">
-                            <Label className="text-slate-400 block text-xs text-center">Border Style</Label>
-                            <div className="flex justify-center gap-2 flex-wrap">
-                              {DECORATIVE_BORDERS.map((border) => (
-                                <button
-                                  key={border.id}
-                                  type="button"
-                                  onClick={() => setFrontBorderDesign(border.id)}
-                                  className={`w-12 h-12 rounded-lg border-2 transition-all overflow-hidden relative ${
-                                    frontBorderDesign === border.id
-                                      ? 'border-amber-500 ring-2 ring-amber-500/30 scale-105'
-                                      : 'border-slate-600 hover:border-slate-400'
-                                  }`}
-                                  title={border.name}
-                                >
-                                  {/* Show card background with corner of border */}
-                                  <div 
-                                    className="absolute inset-0"
-                                    style={{
-                                      background: deceasedPhoto 
-                                        ? `url(${deceasedPhoto}) center/cover` 
-                                        : 'linear-gradient(135deg, #f8f5f0, #ebe6df)'
-                                    }}
-                                  />
-                                  {/* Border overlay scaled to show top-left corner detail */}
-                                  <div className="absolute inset-0 scale-[5] origin-top-left">
-                                    <DecorativeBorderOverlay type={border.id} color={frontBorderColor} />
-                                  </div>
-                                </button>
-                              ))}
-                            </div>
-                            {/* Border Color Selection */}
-                            <div className="flex justify-center gap-2 pt-1">
-                              <button
-                                type="button"
-                                onClick={() => setFrontBorderColor('#d4af37')}
-                                className={`w-7 h-7 rounded-full border-2 transition-all ${
-                                  frontBorderColor === '#d4af37' ? 'border-amber-400 ring-2 ring-amber-400/40 scale-110' : 'border-slate-500'
-                                }`}
-                                style={{ background: 'linear-gradient(135deg, #ffd700, #b8860b)' }}
-                                title="Gold"
-                              />
-                              <button
-                                type="button"
-                                onClick={() => setFrontBorderColor('#c0c0c0')}
-                                className={`w-7 h-7 rounded-full border-2 transition-all ${
-                                  frontBorderColor === '#c0c0c0' ? 'border-amber-400 ring-2 ring-amber-400/40 scale-110' : 'border-slate-500'
-                                }`}
-                                style={{ background: 'linear-gradient(135deg, #e8e8e8, #a8a8a8)' }}
-                                title="Silver"
-                              />
-                              <button
-                                type="button"
-                                onClick={() => setFrontBorderColor('#b76e79')}
-                                className={`w-7 h-7 rounded-full border-2 transition-all ${
-                                  frontBorderColor === '#b76e79' ? 'border-amber-400 ring-2 ring-amber-400/40 scale-110' : 'border-slate-500'
-                                }`}
-                                style={{ background: 'linear-gradient(135deg, #e8b4b8, #9e5a65)' }}
-                                title="Rose Gold"
-                              />
-                              <button
-                                type="button"
-                                onClick={() => setFrontBorderColor('#f8f8f8')}
-                                className={`w-7 h-7 rounded-full border-2 transition-all ${
-                                  frontBorderColor === '#f8f8f8' ? 'border-amber-400 ring-2 ring-amber-400/40 scale-110' : 'border-slate-500'
-                                }`}
-                                style={{ background: 'linear-gradient(135deg, #ffffff, #e0e0e0)' }}
-                                title="White"
-                              />
-                            </div>
-                          </div>
-                        )}
                       </div>
                     )}
                     
@@ -1650,6 +1575,81 @@ const Design = () => {
                   
                   {/* Right Column: All Controls */}
                   <div className="flex-1 space-y-6 min-w-0">
+
+                  {/* Border Style Selection - Paper cards only, at top for easy access on desktop */}
+                  {cardType === 'paper' && (
+                    <div className="hidden md:block bg-slate-700/50 rounded-xl p-4">
+                      <h3 className="text-lg font-semibold text-white mb-3 text-center">Border Style</h3>
+                      <div className="flex justify-center gap-2 flex-wrap mb-3">
+                        {DECORATIVE_BORDERS.map((border) => (
+                          <button
+                            key={border.id}
+                            type="button"
+                            onClick={() => setFrontBorderDesign(border.id)}
+                            className={`w-14 h-14 rounded-lg border-2 transition-all overflow-hidden relative ${
+                              frontBorderDesign === border.id
+                                ? 'border-amber-500 ring-2 ring-amber-500/30 scale-105'
+                                : 'border-slate-600 hover:border-slate-400'
+                            }`}
+                            title={border.name}
+                          >
+                            {/* Show card background with corner of border */}
+                            <div 
+                              className="absolute inset-0"
+                              style={{
+                                background: deceasedPhoto 
+                                  ? `url(${deceasedPhoto}) center/cover` 
+                                  : 'linear-gradient(135deg, #f8f5f0, #ebe6df)'
+                              }}
+                            />
+                            {/* Border overlay scaled to show top-left corner detail */}
+                            <div className="absolute inset-0 scale-[5] origin-top-left">
+                              <DecorativeBorderOverlay type={border.id} color={frontBorderColor} />
+                            </div>
+                          </button>
+                        ))}
+                      </div>
+                      {/* Border Color Selection */}
+                      <div className="flex justify-center gap-3">
+                        <button
+                          type="button"
+                          onClick={() => setFrontBorderColor('#d4af37')}
+                          className={`w-8 h-8 rounded-full border-2 transition-all ${
+                            frontBorderColor === '#d4af37' ? 'border-amber-400 ring-2 ring-amber-400/40 scale-110' : 'border-slate-500'
+                          }`}
+                          style={{ background: 'linear-gradient(135deg, #ffd700, #b8860b)' }}
+                          title="Gold"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setFrontBorderColor('#c0c0c0')}
+                          className={`w-8 h-8 rounded-full border-2 transition-all ${
+                            frontBorderColor === '#c0c0c0' ? 'border-amber-400 ring-2 ring-amber-400/40 scale-110' : 'border-slate-500'
+                          }`}
+                          style={{ background: 'linear-gradient(135deg, #e8e8e8, #a8a8a8)' }}
+                          title="Silver"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setFrontBorderColor('#b76e79')}
+                          className={`w-8 h-8 rounded-full border-2 transition-all ${
+                            frontBorderColor === '#b76e79' ? 'border-amber-400 ring-2 ring-amber-400/40 scale-110' : 'border-slate-500'
+                          }`}
+                          style={{ background: 'linear-gradient(135deg, #e8b4b8, #9e5a65)' }}
+                          title="Rose Gold"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setFrontBorderColor('#f8f8f8')}
+                          className={`w-8 h-8 rounded-full border-2 transition-all ${
+                            frontBorderColor === '#f8f8f8' ? 'border-amber-400 ring-2 ring-amber-400/40 scale-110' : 'border-slate-500'
+                          }`}
+                          style={{ background: 'linear-gradient(135deg, #ffffff, #e0e0e0)' }}
+                          title="White"
+                        />
+                      </div>
+                    </div>
+                  )}
 
                   {/* Metal Card Thickness Selection - only for metal cards */}
                   {cardType === 'metal' && (
