@@ -1523,7 +1523,7 @@ const Design = () => {
                                   textShadow: datesTextShadow ? '0 1px 2px rgba(0,0,0,0.5)' : 'none',
                                 }}
                               >
-                                <span style={{ fontSize: frontDatesSize === 'auto' ? '9px' : `${Math.max(8, (typeof frontDatesSize === 'number' ? frontDatesSize : 12) * 0.7)}px`, color: frontDatesColor, fontWeight: datesBold ? 'bold' : 'normal', textAlign: 'center', maxWidth: '90%', lineHeight: 1.1, display: 'block' }}>
+                                <span style={{ fontSize: frontDatesSize === 'auto' ? '8px' : `${Math.max(7, (typeof frontDatesSize === 'number' ? frontDatesSize : 12) * 0.65)}px`, color: frontDatesColor, fontWeight: datesBold ? 'bold' : 'normal', textAlign: 'center', whiteSpace: 'nowrap', fontFamily: "'Montserrat', sans-serif" }}>
                                   {formatDates(birthDate, deathDate, frontDateFormat)}
                                 </span>
                               </div>
