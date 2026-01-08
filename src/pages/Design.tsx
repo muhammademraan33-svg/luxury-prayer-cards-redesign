@@ -1358,12 +1358,18 @@ const Design = () => {
       <div className="design-page min-h-screen bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900">
       {/* Header */}
       <header className="border-b border-amber-900/30 bg-slate-900/80 backdrop-blur-sm sticky top-0 z-50">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
+        <div className="container mx-auto px-4 py-3 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-3">
             <span className="text-lg font-bold text-white">LuxuryPrayerCards.com</span>
           </Link>
-          <div className="text-sm text-slate-400">
-            Step {Math.min(step, 4)} of 4
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 bg-gradient-to-r from-amber-500/20 to-amber-600/20 border border-amber-500/40 rounded-full px-3 py-1.5 animate-pulse">
+              <Zap className="h-4 w-4 text-amber-400" />
+              <span className="text-sm font-semibold text-amber-300">Delivered in 48-72 Hours</span>
+            </div>
+            <div className="text-sm text-slate-400 hidden sm:block">
+              Step {Math.min(step, 4)} of 4
+            </div>
           </div>
         </div>
       </header>
