@@ -747,32 +747,8 @@ const Design = () => {
   };
 
   const formatDates = (birth: string, death: string, format: 'full' | 'short-month' | 'mmm-dd-yyyy' | 'numeric' | 'year'): string => {
-    const formatSingleDate = (d: Date, fmt: typeof format) => {
-      switch (fmt) {
-        case 'year':
-          return d.getFullYear().toString();
-        case 'numeric':
-          return d.toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' });
-        case 'mmm-dd-yyyy': {
-          const month = d.toLocaleDateString('en-US', { month: 'short' });
-          const day = d.getDate().toString().padStart(2, '0');
-          const year = d.getFullYear();
-          return `${month} ${day}, ${year}`;
-        }
-        case 'short-month':
-          return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-        default:
-          return d.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
-      }
-    };
-
-    // Parse date string (YYYY-MM-DD) to avoid timezone offset issues
-    const parseLocalDate = (dateStr: string): Date => {
-      const [year, month, day] = dateStr.split('-').map(Number);
-      return new Date(year, month - 1, day);
-    };
-
-    if (!birth || !death) {
+    // If user typed dates directly, just display them as entered
+    if (!birth && !death) {
       switch (format) {
         case 'year': return '1945 – 2025';
         case 'numeric': return '01/01/1945 – 12/31/2025';
@@ -781,10 +757,12 @@ const Design = () => {
         default: return 'January 1, 1945 – December 31, 2025';
       }
     }
-    const birthD = parseLocalDate(birth);
-    const deathD = parseLocalDate(death);
     
-    return `${formatSingleDate(birthD, format)} – ${formatSingleDate(deathD, format)}`;
+    // Display text as user entered it
+    const birthDisplay = birth || 'Birth Date';
+    const deathDisplay = death || 'Death Date';
+    
+    return `${birthDisplay} – ${deathDisplay}`;
   };
 
   // Prevent orphan words by replacing the last space in each line with a non-breaking space
@@ -2311,16 +2289,18 @@ const Design = () => {
                             <Label className="text-white text-sm font-medium">Dates</Label>
                             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                               <Input
-                                type="date"
+                                type="text"
+                                placeholder="Birth (e.g. Jan 1, 1940)"
                                 value={birthDate}
                                 onChange={(e) => setBirthDate(e.target.value)}
-                                className="bg-slate-700 border-slate-600 text-white"
+                                className="bg-slate-700 border-slate-600 text-white placeholder:text-slate-400"
                               />
                               <Input
-                                type="date"
+                                type="text"
+                                placeholder="Death (e.g. Dec 25, 2024)"
                                 value={deathDate}
                                 onChange={(e) => setDeathDate(e.target.value)}
-                                className="bg-slate-700 border-slate-600 text-white"
+                                className="bg-slate-700 border-slate-600 text-white placeholder:text-slate-400"
                               />
                               <Select value={datesFont} onValueChange={setDatesFont}>
                                 <SelectTrigger className="bg-slate-700 border-slate-600 text-white">
