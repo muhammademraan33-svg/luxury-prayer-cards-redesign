@@ -1526,7 +1526,9 @@ const Design = () => {
                             
                             {/* Decorative Border Overlay */}
                             {cardType === 'paper' && frontBorderDesign !== 'none' && (
-                              <DecorativeBorderOverlay type={frontBorderDesign} color={frontBorderColor} />
+                              <div className="absolute inset-0 z-20 pointer-events-none">
+                                <DecorativeBorderOverlay type={frontBorderDesign} color={frontBorderColor} />
+                              </div>
                             )}
                           </div>
                         </div>
@@ -1598,7 +1600,9 @@ const Design = () => {
                                   )}
                                 </div>
                                 {cardType === 'paper' && backBorderDesign !== 'none' && (
-                                  <DecorativeBorderOverlay type={backBorderDesign} color={backBorderColor} />
+                                  <div className="absolute inset-0 z-20 pointer-events-none">
+                                    <DecorativeBorderOverlay type={backBorderDesign} color={backBorderColor} />
+                                  </div>
                                 )}
                               </div>
                             );
@@ -1924,7 +1928,9 @@ const Design = () => {
                               
                               {/* Decorative Border Overlay - Paper cards only (Front) */}
                               {cardType === 'paper' && frontBorderDesign !== 'none' && (
-                                <DecorativeBorderOverlay type={frontBorderDesign} color={frontBorderColor} />
+                                <div className="absolute inset-0 z-20 pointer-events-none">
+                                  <DecorativeBorderOverlay type={frontBorderDesign} color={frontBorderColor} />
+                                </div>
                               )}
                             </div>
                         </div>
@@ -2762,17 +2768,17 @@ const Design = () => {
                                 <div 
                                   className="relative z-10 w-full h-full"
                                   style={{ 
-                                    padding: backBorderDesign !== 'none' ? '8px' : '12px',
-                                    paddingTop: backBorderDesign !== 'none' ? '20px' : '12px',
-                                    paddingBottom: backBorderDesign !== 'none' ? '20px' : '12px',
+                                    padding: backBorderDesign !== 'none' ? '6px' : '8px',
+                                    paddingTop: backBorderDesign !== 'none' ? '14px' : '8px',
+                                    paddingBottom: backBorderDesign !== 'none' ? '14px' : '8px',
                                   }}
                                 >
-                                  <div className="h-full flex flex-col text-center">
+                                  <div className="h-full flex flex-col text-center gap-0">
                                     {/* Header Section - Logo, In Loving Memory, Name, Dates */}
                                     <div className="flex flex-col items-center shrink-0">
                                       {/* Funeral Home Logo - Top (above In Loving Memory) */}
                                       {funeralHomeLogo && funeralHomeLogoPosition === 'top' && (
-                                        <div className="flex justify-center mb-1">
+                                        <div className="flex justify-center">
                                           <img 
                                             src={funeralHomeLogo} 
                                             alt="Funeral Home Logo" 
@@ -2785,13 +2791,14 @@ const Design = () => {
                                   
                                   {showInLovingMemory && (
                                     <p 
-                                      className="uppercase tracking-[0.12em] mb-0.5"
+                                      className="uppercase tracking-[0.12em]"
                                       style={{ 
                                         fontSize: `${inLovingMemorySize}px`,
                                         color: inLovingMemoryColor,
                                         fontWeight: inLovingMemoryBold ? 'bold' : 'normal',
                                         fontFamily: inLovingMemoryFont,
                                         textShadow: '1px 1px 3px rgba(0,0,0,0.4)',
+                                        marginBottom: '1px',
                                       }}
                                     >
                                       {inLovingMemoryText}
@@ -2799,13 +2806,14 @@ const Design = () => {
                                   )}
                                   {showNameOnBack && (
                                     <p 
-                                      className="mb-0.5 whitespace-pre text-center"
+                                      className="whitespace-pre text-center"
                                       style={{ 
                                         fontSize: `${backNameSize}px`,
                                         color: backNameColor,
                                         fontWeight: backNameBold ? 'bold' : 'normal',
                                         fontFamily: backNameFont,
                                         textShadow: '1px 1px 3px rgba(0,0,0,0.4)',
+                                        marginBottom: '1px',
                                       }}
                                     >
                                       {deceasedName || 'Name Here'}
@@ -2815,11 +2823,12 @@ const Design = () => {
                                   {/* Dates - now in flow, not absolute */}
                                   {showDatesOnBack && (
                                     <div
-                                      className="touch-none select-none px-1 rounded mb-1"
+                                      className="touch-none select-none px-1 rounded"
                                       style={{
                                         cursor: draggingText === 'backDates' || resizingText === 'backDates' ? 'grabbing' : 'grab',
                                         boxShadow: (draggingText === 'backDates' || resizingText === 'backDates') ? '0 0 0 2px #d97706' : 'none',
                                         textAlign: backDatesAlign,
+                                        marginBottom: '2px',
                                       }}
                                       onPointerDown={(e) => handleTextPointerDown(e, 'backDates')}
                                       onPointerMove={handleTextPointerMove}
@@ -2840,10 +2849,10 @@ const Design = () => {
                                   )}
                                 </div>
 
-                                {/* Prayer - takes remaining space, vertically centered */}
+                                {/* Prayer - takes remaining space, starts from top */}
                                 <div
                                   ref={prayerContainerRef}
-                                  className="flex-1 flex items-center justify-center py-1 px-1 overflow-hidden min-h-0"
+                                  className="flex-1 flex items-start justify-center pt-1 px-1 overflow-hidden min-h-0"
                                 >
                                   <p 
                                     ref={prayerTextRef}
@@ -2907,7 +2916,9 @@ const Design = () => {
                               
                               {/* Decorative Border Overlay - Paper cards only (Back) */}
                               {cardType === 'paper' && backBorderDesign !== 'none' && (
-                                <DecorativeBorderOverlay type={backBorderDesign} color={backBorderColor} />
+                                <div className="absolute inset-0 z-20 pointer-events-none">
+                                  <DecorativeBorderOverlay type={backBorderDesign} color={backBorderColor} />
+                                </div>
                               )}
                             </div>
                           </div>
