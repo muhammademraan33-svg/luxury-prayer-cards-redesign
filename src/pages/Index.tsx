@@ -505,8 +505,8 @@ const Index = () => {
               { size: '5x7', price: 17, aspect: '5/7', packSize: 12, extraPrice: 0.67 },
               { size: '8x10', price: 7, aspect: '4/5' },
               { size: '11x14', price: 17, aspect: '11/14' },
-              { size: '16x20', price: 17, aspect: '4/5', isMemorial: true, memorialLabel: 'Memorial Photo' },
-              { size: '18x24', price: 27, aspect: '4/5', isMemorial: true, memorialLabel: 'Large Memorial Photo' },
+              { size: '16x20', price: 17, aspect: '4/5', isMemorial: true, memorialLabel: '16x20 Memorial Photo' },
+              { size: '18x24', price: 27, aspect: '4/5', isMemorial: true, memorialLabel: '18x24 Memorial Photo' },
             ].map((photo) => {
               // Calculate total prints and price for pack items
               const uploads = multiPhotoUploads[photo.size] || [];
