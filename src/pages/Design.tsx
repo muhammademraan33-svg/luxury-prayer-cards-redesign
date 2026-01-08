@@ -16,7 +16,6 @@ import { toast } from 'sonner';
 import metalCardProduct from '@/assets/metal-card-product.jpg';
 import paperCardsProduct from '@/assets/paper-cards-product.jpg';
 import { AutoFitSingleLineText } from '@/components/AutoFitSingleLineText';
-import { PrintPreviewSample } from '@/components/PrintPreviewSample';
 
 import cloudsLightBg from '@/assets/backgrounds/clouds-light.jpg';
 import marbleGreyBg from '@/assets/backgrounds/marble-grey.jpg';
@@ -215,7 +214,6 @@ const Design = () => {
   const [frontBorderColor, setFrontBorderColor] = useState('#d4af37'); // Gold (metallic) default
   const [backBorderDesign, setBackBorderDesign] = useState<DecorativeBorderType>('none');
   const [backBorderColor, setBackBorderColor] = useState('#d4af37'); // Gold (metallic) default
-  const [showPrintPreview, setShowPrintPreview] = useState(false);
 
   // Only allow the 4 metallic border colors
   const METALLIC_BORDER_HEXES = ['#d4af37', '#c0c0c0', '#b76e79', '#f8f8f8'] as const;
@@ -1467,7 +1465,7 @@ const Design = () => {
                           onClick={() => !deceasedPhoto && photoInputRef.current?.click()}
                         >
                           <div 
-                            className={`w-full h-full ${cardType === 'metal' && metalBorderColor !== 'none' ? 'rounded-lg' : ''} overflow-hidden bg-slate-700 flex items-center justify-center relative ${!deceasedPhoto ? 'hover:bg-slate-600 transition-colors' : ''}`}
+                            className={`w-full h-full ${cardType === 'metal' && metalBorderColor !== 'none' ? 'rounded-lg' : cardRounding} overflow-hidden bg-slate-700 flex items-center justify-center relative ${!deceasedPhoto ? 'hover:bg-slate-600 transition-colors' : ''}`}
                           >
                             {deceasedPhoto ? (
                               <>
@@ -1830,7 +1828,7 @@ const Design = () => {
                         >
                             <div 
                               ref={photoContainerRef}
-                              className={`w-full h-full ${cardType === 'metal' && metalBorderColor !== 'none' ? 'rounded-lg' : ''} overflow-hidden bg-slate-700 flex items-center justify-center touch-none relative ${!deceasedPhoto ? 'cursor-pointer hover:bg-slate-600 transition-colors' : ''}`}
+                              className={`w-full h-full ${cardType === 'metal' && metalBorderColor !== 'none' ? 'rounded-lg' : cardRounding} overflow-hidden bg-slate-700 flex items-center justify-center touch-none relative ${!deceasedPhoto ? 'cursor-pointer hover:bg-slate-600 transition-colors' : ''}`}
                               style={{ cursor: deceasedPhoto && !draggingText ? (isPanning ? 'grabbing' : 'grab') : (!deceasedPhoto ? 'pointer' : 'default') }}
                               onPointerDown={handlePhotoPointerDown}
                               onPointerMove={handlePhotoPointerMove}
@@ -4083,16 +4081,6 @@ const Design = () => {
                           </div>
                         </div>
                         
-                        {/* Preview Print Output Button */}
-                        <Button
-                          type="button"
-                          variant="outline"
-                          onClick={() => setShowPrintPreview(true)}
-                          className="w-full mt-4 border-amber-500/50 text-amber-400 hover:bg-amber-500/10"
-                        >
-                          <Layers className="h-4 w-4 mr-2" />
-                          Preview Print Output (Signs365 Specs)
-                        </Button>
                       </div>
                     </>
                   ) : (
@@ -4677,10 +4665,10 @@ const Design = () => {
           }}
         >
           <div 
-            className={`w-full h-full rounded-lg overflow-hidden relative ${metalBorderColor !== 'none' ? `bg-gradient-to-br ${getMetalBorderGradient(metalBorderColor)}` : ''}`}
+            className={`w-full h-full ${cardType === 'paper' && paperCornerRadius !== 'none' ? 'rounded-lg' : 'rounded-lg'} overflow-hidden relative ${metalBorderColor !== 'none' ? `bg-gradient-to-br ${getMetalBorderGradient(metalBorderColor)}` : ''}`}
             style={{ padding: metalBorderColor !== 'none' ? '4px' : '0' }}
           >
-            <div className={`w-full h-full ${metalBorderColor !== 'none' ? 'rounded-lg' : ''} overflow-hidden bg-slate-700 relative`}>
+            <div className={`w-full h-full ${metalBorderColor !== 'none' ? 'rounded-lg' : (cardType === 'paper' && paperCornerRadius !== 'none' ? 'rounded-lg' : '')} overflow-hidden bg-slate-700 relative`}>
               {deceasedPhoto && (
                 <>
                   <img
@@ -4770,11 +4758,11 @@ const Design = () => {
           }}
         >
           <div 
-            className={`w-full h-full rounded-lg overflow-hidden relative ${metalBorderColor !== 'none' ? `bg-gradient-to-br ${getMetalBorderGradient(metalBorderColor)}` : ''}`}
+            className={`w-full h-full ${cardType === 'paper' && paperCornerRadius !== 'none' ? 'rounded-lg' : 'rounded-lg'} overflow-hidden relative ${metalBorderColor !== 'none' ? `bg-gradient-to-br ${getMetalBorderGradient(metalBorderColor)}` : ''}`}
             style={{ padding: metalBorderColor !== 'none' ? '4px' : '0' }}
           >
             <div 
-              className={`w-full h-full ${metalBorderColor !== 'none' ? 'rounded-lg' : ''} overflow-hidden relative flex flex-col`}
+              className={`w-full h-full ${metalBorderColor !== 'none' ? 'rounded-lg' : (cardType === 'paper' && paperCornerRadius !== 'none' ? 'rounded-lg' : '')} overflow-hidden relative flex flex-col`}
               style={{
                 backgroundColor: backBgImage ? 'transparent' : '#ffffff',
               }}
@@ -4871,15 +4859,6 @@ const Design = () => {
         </div>
       </footer>
     </div>
-    
-    {/* Print Preview Sample Modal */}
-    <PrintPreviewSample
-      open={showPrintPreview}
-      onClose={() => setShowPrintPreview(false)}
-      hasRoundedCorners={paperCornerRadius !== 'none'}
-      cardWidth={mainDesignSize === '3x4.75' ? '3' : '2.5'}
-      cardHeight={mainDesignSize === '3x4.75' ? '4.75' : '4.25'}
-    />
     </>
   );
 };
