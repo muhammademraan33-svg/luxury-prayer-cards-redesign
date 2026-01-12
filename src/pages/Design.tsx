@@ -333,46 +333,35 @@ const Design = () => {
   const [namePosition, setNamePosition] = useState({ x: 50, y: 80 });
   const [datesPosition, setDatesPosition] = useState({ x: 50, y: cardType === 'metal' ? 91 : 92 });
 
-  // Prevent name/dates from overlapping (works for both bordered and non-bordered cases)
+  // Prevent name/dates from overlapping - only clamp when they would actually collide
   useEffect(() => {
     if (cardType !== 'paper') return;
     if (!showNameOnFront || !showDatesOnFront) return;
 
     const hasBorder = frontBorderDesign !== 'none';
     
-    // Safe max Y depends on whether border is active - reduced to prevent cutoff
+    // Safe max Y depends on whether border is active
     const SAFE_MAX_Y = hasBorder ? 82 : 95;
     
     // Dynamic gap based on line count and border presence
     const nameText = deceasedName || 'Name Here';
     const lineCount = nameText.split('\n').length;
-    // Larger gap when border present to avoid cutoff; small but visible gap when no border
     const BASE_GAP = hasBorder ? 4 : 2;
     const PER_LINE_GAP = hasBorder ? 1.5 : 0.5;
     const MIN_GAP_Y = BASE_GAP + (lineCount - 1) * PER_LINE_GAP;
 
     const lineOffset = (lineCount - 1) * 3;
     const effectiveNameY = namePosition.y - lineOffset;
-
     const minDatesY = effectiveNameY + MIN_GAP_Y;
 
-    const clampedDatesY = Math.min(datesPosition.y, SAFE_MAX_Y);
-
-    // No border: keep dates tucked directly under the name (with small whitespace).
-    // With border: only push dates down if needed to avoid overlap.
-    const desiredDatesY = hasBorder ? Math.max(clampedDatesY, minDatesY) : minDatesY;
-    let nextDatesY = Math.min(desiredDatesY, SAFE_MAX_Y);
-
-    let nextNameY = namePosition.y;
-    if (nextDatesY < minDatesY) {
-      nextNameY = (nextDatesY - MIN_GAP_Y) + lineOffset;
+    // Only adjust if dates would overlap with name (dates too high)
+    if (datesPosition.y < minDatesY) {
+      setDatesPosition((prev) => ({ ...prev, y: minDatesY }));
     }
-
-    if (nextDatesY !== datesPosition.y) {
-      setDatesPosition((prev) => ({ ...prev, y: nextDatesY }));
-    }
-    if (nextNameY !== namePosition.y) {
-      setNamePosition((prev) => ({ ...prev, y: nextNameY }));
+    
+    // Clamp dates to safe max if border present
+    if (datesPosition.y > SAFE_MAX_Y) {
+      setDatesPosition((prev) => ({ ...prev, y: SAFE_MAX_Y }));
     }
   }, [
     cardType,
