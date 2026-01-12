@@ -77,14 +77,15 @@ const FONT_OPTIONS = [
   { value: 'Montserrat', name: 'Montserrat' },
 ];
 
-// Helper to convert px to inches at 300 DPI (print standard)
+// Helper to convert px to points at 300 DPI (print standard)
+// 1 inch = 72 points, 1 inch = 300 px at 300 DPI
 const PX_PER_INCH = 300;
-const pxToInches = (px: number): string => {
-  const inches = px / PX_PER_INCH;
-  return inches.toFixed(3);
+const POINTS_PER_INCH = 72;
+const pxToPoints = (px: number): number => {
+  return Math.round((px / PX_PER_INCH) * POINTS_PER_INCH);
 };
-const inchesToPx = (inches: number): number => {
-  return Math.round(inches * PX_PER_INCH);
+const pointsToPx = (points: number): number => {
+  return Math.round((points / POINTS_PER_INCH) * PX_PER_INCH);
 };
 
 type MetalFinish = 'silver' | 'gold' | 'rosegold' | 'black' | 'white' | 'marble';
@@ -2613,14 +2614,14 @@ const Design = () => {
                                 <Label className="text-slate-400 text-xs w-10">Size</Label>
                                 <input
                                   type="range"
-                                  min="0.04"
-                                  max="0.5"
-                                  step="0.005"
-                                  value={nameSize / PX_PER_INCH}
-                                  onChange={(e) => setNameSize(parseFloat(e.target.value) * PX_PER_INCH)}
+                                  min="6"
+                                  max="150"
+                                  step="1"
+                                  value={pxToPoints(nameSize)}
+                                  onChange={(e) => setNameSize(pointsToPx(parseFloat(e.target.value)))}
                                   className="flex-1 accent-amber-600 h-1"
                                 />
-                                <span className="text-xs text-slate-400 w-12 text-right">{pxToInches(nameSize)}"</span>
+                                <span className="text-xs text-slate-400 w-12 text-right">{pxToPoints(nameSize)}pt</span>
                               </div>
                               <div className="flex items-center gap-2">
                                 <Label className="text-slate-400 text-xs w-10">L/R</Label>
@@ -2754,16 +2755,16 @@ const Design = () => {
                                 <Label className="text-slate-400 text-xs w-10">Size</Label>
                                 <input
                                   type="range"
-                                  min="0.027"
-                                  max="0.33"
-                                  step="0.005"
-                                  value={(typeof frontDatesSize === 'number' ? frontDatesSize : 16) / PX_PER_INCH}
-                                  onChange={(e) => setFrontDatesSize(parseFloat(e.target.value) * PX_PER_INCH)}
+                                  min="6"
+                                  max="72"
+                                  step="1"
+                                  value={pxToPoints(typeof frontDatesSize === 'number' ? frontDatesSize : 16)}
+                                  onChange={(e) => setFrontDatesSize(pointsToPx(parseFloat(e.target.value)))}
                                   className="flex-1 accent-amber-600 h-1"
                                   disabled={!showDatesOnFront || frontDatesSize === 'auto'}
                                 />
                                 <span className="text-xs text-slate-400 w-12 text-right">
-                                  {frontDatesSize === 'auto' ? 'Auto' : `${pxToInches(frontDatesSize)}"`}
+                                  {frontDatesSize === 'auto' ? 'Auto' : `${pxToPoints(frontDatesSize)}pt`}
                                 </span>
                               </div>
                               <div className="flex items-center gap-2">
@@ -2864,14 +2865,14 @@ const Design = () => {
                                     <Label className="text-slate-400 text-xs w-10">Size</Label>
                                     <input
                                       type="range"
-                                      min="0.027"
-                                      max="0.33"
-                                      step="0.005"
-                                      value={additionalTextSize / PX_PER_INCH}
-                                      onChange={(e) => setAdditionalTextSize(parseFloat(e.target.value) * PX_PER_INCH)}
+                                      min="6"
+                                      max="72"
+                                      step="1"
+                                      value={pxToPoints(additionalTextSize)}
+                                      onChange={(e) => setAdditionalTextSize(pointsToPx(parseFloat(e.target.value)))}
                                       className="flex-1 accent-amber-600 h-1"
                                     />
-                                    <span className="text-xs text-slate-400 w-12 text-right">{pxToInches(additionalTextSize)}"</span>
+                                    <span className="text-xs text-slate-400 w-12 text-right">{pxToPoints(additionalTextSize)}pt</span>
                                   </div>
                                   <div className="flex items-center gap-2">
                                     <Label className="text-slate-400 text-xs w-10">L/R</Label>
@@ -3242,7 +3243,7 @@ const Design = () => {
                                     <span className="text-xs">−</span>
                                   </Button>
                                   <span className="text-xs text-white bg-slate-700 px-2 py-1 rounded min-w-[48px] text-center">
-                                    {backDatesSize === 'auto' ? 'Auto' : `${pxToInches(backDatesSize)}"`}
+                                    {backDatesSize === 'auto' ? 'Auto' : `${pxToPoints(backDatesSize)}pt`}
                                   </span>
                                   <Button
                                     type="button"
