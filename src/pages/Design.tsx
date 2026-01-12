@@ -2613,11 +2613,11 @@ const Design = () => {
                                 <Label className="text-slate-400 text-xs w-10">Size</Label>
                                 <input
                                   type="range"
-                                  min="12"
-                                  max="150"
-                                  step="1"
-                                  value={nameSize}
-                                  onChange={(e) => setNameSize(parseFloat(e.target.value))}
+                                  min="0.04"
+                                  max="0.5"
+                                  step="0.005"
+                                  value={nameSize / PX_PER_INCH}
+                                  onChange={(e) => setNameSize(parseFloat(e.target.value) * PX_PER_INCH)}
                                   className="flex-1 accent-amber-600 h-1"
                                 />
                                 <span className="text-xs text-slate-400 w-12 text-right">{pxToInches(nameSize)}"</span>
@@ -2754,11 +2754,11 @@ const Design = () => {
                                 <Label className="text-slate-400 text-xs w-10">Size</Label>
                                 <input
                                   type="range"
-                                  min="8"
-                                  max="100"
-                                  step="1"
-                                  value={typeof frontDatesSize === 'number' ? frontDatesSize : 16}
-                                  onChange={(e) => setFrontDatesSize(parseFloat(e.target.value))}
+                                  min="0.027"
+                                  max="0.33"
+                                  step="0.005"
+                                  value={(typeof frontDatesSize === 'number' ? frontDatesSize : 16) / PX_PER_INCH}
+                                  onChange={(e) => setFrontDatesSize(parseFloat(e.target.value) * PX_PER_INCH)}
                                   className="flex-1 accent-amber-600 h-1"
                                   disabled={!showDatesOnFront || frontDatesSize === 'auto'}
                                 />
@@ -2864,11 +2864,11 @@ const Design = () => {
                                     <Label className="text-slate-400 text-xs w-10">Size</Label>
                                     <input
                                       type="range"
-                                      min="8"
-                                      max="100"
-                                      step="1"
-                                      value={additionalTextSize}
-                                      onChange={(e) => setAdditionalTextSize(parseFloat(e.target.value))}
+                                      min="0.027"
+                                      max="0.33"
+                                      step="0.005"
+                                      value={additionalTextSize / PX_PER_INCH}
+                                      onChange={(e) => setAdditionalTextSize(parseFloat(e.target.value) * PX_PER_INCH)}
                                       className="flex-1 accent-amber-600 h-1"
                                     />
                                     <span className="text-xs text-slate-400 w-12 text-right">{pxToInches(additionalTextSize)}"</span>
