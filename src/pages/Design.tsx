@@ -346,9 +346,9 @@ const Design = () => {
     // Dynamic gap based on line count and border presence
     const nameText = deceasedName || 'Name Here';
     const lineCount = nameText.split('\n').length;
-    // Larger gap when border present to avoid cutoff; very tight gap when no border
-    const BASE_GAP = hasBorder ? 4 : 0.8;
-    const PER_LINE_GAP = hasBorder ? 1.5 : 0.35;
+    // Larger gap when border present to avoid cutoff; small but visible gap when no border
+    const BASE_GAP = hasBorder ? 4 : 2;
+    const PER_LINE_GAP = hasBorder ? 1.5 : 0.5;
     const MIN_GAP_Y = BASE_GAP + (lineCount - 1) * PER_LINE_GAP;
 
     const lineOffset = (lineCount - 1) * 3;
@@ -2586,6 +2586,40 @@ const Design = () => {
                                 >
                                   S
                                 </Button>
+                              </div>
+                            </div>
+                            
+                            {/* Text Position Controls */}
+                            <div className="pt-2 border-t border-slate-600 space-y-2">
+                              <Label className="text-slate-400 text-xs">Text Position</Label>
+                              <div className="space-y-1.5">
+                                <div className="flex items-center gap-2">
+                                  <span className="text-slate-400 text-xs w-12">Name Y</span>
+                                  <input
+                                    type="range"
+                                    min="30"
+                                    max="95"
+                                    step="1"
+                                    value={namePosition.y}
+                                    onChange={(e) => setNamePosition(prev => ({ ...prev, y: parseFloat(e.target.value) }))}
+                                    className="flex-1 accent-amber-600 h-1"
+                                  />
+                                  <span className="text-xs text-slate-500 w-8">{Math.round(namePosition.y)}%</span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  <span className="text-slate-400 text-xs w-12">Dates Y</span>
+                                  <input
+                                    type="range"
+                                    min="30"
+                                    max="98"
+                                    step="1"
+                                    value={datesPosition.y}
+                                    onChange={(e) => setDatesPosition(prev => ({ ...prev, y: parseFloat(e.target.value) }))}
+                                    className="flex-1 accent-amber-600 h-1"
+                                    disabled={!showDatesOnFront}
+                                  />
+                                  <span className="text-xs text-slate-500 w-8">{Math.round(datesPosition.y)}%</span>
+                                </div>
                               </div>
                             </div>
                           </div>
