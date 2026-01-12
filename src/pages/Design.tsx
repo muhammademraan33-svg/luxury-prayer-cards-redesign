@@ -333,45 +333,72 @@ const Design = () => {
   const [namePosition, setNamePosition] = useState({ x: 50, y: 80 });
   const [datesPosition, setDatesPosition] = useState({ x: 50, y: cardType === 'metal' ? 91 : 92 });
 
-  // Prevent name/dates from overlapping - only clamp when they would actually collide
-  // Use a ref to track if we're in a user-initiated slider change
-  const [borderJustChanged, setBorderJustChanged] = useState(false);
+  // Auto-adjust name/dates positions based on elements (borders, line count, etc.)
   const prevBorderRef = useRef(frontBorderDesign);
   
-  // Detect border changes
-  useEffect(() => {
-    if (prevBorderRef.current !== frontBorderDesign) {
-      setBorderJustChanged(true);
-      prevBorderRef.current = frontBorderDesign;
-      // Reset flag after a brief delay
-      const timer = setTimeout(() => setBorderJustChanged(false), 100);
-      return () => clearTimeout(timer);
-    }
-  }, [frontBorderDesign]);
-
   useEffect(() => {
     if (cardType !== 'paper') return;
     if (!showNameOnFront || !showDatesOnFront) return;
-    
-    // Skip auto-adjustment when border just changed to avoid jarring jumps
-    if (borderJustChanged) return;
 
     const hasBorder = frontBorderDesign !== 'none';
+    const hadBorder = prevBorderRef.current !== 'none';
+    const borderJustAdded = hasBorder && !hadBorder;
+    const borderJustRemoved = !hasBorder && hadBorder;
+    prevBorderRef.current = frontBorderDesign;
+    
+    // Safe zones for text positioning
+    const SAFE_MAX_Y = hasBorder ? 84 : 96;
+    const SAFE_MIN_NAME_Y = hasBorder ? 65 : 60;
     
     // Dynamic gap based on line count and border presence
     const nameText = deceasedName || 'Name Here';
     const lineCount = nameText.split('\n').length;
-    const BASE_GAP = hasBorder ? 4 : 2;
-    const PER_LINE_GAP = hasBorder ? 1.5 : 0.5;
+    const BASE_GAP = hasBorder ? 5 : 2.5;
+    const PER_LINE_GAP = hasBorder ? 2 : 0.8;
     const MIN_GAP_Y = BASE_GAP + (lineCount - 1) * PER_LINE_GAP;
 
     const lineOffset = (lineCount - 1) * 3;
     const effectiveNameY = namePosition.y - lineOffset;
     const minDatesY = effectiveNameY + MIN_GAP_Y;
 
-    // Only adjust if dates would overlap with name (dates too high)
-    if (datesPosition.y < minDatesY) {
-      setDatesPosition((prev) => ({ ...prev, y: minDatesY }));
+    let newNameY = namePosition.y;
+    let newDatesY = datesPosition.y;
+
+    // When border is added, pull both name and dates up into safe zone
+    if (borderJustAdded) {
+      newNameY = Math.min(namePosition.y, 78);
+      newDatesY = Math.min(datesPosition.y, SAFE_MAX_Y);
+    }
+    
+    // When border is removed, allow text to go lower
+    if (borderJustRemoved) {
+      // Keep current positions, just ensure min gap
+    }
+
+    // Ensure dates don't overlap with name
+    const adjustedEffectiveNameY = newNameY - lineOffset;
+    const adjustedMinDatesY = adjustedEffectiveNameY + MIN_GAP_Y;
+    if (newDatesY < adjustedMinDatesY) {
+      newDatesY = adjustedMinDatesY;
+    }
+
+    // Ensure dates don't exceed safe max
+    if (newDatesY > SAFE_MAX_Y) {
+      newDatesY = SAFE_MAX_Y;
+      // If dates hit max, push name up
+      newNameY = (newDatesY - MIN_GAP_Y) + lineOffset;
+    }
+    
+    // Ensure name doesn't go too high
+    if (newNameY < SAFE_MIN_NAME_Y) {
+      newNameY = SAFE_MIN_NAME_Y;
+    }
+
+    if (newDatesY !== datesPosition.y) {
+      setDatesPosition((prev) => ({ ...prev, y: newDatesY }));
+    }
+    if (newNameY !== namePosition.y) {
+      setNamePosition((prev) => ({ ...prev, y: newNameY }));
     }
   }, [
     cardType,
@@ -381,7 +408,6 @@ const Design = () => {
     deceasedName,
     namePosition.y,
     datesPosition.y,
-    borderJustChanged,
   ]);
 
   const [nameColor, setNameColor] = useState('#ffffff');
@@ -1437,6 +1463,61 @@ const Design = () => {
                 <div className="md:flex md:gap-4">
                   {/* Left Column: Preview (sticky on medium+ screens) */}
                   <div className="hidden md:flex md:flex-col md:items-center md:w-[240px] md:flex-shrink-0 md:sticky md:top-14 md:self-start">
+                    {/* Paper Card Size Selection - Above Front/Back */}
+                    {cardType === 'paper' && (
+                      <div className="w-full bg-slate-700/50 rounded-lg p-2 mb-2">
+                        <h3 className="text-xs font-semibold text-white mb-1.5 text-center">
+                          Card Size {activeDesignIndex >= 0 ? `(Design ${activeDesignIndex + 2})` : ''}
+                        </h3>
+                        <div className="grid grid-cols-2 gap-1.5">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              if (activeDesignIndex === -1) {
+                                setMainDesignSize('2.625x4.375');
+                              } else {
+                                const updated = [...additionalDesigns];
+                                updated[activeDesignIndex] = { ...updated[activeDesignIndex], size: '2.625x4.375' };
+                                setAdditionalDesigns(updated);
+                              }
+                            }}
+                            className={`p-1 rounded-lg border-2 transition-all ${
+                              (activeDesignIndex === -1 ? mainDesignSize : additionalDesigns[activeDesignIndex]?.size) === '2.625x4.375'
+                                ? 'border-amber-500 bg-amber-500/20'
+                                : 'border-slate-600 hover:border-slate-500'
+                            }`}
+                          >
+                            <div className="text-center">
+                              <div className="text-xs font-bold text-white">2.5"×4.25"</div>
+                              <div className="text-amber-400 font-semibold text-[10px]">Included</div>
+                            </div>
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              if (activeDesignIndex === -1) {
+                                setMainDesignSize('3.125x4.875');
+                              } else {
+                                const updated = [...additionalDesigns];
+                                updated[activeDesignIndex] = { ...updated[activeDesignIndex], size: '3.125x4.875' };
+                                setAdditionalDesigns(updated);
+                              }
+                            }}
+                            className={`p-1 rounded-lg border-2 transition-all ${
+                              (activeDesignIndex === -1 ? mainDesignSize : additionalDesigns[activeDesignIndex]?.size) === '3.125x4.875'
+                                ? 'border-amber-500 bg-amber-500/20'
+                                : 'border-slate-600 hover:border-slate-500'
+                            }`}
+                          >
+                            <div className="text-center">
+                              <div className="text-xs font-bold text-white">3"×4.75"</div>
+                              <div className="text-amber-400 font-semibold text-[10px]">+${PAPER_SIZE_UPSELL}</div>
+                            </div>
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                    
                     {/* Front/Back Toggle - Above the card */}
                     <div className="flex justify-center gap-1 mb-2">
                       <Button
@@ -2711,84 +2792,6 @@ const Design = () => {
                           </div>
                         </div>
 
-                        {/* Paper Card Size Selection - moved after border */}
-                        {cardType === 'paper' && (
-                          <div className="bg-slate-700/50 rounded-lg p-2 border-t border-slate-700 mt-2">
-                            <h3 className="text-xs font-semibold text-white mb-1 text-center">
-                              Card Size {activeDesignIndex >= 0 ? `(Design ${activeDesignIndex + 2})` : ''}
-                            </h3>
-                            <div className="grid grid-cols-2 gap-1.5">
-                              <button
-                                type="button"
-                                onClick={() => {
-                                  if (activeDesignIndex === -1) {
-                                    setMainDesignSize('2.625x4.375');
-                                  } else {
-                                    const updated = [...additionalDesigns];
-                                    updated[activeDesignIndex] = { ...updated[activeDesignIndex], size: '2.625x4.375' };
-                                    setAdditionalDesigns(updated);
-                                  }
-                                }}
-                                className={`p-1.5 rounded-lg border-2 transition-all ${
-                                  (activeDesignIndex === -1 ? mainDesignSize : additionalDesigns[activeDesignIndex]?.size) === '2.625x4.375'
-                                    ? 'border-amber-500 bg-amber-500/20'
-                                    : 'border-slate-600 hover:border-slate-500'
-                                }`}
-                              >
-                                <div className="flex items-center gap-2">
-                                  <div 
-                                    className="border border-white/60 shadow"
-                                    style={{ 
-                                      width: '18px', 
-                                      height: '30px',
-                                      backgroundImage: `url(${cloudsLightBg})`,
-                                      backgroundSize: 'cover',
-                                      backgroundPosition: 'center'
-                                    }}
-                                  />
-                                  <div className="text-left">
-                                    <div className="text-xs font-bold text-white">2.5"×4.25"</div>
-                                    <div className="text-amber-400 font-semibold text-xs">Included</div>
-                                  </div>
-                                </div>
-                              </button>
-                              <button
-                                type="button"
-                                onClick={() => {
-                                  if (activeDesignIndex === -1) {
-                                    setMainDesignSize('3.125x4.875');
-                                  } else {
-                                    const updated = [...additionalDesigns];
-                                    updated[activeDesignIndex] = { ...updated[activeDesignIndex], size: '3.125x4.875' };
-                                    setAdditionalDesigns(updated);
-                                  }
-                                }}
-                                className={`p-1.5 rounded-lg border-2 transition-all ${
-                                  (activeDesignIndex === -1 ? mainDesignSize : additionalDesigns[activeDesignIndex]?.size) === '3.125x4.875'
-                                    ? 'border-amber-500 bg-amber-500/20'
-                                    : 'border-slate-600 hover:border-slate-500'
-                                }`}
-                              >
-                                <div className="flex items-center gap-2">
-                                  <div 
-                                    className="border border-white/60 shadow"
-                                    style={{ 
-                                      width: '22px', 
-                                      height: '35px',
-                                      backgroundImage: `url(${cloudsLightBg})`,
-                                      backgroundSize: 'cover',
-                                      backgroundPosition: 'center'
-                                    }}
-                                  />
-                                  <div className="text-left">
-                                    <div className="text-xs font-bold text-white">3"×4.75"</div>
-                                    <div className="text-amber-400 font-semibold text-xs">+${PAPER_SIZE_UPSELL}</div>
-                                  </div>
-                                </div>
-                              </button>
-                            </div>
-                          </div>
-                        )}
 
                         {/* Variety Upsell CTA - Paper cards only */}
                         {cardType === 'paper' && (
