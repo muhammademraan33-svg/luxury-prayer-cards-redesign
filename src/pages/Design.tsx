@@ -341,7 +341,7 @@ const Design = () => {
   const [nameFont, setNameFont] = useState('Great Vibes');
   const [datesFont, setDatesFont] = useState(cardType === 'paper' ? 'Montserrat' : 'Cormorant Garamond');
   const [namePosition, setNamePosition] = useState({ x: 50, y: 80 });
-  const [datesPosition, setDatesPosition] = useState({ x: 50, y: cardType === 'metal' ? 91 : 92 });
+  const [datesPosition, setDatesPosition] = useState({ x: 50, y: cardType === 'metal' ? 87 : 88 });
 
   // Calculate estimated text height as percentage of card height
   // Based on 300 DPI and typical card dimensions
