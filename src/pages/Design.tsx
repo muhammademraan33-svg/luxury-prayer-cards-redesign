@@ -77,6 +77,16 @@ const FONT_OPTIONS = [
   { value: 'Montserrat', name: 'Montserrat' },
 ];
 
+// Helper to convert px to inches at 300 DPI (print standard)
+const PX_PER_INCH = 300;
+const pxToInches = (px: number): string => {
+  const inches = px / PX_PER_INCH;
+  return inches.toFixed(3);
+};
+const inchesToPx = (inches: number): number => {
+  return Math.round(inches * PX_PER_INCH);
+};
+
 type MetalFinish = 'silver' | 'gold' | 'rosegold' | 'black' | 'white' | 'marble';
 type Orientation = 'landscape' | 'portrait';
 type CardSide = 'front' | 'back';
@@ -2510,17 +2520,17 @@ const Design = () => {
                                   variant="outline"
                                   size="icon"
                                   className="h-5 w-5 border-slate-600"
-                                  onClick={() => setNameSize(Math.max(8, nameSize - 2))}
+                                  onClick={() => setNameSize(Math.max(8, nameSize - 3))}
                                 >
                                   <span className="text-xs">−</span>
                                 </Button>
-                                <span className="text-xs text-white bg-slate-700 px-1.5 py-0.5 rounded min-w-[32px] text-center">{Math.round(nameSize)}px</span>
+                                <span className="text-xs text-white bg-slate-700 px-1.5 py-0.5 rounded min-w-[42px] text-center">{pxToInches(nameSize)}"</span>
                                 <Button
                                   type="button"
                                   variant="outline"
                                   size="icon"
                                   className="h-5 w-5 border-slate-600"
-                                  onClick={() => setNameSize(Math.min(48, nameSize + 2))}
+                                  onClick={() => setNameSize(Math.min(150, nameSize + 3))}
                                 >
                                   <span className="text-xs">+</span>
                                 </Button>
@@ -2629,20 +2639,20 @@ const Design = () => {
                                   variant="outline"
                                   size="icon"
                                   className="h-5 w-5 border-slate-600"
-                                  onClick={() => setFrontDatesSize(typeof frontDatesSize === 'number' ? Math.max(8, frontDatesSize - 2) : 10)}
+                                  onClick={() => setFrontDatesSize(typeof frontDatesSize === 'number' ? Math.max(8, frontDatesSize - 3) : 10)}
                                   disabled={!showDatesOnFront}
                                 >
                                   <span className="text-xs">−</span>
                                 </Button>
-                                <span className="text-xs text-white bg-slate-700 px-1 py-0.5 rounded min-w-[28px] text-center">
-                                  {frontDatesSize === 'auto' ? 'A' : `${frontDatesSize}`}
+                                <span className="text-xs text-white bg-slate-700 px-1 py-0.5 rounded min-w-[38px] text-center">
+                                  {frontDatesSize === 'auto' ? 'Auto' : `${pxToInches(frontDatesSize)}"`}
                                 </span>
                                 <Button
                                   type="button"
                                   variant="outline"
                                   size="icon"
                                   className="h-5 w-5 border-slate-600"
-                                  onClick={() => setFrontDatesSize(typeof frontDatesSize === 'number' ? Math.min(48, frontDatesSize + 2) : 14)}
+                                  onClick={() => setFrontDatesSize(typeof frontDatesSize === 'number' ? Math.min(100, frontDatesSize + 3) : 14)}
                                   disabled={!showDatesOnFront}
                                 >
                                   <span className="text-xs">+</span>
@@ -2752,17 +2762,17 @@ const Design = () => {
                                       variant="outline"
                                       size="icon"
                                       className="h-5 w-5 border-slate-600"
-                                      onClick={() => setAdditionalTextSize(Math.max(8, additionalTextSize - 2))}
+                                      onClick={() => setAdditionalTextSize(Math.max(8, additionalTextSize - 3))}
                                     >
                                       <span className="text-xs">−</span>
                                     </Button>
-                                    <span className="text-xs text-white bg-slate-700 px-1.5 py-0.5 rounded min-w-[32px] text-center">{Math.round(additionalTextSize)}px</span>
+                                    <span className="text-xs text-white bg-slate-700 px-1.5 py-0.5 rounded min-w-[42px] text-center">{pxToInches(additionalTextSize)}"</span>
                                     <Button
                                       type="button"
                                       variant="outline"
                                       size="icon"
                                       className="h-5 w-5 border-slate-600"
-                                      onClick={() => setAdditionalTextSize(Math.min(48, additionalTextSize + 2))}
+                                      onClick={() => setAdditionalTextSize(Math.min(100, additionalTextSize + 3))}
                                     >
                                       <span className="text-xs">+</span>
                                     </Button>
@@ -3124,19 +3134,19 @@ const Design = () => {
                                     variant="outline"
                                     size="icon"
                                     className="h-6 w-6 border-slate-600"
-                                    onClick={() => setBackDatesSize(typeof backDatesSize === 'number' ? Math.max(6, backDatesSize - 1) : 9)}
+                                    onClick={() => setBackDatesSize(typeof backDatesSize === 'number' ? Math.max(6, backDatesSize - 3) : 9)}
                                   >
                                     <span className="text-xs">−</span>
                                   </Button>
-                                  <span className="text-xs text-white bg-slate-700 px-2 py-1 rounded min-w-[40px] text-center">
-                                    {backDatesSize === 'auto' ? 'Auto' : `${backDatesSize}px`}
+                                  <span className="text-xs text-white bg-slate-700 px-2 py-1 rounded min-w-[48px] text-center">
+                                    {backDatesSize === 'auto' ? 'Auto' : `${pxToInches(backDatesSize)}"`}
                                   </span>
                                   <Button
                                     type="button"
                                     variant="outline"
                                     size="icon"
                                     className="h-6 w-6 border-slate-600"
-                                    onClick={() => setBackDatesSize(typeof backDatesSize === 'number' ? Math.min(18, backDatesSize + 1) : 11)}
+                                    onClick={() => setBackDatesSize(typeof backDatesSize === 'number' ? Math.min(100, backDatesSize + 3) : 11)}
                                   >
                                     <span className="text-xs">+</span>
                                   </Button>
