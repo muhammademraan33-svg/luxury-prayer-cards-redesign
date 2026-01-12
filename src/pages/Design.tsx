@@ -334,14 +334,29 @@ const Design = () => {
   const [datesPosition, setDatesPosition] = useState({ x: 50, y: cardType === 'metal' ? 91 : 92 });
 
   // Prevent name/dates from overlapping - only clamp when they would actually collide
+  // Use a ref to track if we're in a user-initiated slider change
+  const [borderJustChanged, setBorderJustChanged] = useState(false);
+  const prevBorderRef = useRef(frontBorderDesign);
+  
+  // Detect border changes
+  useEffect(() => {
+    if (prevBorderRef.current !== frontBorderDesign) {
+      setBorderJustChanged(true);
+      prevBorderRef.current = frontBorderDesign;
+      // Reset flag after a brief delay
+      const timer = setTimeout(() => setBorderJustChanged(false), 100);
+      return () => clearTimeout(timer);
+    }
+  }, [frontBorderDesign]);
+
   useEffect(() => {
     if (cardType !== 'paper') return;
     if (!showNameOnFront || !showDatesOnFront) return;
+    
+    // Skip auto-adjustment when border just changed to avoid jarring jumps
+    if (borderJustChanged) return;
 
     const hasBorder = frontBorderDesign !== 'none';
-    
-    // Safe max Y depends on whether border is active
-    const SAFE_MAX_Y = hasBorder ? 82 : 95;
     
     // Dynamic gap based on line count and border presence
     const nameText = deceasedName || 'Name Here';
@@ -358,11 +373,6 @@ const Design = () => {
     if (datesPosition.y < minDatesY) {
       setDatesPosition((prev) => ({ ...prev, y: minDatesY }));
     }
-    
-    // Clamp dates to safe max if border present
-    if (datesPosition.y > SAFE_MAX_Y) {
-      setDatesPosition((prev) => ({ ...prev, y: SAFE_MAX_Y }));
-    }
   }, [
     cardType,
     frontBorderDesign,
@@ -371,6 +381,7 @@ const Design = () => {
     deceasedName,
     namePosition.y,
     datesPosition.y,
+    borderJustChanged,
   ]);
 
   const [nameColor, setNameColor] = useState('#ffffff');
