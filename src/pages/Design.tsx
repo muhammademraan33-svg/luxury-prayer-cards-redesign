@@ -158,7 +158,7 @@ import { DecorativeBorderOverlay, DECORATIVE_BORDERS, DecorativeBorderType } fro
 type CardThickness = 'standard' | 'premium';
 
 type EaselPhotoSize = '16x20' | '18x24';
-type PaperCardSize = '2.5x4.25' | '3x4.75';
+type PaperCardSize = '2.625x4.375' | '3.125x4.875';
 
 const Design = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -248,7 +248,7 @@ const Design = () => {
     setDatesPosition((prev) => ({ ...prev, y: Math.min(prev.y, SAFE_MAX_Y) }));
   }, [cardType, frontBorderDesign]);
 
-  const [mainDesignSize, setMainDesignSize] = useState<PaperCardSize>('2.5x4.25'); // Size for main design
+  const [mainDesignSize, setMainDesignSize] = useState<PaperCardSize>('2.625x4.375'); // Size for main design
   const [additionalDesigns, setAdditionalDesigns] = useState<AdditionalDesignData[]>([]); // Additional designs with full data
   const [mainDesignQty, setMainDesignQty] = useState(55); // Quantity for main design
   const [activeDesignIndex, setActiveDesignIndex] = useState<number>(-1); // -1 = main design, 0+ = additional designs
@@ -341,14 +341,14 @@ const Design = () => {
     const hasBorder = frontBorderDesign !== 'none';
     
     // Safe max Y depends on whether border is active - reduced to prevent cutoff
-    const SAFE_MAX_Y = hasBorder ? 82 : 94;
+    const SAFE_MAX_Y = hasBorder ? 82 : 95;
     
     // Dynamic gap based on line count and border presence
     const nameText = deceasedName || 'Name Here';
     const lineCount = nameText.split('\n').length;
-    // Larger gap when border present to avoid cutoff; smaller gap when no border
-    const BASE_GAP = hasBorder ? 4 : 2;
-    const PER_LINE_GAP = hasBorder ? 1.5 : 0.8;
+    // Larger gap when border present to avoid cutoff; minimal gap when no border
+    const BASE_GAP = hasBorder ? 4 : 1;
+    const PER_LINE_GAP = hasBorder ? 1.5 : 0.5;
     const MIN_GAP_Y = BASE_GAP + (lineCount - 1) * PER_LINE_GAP;
 
     const lineOffset = (lineCount - 1) * 3;
@@ -1134,11 +1134,11 @@ const Design = () => {
       }
       
       // Size upsell: $7 per design that is large size
-      if (mainDesignSize === '3x4.75') {
+      if (mainDesignSize === '3.125x4.875') {
         total += PAPER_SIZE_UPSELL;
       }
       additionalDesigns.forEach(d => {
-        if (d.size === '3x4.75') {
+        if (d.size === '3.125x4.875') {
           total += PAPER_SIZE_UPSELL;
         }
       });
@@ -1279,12 +1279,12 @@ const Design = () => {
   const getCardClass = (forSidebar = false) => {
     if (cardType === 'paper') {
       // Paper prayer cards - aspect ratio based on active design's size selection
-      const activeSize = activeDesignIndex === -1 ? mainDesignSize : (additionalDesigns[activeDesignIndex]?.size || '2.5x4.25');
+      const activeSize = activeDesignIndex === -1 ? mainDesignSize : (additionalDesigns[activeDesignIndex]?.size || '2.625x4.375');
       // Smaller size for sidebar to fit without scrolling
       if (forSidebar) {
-        return activeSize === '3x4.75' ? 'aspect-[3/4.75] w-48' : 'aspect-[2.5/4.25] w-44';
+        return activeSize === '3.125x4.875' ? 'aspect-[3.125/4.875] w-48' : 'aspect-[2.625/4.375] w-44';
       }
-      return activeSize === '3x4.75' ? 'aspect-[3/4.75] w-64' : 'aspect-[2.5/4.25] w-60';
+      return activeSize === '3.125x4.875' ? 'aspect-[3.125/4.875] w-64' : 'aspect-[2.625/4.375] w-60';
     }
     // Metal cards 2" x 3.5"
     if (forSidebar) {
@@ -2686,15 +2686,15 @@ const Design = () => {
                                 type="button"
                                 onClick={() => {
                                   if (activeDesignIndex === -1) {
-                                    setMainDesignSize('2.5x4.25');
+                                    setMainDesignSize('2.625x4.375');
                                   } else {
                                     const updated = [...additionalDesigns];
-                                    updated[activeDesignIndex] = { ...updated[activeDesignIndex], size: '2.5x4.25' };
+                                    updated[activeDesignIndex] = { ...updated[activeDesignIndex], size: '2.625x4.375' };
                                     setAdditionalDesigns(updated);
                                   }
                                 }}
                                 className={`p-1.5 rounded-lg border-2 transition-all ${
-                                  (activeDesignIndex === -1 ? mainDesignSize : additionalDesigns[activeDesignIndex]?.size) === '2.5x4.25'
+                                  (activeDesignIndex === -1 ? mainDesignSize : additionalDesigns[activeDesignIndex]?.size) === '2.625x4.375'
                                     ? 'border-amber-500 bg-amber-500/20'
                                     : 'border-slate-600 hover:border-slate-500'
                                 }`}
@@ -2720,15 +2720,15 @@ const Design = () => {
                                 type="button"
                                 onClick={() => {
                                   if (activeDesignIndex === -1) {
-                                    setMainDesignSize('3x4.75');
+                                    setMainDesignSize('3.125x4.875');
                                   } else {
                                     const updated = [...additionalDesigns];
-                                    updated[activeDesignIndex] = { ...updated[activeDesignIndex], size: '3x4.75' };
+                                    updated[activeDesignIndex] = { ...updated[activeDesignIndex], size: '3.125x4.875' };
                                     setAdditionalDesigns(updated);
                                   }
                                 }}
                                 className={`p-1.5 rounded-lg border-2 transition-all ${
-                                  (activeDesignIndex === -1 ? mainDesignSize : additionalDesigns[activeDesignIndex]?.size) === '3x4.75'
+                                  (activeDesignIndex === -1 ? mainDesignSize : additionalDesigns[activeDesignIndex]?.size) === '3.125x4.875'
                                     ? 'border-amber-500 bg-amber-500/20'
                                     : 'border-slate-600 hover:border-slate-500'
                                 }`}
@@ -4069,8 +4069,8 @@ const Design = () => {
                           <div className="flex justify-between items-center py-2 border-b border-slate-600">
                             <span className="text-slate-300">Card Sizes</span>
                             <span className="text-white font-medium text-sm">
-                              {mainDesignSize === '3x4.75' ? 'Main: Large' : 'Main: Standard'}
-                              {additionalDesigns.length > 0 && `, +${additionalDesigns.filter(d => d.size === '3x4.75').length} large`}
+                              {mainDesignSize === '3.125x4.875' ? 'Main: Large' : 'Main: Standard'}
+                              {additionalDesigns.length > 0 && `, +${additionalDesigns.filter(d => d.size === '3.125x4.875').length} large`}
                             </span>
                           </div>
                           
@@ -4278,7 +4278,7 @@ const Design = () => {
                               </div>
                             </div>
                             <p className="text-amber-400 text-sm mt-2">
-                              Large designs: {(mainDesignSize === '3x4.75' ? 1 : 0) + additionalDesigns.filter(d => d.size === '3x4.75').length}
+                              Large designs: {(mainDesignSize === '3.125x4.875' ? 1 : 0) + additionalDesigns.filter(d => d.size === '3.125x4.875').length}
                             </p>
                           </div>
                         </div>
@@ -4531,10 +4531,10 @@ const Design = () => {
                         </div>
                       )}
                       
-                      {cardType === 'paper' && ((mainDesignSize === '3x4.75' ? 1 : 0) + additionalDesigns.filter(d => d.size === '3x4.75').length) > 0 && (
+                      {cardType === 'paper' && ((mainDesignSize === '3.125x4.875' ? 1 : 0) + additionalDesigns.filter(d => d.size === '3.125x4.875').length) > 0 && (
                         <div className="flex justify-between">
-                          <span className="text-slate-300">Large Size Upgrades × {(mainDesignSize === '3x4.75' ? 1 : 0) + additionalDesigns.filter(d => d.size === '3x4.75').length}</span>
-                          <span className="text-white">${((mainDesignSize === '3x4.75' ? 1 : 0) + additionalDesigns.filter(d => d.size === '3x4.75').length) * PAPER_SIZE_UPSELL}</span>
+                          <span className="text-slate-300">Large Size Upgrades × {(mainDesignSize === '3.125x4.875' ? 1 : 0) + additionalDesigns.filter(d => d.size === '3.125x4.875').length}</span>
+                          <span className="text-white">${((mainDesignSize === '3.125x4.875' ? 1 : 0) + additionalDesigns.filter(d => d.size === '3.125x4.875').length) * PAPER_SIZE_UPSELL}</span>
                         </div>
                       )}
                       
