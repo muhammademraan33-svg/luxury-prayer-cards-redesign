@@ -338,14 +338,18 @@ const Design = () => {
     if (cardType !== 'paper') return;
     if (!showNameOnFront || !showDatesOnFront) return;
 
-    // Safe max Y depends on whether border is active - reduced to prevent cutoff
-    const SAFE_MAX_Y = frontBorderDesign === 'none' ? 93 : 84;
+    const hasBorder = frontBorderDesign !== 'none';
     
-    // Dynamic gap based on line count - tighter spacing
+    // Safe max Y depends on whether border is active - reduced to prevent cutoff
+    const SAFE_MAX_Y = hasBorder ? 82 : 94;
+    
+    // Dynamic gap based on line count and border presence
     const nameText = deceasedName || 'Name Here';
     const lineCount = nameText.split('\n').length;
-    // Base gap of 1.5%, plus 1% per additional line
-    const MIN_GAP_Y = 1.5 + (lineCount - 1) * 1;
+    // Larger gap when border present to avoid cutoff; smaller gap when no border
+    const BASE_GAP = hasBorder ? 4 : 2;
+    const PER_LINE_GAP = hasBorder ? 1.5 : 0.8;
+    const MIN_GAP_Y = BASE_GAP + (lineCount - 1) * PER_LINE_GAP;
 
     const lineOffset = (lineCount - 1) * 3;
     const effectiveNameY = namePosition.y - lineOffset;
