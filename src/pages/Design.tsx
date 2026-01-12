@@ -346,9 +346,9 @@ const Design = () => {
     // Dynamic gap based on line count and border presence
     const nameText = deceasedName || 'Name Here';
     const lineCount = nameText.split('\n').length;
-    // Larger gap when border present to avoid cutoff; minimal gap when no border
-    const BASE_GAP = hasBorder ? 4 : 1;
-    const PER_LINE_GAP = hasBorder ? 1.5 : 0.5;
+    // Larger gap when border present to avoid cutoff; very tight gap when no border
+    const BASE_GAP = hasBorder ? 4 : 0.8;
+    const PER_LINE_GAP = hasBorder ? 1.5 : 0.35;
     const MIN_GAP_Y = BASE_GAP + (lineCount - 1) * PER_LINE_GAP;
 
     const lineOffset = (lineCount - 1) * 3;
@@ -356,10 +356,12 @@ const Design = () => {
 
     const minDatesY = effectiveNameY + MIN_GAP_Y;
 
-    // Prefer moving dates down; if border max prevents it, move name up.
     const clampedDatesY = Math.min(datesPosition.y, SAFE_MAX_Y);
-    let nextDatesY = Math.max(clampedDatesY, minDatesY);
-    nextDatesY = Math.min(nextDatesY, SAFE_MAX_Y);
+
+    // No border: keep dates tucked directly under the name (with small whitespace).
+    // With border: only push dates down if needed to avoid overlap.
+    const desiredDatesY = hasBorder ? Math.max(clampedDatesY, minDatesY) : minDatesY;
+    let nextDatesY = Math.min(desiredDatesY, SAFE_MAX_Y);
 
     let nextNameY = namePosition.y;
     if (nextDatesY < minDatesY) {
