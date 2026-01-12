@@ -343,82 +343,50 @@ const Design = () => {
   const [namePosition, setNamePosition] = useState({ x: 50, y: 80 });
   const [datesPosition, setDatesPosition] = useState({ x: 50, y: cardType === 'metal' ? 91 : 92 });
 
-  // Auto-adjust name/dates positions based on elements (borders, line count, etc.)
+  // Calculate estimated text height as percentage of card height
+  // Based on 300 DPI and typical card dimensions
+  const getTextHeightPercent = (fontSize: number, lineCount: number, cardHeightPx: number = 420) => {
+    const lineHeightMultiplier = 1.3;
+    const totalHeightPx = fontSize * lineHeightMultiplier * lineCount;
+    return (totalHeightPx / cardHeightPx) * 100;
+  };
+
+  // Auto-wrap text based on font size and card width
+  const getAutoWrappedText = (text: string, fontSize: number, maxWidthPercent: number = 85) => {
+    // Estimate chars per line based on font size (rough approximation)
+    // Average char width is roughly 0.5-0.6 of font size for most fonts
+    const cardWidthPx = 280; // Approximate card width in pixels at display scale
+    const maxWidthPx = (maxWidthPercent / 100) * cardWidthPx;
+    const avgCharWidth = fontSize * 0.5;
+    const charsPerLine = Math.floor(maxWidthPx / avgCharWidth);
+    
+    if (charsPerLine <= 0 || text.length <= charsPerLine) {
+      return text;
+    }
+    
+    // Split into words and wrap
+    const words = text.split(' ');
+    const lines: string[] = [];
+    let currentLine = '';
+    
+    for (const word of words) {
+      const testLine = currentLine ? `${currentLine} ${word}` : word;
+      if (testLine.length > charsPerLine && currentLine) {
+        lines.push(currentLine);
+        currentLine = word;
+      } else {
+        currentLine = testLine;
+      }
+    }
+    if (currentLine) {
+      lines.push(currentLine);
+    }
+    
+    return lines.join('\n');
+  };
+
+  // Refs for auto-adjustment (declared here, used in useEffect below after states)
   const prevBorderRef = useRef(frontBorderDesign);
-  
-  useEffect(() => {
-    if (cardType !== 'paper') return;
-    if (!showNameOnFront || !showDatesOnFront) return;
-
-    const hasBorder = frontBorderDesign !== 'none';
-    const hadBorder = prevBorderRef.current !== 'none';
-    const borderJustAdded = hasBorder && !hadBorder;
-    const borderJustRemoved = !hasBorder && hadBorder;
-    prevBorderRef.current = frontBorderDesign;
-    
-    // Safe zones for text positioning
-    const SAFE_MAX_Y = hasBorder ? 84 : 96;
-    const SAFE_MIN_NAME_Y = hasBorder ? 65 : 60;
-    
-    // Dynamic gap based on line count and border presence
-    const nameText = deceasedName || 'Name Here';
-    const lineCount = nameText.split('\n').length;
-    const BASE_GAP = hasBorder ? 5 : 2.5;
-    const PER_LINE_GAP = hasBorder ? 2 : 0.8;
-    const MIN_GAP_Y = BASE_GAP + (lineCount - 1) * PER_LINE_GAP;
-
-    const lineOffset = (lineCount - 1) * 3;
-    const effectiveNameY = namePosition.y - lineOffset;
-    const minDatesY = effectiveNameY + MIN_GAP_Y;
-
-    let newNameY = namePosition.y;
-    let newDatesY = datesPosition.y;
-
-    // When border is added, pull both name and dates up into safe zone
-    if (borderJustAdded) {
-      newNameY = Math.min(namePosition.y, 78);
-      newDatesY = Math.min(datesPosition.y, SAFE_MAX_Y);
-    }
-    
-    // When border is removed, allow text to go lower
-    if (borderJustRemoved) {
-      // Keep current positions, just ensure min gap
-    }
-
-    // Ensure dates don't overlap with name
-    const adjustedEffectiveNameY = newNameY - lineOffset;
-    const adjustedMinDatesY = adjustedEffectiveNameY + MIN_GAP_Y;
-    if (newDatesY < adjustedMinDatesY) {
-      newDatesY = adjustedMinDatesY;
-    }
-
-    // Ensure dates don't exceed safe max
-    if (newDatesY > SAFE_MAX_Y) {
-      newDatesY = SAFE_MAX_Y;
-      // If dates hit max, push name up
-      newNameY = (newDatesY - MIN_GAP_Y) + lineOffset;
-    }
-    
-    // Ensure name doesn't go too high
-    if (newNameY < SAFE_MIN_NAME_Y) {
-      newNameY = SAFE_MIN_NAME_Y;
-    }
-
-    if (newDatesY !== datesPosition.y) {
-      setDatesPosition((prev) => ({ ...prev, y: newDatesY }));
-    }
-    if (newNameY !== namePosition.y) {
-      setNamePosition((prev) => ({ ...prev, y: newNameY }));
-    }
-  }, [
-    cardType,
-    frontBorderDesign,
-    showNameOnFront,
-    showDatesOnFront,
-    deceasedName,
-    namePosition.y,
-    datesPosition.y,
-  ]);
 
   const [nameColor, setNameColor] = useState('#ffffff');
   const [frontDatesColor, setFrontDatesColor] = useState('#ffffff');
@@ -472,6 +440,111 @@ const Design = () => {
   const [funeralHomeLogo, setFuneralHomeLogo] = useState<string | null>(null);
   const [funeralHomeLogoPosition, setFuneralHomeLogoPosition] = useState<'top' | 'bottom'>('bottom');
   const [funeralHomeLogoSize, setFuneralHomeLogoSize] = useState(40);
+
+  // Auto-adjust name/dates/additional text positions based on elements
+  useEffect(() => {
+    if (cardType !== 'paper') return;
+
+    const hasBorder = frontBorderDesign !== 'none';
+    const hadBorder = prevBorderRef.current !== 'none';
+    const borderJustAdded = hasBorder && !hadBorder;
+    prevBorderRef.current = frontBorderDesign;
+    
+    // Safe zones for text positioning
+    const SAFE_MAX_Y = hasBorder ? 84 : 96;
+    const SAFE_MIN_Y = hasBorder ? 12 : 5;
+    
+    // Calculate text heights
+    const nameText = deceasedName || 'Name Here';
+    const wrappedName = getAutoWrappedText(nameText, nameSize);
+    const nameLineCount = wrappedName.split('\n').length;
+    const nameHeightPercent = getTextHeightPercent(nameSize, nameLineCount);
+    
+    const datesHeightPercent = typeof frontDatesSize === 'number' 
+      ? getTextHeightPercent(frontDatesSize, 1) 
+      : getTextHeightPercent(14, 1); // Default for auto
+    
+    const additionalHeightPercent = showAdditionalText 
+      ? getTextHeightPercent(additionalTextSize, (additionalText || 'Text').split('\n').length)
+      : 0;
+    
+    // Minimum gaps between elements (as percentage)
+    const MIN_GAP = hasBorder ? 3 : 2;
+    
+    let newNameY = namePosition.y;
+    let newDatesY = datesPosition.y;
+    let newAdditionalY = additionalTextPosition.y;
+
+    // When border is added, pull everything into safe zone
+    if (borderJustAdded) {
+      newNameY = Math.min(namePosition.y, SAFE_MAX_Y - nameHeightPercent / 2);
+      newDatesY = Math.min(datesPosition.y, SAFE_MAX_Y - datesHeightPercent / 2);
+      if (showAdditionalText) {
+        newAdditionalY = Math.min(additionalTextPosition.y, SAFE_MAX_Y - additionalHeightPercent / 2);
+      }
+    }
+    
+    // Calculate bounds for each element
+    const nameTop = newNameY - nameHeightPercent / 2;
+    const nameBottom = newNameY + nameHeightPercent / 2;
+    
+    // Ensure dates don't overlap with name (dates are below name typically)
+    if (showDatesOnFront && newDatesY < nameBottom + MIN_GAP + datesHeightPercent / 2) {
+      newDatesY = nameBottom + MIN_GAP + datesHeightPercent / 2;
+    }
+    
+    // Ensure dates stay in safe zone
+    if (showDatesOnFront && newDatesY + datesHeightPercent / 2 > SAFE_MAX_Y) {
+      newDatesY = SAFE_MAX_Y - datesHeightPercent / 2;
+      // Push name up if needed
+      const requiredNameBottom = newDatesY - MIN_GAP - datesHeightPercent / 2;
+      if (nameBottom > requiredNameBottom) {
+        newNameY = requiredNameBottom - nameHeightPercent / 2;
+      }
+    }
+    
+    // Ensure additional text doesn't overlap (usually above name)
+    if (showAdditionalText) {
+      const additionalBottom = newAdditionalY + additionalHeightPercent / 2;
+      if (additionalBottom + MIN_GAP > nameTop) {
+        newAdditionalY = nameTop - MIN_GAP - additionalHeightPercent / 2;
+      }
+      // Keep in safe zone
+      if (newAdditionalY - additionalHeightPercent / 2 < SAFE_MIN_Y) {
+        newAdditionalY = SAFE_MIN_Y + additionalHeightPercent / 2;
+      }
+    }
+    
+    // Ensure name doesn't go too high
+    if (newNameY - nameHeightPercent / 2 < SAFE_MIN_Y) {
+      newNameY = SAFE_MIN_Y + nameHeightPercent / 2;
+    }
+
+    // Update positions if changed
+    if (Math.abs(newDatesY - datesPosition.y) > 0.5) {
+      setDatesPosition((prev) => ({ ...prev, y: newDatesY }));
+    }
+    if (Math.abs(newNameY - namePosition.y) > 0.5) {
+      setNamePosition((prev) => ({ ...prev, y: newNameY }));
+    }
+    if (showAdditionalText && Math.abs(newAdditionalY - additionalTextPosition.y) > 0.5) {
+      setAdditionalTextPosition((prev) => ({ ...prev, y: newAdditionalY }));
+    }
+  }, [
+    cardType,
+    frontBorderDesign,
+    showNameOnFront,
+    showDatesOnFront,
+    showAdditionalText,
+    deceasedName,
+    nameSize,
+    frontDatesSize,
+    additionalTextSize,
+    additionalText,
+    namePosition.y,
+    datesPosition.y,
+    additionalTextPosition.y,
+  ]);
 
   // Helper to update front text colors based on background darkness
   const updateFrontTextColors = (isDark: boolean) => {
@@ -1978,25 +2051,24 @@ const Design = () => {
                               
                               {/* Text Overlay - Name */}
                               {showNameOnFront && (() => {
-                                // Calculate line count and offset Y position for multi-line names
-                                const nameText = deceasedName || 'Name Here';
-                                const lineCount = nameText.split('\n').length;
-                                // Offset by ~3% per additional line to keep name above dates
-                                const lineOffset = (lineCount - 1) * 3;
-                                const adjustedY = namePosition.y - lineOffset;
+                                // Auto-wrap text based on font size
+                                const rawText = deceasedName || 'Name Here';
+                                const wrappedText = getAutoWrappedText(rawText, nameSize);
+                                const lineCount = wrappedText.split('\n').length;
                                 
                                 return (
                                   <div
                                     className="absolute touch-none select-none px-2 py-1 rounded"
                                     style={{
                                       left: `${namePosition.x}%`,
-                                      top: `${adjustedY}%`,
+                                      top: `${namePosition.y}%`,
                                       transform: 'translate(-50%, -50%)',
                                       fontFamily: nameFont,
                                       cursor: draggingText === 'name' || resizingText === 'name' ? 'grabbing' : 'grab',
                                       textShadow: nameTextShadow ? '0 2px 4px rgba(0,0,0,0.5)' : 'none',
                                       boxShadow: (draggingText === 'name' || resizingText === 'name') ? '0 0 0 2px #d97706' : 'none',
-                                      whiteSpace: 'nowrap',
+                                      maxWidth: '90%',
+                                      textAlign: 'center',
                                     }}
                                     onPointerDown={(e) => handleTextPointerDown(e, 'name')}
                                     onPointerMove={handleTextPointerMove}
@@ -2004,8 +2076,16 @@ const Design = () => {
                                     onPointerCancel={handleTextPointerUp}
                                     onWheel={(e) => handleTextWheel(e, 'name')}
                                   >
-                                    <span style={{ fontSize: `${nameSize}px`, color: nameColor, fontWeight: nameBold ? 'bold' : 'normal', whiteSpace: 'pre', textAlign: 'center' }}>
-                                      {nameText}
+                                    <span style={{ 
+                                      fontSize: `${nameSize}px`, 
+                                      color: nameColor, 
+                                      fontWeight: nameBold ? 'bold' : 'normal', 
+                                      whiteSpace: 'pre-wrap', 
+                                      textAlign: 'center',
+                                      display: 'block',
+                                      lineHeight: 1.3,
+                                    }}>
+                                      {wrappedText}
                                     </span>
                                   </div>
                                 );
@@ -2013,19 +2093,12 @@ const Design = () => {
                               
                               {/* Text Overlay - Dates */}
                               {showDatesOnFront && (() => {
-                                // Dynamic spacing based on name lines - tighter gap
-                                const nameText = deceasedName || 'Name Here';
-                                const nameLineCount = nameText.split('\n').length;
-                                // Smaller offset per line for tighter spacing
-                                const datesOffset = (nameLineCount - 1) * 2;
-                                const adjustedDatesY = Math.min(96, datesPosition.y + datesOffset);
-
                                 return (
                                   <div
                                     className="absolute touch-none select-none px-2 rounded"
                                     style={{
                                       left: `${datesPosition.x}%`,
-                                      top: `${adjustedDatesY}%`,
+                                      top: `${datesPosition.y}%`,
                                       transform: 'translate(-50%, -50%)',
                                       fontFamily: datesFont,
                                       cursor: draggingText === 'dates' || resizingText === 'dates' ? 'grabbing' : 'grab',
