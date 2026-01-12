@@ -2514,27 +2514,6 @@ const Design = () => {
                                 onChange={(e) => setNameColor(e.target.value)}
                                 className="w-6 h-6 rounded border border-slate-600 cursor-pointer"
                               />
-                              <div className="flex items-center gap-0.5">
-                                <Button
-                                  type="button"
-                                  variant="outline"
-                                  size="icon"
-                                  className="h-5 w-5 border-slate-600"
-                                  onClick={() => setNameSize(Math.max(8, nameSize - 3))}
-                                >
-                                  <span className="text-xs">−</span>
-                                </Button>
-                                <span className="text-xs text-white bg-slate-700 px-1.5 py-0.5 rounded min-w-[42px] text-center">{pxToInches(nameSize)}"</span>
-                                <Button
-                                  type="button"
-                                  variant="outline"
-                                  size="icon"
-                                  className="h-5 w-5 border-slate-600"
-                                  onClick={() => setNameSize(Math.min(150, nameSize + 3))}
-                                >
-                                  <span className="text-xs">+</span>
-                                </Button>
-                              </div>
                               <Button
                                 type="button"
                                 variant={nameBold ? 'default' : 'outline'}
@@ -2554,6 +2533,48 @@ const Design = () => {
                               >
                                 S
                               </Button>
+                            </div>
+                            {/* Name Size & Position Sliders */}
+                            <div className="space-y-1.5 pt-1">
+                              <div className="flex items-center gap-2">
+                                <Label className="text-slate-400 text-xs w-10">Size</Label>
+                                <input
+                                  type="range"
+                                  min="12"
+                                  max="150"
+                                  step="1"
+                                  value={nameSize}
+                                  onChange={(e) => setNameSize(parseFloat(e.target.value))}
+                                  className="flex-1 accent-amber-600 h-1"
+                                />
+                                <span className="text-xs text-slate-400 w-12 text-right">{pxToInches(nameSize)}"</span>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <Label className="text-slate-400 text-xs w-10">L/R</Label>
+                                <input
+                                  type="range"
+                                  min="10"
+                                  max="90"
+                                  step="1"
+                                  value={namePosition.x}
+                                  onChange={(e) => setNamePosition(prev => ({ ...prev, x: parseFloat(e.target.value) }))}
+                                  className="flex-1 accent-amber-600 h-1"
+                                />
+                                <span className="text-xs text-slate-400 w-12 text-right">{Math.round(namePosition.x)}%</span>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <Label className="text-slate-400 text-xs w-10">U/D</Label>
+                                <input
+                                  type="range"
+                                  min="5"
+                                  max="95"
+                                  step="1"
+                                  value={namePosition.y}
+                                  onChange={(e) => setNamePosition(prev => ({ ...prev, y: parseFloat(e.target.value) }))}
+                                  className="flex-1 accent-amber-600 h-1"
+                                />
+                                <span className="text-xs text-slate-400 w-12 text-right">{Math.round(namePosition.y)}%</span>
+                              </div>
                             </div>
                           </div>
 
@@ -2623,94 +2644,82 @@ const Design = () => {
                                 className="w-6 h-6 rounded border border-slate-600 cursor-pointer"
                                 disabled={!showDatesOnFront}
                               />
-                              <div className="flex items-center gap-0.5">
-                                <Button
-                                  type="button"
-                                  variant={frontDatesSize === 'auto' ? 'default' : 'outline'}
-                                  size="sm"
-                                  className={`h-5 px-1.5 text-xs ${frontDatesSize === 'auto' ? 'bg-amber-600' : 'border-slate-600'}`}
-                                  onClick={() => setFrontDatesSize('auto')}
-                                  disabled={!showDatesOnFront}
-                                >
-                                  Auto
-                                </Button>
-                                <Button
-                                  type="button"
-                                  variant="outline"
-                                  size="icon"
-                                  className="h-5 w-5 border-slate-600"
-                                  onClick={() => setFrontDatesSize(typeof frontDatesSize === 'number' ? Math.max(8, frontDatesSize - 3) : 10)}
-                                  disabled={!showDatesOnFront}
-                                >
-                                  <span className="text-xs">−</span>
-                                </Button>
-                                <span className="text-xs text-white bg-slate-700 px-1 py-0.5 rounded min-w-[38px] text-center">
+                              <Button
+                                type="button"
+                                variant={frontDatesSize === 'auto' ? 'default' : 'outline'}
+                                size="sm"
+                                className={`h-5 px-1.5 text-xs ${frontDatesSize === 'auto' ? 'bg-amber-600' : 'border-slate-600'}`}
+                                onClick={() => setFrontDatesSize('auto')}
+                                disabled={!showDatesOnFront}
+                              >
+                                Auto
+                              </Button>
+                              <Button
+                                type="button"
+                                variant={datesBold ? 'default' : 'outline'}
+                                size="sm"
+                                className={`h-5 px-2 text-xs font-bold ${datesBold ? 'bg-amber-600 text-white' : 'border-slate-600 text-slate-300'}`}
+                                onClick={() => setDatesBold(!datesBold)}
+                              >
+                                B
+                              </Button>
+                              <Button
+                                type="button"
+                                variant={datesTextShadow ? 'default' : 'outline'}
+                                size="sm"
+                                className={`h-5 px-2 text-xs ${datesTextShadow ? 'bg-amber-600 text-white' : 'border-slate-600 text-slate-300'}`}
+                                onClick={() => setDatesTextShadow(!datesTextShadow)}
+                                disabled={!showDatesOnFront}
+                                title="Text Shadow"
+                              >
+                                S
+                              </Button>
+                            </div>
+                            {/* Dates Size & Position Sliders */}
+                            <div className="space-y-1.5 pt-1">
+                              <div className="flex items-center gap-2">
+                                <Label className="text-slate-400 text-xs w-10">Size</Label>
+                                <input
+                                  type="range"
+                                  min="8"
+                                  max="100"
+                                  step="1"
+                                  value={typeof frontDatesSize === 'number' ? frontDatesSize : 16}
+                                  onChange={(e) => setFrontDatesSize(parseFloat(e.target.value))}
+                                  className="flex-1 accent-amber-600 h-1"
+                                  disabled={!showDatesOnFront || frontDatesSize === 'auto'}
+                                />
+                                <span className="text-xs text-slate-400 w-12 text-right">
                                   {frontDatesSize === 'auto' ? 'Auto' : `${pxToInches(frontDatesSize)}"`}
                                 </span>
-                                <Button
-                                  type="button"
-                                  variant="outline"
-                                  size="icon"
-                                  className="h-5 w-5 border-slate-600"
-                                  onClick={() => setFrontDatesSize(typeof frontDatesSize === 'number' ? Math.min(100, frontDatesSize + 3) : 14)}
-                                  disabled={!showDatesOnFront}
-                                >
-                                  <span className="text-xs">+</span>
-                                </Button>
-                                <Button
-                                  type="button"
-                                  variant={datesBold ? 'default' : 'outline'}
-                                  size="sm"
-                                  className={`h-5 px-2 text-xs font-bold ${datesBold ? 'bg-amber-600 text-white' : 'border-slate-600 text-slate-300'}`}
-                                  onClick={() => setDatesBold(!datesBold)}
-                                >
-                                  B
-                                </Button>
-                                <Button
-                                  type="button"
-                                  variant={datesTextShadow ? 'default' : 'outline'}
-                                  size="sm"
-                                  className={`h-5 px-2 text-xs ${datesTextShadow ? 'bg-amber-600 text-white' : 'border-slate-600 text-slate-300'}`}
-                                  onClick={() => setDatesTextShadow(!datesTextShadow)}
-                                  disabled={!showDatesOnFront}
-                                  title="Text Shadow"
-                                >
-                                  S
-                                </Button>
                               </div>
-                            </div>
-                            
-                            {/* Text Position Controls */}
-                            <div className="pt-2 border-t border-slate-600 space-y-2">
-                              <Label className="text-slate-400 text-xs">Text Position</Label>
-                              <div className="space-y-1.5">
-                                <div className="flex items-center gap-2">
-                                  <span className="text-slate-400 text-xs w-12">Name Y</span>
-                                  <input
-                                    type="range"
-                                    min="30"
-                                    max="95"
-                                    step="1"
-                                    value={namePosition.y}
-                                    onChange={(e) => setNamePosition(prev => ({ ...prev, y: parseFloat(e.target.value) }))}
-                                    className="flex-1 accent-amber-600 h-1"
-                                  />
-                                  <span className="text-xs text-slate-500 w-8">{Math.round(namePosition.y)}%</span>
-                                </div>
-                                <div className="flex items-center gap-2">
-                                  <span className="text-slate-400 text-xs w-12">Dates Y</span>
-                                  <input
-                                    type="range"
-                                    min="30"
-                                    max="98"
-                                    step="1"
-                                    value={datesPosition.y}
-                                    onChange={(e) => setDatesPosition(prev => ({ ...prev, y: parseFloat(e.target.value) }))}
-                                    className="flex-1 accent-amber-600 h-1"
-                                    disabled={!showDatesOnFront}
-                                  />
-                                  <span className="text-xs text-slate-500 w-8">{Math.round(datesPosition.y)}%</span>
-                                </div>
+                              <div className="flex items-center gap-2">
+                                <Label className="text-slate-400 text-xs w-10">L/R</Label>
+                                <input
+                                  type="range"
+                                  min="10"
+                                  max="90"
+                                  step="1"
+                                  value={datesPosition.x}
+                                  onChange={(e) => setDatesPosition(prev => ({ ...prev, x: parseFloat(e.target.value) }))}
+                                  className="flex-1 accent-amber-600 h-1"
+                                  disabled={!showDatesOnFront}
+                                />
+                                <span className="text-xs text-slate-400 w-12 text-right">{Math.round(datesPosition.x)}%</span>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <Label className="text-slate-400 text-xs w-10">U/D</Label>
+                                <input
+                                  type="range"
+                                  min="5"
+                                  max="98"
+                                  step="1"
+                                  value={datesPosition.y}
+                                  onChange={(e) => setDatesPosition(prev => ({ ...prev, y: parseFloat(e.target.value) }))}
+                                  className="flex-1 accent-amber-600 h-1"
+                                  disabled={!showDatesOnFront}
+                                />
+                                <span className="text-xs text-slate-400 w-12 text-right">{Math.round(datesPosition.y)}%</span>
                               </div>
                             </div>
                           </div>
@@ -2756,45 +2765,66 @@ const Design = () => {
                                     onChange={(e) => setAdditionalTextColor(e.target.value)}
                                     className="w-6 h-6 rounded border border-slate-600 cursor-pointer"
                                   />
-                                  <div className="flex items-center gap-0.5">
-                                    <Button
-                                      type="button"
-                                      variant="outline"
-                                      size="icon"
-                                      className="h-5 w-5 border-slate-600"
-                                      onClick={() => setAdditionalTextSize(Math.max(8, additionalTextSize - 3))}
-                                    >
-                                      <span className="text-xs">−</span>
-                                    </Button>
-                                    <span className="text-xs text-white bg-slate-700 px-1.5 py-0.5 rounded min-w-[42px] text-center">{pxToInches(additionalTextSize)}"</span>
-                                    <Button
-                                      type="button"
-                                      variant="outline"
-                                      size="icon"
-                                      className="h-5 w-5 border-slate-600"
-                                      onClick={() => setAdditionalTextSize(Math.min(100, additionalTextSize + 3))}
-                                    >
-                                      <span className="text-xs">+</span>
-                                    </Button>
-                                    <Button
-                                      type="button"
-                                      variant={additionalTextBold ? 'default' : 'outline'}
-                                      size="sm"
-                                      className={`h-5 px-2 text-xs font-bold ${additionalTextBold ? 'bg-amber-600 text-white' : 'border-slate-600 text-slate-300'}`}
-                                      onClick={() => setAdditionalTextBold(!additionalTextBold)}
-                                    >
-                                      B
-                                    </Button>
-                                    <Button
-                                      type="button"
-                                      variant={additionalTextShadow ? 'default' : 'outline'}
-                                      size="sm"
-                                      className={`h-5 px-2 text-xs ${additionalTextShadow ? 'bg-amber-600 text-white' : 'border-slate-600 text-slate-300'}`}
-                                      onClick={() => setAdditionalTextShadow(!additionalTextShadow)}
-                                      title="Text Shadow"
-                                    >
-                                      S
-                                    </Button>
+                                  <Button
+                                    type="button"
+                                    variant={additionalTextBold ? 'default' : 'outline'}
+                                    size="sm"
+                                    className={`h-5 px-2 text-xs font-bold ${additionalTextBold ? 'bg-amber-600 text-white' : 'border-slate-600 text-slate-300'}`}
+                                    onClick={() => setAdditionalTextBold(!additionalTextBold)}
+                                  >
+                                    B
+                                  </Button>
+                                  <Button
+                                    type="button"
+                                    variant={additionalTextShadow ? 'default' : 'outline'}
+                                    size="sm"
+                                    className={`h-5 px-2 text-xs ${additionalTextShadow ? 'bg-amber-600 text-white' : 'border-slate-600 text-slate-300'}`}
+                                    onClick={() => setAdditionalTextShadow(!additionalTextShadow)}
+                                    title="Text Shadow"
+                                  >
+                                    S
+                                  </Button>
+                                </div>
+                                {/* Additional Text Size & Position Sliders */}
+                                <div className="space-y-1.5 pt-1">
+                                  <div className="flex items-center gap-2">
+                                    <Label className="text-slate-400 text-xs w-10">Size</Label>
+                                    <input
+                                      type="range"
+                                      min="8"
+                                      max="100"
+                                      step="1"
+                                      value={additionalTextSize}
+                                      onChange={(e) => setAdditionalTextSize(parseFloat(e.target.value))}
+                                      className="flex-1 accent-amber-600 h-1"
+                                    />
+                                    <span className="text-xs text-slate-400 w-12 text-right">{pxToInches(additionalTextSize)}"</span>
+                                  </div>
+                                  <div className="flex items-center gap-2">
+                                    <Label className="text-slate-400 text-xs w-10">L/R</Label>
+                                    <input
+                                      type="range"
+                                      min="10"
+                                      max="90"
+                                      step="1"
+                                      value={additionalTextPosition.x}
+                                      onChange={(e) => setAdditionalTextPosition(prev => ({ ...prev, x: parseFloat(e.target.value) }))}
+                                      className="flex-1 accent-amber-600 h-1"
+                                    />
+                                    <span className="text-xs text-slate-400 w-12 text-right">{Math.round(additionalTextPosition.x)}%</span>
+                                  </div>
+                                  <div className="flex items-center gap-2">
+                                    <Label className="text-slate-400 text-xs w-10">U/D</Label>
+                                    <input
+                                      type="range"
+                                      min="5"
+                                      max="95"
+                                      step="1"
+                                      value={additionalTextPosition.y}
+                                      onChange={(e) => setAdditionalTextPosition(prev => ({ ...prev, y: parseFloat(e.target.value) }))}
+                                      className="flex-1 accent-amber-600 h-1"
+                                    />
+                                    <span className="text-xs text-slate-400 w-12 text-right">{Math.round(additionalTextPosition.y)}%</span>
                                   </div>
                                 </div>
                               </>
