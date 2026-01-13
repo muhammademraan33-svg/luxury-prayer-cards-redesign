@@ -740,6 +740,11 @@ const Design = () => {
   useEffect(() => {
     void syncBackTextColors();
   }, [syncBackTextColors]);
+
+  // Sync front text colors when photo changes
+  useEffect(() => {
+    void syncFrontTextColors(deceasedPhoto);
+  }, [deceasedPhoto, syncFrontTextColors]);
   
   // Easel photo state - supports multiple photos with individual sizes
   const [easelPhotos, setEaselPhotos] = useState<{src: string, size: EaselPhotoSize}[]>([]);
@@ -1812,26 +1817,34 @@ const Design = () => {
                                 <div 
                                   className={`relative z-10 h-full flex flex-col items-center justify-center p-4 text-center ${cardRounding}`}
                                 >
-                                  <div className={`text-xs mb-1 ${isBackDark ? 'text-zinc-300' : 'text-zinc-600'}`} style={{ fontFamily: 'Cinzel' }}>
-                                    In Loving Memory
+                                  <div style={{ fontFamily: inLovingMemoryFont, color: inLovingMemoryColor, fontSize: `${inLovingMemorySize}px`, fontWeight: inLovingMemoryBold ? 'bold' : 'normal' }} className="mb-1">
+                                    {inLovingMemoryText}
                                   </div>
-                                  <div className={`text-base font-semibold mb-1 ${isBackDark ? 'text-white' : 'text-zinc-800'}`} style={{ fontFamily: nameFont }}>
+                                  <div className="font-semibold mb-1" style={{ fontFamily: backNameFont, color: backNameColor, fontSize: `${backNameSize}px`, fontWeight: backNameBold ? 'bold' : 'normal' }}>
                                     {deceasedName || 'Name Here'}
                                   </div>
                                   {showDatesOnBack && (
                                     <div 
-                                      className="text-xs mb-3"
+                                      className="mb-3 w-full"
                                       style={{ 
                                         fontFamily: datesFont, 
                                         color: backDatesColor,
                                         fontSize: backDatesSize === 'auto' ? '10px' : `${backDatesSize}px`
                                       }}
                                     >
-                                      {formatDates(birthDate, deathDate, backDateFormat)}
+                                      <AutoFitSingleLineText
+                                        text={formatDates(birthDate, deathDate, backDateFormat)}
+                                        maxWidth="100%"
+                                        style={{ 
+                                          fontFamily: datesFont, 
+                                          color: backDatesColor,
+                                          fontSize: backDatesSize === 'auto' ? '10px' : `${backDatesSize}px`
+                                        }}
+                                      />
                                     </div>
                                   )}
                                   <div 
-                                    className={`text-xs leading-relaxed max-w-[90%] flex-1 overflow-hidden ${isBackDark ? 'text-zinc-200' : 'text-zinc-700'}`} 
+                                    className="text-xs leading-relaxed max-w-[90%] flex-1 overflow-hidden"
                                     style={{ 
                                       fontFamily: 'Cormorant Garamond',
                                       fontSize: `${prayerTextSize === 'auto' ? autoPrayerFontSize : Math.min(prayerTextSize, autoPrayerFontSize)}px`,
@@ -3090,24 +3103,25 @@ const Design = () => {
                                       onPointerCancel={handleTextPointerUp}
                                       onWheel={(e) => handleTextWheel(e, 'backDates')}
                                     >
-                                      <span style={{ 
-                                        fontSize: backDatesSize === 'auto' ? '9px' : `${backDatesSize}px`,
-                                        color: backDatesColor,
-                                        fontWeight: datesBold ? 'bold' : 'normal',
-                                        textAlign: 'center',
-                                        textShadow: '2px 2px 4px rgba(0,0,0,0.5)',
-                                        lineHeight: 1.1,
-                                      }}>
-                                        {formatDates(birthDate, deathDate, backDateFormat)}
-                                      </span>
+                                      <AutoFitSingleLineText
+                                        text={formatDates(birthDate, deathDate, backDateFormat)}
+                                        maxWidth="100%"
+                                        style={{ 
+                                          fontSize: backDatesSize === 'auto' ? '9px' : `${backDatesSize}px`,
+                                          color: backDatesColor,
+                                          fontWeight: datesBold ? 'bold' : 'normal',
+                                          textAlign: 'center',
+                                          textShadow: '2px 2px 4px rgba(0,0,0,0.5)',
+                                        }}
+                                      />
                                     </div>
                                   )}
                                 </div>
 
-                                {/* Prayer - takes remaining space, starts from top */}
+                                {/* Prayer - takes remaining space, centered vertically */}
                                 <div
                                   ref={prayerContainerRef}
-                                  className="flex-1 flex items-start justify-center pt-1 px-1 overflow-hidden min-h-0"
+                                  className="flex-1 flex items-center justify-center px-1 overflow-hidden min-h-0"
                                 >
                                   <p 
                                     ref={prayerTextRef}
@@ -5015,24 +5029,32 @@ const Design = () => {
                 )}
                 {showDatesOnBack && birthDate && deathDate && (
                   <div
-                    className="text-center mt-1"
+                    className="text-center mt-1 w-full"
                     style={{
                       fontFamily: datesFont,
                       fontSize: `${(typeof backDatesSize === 'number' ? backDatesSize : 10) * 3}px`,
                       color: backDatesColor,
                       textAlign: 'center',
-                      lineHeight: 1.1,
                     }}
                   >
-                    {formatDates(birthDate, deathDate, backDateFormat)}
+                    <AutoFitSingleLineText
+                      text={formatDates(birthDate, deathDate, backDateFormat)}
+                      maxWidth="100%"
+                      style={{
+                        fontFamily: datesFont,
+                        fontSize: `${(typeof backDatesSize === 'number' ? backDatesSize : 10) * 3}px`,
+                        color: backDatesColor,
+                        textAlign: 'center',
+                      }}
+                    />
                   </div>
                 )}
                 <div
-                  className="flex-1 mt-4 text-center"
+                  className="flex-1 flex items-center justify-center mt-4 text-center"
                   style={{
                     fontFamily: 'Cormorant Garamond',
                     fontSize: `${(prayerTextSize === 'auto' ? autoPrayerFontSize : Math.min(prayerTextSize, autoPrayerFontSize)) * 3}px`,
-                    color: '#333',
+                    color: prayerColor,
                     fontWeight: prayerBold ? 'bold' : 'normal',
                     lineHeight: 1.5,
                     whiteSpace: 'pre-line',
