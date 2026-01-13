@@ -16,6 +16,7 @@ import { toast } from 'sonner';
 import metalCardProduct from '@/assets/metal-card-product.jpg';
 import paperCardsProduct from '@/assets/paper-cards-product.jpg';
 import { AutoFitSingleLineText } from '@/components/AutoFitSingleLineText';
+import { AutoFitText } from '@/components/AutoFitText';
 
 import cloudsLightBg from '@/assets/backgrounds/clouds-light.jpg';
 import marbleGreyBg from '@/assets/backgrounds/marble-grey.jpg';
@@ -1684,6 +1685,8 @@ const Design = () => {
                                   transform: 'translate(-50%, -50%)',
                                   fontFamily: nameFont,
                                   textShadow: nameTextShadow ? '0 1px 2px rgba(0,0,0,0.5)' : 'none',
+                                  maxWidth: '95%',
+                                  width: 'max-content',
                                 }}
                               >
                                 <span style={{ fontSize: `${Math.max(8, nameSize * 0.7)}px`, color: nameColor, fontWeight: nameBold ? 'bold' : 'normal', whiteSpace: 'pre-line', textAlign: 'center', display: 'block', lineHeight: 1.2 }}>
@@ -1706,9 +1709,10 @@ const Design = () => {
                                   overflow: 'visible',
                                 }}
                               >
-                                <AutoFitSingleLineText
+                                <AutoFitText
                                   text={formatDates(birthDate, deathDate, frontDateFormat)}
                                   maxWidth="100%"
+                                  allowWrap={true}
                                   style={{
                                     fontSize:
                                       frontDatesSize === 'auto'
@@ -2062,7 +2066,8 @@ const Design = () => {
                                     cursor: draggingText === 'name' || resizingText === 'name' ? 'grabbing' : 'grab',
                                     textShadow: nameTextShadow ? '0 2px 4px rgba(0,0,0,0.5)' : 'none',
                                     boxShadow: (draggingText === 'name' || resizingText === 'name') ? '0 0 0 2px #d97706' : 'none',
-                                    maxWidth: '90%',
+                                    maxWidth: '95%',
+                                    width: 'max-content',
                                     textAlign: 'center',
                                   }}
                                   onPointerDown={(e) => handleTextPointerDown(e, 'name')}
@@ -2108,9 +2113,10 @@ const Design = () => {
                                     onPointerCancel={handleTextPointerUp}
                                     onWheel={(e) => handleTextWheel(e, 'dates')}
                                   >
-                                    <AutoFitSingleLineText
+                                    <AutoFitText
                                       text={formatDates(birthDate, deathDate, frontDateFormat)}
                                       maxWidth="100%"
+                                      allowWrap={true}
                                       style={{
                                         fontSize: frontDatesSize === 'auto' ? '12px' : `${frontDatesSize}px`,
                                         color: frontDatesColor,
@@ -4862,6 +4868,9 @@ const Design = () => {
                     textShadow: nameTextShadow ? '0 2px 4px rgba(0,0,0,0.5)' : 'none',
                     whiteSpace: 'pre-line',
                     textAlign: 'center',
+                    maxWidth: '95%',
+                    width: 'max-content',
+                    lineHeight: 1.2,
                   }}
                 >
                   {deceasedName || 'Name Here'}
@@ -4884,10 +4893,10 @@ const Design = () => {
                     overflow: 'visible',
                   }}
                 >
-                  <AutoFitSingleLineText
+                  <AutoFitText
                     text={formatDates(birthDate, deathDate, frontDateFormat)}
                     maxWidth="100%"
-                    minScale={0.6}
+                    allowWrap={true}
                     style={{ font: 'inherit', color: 'inherit', fontWeight: 'inherit' }}
                   />
                 </div>
