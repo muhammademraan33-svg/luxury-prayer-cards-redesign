@@ -470,40 +470,51 @@ const Design = () => {
       ? getTextHeightPercent(additionalTextSize, (additionalText || 'Text').split('\n').length)
       : 0;
     
-    // Minimum gaps between elements (as percentage)
-    const MIN_GAP = hasBorder ? 3 : 2;
+    // FIXED gap between name and dates - consistent regardless of borders
+    const NAME_DATES_GAP = 2;
+    const MIN_GAP = 2;
     
     let newNameY = namePosition.y;
     let newDatesY = datesPosition.y;
     let newAdditionalY = additionalTextPosition.y;
 
+    // Calculate where dates should be based on name position
+    const nameBottom = newNameY + nameHeightPercent / 2;
+    const idealDatesY = nameBottom + NAME_DATES_GAP + datesHeightPercent / 2;
+
     // When border is added, pull everything into safe zone
     if (borderJustAdded) {
-      newNameY = Math.min(namePosition.y, SAFE_MAX_Y - nameHeightPercent / 2);
-      newDatesY = Math.min(datesPosition.y, SAFE_MAX_Y - datesHeightPercent / 2);
+      // First check if ideal positions fit
+      if (idealDatesY + datesHeightPercent / 2 > SAFE_MAX_Y) {
+        // Need to move name up to fit dates
+        const maxDatesY = SAFE_MAX_Y - datesHeightPercent / 2;
+        const requiredNameBottom = maxDatesY - NAME_DATES_GAP - datesHeightPercent / 2;
+        newNameY = requiredNameBottom - nameHeightPercent / 2;
+        newDatesY = maxDatesY;
+      } else {
+        newNameY = Math.min(namePosition.y, SAFE_MAX_Y - nameHeightPercent - NAME_DATES_GAP - datesHeightPercent);
+        newDatesY = idealDatesY;
+      }
       if (showAdditionalText) {
         newAdditionalY = Math.min(additionalTextPosition.y, SAFE_MAX_Y - additionalHeightPercent / 2);
       }
-    }
-    
-    // Calculate bounds for each element
-    const nameTop = newNameY - nameHeightPercent / 2;
-    const nameBottom = newNameY + nameHeightPercent / 2;
-    
-    // Ensure dates don't overlap with name (dates are below name typically)
-    if (showDatesOnFront && newDatesY < nameBottom + MIN_GAP + datesHeightPercent / 2) {
-      newDatesY = nameBottom + MIN_GAP + datesHeightPercent / 2;
+    } else {
+      // Always position dates with fixed gap below name
+      if (showDatesOnFront) {
+        newDatesY = nameBottom + NAME_DATES_GAP + datesHeightPercent / 2;
+      }
     }
     
     // Ensure dates stay in safe zone
     if (showDatesOnFront && newDatesY + datesHeightPercent / 2 > SAFE_MAX_Y) {
       newDatesY = SAFE_MAX_Y - datesHeightPercent / 2;
-      // Push name up if needed
-      const requiredNameBottom = newDatesY - MIN_GAP - datesHeightPercent / 2;
-      if (nameBottom > requiredNameBottom) {
-        newNameY = requiredNameBottom - nameHeightPercent / 2;
-      }
+      // Push name up to maintain gap
+      const requiredNameBottom = newDatesY - NAME_DATES_GAP - datesHeightPercent / 2;
+      newNameY = requiredNameBottom - nameHeightPercent / 2;
     }
+    
+    // Recalculate name top after any adjustments
+    const nameTop = newNameY - nameHeightPercent / 2;
     
     // Ensure additional text doesn't overlap (usually above name)
     if (showAdditionalText) {
@@ -520,6 +531,10 @@ const Design = () => {
     // Ensure name doesn't go too high
     if (newNameY - nameHeightPercent / 2 < SAFE_MIN_Y) {
       newNameY = SAFE_MIN_Y + nameHeightPercent / 2;
+      // Recalculate dates position
+      if (showDatesOnFront) {
+        newDatesY = (newNameY + nameHeightPercent / 2) + NAME_DATES_GAP + datesHeightPercent / 2;
+      }
     }
 
     // Update positions if changed
