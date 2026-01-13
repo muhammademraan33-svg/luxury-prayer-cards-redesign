@@ -458,8 +458,8 @@ const Design = () => {
     
     // Calculate text heights
     const nameText = deceasedName || 'Name Here';
-    const wrappedName = getAutoWrappedText(nameText, nameSize);
-    const nameLineCount = wrappedName.split('\n').length;
+    // Count actual line breaks entered by user (pre-line respects \n)
+    const nameLineCount = Math.max(1, nameText.split('\n').length);
     const nameHeightPercent = getTextHeightPercent(nameSize, nameLineCount);
     
     const datesHeightPercent = typeof frontDatesSize === 'number' 
