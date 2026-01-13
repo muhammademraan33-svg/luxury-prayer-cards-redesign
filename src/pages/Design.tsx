@@ -563,10 +563,10 @@ const Design = () => {
     additionalTextPosition.y,
   ]);
 
-  // Helper to update front text colors based on background darkness
-  const updateFrontTextColors = (isDark: boolean) => {
-    if (isDark) {
-      // Light text for dark backgrounds (photos, dark images)
+  // Helper to apply front text colors based on background darkness
+  const applyFrontTextPalette = useCallback((useLightText: boolean) => {
+    if (useLightText) {
+      // Light text for dark backgrounds
       setNameColor('#ffffff');
       setFrontDatesColor('#ffffff');
       setAdditionalTextColor('#ffffff');
@@ -576,6 +576,11 @@ const Design = () => {
       setFrontDatesColor('#111827');
       setAdditionalTextColor('#111827');
     }
+  }, []);
+
+  // Legacy wrapper for existing call sites (used before async function is ready)
+  const updateFrontTextColors = (isDark: boolean) => {
+    applyFrontTextPalette(isDark);
   };
 
   const BACK_IMAGE_OVERLAY_ALPHA = 0.2;
@@ -644,6 +649,29 @@ const Design = () => {
       img.src = src;
     });
   }, []);
+
+  // Sync front text colors by analyzing the image luminance
+  const syncFrontTextColors = useCallback(
+    async (imageSrc: string | null) => {
+      if (!imageSrc) {
+        // No photo - use dark text for light placeholder background
+        applyFrontTextPalette(false);
+        return;
+      }
+
+      // Analyze the photo to determine if it's dark or light
+      const avg = await getAverageImageHex(imageSrc);
+      if (avg) {
+        const lum = relativeLuminance(avg);
+        // If luminance is below 0.45, background is dark, use light text
+        applyFrontTextPalette(lum < 0.45);
+      } else {
+        // Default to light text for photos (common case)
+        applyFrontTextPalette(true);
+      }
+    },
+    [applyFrontTextPalette, getAverageImageHex]
+  );
 
   const applyBackTextPalette = useCallback(
     (backgroundHex: string | null, fallbackIsDark: boolean) => {
@@ -1216,7 +1244,7 @@ const Design = () => {
       setPhotoZoom(1);
       setPhotoPanX(0);
       setPhotoPanY(0);
-      updateFrontTextColors(true); // Photos are treated as dark backgrounds - use light text
+      void syncFrontTextColors(previewUrl); // Analyze photo and adjust text colors
     } else if (type === 'back') {
       setBackBgImage(previewUrl);
       void syncBackTextColors({ imageSrc: previewUrl, fallbackIsDark: true });
@@ -2294,7 +2322,7 @@ const Design = () => {
                                 setPhotoPanX(0);
                                 setPhotoPanY(0);
                                 setPhotoRotation(0);
-                                updateFrontTextColors(false); // No photo - reset to dark text
+                                void syncFrontTextColors(null); // No photo - analyze and reset colors
                               }}
                               className="border-rose-600/50 text-rose-400 hover:bg-rose-600/20"
                             >
