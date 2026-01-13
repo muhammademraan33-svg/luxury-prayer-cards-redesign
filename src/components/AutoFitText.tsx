@@ -15,7 +15,7 @@ export function AutoFitText({
   maxWidth = "90%",
   className,
   style,
-  allowWrap = true,
+  allowWrap = false,
 }: AutoFitTextProps) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const textRef = useRef<HTMLSpanElement | null>(null);

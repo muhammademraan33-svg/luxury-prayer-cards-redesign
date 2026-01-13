@@ -396,8 +396,8 @@ const Design = () => {
   const [nameSize, setNameSize] = useState(24);
   const [frontDatesSize, setFrontDatesSize] = useState<number | 'auto'>(16);
   const [backDatesSize, setBackDatesSize] = useState<number | 'auto'>(14);
-  const [frontDateFormat, setFrontDateFormat] = useState<'full' | 'short-month' | 'mmm-dd-yyyy' | 'numeric' | 'year'>(cardType === 'paper' ? 'full' : 'mmm-dd-yyyy');
-  const [backDateFormat, setBackDateFormat] = useState<'full' | 'short-month' | 'mmm-dd-yyyy' | 'numeric' | 'year'>(cardType === 'paper' ? 'full' : 'mmm-dd-yyyy');
+  const [frontDateFormat, setFrontDateFormat] = useState<'full' | 'short-month' | 'mmm-dd-yyyy' | 'numeric' | 'year'>('mmm-dd-yyyy');
+  const [backDateFormat, setBackDateFormat] = useState<'full' | 'short-month' | 'mmm-dd-yyyy' | 'numeric' | 'year'>('mmm-dd-yyyy');
   const [additionalText, setAdditionalText] = useState('');
   const [additionalTextPosition, setAdditionalTextPosition] = useState({ x: 50, y: 70 });
   const [additionalTextColor, setAdditionalTextColor] = useState('#ffffff');
@@ -1712,7 +1712,7 @@ const Design = () => {
                                 <AutoFitText
                                   text={formatDates(birthDate, deathDate, frontDateFormat)}
                                   maxWidth="100%"
-                                  allowWrap={true}
+                                  allowWrap={false}
                                   style={{
                                     fontSize:
                                       frontDatesSize === 'auto'
@@ -2116,7 +2116,7 @@ const Design = () => {
                                     <AutoFitText
                                       text={formatDates(birthDate, deathDate, frontDateFormat)}
                                       maxWidth="100%"
-                                      allowWrap={true}
+                                      allowWrap={false}
                                       style={{
                                         fontSize: frontDatesSize === 'auto' ? '12px' : `${frontDatesSize}px`,
                                         color: frontDatesColor,
@@ -4896,7 +4896,7 @@ const Design = () => {
                   <AutoFitText
                     text={formatDates(birthDate, deathDate, frontDateFormat)}
                     maxWidth="100%"
-                    allowWrap={true}
+                    allowWrap={false}
                     style={{ font: 'inherit', color: 'inherit', fontWeight: 'inherit' }}
                   />
                 </div>
