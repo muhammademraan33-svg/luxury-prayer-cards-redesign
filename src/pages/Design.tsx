@@ -1686,7 +1686,7 @@ const Design = () => {
                                   textShadow: nameTextShadow ? '0 1px 2px rgba(0,0,0,0.5)' : 'none',
                                 }}
                               >
-                                <span style={{ fontSize: `${Math.max(8, nameSize * 0.7)}px`, color: nameColor, fontWeight: nameBold ? 'bold' : 'normal', whiteSpace: 'nowrap', textAlign: 'center' }}>
+                                <span style={{ fontSize: `${Math.max(8, nameSize * 0.7)}px`, color: nameColor, fontWeight: nameBold ? 'bold' : 'normal', whiteSpace: 'pre-line', textAlign: 'center', display: 'block', lineHeight: 1.2 }}>
                                   {deceasedName || 'Name Here'}
                                 </span>
                               </div>
@@ -2051,46 +2051,39 @@ const Design = () => {
                               )}
                               
                               {/* Text Overlay - Name */}
-                              {showNameOnFront && (() => {
-                                // Auto-wrap text based on font size
-                                const rawText = deceasedName || 'Name Here';
-                                const wrappedText = getAutoWrappedText(rawText, nameSize);
-                                const lineCount = wrappedText.split('\n').length;
-                                
-                                return (
-                                  <div
-                                    className="absolute touch-none select-none px-2 py-1 rounded"
-                                    style={{
-                                      left: `${namePosition.x}%`,
-                                      top: `${namePosition.y}%`,
-                                      transform: 'translate(-50%, -50%)',
-                                      fontFamily: nameFont,
-                                      cursor: draggingText === 'name' || resizingText === 'name' ? 'grabbing' : 'grab',
-                                      textShadow: nameTextShadow ? '0 2px 4px rgba(0,0,0,0.5)' : 'none',
-                                      boxShadow: (draggingText === 'name' || resizingText === 'name') ? '0 0 0 2px #d97706' : 'none',
-                                      maxWidth: '90%',
-                                      textAlign: 'center',
-                                    }}
-                                    onPointerDown={(e) => handleTextPointerDown(e, 'name')}
-                                    onPointerMove={handleTextPointerMove}
-                                    onPointerUp={handleTextPointerUp}
-                                    onPointerCancel={handleTextPointerUp}
-                                    onWheel={(e) => handleTextWheel(e, 'name')}
-                                  >
-                                    <span style={{ 
-                                      fontSize: `${nameSize}px`, 
-                                      color: nameColor, 
-                                      fontWeight: nameBold ? 'bold' : 'normal', 
-                                      whiteSpace: 'pre-wrap', 
-                                      textAlign: 'center',
-                                      display: 'block',
-                                      lineHeight: 1.3,
-                                    }}>
-                                      {wrappedText}
-                                    </span>
-                                  </div>
-                                );
-                              })()}
+                              {showNameOnFront && (
+                                <div
+                                  className="absolute touch-none select-none px-2 py-1 rounded"
+                                  style={{
+                                    left: `${namePosition.x}%`,
+                                    top: `${namePosition.y}%`,
+                                    transform: 'translate(-50%, -50%)',
+                                    fontFamily: nameFont,
+                                    cursor: draggingText === 'name' || resizingText === 'name' ? 'grabbing' : 'grab',
+                                    textShadow: nameTextShadow ? '0 2px 4px rgba(0,0,0,0.5)' : 'none',
+                                    boxShadow: (draggingText === 'name' || resizingText === 'name') ? '0 0 0 2px #d97706' : 'none',
+                                    maxWidth: '90%',
+                                    textAlign: 'center',
+                                  }}
+                                  onPointerDown={(e) => handleTextPointerDown(e, 'name')}
+                                  onPointerMove={handleTextPointerMove}
+                                  onPointerUp={handleTextPointerUp}
+                                  onPointerCancel={handleTextPointerUp}
+                                  onWheel={(e) => handleTextWheel(e, 'name')}
+                                >
+                                  <span style={{ 
+                                    fontSize: `${nameSize}px`, 
+                                    color: nameColor, 
+                                    fontWeight: nameBold ? 'bold' : 'normal', 
+                                    whiteSpace: 'pre-line', 
+                                    textAlign: 'center',
+                                    display: 'block',
+                                    lineHeight: 1.2,
+                                  }}>
+                                    {deceasedName || 'Name Here'}
+                                  </span>
+                                </div>
+                              )}
                               
                               {/* Text Overlay - Dates */}
                               {showDatesOnFront && (() => {
@@ -4961,6 +4954,8 @@ const Design = () => {
                       fontSize: `${backNameSize * 3}px`,
                       color: backNameColor,
                       fontWeight: backNameBold ? 'bold' : 'normal',
+                      whiteSpace: 'pre-line',
+                      lineHeight: 1.2,
                     }}
                   >
                     {deceasedName}
