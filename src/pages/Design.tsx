@@ -191,13 +191,27 @@ const Design = () => {
     window.scrollTo(0, 0);
   }, []);
 
-  const [step, setStep] = useState(1);
+  // Restore state from sessionStorage if returning from memorial photo editor
+  const savedState = (() => {
+    const saved = sessionStorage.getItem('designPageState');
+    if (saved) {
+      sessionStorage.removeItem('designPageState'); // Clear after reading
+      try {
+        return JSON.parse(saved);
+      } catch (e) {
+        console.error('Failed to parse saved design state:', e);
+      }
+    }
+    return null;
+  })();
+
+  const [step, setStep] = useState(savedState?.step || 1);
   
   // Form state
-  const [deceasedName, setDeceasedName] = useState('');
-  const [birthDate, setBirthDate] = useState('');
-  const [deathDate, setDeathDate] = useState('');
-  const [metalFinish, setMetalFinish] = useState<MetalFinish>('white');
+  const [deceasedName, setDeceasedName] = useState(savedState?.deceasedName || '');
+  const [birthDate, setBirthDate] = useState(savedState?.birthDate || '');
+  const [deathDate, setDeathDate] = useState(savedState?.deathDate || '');
+  const [metalFinish, setMetalFinish] = useState<MetalFinish>(savedState?.metalFinish || 'white');
 
   // Card type from URL param (metal or paper)
   const cardType: CardType = searchParams.get('type') === 'paper' ? 'paper' : 'metal';
@@ -218,15 +232,15 @@ const Design = () => {
     }
   }, [searchParams, cardType]);
 
-  const [extraSets, setExtraSets] = useState(0); // Additional 55-card sets beyond package
-  const [extraPhotos, setExtraPhotos] = useState(0); // Extra photos beyond package (handled by easelPhotos length)
+  const [extraSets, setExtraSets] = useState(savedState?.extraSets || 0); // Additional 55-card sets beyond package
+  const [extraPhotos, setExtraPhotos] = useState(savedState?.extraPhotos || 0); // Extra photos beyond package (handled by easelPhotos length)
   
-  const [upgradeThickness, setUpgradeThickness] = useState(false);
-  const [shippingSpeed, setShippingSpeed] = useState<ShippingSpeed>('72hour');
-  const [frontBorderDesign, setFrontBorderDesign] = useState<DecorativeBorderType>('none');
-  const [frontBorderColor, setFrontBorderColor] = useState('#d4af37'); // Gold (metallic) default
-  const [backBorderDesign, setBackBorderDesign] = useState<DecorativeBorderType>('none');
-  const [backBorderColor, setBackBorderColor] = useState('#d4af37'); // Gold (metallic) default
+  const [upgradeThickness, setUpgradeThickness] = useState(savedState?.upgradeThickness || false);
+  const [shippingSpeed, setShippingSpeed] = useState<ShippingSpeed>(savedState?.shippingSpeed || '72hour');
+  const [frontBorderDesign, setFrontBorderDesign] = useState<DecorativeBorderType>(savedState?.frontBorderDesign || 'none');
+  const [frontBorderColor, setFrontBorderColor] = useState(savedState?.frontBorderColor || '#d4af37'); // Gold (metallic) default
+  const [backBorderDesign, setBackBorderDesign] = useState<DecorativeBorderType>(savedState?.backBorderDesign || 'none');
+  const [backBorderColor, setBackBorderColor] = useState(savedState?.backBorderColor || '#d4af37'); // Gold (metallic) default
 
   // Only allow the 4 metallic border colors
   const METALLIC_BORDER_HEXES = ['#d4af37', '#c0c0c0', '#b76e79', '#f8f8f8'] as const;
@@ -261,27 +275,27 @@ const Design = () => {
     setDatesPosition((prev) => ({ ...prev, y: Math.min(prev.y, SAFE_MAX_Y) }));
   }, [cardType, frontBorderDesign]);
 
-  const [mainDesignSize, setMainDesignSize] = useState<PaperCardSize>('2.625x4.375'); // Size for main design
-  const [additionalDesigns, setAdditionalDesigns] = useState<AdditionalDesignData[]>([]); // Additional designs with full data
-  const [mainDesignQty, setMainDesignQty] = useState(55); // Quantity for main design
-  const [activeDesignIndex, setActiveDesignIndex] = useState<number>(-1); // -1 = main design, 0+ = additional designs
-  const [qrUrl, setQrUrl] = useState('');
-  const [showQrCode, setShowQrCode] = useState(true);
-  const [orientation, setOrientation] = useState<Orientation>('portrait');
-  const [cardSide, setCardSide] = useState<CardSide>('front');
+  const [mainDesignSize, setMainDesignSize] = useState<PaperCardSize>(savedState?.mainDesignSize || '2.625x4.375'); // Size for main design
+  const [additionalDesigns, setAdditionalDesigns] = useState<AdditionalDesignData[]>(savedState?.additionalDesigns || []); // Additional designs with full data
+  const [mainDesignQty, setMainDesignQty] = useState(savedState?.mainDesignQty || 55); // Quantity for main design
+  const [activeDesignIndex, setActiveDesignIndex] = useState<number>(savedState?.activeDesignIndex ?? -1); // -1 = main design, 0+ = additional designs
+  const [qrUrl, setQrUrl] = useState(savedState?.qrUrl || '');
+  const [showQrCode, setShowQrCode] = useState(savedState?.showQrCode ?? true);
+  const [orientation, setOrientation] = useState<Orientation>(savedState?.orientation || 'portrait');
+  const [cardSide, setCardSide] = useState<CardSide>(savedState?.cardSide || 'front');
   const [showPrintPreview, setShowPrintPreview] = useState(false);
   const [printPreviewImages, setPrintPreviewImages] = useState<{ front: string; back: string } | null>(null);
   const [generatingPreview, setGeneratingPreview] = useState(false);
-  const [deceasedPhoto, setDeceasedPhoto] = useState<string | null>(null);
-  const [photoZoom, setPhotoZoom] = useState(1);
-  const [photoPanX, setPhotoPanX] = useState(0);
-  const [photoPanY, setPhotoPanY] = useState(0);
-  const [photoRotation, setPhotoRotation] = useState(0);
-  const [photoFade, setPhotoFade] = useState(false);
-  const [fadeColor, setFadeColor] = useState('#000000');
-  const [fadeShape, setFadeShape] = useState<'rectangle' | 'circle'>('rectangle');
-  const [metalBorderColor, setMetalBorderColor] = useState<string>('#d4af37'); // 'none' or metallic hex
-  const [photoBrightness, setPhotoBrightness] = useState(100);
+  const [deceasedPhoto, setDeceasedPhoto] = useState<string | null>(savedState?.deceasedPhoto || null);
+  const [photoZoom, setPhotoZoom] = useState(savedState?.photoZoom || 1);
+  const [photoPanX, setPhotoPanX] = useState(savedState?.photoPanX || 0);
+  const [photoPanY, setPhotoPanY] = useState(savedState?.photoPanY || 0);
+  const [photoRotation, setPhotoRotation] = useState(savedState?.photoRotation || 0);
+  const [photoFade, setPhotoFade] = useState(savedState?.photoFade || false);
+  const [fadeColor, setFadeColor] = useState(savedState?.fadeColor || '#000000');
+  const [fadeShape, setFadeShape] = useState<'rectangle' | 'circle'>(savedState?.fadeShape || 'rectangle');
+  const [metalBorderColor, setMetalBorderColor] = useState<string>(savedState?.metalBorderColor || '#d4af37'); // 'none' or metallic hex
+  const [photoBrightness, setPhotoBrightness] = useState(savedState?.photoBrightness || 100);
 
   // Sync back of card background to match front border color
   useEffect(() => {
@@ -326,28 +340,28 @@ const Design = () => {
     }
   };
   const [isPanning, setIsPanning] = useState(false);
-  const [backBgImage, setBackBgImage] = useState<string | null>(null);
-  const [backBgType, setBackBgType] = useState<BackBgType>('metal');
-  const [backMetalFinish, setBackMetalFinish] = useState<MetalFinish>('white');
-  const [backBgZoom, setBackBgZoom] = useState(1);
-  const [backBgPanX, setBackBgPanX] = useState(0);
-  const [backBgPanY, setBackBgPanY] = useState(0);
-  const [backBgRotation, setBackBgRotation] = useState(0);
-  const [backText, setBackText] = useState('The Lord is my shepherd; I shall not want.');
-  const [prayerTextSize, setPrayerTextSize] = useState<number | 'auto'>('auto');
-  const [autoPrayerFontSize, setAutoPrayerFontSize] = useState(16);
+  const [backBgImage, setBackBgImage] = useState<string | null>(savedState?.backBgImage || null);
+  const [backBgType, setBackBgType] = useState<BackBgType>(savedState?.backBgType || 'metal');
+  const [backMetalFinish, setBackMetalFinish] = useState<MetalFinish>(savedState?.backMetalFinish || 'white');
+  const [backBgZoom, setBackBgZoom] = useState(savedState?.backBgZoom || 1);
+  const [backBgPanX, setBackBgPanX] = useState(savedState?.backBgPanX || 0);
+  const [backBgPanY, setBackBgPanY] = useState(savedState?.backBgPanY || 0);
+  const [backBgRotation, setBackBgRotation] = useState(savedState?.backBgRotation || 0);
+  const [backText, setBackText] = useState(savedState?.backText || 'The Lord is my shepherd; I shall not want.');
+  const [prayerTextSize, setPrayerTextSize] = useState<number | 'auto'>(savedState?.prayerTextSize ?? 'auto');
+  const [autoPrayerFontSize, setAutoPrayerFontSize] = useState(savedState?.autoPrayerFontSize || 16);
   const [prayerLayoutNonce, setPrayerLayoutNonce] = useState(0);
-  const [prayerColor, setPrayerColor] = useState('#ffffff');
-  const [backBgSampleHex, setBackBgSampleHex] = useState<string>('#ffffff');
+  const [prayerColor, setPrayerColor] = useState(savedState?.prayerColor || '#ffffff');
+  const [backBgSampleHex, setBackBgSampleHex] = useState<string>(savedState?.backBgSampleHex || '#ffffff');
   
   // Front card text state
-  const [showNameOnFront, setShowNameOnFront] = useState(true);
-  const [showDatesOnFront, setShowDatesOnFront] = useState(true);
-  const [showDatesOnBack, setShowDatesOnBack] = useState(true);
-  const [nameFont, setNameFont] = useState('Great Vibes');
-  const [datesFont, setDatesFont] = useState(cardType === 'paper' ? 'Montserrat' : 'Cormorant Garamond');
-  const [namePosition, setNamePosition] = useState({ x: 50, y: 80 });
-  const [datesPosition, setDatesPosition] = useState({ x: 50, y: cardType === 'metal' ? 87 : 88 });
+  const [showNameOnFront, setShowNameOnFront] = useState(savedState?.showNameOnFront ?? true);
+  const [showDatesOnFront, setShowDatesOnFront] = useState(savedState?.showDatesOnFront ?? true);
+  const [showDatesOnBack, setShowDatesOnBack] = useState(savedState?.showDatesOnBack ?? true);
+  const [nameFont, setNameFont] = useState(savedState?.nameFont || 'Great Vibes');
+  const [datesFont, setDatesFont] = useState(savedState?.datesFont || (cardType === 'paper' ? 'Montserrat' : 'Cormorant Garamond'));
+  const [namePosition, setNamePosition] = useState(savedState?.namePosition || { x: 50, y: 80 });
+  const [datesPosition, setDatesPosition] = useState(savedState?.datesPosition || { x: 50, y: cardType === 'metal' ? 87 : 88 });
 
   // Calculate estimated text height as percentage of card height
   // Based on 300 DPI and typical card dimensions
@@ -4751,7 +4765,23 @@ const Design = () => {
                     <Button 
                       type="button" 
                       onClick={() => {
-                        // Store card data in sessionStorage for memorial photo editor
+                        // Save ALL design state before navigating
+                        const designState = {
+                          step, deceasedName, birthDate, deathDate, metalFinish,
+                          extraSets, extraPhotos, upgradeThickness, shippingSpeed,
+                          frontBorderDesign, frontBorderColor, backBorderDesign, backBorderColor,
+                          mainDesignSize, additionalDesigns, mainDesignQty, activeDesignIndex,
+                          qrUrl, showQrCode, orientation, cardSide,
+                          deceasedPhoto, photoZoom, photoPanX, photoPanY, photoRotation,
+                          photoFade, fadeColor, fadeShape, metalBorderColor, photoBrightness,
+                          backBgImage, backBgType, backMetalFinish, backBgZoom, backBgPanX, backBgPanY,
+                          backBgRotation, backText, prayerTextSize, autoPrayerFontSize, prayerColor,
+                          showNameOnFront, showDatesOnFront, showDatesOnBack, nameFont, datesFont,
+                          namePosition, datesPosition, funeralHomeLogo,
+                        };
+                        sessionStorage.setItem('designPageState', JSON.stringify(designState));
+                        
+                        // Store card data for memorial photo editor
                         sessionStorage.setItem('memorialPhotoData', JSON.stringify({
                           deceasedName,
                           birthDate,
