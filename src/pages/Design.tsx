@@ -1031,7 +1031,9 @@ const Design = () => {
       if (disposed) return;
 
       const minPx = 10;
-      const maxPx = 28;
+      // Scale max font size based on container height for proper auto-sizing
+      const containerHeight = container.clientHeight || 200;
+      const maxPx = Math.max(28, Math.round(containerHeight * 0.18));
 
       // Compute available space inside the prayer container (clientHeight/Width includes padding)
       const cs = window.getComputedStyle(container);
@@ -2071,23 +2073,38 @@ const Design = () => {
                                   />
                                 )}
                                 <div 
-                                  className={`relative z-10 h-full flex flex-col items-center p-3 text-center ${cardRounding}`}
+                                  className={`relative z-10 h-full flex flex-col items-center p-2 text-center ${cardRounding}`}
                                 >
                                   {/* Header section - shrinks to content */}
                                   <div className="shrink-0 flex flex-col items-center">
-                                    <div style={{ fontFamily: inLovingMemoryFont, color: inLovingMemoryColor, fontSize: `${Math.max(6, inLovingMemorySize * 0.6)}px`, fontWeight: inLovingMemoryBold ? 'bold' : 'normal' }} className="mb-0.5">
-                                      {inLovingMemoryText}
-                                    </div>
-                                    <div className="font-semibold mb-0.5" style={{ fontFamily: backNameFont, color: backNameColor, fontSize: `${Math.max(7, backNameSize * 0.6)}px`, fontWeight: backNameBold ? 'bold' : 'normal' }}>
-                                      {deceasedName || 'Name Here'}
-                                    </div>
+                                    {/* Funeral Home Logo - Top */}
+                                    {funeralHomeLogo && funeralHomeLogoPosition === 'top' && (
+                                      <div className="flex justify-center mb-0.5">
+                                        <img 
+                                          src={funeralHomeLogo} 
+                                          alt="Funeral Home Logo" 
+                                          className="object-contain"
+                                          style={{ height: `${Math.max(10, funeralHomeLogoSize * 0.35)}px`, maxWidth: '60%' }}
+                                        />
+                                      </div>
+                                    )}
+                                    {showInLovingMemory && (
+                                      <div style={{ fontFamily: inLovingMemoryFont, color: inLovingMemoryColor, fontSize: `${Math.max(5, inLovingMemorySize * 0.5)}px`, fontWeight: inLovingMemoryBold ? 'bold' : 'normal' }} className="mb-0.5">
+                                        {inLovingMemoryText}
+                                      </div>
+                                    )}
+                                    {showNameOnBack && (
+                                      <div className="font-semibold mb-0.5" style={{ fontFamily: backNameFont, color: backNameColor, fontSize: `${Math.max(6, backNameSize * 0.5)}px`, fontWeight: backNameBold ? 'bold' : 'normal' }}>
+                                        {deceasedName || 'Name Here'}
+                                      </div>
+                                    )}
                                     {showDatesOnBack && (
                                       <div 
-                                        className="mb-1 w-full"
+                                        className="mb-0.5 w-full"
                                         style={{ 
                                           fontFamily: datesFont, 
                                           color: backDatesColor,
-                                          fontSize: backDatesSize === 'auto' ? '6px' : `${Math.max(5, (typeof backDatesSize === 'number' ? backDatesSize : 9) * 0.6)}px`
+                                          fontSize: backDatesSize === 'auto' ? '5px' : `${Math.max(4, (typeof backDatesSize === 'number' ? backDatesSize : 9) * 0.5)}px`
                                         }}
                                       >
                                         <AutoFitSingleLineText
@@ -2096,7 +2113,7 @@ const Design = () => {
                                           style={{ 
                                             fontFamily: datesFont, 
                                             color: backDatesColor,
-                                            fontSize: backDatesSize === 'auto' ? '6px' : `${Math.max(5, (typeof backDatesSize === 'number' ? backDatesSize : 9) * 0.6)}px`
+                                            fontSize: backDatesSize === 'auto' ? '5px' : `${Math.max(4, (typeof backDatesSize === 'number' ? backDatesSize : 9) * 0.5)}px`
                                           }}
                                         />
                                       </div>
@@ -2104,27 +2121,40 @@ const Design = () => {
                                   </div>
                                   {/* Prayer - takes remaining space, centered */}
                                   <div 
-                                    className="flex-1 flex items-center justify-center max-w-[90%] min-h-0 overflow-hidden"
+                                    className="flex-1 flex items-center justify-center w-full min-h-0 overflow-hidden px-1"
                                   >
                                     <div 
-                                      className="text-xs leading-relaxed"
+                                      className="text-center whitespace-pre-line"
                                       style={{ 
                                         fontFamily: 'Cormorant Garamond',
-                                        fontSize: `${Math.max(6, (prayerTextSize === 'auto' ? autoPrayerFontSize : Math.min(prayerTextSize, autoPrayerFontSize)) * 0.6)}px`,
+                                        fontSize: `${Math.max(5, (prayerTextSize === 'auto' ? autoPrayerFontSize : Math.min(prayerTextSize, autoPrayerFontSize)) * 0.45)}px`,
                                         color: prayerColor,
                                         fontWeight: prayerBold ? 'bold' : 'normal',
-                                        lineHeight: 1.2,
+                                        lineHeight: 1.15,
                                       }}
                                     >
                                       {backText}
                                     </div>
                                   </div>
-                                  {/* Footer - QR code */}
-                                  {showQrCode && qrUrl && (
-                                    <div className="shrink-0 mt-1 bg-white p-1 rounded">
-                                      <QRCodeSVG value={qrUrl} size={24} />
-                                    </div>
-                                  )}
+                                  {/* Footer - QR code and/or Logo */}
+                                  <div className="shrink-0 flex flex-col items-center">
+                                    {showQrCode && qrUrl && (
+                                      <div className="bg-white p-0.5 rounded">
+                                        <QRCodeSVG value={qrUrl} size={18} />
+                                      </div>
+                                    )}
+                                    {/* Funeral Home Logo - Bottom */}
+                                    {funeralHomeLogo && funeralHomeLogoPosition === 'bottom' && (
+                                      <div className="flex justify-center mt-0.5">
+                                        <img 
+                                          src={funeralHomeLogo} 
+                                          alt="Funeral Home Logo" 
+                                          className="object-contain"
+                                          style={{ height: `${Math.max(10, funeralHomeLogoSize * 0.35)}px`, maxWidth: '60%' }}
+                                        />
+                                      </div>
+                                    )}
+                                  </div>
                                 </div>
                                 {cardType === 'paper' && backBorderDesign !== 'none' && (
                                   <div className="absolute inset-0 z-20 pointer-events-none">
