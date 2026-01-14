@@ -416,7 +416,7 @@ const Design = () => {
   const [backDatesColor, setBackDatesColor] = useState('#666666');
   const [nameSize, setNameSize] = useState(24);
   const [frontDatesSize, setFrontDatesSize] = useState<number | 'auto'>(16);
-  const [backDatesSize, setBackDatesSize] = useState<number | 'auto'>(14);
+  const [backDatesSize, setBackDatesSize] = useState<number | 'auto'>(16);
   const [frontDateFormat, setFrontDateFormat] = useState<'full' | 'short-month' | 'mmm-dd-yyyy' | 'numeric' | 'year'>('full');
   const [backDateFormat, setBackDateFormat] = useState<'full' | 'short-month' | 'mmm-dd-yyyy' | 'numeric' | 'year'>('full');
   const [additionalText, setAdditionalText] = useState('');
@@ -437,7 +437,7 @@ const Design = () => {
   const [backDatesAlign, setBackDatesAlign] = useState<'left' | 'center' | 'right'>('center');
   
   // Back name styling - now has its own size control
-  const [backNameSize, setBackNameSize] = useState(22);
+  const [backNameSize, setBackNameSize] = useState(24);
   const [backNameColor, setBackNameColor] = useState('#ffffff');
   const [backNameBold, setBackNameBold] = useState(true);
   const [backNameFont, setBackNameFont] = useState('Great Vibes');
@@ -458,7 +458,7 @@ const Design = () => {
   // "In Loving Memory" customization
   const [inLovingMemoryText, setInLovingMemoryText] = useState('In Loving Memory');
   const [inLovingMemoryColor, setInLovingMemoryColor] = useState('#ffffff');
-  const [inLovingMemorySize, setInLovingMemorySize] = useState(24);
+  const [inLovingMemorySize, setInLovingMemorySize] = useState(16);
   const [inLovingMemoryFont, setInLovingMemoryFont] = useState('Cormorant Garamond');
   const [showInLovingMemory, setShowInLovingMemory] = useState(true);
   const [inLovingMemoryPosition, setInLovingMemoryPosition] = useState({ x: 0, y: 0 });
@@ -1060,7 +1060,7 @@ const Design = () => {
       const minPx = 13;
       // Scale max font size based on container height - aim for 12-14pt body text
       const containerHeight = container.clientHeight || 200;
-      const maxPx = Math.max(48, Math.round(containerHeight * 0.3));
+      const maxPx = Math.max(60, Math.round(containerHeight * 0.4));
 
       // Compute available space inside the prayer container (clientHeight/Width includes padding)
       const cs = window.getComputedStyle(container);
@@ -2103,8 +2103,8 @@ const Design = () => {
                                   className={`relative z-10 h-full flex flex-col items-center text-center ${cardRounding}`}
                                   style={{
                                     padding: '4px',
-                                    paddingTop: backBorderDesign !== 'none' ? '10px' : '4px',
-                                    paddingBottom: backBorderDesign !== 'none' ? '10px' : '4px',
+                                    paddingTop: backBorderDesign !== 'none' ? '14px' : '4px',
+                                    paddingBottom: backBorderDesign !== 'none' ? '14px' : '4px',
                                   }}
                                 >
                                   {/* Header section - shrinks to content */}
@@ -3449,9 +3449,9 @@ const Design = () => {
                                 <div 
                                   className="relative z-10 w-full h-full"
                                   style={{ 
-                                    padding: backBorderDesign !== 'none' ? '6px' : '8px',
-                                    paddingTop: backBorderDesign !== 'none' ? '18px' : '8px',
-                                    paddingBottom: backBorderDesign !== 'none' ? '18px' : '8px',
+                                    padding: backBorderDesign !== 'none' ? '8px' : '8px',
+                                    paddingTop: backBorderDesign !== 'none' ? '24px' : '8px',
+                                    paddingBottom: backBorderDesign !== 'none' ? '24px' : '8px',
                                   }}
                                 >
                                   <div className="h-full flex flex-col text-center gap-0">
@@ -4219,7 +4219,7 @@ const Design = () => {
                               <input
                                 type="range"
                                 min="10"
-                                max={autoPrayerFontSize}
+                                max={Math.max(60, autoPrayerFontSize)}
                                 step="1"
                                 value={prayerTextSize === 'auto' ? autoPrayerFontSize : Math.min(prayerTextSize, autoPrayerFontSize)}
                                 onChange={(e) => setPrayerTextSize(parseFloat(e.target.value))}
