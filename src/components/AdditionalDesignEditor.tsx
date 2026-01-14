@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
@@ -111,10 +111,12 @@ export const AdditionalDesignEditor = ({
   const photoInputRef = useRef<HTMLInputElement>(null);
   const bgInputRef = useRef<HTMLInputElement>(null);
 
-  // Reset local state when design changes
-  useState(() => {
-    setLocalDesign(design);
-  });
+  // Reset local state when dialog opens or design changes
+  useEffect(() => {
+    if (open) {
+      setLocalDesign(design);
+    }
+  }, [open, design]);
 
   const handlePhotoUpload = (file: File) => {
     const reader = new FileReader();
