@@ -8,7 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
-import { CardMockup } from '@/components/CardMockup';
+
 
 interface PhotoUploadItem {
   src: string;
@@ -302,71 +302,42 @@ const Index = () => {
         <div className="absolute inset-0 bg-gradient-to-b from-primary/5 via-transparent to-transparent pointer-events-none" />
         
         <div className="container mx-auto px-4 py-16 md:py-24">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            {/* Left - Text Content */}
-            <div className="text-center lg:text-left">
-              <p className="text-primary font-medium mb-4 tracking-wide">
-                TRUSTED BY 10,000+ FAMILIES NATIONWIDE
-              </p>
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mb-6 leading-tight tracking-tight">
-                Honor Their Memory with{' '}
-                <span className="text-primary">Beautiful</span> Prayer Cards
-              </h1>
-              <p className="text-lg md:text-xl text-muted-foreground mb-8 max-w-xl mx-auto lg:mx-0">
-                Create stunning keepsakes that family and friends will treasure forever. 
-                From classic paper cards to premium metal finishes — delivered in as fast as 48 hours.
-              </p>
-              
-              <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 mb-8">
-                <Link to="/design?type=paper&quantity=55">
-                  <Button size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold text-lg px-10 py-7 shadow-xl">
-                    Design Prayer Cards
-                    <ArrowRight className="ml-2 h-5 w-5" />
-                  </Button>
-                </Link>
-                <a href="#pricing">
-                  <Button size="lg" variant="outline" className="text-lg px-8 py-7 border-2">
-                    See Pricing
-                  </Button>
-                </a>
-              </div>
-              
-              {/* Trust Indicators */}
-              <div className="flex flex-wrap items-center justify-center lg:justify-start gap-6 text-muted-foreground">
-                <div className="flex items-center gap-2">
-                  <Shield className="h-5 w-5 text-primary" />
-                  <span className="text-sm font-medium">100% Satisfaction Guarantee</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Truck className="h-5 w-5 text-primary" />
-                  <span className="text-sm font-medium">48-Hour Rush Available</span>
-                </div>
-              </div>
+          <div className="max-w-3xl mx-auto text-center">
+            <p className="text-primary font-medium mb-4 tracking-wide">
+              TRUSTED BY 10,000+ FAMILIES NATIONWIDE
+            </p>
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mb-6 leading-tight tracking-tight">
+              Honor Their Memory with{' '}
+              <span className="text-primary">Beautiful</span> Prayer Cards
+            </h1>
+            <p className="text-lg md:text-xl text-muted-foreground mb-8 max-w-xl mx-auto">
+              Create stunning keepsakes that family and friends will treasure forever. 
+              From classic paper cards to premium metal finishes — delivered in as fast as 48 hours.
+            </p>
+            
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-8">
+              <Link to="/design?type=paper&quantity=55">
+                <Button size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold text-lg px-10 py-7 shadow-xl">
+                  Design Prayer Cards
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </Button>
+              </Link>
+              <a href="#pricing">
+                <Button size="lg" variant="outline" className="text-lg px-8 py-7 border-2">
+                  See Pricing
+                </Button>
+              </a>
             </div>
             
-            {/* Right - Product Preview */}
-            <div className="relative">
-              <div className="grid grid-cols-2 gap-4">
-                {/* Paper Card Preview */}
-                <div className="relative group">
-                  <CardMockup variant="paper" className="w-full" />
-                  <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 bg-background border border-border rounded-full px-4 py-1.5 shadow-lg">
-                    <span className="text-sm font-semibold text-foreground">Paper Cards</span>
-                  </div>
-                </div>
-                
-                {/* Metal Card Preview */}
-                <div className="relative group mt-8">
-                  <CardMockup variant="metal" className="w-full" />
-                  <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 bg-background border border-border rounded-full px-4 py-1.5 shadow-lg">
-                    <span className="text-sm font-semibold text-foreground">Metal Cards</span>
-                  </div>
-                </div>
+            {/* Trust Indicators */}
+            <div className="flex flex-wrap items-center justify-center gap-6 text-muted-foreground">
+              <div className="flex items-center gap-2">
+                <Shield className="h-5 w-5 text-primary" />
+                <span className="text-sm font-medium">100% Satisfaction Guarantee</span>
               </div>
-              
-              {/* Floating badge */}
-              <div className="absolute -top-4 -right-4 bg-green-500 text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-lg">
-                FREE Memorial Photo
+              <div className="flex items-center gap-2">
+                <Truck className="h-5 w-5 text-primary" />
+                <span className="text-sm font-medium">48-Hour Rush Available</span>
               </div>
             </div>
           </div>
