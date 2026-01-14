@@ -6,6 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { ArrowLeft, Upload, RotateCcw, Image as ImageIcon, Type, Trash2, ShoppingCart, Plus, Minus, Copy, Building } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -328,9 +329,9 @@ const MemorialPhotoEditor = () => {
         </div>
       </header>
 
-      <div className="container mx-auto px-4 py-8">
-        <div className="grid lg:grid-cols-2 gap-8">
-          {/* Preview Canvas */}
+      <div className="container mx-auto px-4 py-6">
+        <div className="grid lg:grid-cols-[1fr,380px] gap-6">
+          {/* Left Column - Preview Canvas */}
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <Label className="text-white text-lg font-semibold">Preview</Label>
@@ -348,7 +349,8 @@ const MemorialPhotoEditor = () => {
               className="relative mx-auto bg-slate-800 rounded-lg overflow-hidden shadow-2xl select-none"
               style={{ 
                 aspectRatio,
-                maxWidth: photoSize === '16x20' ? '400px' : '375px',
+                maxWidth: '100%',
+                width: '100%',
               }}
               onPointerMove={handleCanvasPointerMove}
               onPointerUp={handleCanvasPointerUp}
@@ -439,8 +441,9 @@ const MemorialPhotoEditor = () => {
             </p>
           </div>
 
-          {/* Controls */}
-          <div className="space-y-6">
+          {/* Right Column - Controls */}
+          <ScrollArea className="h-[calc(100vh-140px)]">
+            <div className="space-y-4 pr-4">
             {/* Photo Upload */}
             <Card className="bg-slate-800 border-slate-700">
               <CardContent className="p-6 space-y-4">
@@ -881,7 +884,8 @@ const MemorialPhotoEditor = () => {
                 )}
               </CardContent>
             </Card>
-          </div>
+            </div>
+          </ScrollArea>
         </div>
       </div>
     </div>
