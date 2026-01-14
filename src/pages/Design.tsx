@@ -3718,14 +3718,14 @@ const Design = () => {
                                 <Label className="text-slate-400 text-xs w-10">Size</Label>
                                 <input
                                   type="range"
-                                  min="8"
-                                  max="60"
+                                  min="10"
+                                  max="150"
                                   step="1"
-                                  value={backNameSize}
-                                  onChange={(e) => setBackNameSize(parseFloat(e.target.value))}
+                                  value={pxToPoints(backNameSize)}
+                                  onChange={(e) => setBackNameSize(pointsToPx(parseFloat(e.target.value)))}
                                   className="flex-1 accent-amber-600 h-1"
                                 />
-                                <span className="text-xs text-slate-400 w-12 text-right">{backNameSize}px</span>
+                                <span className="text-xs text-slate-400 w-12 text-right">{pxToPoints(backNameSize)}pt</span>
                               </div>
                               {/* Back Name Position Sliders */}
                               <div className="flex items-center gap-2">
@@ -3797,15 +3797,15 @@ const Design = () => {
                                 <Label className="text-slate-400 text-xs w-10">Size</Label>
                                 <input
                                   type="range"
-                                  min="6"
-                                  max="40"
+                                  min="10"
+                                  max="72"
                                   step="1"
-                                  value={typeof backDatesSize === 'number' ? backDatesSize : 14}
-                                  onChange={(e) => setBackDatesSize(parseFloat(e.target.value))}
+                                  value={pxToPoints(typeof backDatesSize === 'number' ? backDatesSize : 16)}
+                                  onChange={(e) => setBackDatesSize(pointsToPx(parseFloat(e.target.value)))}
                                   className="flex-1 accent-amber-600 h-1"
                                 />
                                 <span className="text-xs text-slate-400 w-12 text-right">
-                                  {backDatesSize === 'auto' ? 'Auto' : `${backDatesSize}px`}
+                                  {backDatesSize === 'auto' ? 'Auto' : `${pxToPoints(backDatesSize)}pt`}
                                 </span>
                               </div>
                               {/* Back Dates Position Sliders */}
@@ -4075,13 +4075,13 @@ const Design = () => {
                                 <input
                                   type="range"
                                   min="10"
-                                  max="48"
+                                  max="72"
                                   step="1"
-                                  value={inLovingMemorySize}
-                                  onChange={(e) => setInLovingMemorySize(parseFloat(e.target.value))}
+                                  value={pxToPoints(inLovingMemorySize)}
+                                  onChange={(e) => setInLovingMemorySize(pointsToPx(parseFloat(e.target.value)))}
                                   className="flex-1 accent-amber-600 h-1"
                                 />
-                                <span className="text-xs text-slate-400 w-12 text-right">{inLovingMemorySize}px</span>
+                                <span className="text-xs text-slate-400 w-12 text-right">{pxToPoints(inLovingMemorySize)}pt</span>
                               </div>
                               {/* In Loving Memory Position Sliders */}
                               <div className="flex items-center gap-2">
@@ -4219,14 +4219,14 @@ const Design = () => {
                               <input
                                 type="range"
                                 min="10"
-                                max={Math.max(60, autoPrayerFontSize)}
+                                max={Math.max(72, pxToPoints(autoPrayerFontSize))}
                                 step="1"
-                                value={prayerTextSize === 'auto' ? autoPrayerFontSize : Math.min(prayerTextSize, autoPrayerFontSize)}
-                                onChange={(e) => setPrayerTextSize(parseFloat(e.target.value))}
+                                value={prayerTextSize === 'auto' ? pxToPoints(autoPrayerFontSize) : pxToPoints(Math.min(prayerTextSize, autoPrayerFontSize))}
+                                onChange={(e) => setPrayerTextSize(pointsToPx(parseFloat(e.target.value)))}
                                 className="flex-1 accent-amber-600 h-1"
                               />
                               <span className="text-xs text-slate-400 w-12 text-right">
-                                {prayerTextSize === 'auto' ? `${autoPrayerFontSize}px` : `${Math.min(prayerTextSize, autoPrayerFontSize)}px`}
+                                {prayerTextSize === 'auto' ? `${pxToPoints(autoPrayerFontSize)}pt` : `${pxToPoints(Math.min(prayerTextSize, autoPrayerFontSize))}pt`}
                               </span>
                             </div>
                           </div>
