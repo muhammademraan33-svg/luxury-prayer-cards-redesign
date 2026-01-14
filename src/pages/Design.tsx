@@ -10,7 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
-import { CalendarIcon, Sparkles, QrCode, Loader2, Truck, Zap, ArrowLeft, ArrowRight, ImageIcon, RotateCcw, RectangleHorizontal, RectangleVertical, Type, Book, Trash2, Package, Clock, MapPin, Layers, CheckCircle2, Plus, Eye, Download } from 'lucide-react';
+import { CalendarIcon, Sparkles, QrCode, Loader2, Truck, Zap, ArrowLeft, ArrowRight, ImageIcon, RotateCcw, RectangleHorizontal, RectangleVertical, Type, Book, Trash2, Package, Clock, MapPin, Layers, CheckCircle2, Plus, Eye, Download, Sun, Moon } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 import { Textarea } from '@/components/ui/textarea';
 import { Slider } from '@/components/ui/slider';
@@ -286,6 +286,7 @@ const Design = () => {
   const [showQrCode, setShowQrCode] = useState(savedState?.showQrCode ?? true);
   const [orientation, setOrientation] = useState<Orientation>(savedState?.orientation || 'portrait');
   const [cardSide, setCardSide] = useState<CardSide>(savedState?.cardSide || 'front');
+  const [darkDisplay, setDarkDisplay] = useState(savedState?.darkDisplay ?? false);
   const [showPrintPreview, setShowPrintPreview] = useState(false);
   const [printPreviewImages, setPrintPreviewImages] = useState<{ front: string; back: string } | null>(null);
   const [generatingPreview, setGeneratingPreview] = useState(false);
@@ -1824,8 +1825,8 @@ const Design = () => {
                       </div>
                     )}
                     
-                    {/* Front/Back Toggle - Above the card */}
-                    <div className="flex justify-center gap-1 mb-2">
+                    {/* Front/Back Toggle + Dark Mode - Above the card */}
+                    <div className="flex justify-center items-center gap-2 mb-2">
                       <Button
                         type="button"
                         variant={cardSide === 'front' ? 'default' : 'outline'}
@@ -1848,11 +1849,22 @@ const Design = () => {
                       >
                         Back
                       </Button>
+                      <div className="w-px h-5 bg-slate-600" />
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => setDarkDisplay(!darkDisplay)}
+                        className="border-slate-600 text-slate-300 hover:bg-slate-700"
+                        size="sm"
+                        title={darkDisplay ? 'Light background' : 'Dark background'}
+                      >
+                        {darkDisplay ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+                      </Button>
                     </div>
                     
                     {/* Card Preview - Front */}
                     {cardSide === 'front' && (
-                      <div className="flex flex-col items-center gap-2">
+                      <div className={`flex flex-col items-center gap-2 p-4 rounded-lg transition-colors ${darkDisplay ? 'bg-slate-900' : 'bg-slate-200'}`}>
                         <div 
                           data-card-preview
                           className={`${sidebarCardClass} ${cardRounding} overflow-hidden shadow-2xl relative cursor-pointer ${cardType === 'metal' && metalBorderColor !== 'none' ? `bg-gradient-to-br ${getMetalBorderGradient(metalBorderColor)} p-1` : ''}`}
@@ -2069,13 +2081,13 @@ const Design = () => {
                             )}
                           </div>
                         </div>
-                        <p className="text-slate-500 text-xs text-center">Front of card</p>
+                        <p className={`text-xs text-center ${darkDisplay ? 'text-slate-400' : 'text-slate-600'}`}>Front of card</p>
                       </div>
                     )}
                     
                     {/* Card Preview - Back */}
                     {cardSide === 'back' && (
-                      <div className="flex flex-col items-center gap-2">
+                      <div className={`flex flex-col items-center gap-2 p-4 rounded-lg transition-colors ${darkDisplay ? 'bg-slate-900' : 'bg-slate-200'}`}>
                         <div 
                           data-card-preview
                           className={`${sidebarCardClass} ${cardRounding} shadow-2xl relative overflow-hidden`}
@@ -2192,7 +2204,7 @@ const Design = () => {
                             );
                           })()}
                         </div>
-                        <p className="text-slate-500 text-xs text-center">Back of card</p>
+                        <p className={`text-xs text-center ${darkDisplay ? 'text-slate-400' : 'text-slate-600'}`}>Back of card</p>
                       </div>
                     )}
                   </div>
@@ -2377,23 +2389,35 @@ const Design = () => {
 
                   {/* Front/Back Tabs */}
                   <Tabs value={cardSide} onValueChange={(v) => setCardSide(v as CardSide)} className="w-full">
-                    <TabsList className="grid w-full grid-cols-2 bg-slate-700 md:hidden">
-                      <TabsTrigger value="front" className="data-[state=active]:bg-amber-600 data-[state=active]:text-white">
-                        Front (Photo)
-                      </TabsTrigger>
-                      <TabsTrigger value="back" className="data-[state=active]:bg-amber-600 data-[state=active]:text-white">
-                        Back (Info + QR)
-                      </TabsTrigger>
-                    </TabsList>
+                    <div className="flex items-center justify-between gap-2 md:hidden mb-2">
+                      <TabsList className="grid flex-1 grid-cols-2 bg-slate-700">
+                        <TabsTrigger value="front" className="data-[state=active]:bg-amber-600 data-[state=active]:text-white">
+                          Front (Photo)
+                        </TabsTrigger>
+                        <TabsTrigger value="back" className="data-[state=active]:bg-amber-600 data-[state=active]:text-white">
+                          Back (Info + QR)
+                        </TabsTrigger>
+                      </TabsList>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => setDarkDisplay(!darkDisplay)}
+                        className="border-slate-600 text-slate-300 hover:bg-slate-700"
+                        size="sm"
+                        title={darkDisplay ? 'Light background' : 'Dark background'}
+                      >
+                        {darkDisplay ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+                      </Button>
+                    </div>
 
                     {/* Front Card */}
                     <TabsContent value="front" className="mt-4 md:mt-0">
-                      <div className="flex flex-col items-center gap-4">
+                      <div className={`flex flex-col items-center gap-4 md:hidden p-4 rounded-lg transition-colors ${darkDisplay ? 'bg-slate-900' : 'bg-slate-200'}`}>
                         {/* Card Preview */}
                         <div 
                           data-card-preview
                           ref={cardPreviewRef}
-                          className={`md:hidden ${cardClass} ${cardRounding} overflow-hidden shadow-2xl relative ${cardType === 'metal' && metalBorderColor !== 'none' ? `bg-gradient-to-br ${getMetalBorderGradient(metalBorderColor)} p-1` : ''}`}
+                          className={`${cardClass} ${cardRounding} overflow-hidden shadow-2xl relative ${cardType === 'metal' && metalBorderColor !== 'none' ? `bg-gradient-to-br ${getMetalBorderGradient(metalBorderColor)} p-1` : ''}`}
                         >
                             <div 
                               ref={photoContainerRef}
@@ -3401,7 +3425,7 @@ const Design = () => {
 
                     {/* Back Card */}
                     <TabsContent value="back" className="mt-4 md:mt-0">
-                      <div className="flex flex-col items-center gap-4 md:hidden">
+                      <div className={`flex flex-col items-center gap-4 md:hidden p-4 rounded-lg transition-colors ${darkDisplay ? 'bg-slate-900' : 'bg-slate-200'}`}>
                         {/* Card Preview */}
                         <div 
                           data-card-preview
