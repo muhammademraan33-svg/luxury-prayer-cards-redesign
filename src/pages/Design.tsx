@@ -461,6 +461,10 @@ const Design = () => {
   const [inLovingMemorySize, setInLovingMemorySize] = useState(12);
   const [inLovingMemoryFont, setInLovingMemoryFont] = useState('Cormorant Garamond');
   const [showInLovingMemory, setShowInLovingMemory] = useState(true);
+  const [inLovingMemoryPosition, setInLovingMemoryPosition] = useState({ x: 0, y: 0 });
+  
+  // Back name position
+  const [backNamePosition, setBackNamePosition] = useState({ x: 0, y: 0 });
   
   // Funeral home logo
   const [funeralHomeLogo, setFuneralHomeLogo] = useState<string | null>(null);
@@ -3440,7 +3444,7 @@ const Design = () => {
                                   
                                   {showInLovingMemory && (
                                     <p 
-                                      className="uppercase tracking-[0.12em]"
+                                      className="uppercase tracking-[0.12em] touch-none select-none cursor-grab"
                                       style={{ 
                                         fontSize: `${inLovingMemorySize}px`,
                                         color: inLovingMemoryColor,
@@ -3448,6 +3452,7 @@ const Design = () => {
                                         fontFamily: inLovingMemoryFont,
                                         textShadow: '1px 1px 3px rgba(0,0,0,0.4)',
                                         marginBottom: '1px',
+                                        transform: `translate(${inLovingMemoryPosition.x}%, ${inLovingMemoryPosition.y}%)`,
                                       }}
                                     >
                                       {inLovingMemoryText}
@@ -3455,7 +3460,7 @@ const Design = () => {
                                   )}
                                   {showNameOnBack && (
                                     <p 
-                                      className="whitespace-pre text-center"
+                                      className="whitespace-pre text-center touch-none select-none cursor-grab"
                                       style={{ 
                                         fontSize: `${backNameSize}px`,
                                         color: backNameColor,
@@ -3463,6 +3468,7 @@ const Design = () => {
                                         fontFamily: backNameFont,
                                         textShadow: '1px 1px 3px rgba(0,0,0,0.4)',
                                         marginBottom: '1px',
+                                        transform: `translate(${backNamePosition.x}%, ${backNamePosition.y}%)`,
                                       }}
                                     >
                                       {deceasedName || 'Name Here'}
@@ -3667,6 +3673,33 @@ const Design = () => {
                                 />
                                 <span className="text-xs text-slate-400 w-12 text-right">{pxToPoints(backNameSize)}pt</span>
                               </div>
+                              {/* Back Name Position Sliders */}
+                              <div className="flex items-center gap-2">
+                                <Label className="text-slate-400 text-xs w-10">L/R</Label>
+                                <input
+                                  type="range"
+                                  min="-50"
+                                  max="50"
+                                  step="1"
+                                  value={backNamePosition.x}
+                                  onChange={(e) => setBackNamePosition(prev => ({ ...prev, x: parseFloat(e.target.value) }))}
+                                  className="flex-1 accent-amber-600 h-1"
+                                />
+                                <span className="text-xs text-slate-400 w-10 text-right">{backNamePosition.x}%</span>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <Label className="text-slate-400 text-xs w-10">U/D</Label>
+                                <input
+                                  type="range"
+                                  min="-30"
+                                  max="30"
+                                  step="1"
+                                  value={backNamePosition.y}
+                                  onChange={(e) => setBackNamePosition(prev => ({ ...prev, y: parseFloat(e.target.value) }))}
+                                  className="flex-1 accent-amber-600 h-1"
+                                />
+                                <span className="text-xs text-slate-400 w-10 text-right">{backNamePosition.y}%</span>
+                              </div>
                             </div>
                           )}
                           
@@ -3720,6 +3753,33 @@ const Design = () => {
                                 <span className="text-xs text-slate-400 w-12 text-right">
                                   {backDatesSize === 'auto' ? 'Auto' : `${pxToPoints(backDatesSize)}pt`}
                                 </span>
+                              </div>
+                              {/* Back Dates Position Sliders */}
+                              <div className="flex items-center gap-2">
+                                <Label className="text-slate-400 text-xs w-10">L/R</Label>
+                                <input
+                                  type="range"
+                                  min="-50"
+                                  max="50"
+                                  step="1"
+                                  value={backDatesPosition.x - 50}
+                                  onChange={(e) => setBackDatesPosition(prev => ({ ...prev, x: parseFloat(e.target.value) + 50 }))}
+                                  className="flex-1 accent-amber-600 h-1"
+                                />
+                                <span className="text-xs text-slate-400 w-10 text-right">{Math.round(backDatesPosition.x - 50)}%</span>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <Label className="text-slate-400 text-xs w-10">U/D</Label>
+                                <input
+                                  type="range"
+                                  min="-30"
+                                  max="30"
+                                  step="1"
+                                  value={backDatesPosition.y - 18}
+                                  onChange={(e) => setBackDatesPosition(prev => ({ ...prev, y: parseFloat(e.target.value) + 18 }))}
+                                  className="flex-1 accent-amber-600 h-1"
+                                />
+                                <span className="text-xs text-slate-400 w-10 text-right">{Math.round(backDatesPosition.y - 18)}%</span>
                               </div>
                             </div>
                           )}
@@ -3968,6 +4028,33 @@ const Design = () => {
                                   className="flex-1 accent-amber-600 h-1"
                                 />
                                 <span className="text-xs text-slate-400 w-12 text-right">{inLovingMemorySize}px</span>
+                              </div>
+                              {/* In Loving Memory Position Sliders */}
+                              <div className="flex items-center gap-2">
+                                <Label className="text-slate-400 text-xs w-10">L/R</Label>
+                                <input
+                                  type="range"
+                                  min="-50"
+                                  max="50"
+                                  step="1"
+                                  value={inLovingMemoryPosition.x}
+                                  onChange={(e) => setInLovingMemoryPosition(prev => ({ ...prev, x: parseFloat(e.target.value) }))}
+                                  className="flex-1 accent-amber-600 h-1"
+                                />
+                                <span className="text-xs text-slate-400 w-10 text-right">{inLovingMemoryPosition.x}%</span>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <Label className="text-slate-400 text-xs w-10">U/D</Label>
+                                <input
+                                  type="range"
+                                  min="-30"
+                                  max="30"
+                                  step="1"
+                                  value={inLovingMemoryPosition.y}
+                                  onChange={(e) => setInLovingMemoryPosition(prev => ({ ...prev, y: parseFloat(e.target.value) }))}
+                                  className="flex-1 accent-amber-600 h-1"
+                                />
+                                <span className="text-xs text-slate-400 w-10 text-right">{inLovingMemoryPosition.y}%</span>
                               </div>
                             </>
                           )}
