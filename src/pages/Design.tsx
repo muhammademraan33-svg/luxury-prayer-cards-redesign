@@ -4671,8 +4671,10 @@ const Design = () => {
                             </div>
                           </div>
                           <div className="text-right">
-                            <span className="text-amber-400 font-bold text-lg">+${PAPER_SIZE_UPSELL}</span>
-                            <p className="text-slate-500 text-xs">one-time</p>
+                            <div className="bg-green-500/20 border border-green-500/40 rounded-lg px-3 py-1.5">
+                              <span className="text-green-400 font-bold text-lg">Only ${PAPER_SIZE_UPSELL}</span>
+                              <p className="text-green-400/70 text-xs font-medium">one-time upgrade</p>
+                            </div>
                           </div>
                         </div>
                         {mainDesignSize === '3.125x4.875' && (
