@@ -43,7 +43,6 @@ import html2canvas from 'html2canvas';
 import { hexToRgb, pickBestTextColor, relativeLuminance, rgbToHex } from '@/lib/color';
 import { supabase } from '@/integrations/supabase/client';
 import { AdditionalDesignData, createEmptyDesign } from '@/components/AdditionalDesignEditor';
-import { MemorialPhotoDesigner, MemorialPhotoData, createEmptyMemorialPhoto } from '@/components/MemorialPhotoDesigner';
 
 const PRESET_BACKGROUNDS = [
   { id: 'clouds', name: 'Soft Clouds', src: cloudsLightBg, isDark: false },
@@ -221,10 +220,6 @@ const Design = () => {
 
   const [extraSets, setExtraSets] = useState(0); // Additional 55-card sets beyond package
   const [extraPhotos, setExtraPhotos] = useState(0); // Extra photos beyond package (handled by easelPhotos length)
-  
-  // Paper memorial photos state
-  const [paperMemorialPhotos, setPaperMemorialPhotos] = useState<MemorialPhotoData[]>([]);
-  const paperMemorialPhotoInputRef = useRef<HTMLInputElement>(null);
   
   const [upgradeThickness, setUpgradeThickness] = useState(false);
   const [shippingSpeed, setShippingSpeed] = useState<ShippingSpeed>('72hour');
@@ -1296,22 +1291,6 @@ const Design = () => {
     setEaselPhotos(prev => prev.filter((_, i) => i !== index));
   };
 
-  // Paper memorial photo handlers
-  const addPaperMemorialPhoto = () => {
-    const newPhoto = createEmptyMemorialPhoto(deceasedName, birthDate, deathDate);
-    setPaperMemorialPhotos(prev => [...prev, newPhoto]);
-  };
-
-  const removePaperMemorialPhoto = (index: number) => {
-    setPaperMemorialPhotos(prev => prev.filter((_, i) => i !== index));
-  };
-
-  const updatePaperMemorialPhoto = (index: number, data: MemorialPhotoData) => {
-    setPaperMemorialPhotos(prev => prev.map((photo, i) => 
-      i === index ? data : photo
-    ));
-  };
-
   const currentPackage =
     (packages as Record<string, PackageConfig>)[selectedPackage] ?? Object.values(packages)[0];
 
@@ -1339,15 +1318,6 @@ const Design = () => {
           total += PAPER_SIZE_UPSELL;
         }
       });
-      
-      // Paper memorial photos: 1 included, $17 each additional
-      if (paperMemorialPhotos.length > 1) {
-        total += (paperMemorialPhotos.length - 1) * ADDITIONAL_PHOTO_PRICE;
-      }
-      
-      // 18x24 upsell for paper memorial photos - $7 each
-      const upgradedPaperPhotos = paperMemorialPhotos.filter(p => p.size === '18x24').length;
-      total += upgradedPaperPhotos * PHOTO_18X24_UPSELL;
       
       // Add shipping cost
       total += SHIPPING_PRICES[shippingSpeed].price;
@@ -4435,62 +4405,9 @@ const Design = () => {
                             </span>
                           </div>
                           
-                          {/* Memorial Photos Section - Designer Layout */}
-                          <div className="py-3 border-b border-slate-600">
-                            <div className="flex items-center justify-between mb-4">
-                              <span className="text-slate-300 font-medium">Memorial Photos</span>
-                              <span className="text-amber-400 text-sm">
-                                {paperMemorialPhotos.length === 0 
-                                  ? '1 included' 
-                                  : `${paperMemorialPhotos.length} photo${paperMemorialPhotos.length > 1 ? 's' : ''}`
-                                }
-                              </span>
-                            </div>
-                            
-                            {/* No photos yet - show add button */}
-                            {paperMemorialPhotos.length === 0 && (
-                              <button
-                                type="button"
-                                onClick={addPaperMemorialPhoto}
-                                className="w-full p-6 bg-slate-800/50 border-2 border-dashed border-amber-500/40 hover:border-amber-400 rounded-lg transition-all flex flex-col items-center justify-center gap-2 group"
-                              >
-                                <div className="w-12 h-12 bg-slate-700/50 rounded-full flex items-center justify-center group-hover:bg-amber-600/20 transition-colors">
-                                  <Plus className="h-6 w-6 text-amber-400" />
-                                </div>
-                                <span className="text-amber-300 text-sm font-medium">Add Memorial Photo</span>
-                                <span className="text-slate-400 text-xs">1 included in bundle</span>
-                              </button>
-                            )}
-                            
-                            {/* Photo designers */}
-                            <div className="space-y-6">
-                              {paperMemorialPhotos.map((photo, idx) => (
-                                <div key={idx} className="bg-slate-700/30 rounded-lg p-4 border border-slate-600">
-                                  <MemorialPhotoDesigner
-                                    data={photo}
-                                    onChange={(data) => updatePaperMemorialPhoto(idx, data)}
-                                    onRemove={idx > 0 ? () => removePaperMemorialPhoto(idx) : undefined}
-                                    photoIndex={idx}
-                                    deceasedName={deceasedName}
-                                    birthDate={birthDate}
-                                    deathDate={deathDate}
-                                  />
-                                </div>
-                              ))}
-                            </div>
-                            
-                            {/* Add another photo button */}
-                            {paperMemorialPhotos.length > 0 && (
-                              <button
-                                type="button"
-                                onClick={addPaperMemorialPhoto}
-                                className="w-full mt-4 p-4 bg-slate-800/50 border-2 border-dashed border-amber-500/40 hover:border-amber-400 rounded-lg transition-all flex items-center justify-center gap-2 group"
-                              >
-                                <Plus className="h-5 w-5 text-amber-400" />
-                                <span className="text-amber-300 text-sm font-medium">Add Another Photo</span>
-                                <span className="text-slate-400 text-xs ml-2">+${ADDITIONAL_PHOTO_PRICE}</span>
-                              </button>
-                            )}
+                          <div className="flex justify-between items-center py-2 border-b border-slate-600">
+                            <span className="text-slate-300">Memorial Photo</span>
+                            <span className="text-white font-medium">1 included</span>
                           </div>
                           
                           {additionalDesigns.length > 0 && (
