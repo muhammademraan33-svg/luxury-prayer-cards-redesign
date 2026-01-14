@@ -678,8 +678,8 @@ const Design = () => {
   const syncFrontTextColors = useCallback(
     async (imageSrc: string | null) => {
       if (!imageSrc) {
-        // No photo - use dark text for light placeholder background
-        applyFrontTextPalette(false);
+        // No photo - default to white text (user can change if needed)
+        applyFrontTextPalette(true);
         return;
       }
 
