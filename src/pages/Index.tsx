@@ -8,8 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
-import metalCardPreview from '@/assets/metal-card-preview.jpg';
-import paperCardPreview from '@/assets/paper-card-preview.jpg';
+import { CardMockup } from '@/components/CardMockup';
 
 interface PhotoUploadItem {
   src: string;
@@ -350,13 +349,7 @@ const Index = () => {
               <div className="grid grid-cols-2 gap-4">
                 {/* Paper Card Preview */}
                 <div className="relative group">
-                  <div className="aspect-[3/4] rounded-2xl overflow-hidden shadow-2xl border border-border bg-gradient-to-br from-amber-50 to-amber-100 p-4">
-                    <img 
-                      src={paperCardPreview} 
-                      alt="Paper prayer cards" 
-                      className="w-full h-full object-cover rounded-lg"
-                    />
-                  </div>
+                  <CardMockup variant="paper" className="w-full" />
                   <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 bg-background border border-border rounded-full px-4 py-1.5 shadow-lg">
                     <span className="text-sm font-semibold text-foreground">Paper Cards</span>
                   </div>
@@ -364,13 +357,7 @@ const Index = () => {
                 
                 {/* Metal Card Preview */}
                 <div className="relative group mt-8">
-                  <div className="aspect-[3/4] rounded-2xl overflow-hidden shadow-2xl border border-border bg-gradient-to-br from-zinc-200 to-zinc-300 p-4">
-                    <img 
-                      src={metalCardPreview} 
-                      alt="Metal prayer cards" 
-                      className="w-full h-full object-cover rounded-lg"
-                    />
-                  </div>
+                  <CardMockup variant="metal" className="w-full" />
                   <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 bg-background border border-border rounded-full px-4 py-1.5 shadow-lg">
                     <span className="text-sm font-semibold text-foreground">Metal Cards</span>
                   </div>
