@@ -8,8 +8,8 @@ import { Label } from '@/components/ui/label';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
-import metalCardProduct from '@/assets/metal-card-product.jpg';
-import paperCardsProduct from '@/assets/paper-cards-product.jpg';
+import metalCardPreview from '@/assets/metal-card-preview.jpg';
+import paperCardPreview from '@/assets/paper-card-preview.jpg';
 
 interface PhotoUploadItem {
   src: string;
@@ -352,7 +352,7 @@ const Index = () => {
                 <div className="relative group">
                   <div className="aspect-[3/4] rounded-2xl overflow-hidden shadow-2xl border border-border bg-gradient-to-br from-amber-50 to-amber-100 p-4">
                     <img 
-                      src={paperCardsProduct} 
+                      src={paperCardPreview} 
                       alt="Paper prayer cards" 
                       className="w-full h-full object-cover rounded-lg"
                     />
@@ -366,7 +366,7 @@ const Index = () => {
                 <div className="relative group mt-8">
                   <div className="aspect-[3/4] rounded-2xl overflow-hidden shadow-2xl border border-border bg-gradient-to-br from-zinc-200 to-zinc-300 p-4">
                     <img 
-                      src={metalCardProduct} 
+                      src={metalCardPreview} 
                       alt="Metal prayer cards" 
                       className="w-full h-full object-cover rounded-lg"
                     />
