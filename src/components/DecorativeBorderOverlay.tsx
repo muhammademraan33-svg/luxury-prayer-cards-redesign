@@ -4,7 +4,8 @@ export type DecorativeBorderType =
   | 'none' 
   | 'elegant-scroll' 
   | 'simple-line' 
-  | 'ornate-frame';
+  | 'ornate-frame'
+  | 'classic-gold';
 
 export type MetallicColorType = 'gold' | 'silver' | 'rose-gold' | 'white';
 
@@ -56,6 +57,7 @@ const getMetallicGradientId = (color: string): string | null => {
 
 export const DECORATIVE_BORDERS: { id: DecorativeBorderType; name: string }[] = [
   { id: 'none', name: 'No Border' },
+  { id: 'classic-gold', name: 'Classic Gold' },
   { id: 'elegant-scroll', name: 'Elegant Scroll' },
   { id: 'simple-line', name: 'Simple Line' },
   { id: 'ornate-frame', name: 'Ornate Frame' },
@@ -207,6 +209,69 @@ export const DecorativeBorderOverlay: React.FC<DecorativeBorderOverlayProps> = (
             
             {/* Center bottom ornament - adjusted upward */}
             <path d="M47 145 Q50 142 53 145 Q50 139 47 145" fill={fillColor} />
+          </svg>
+        );
+
+      case 'classic-gold':
+        return (
+          <svg style={svgStyle} viewBox="0 0 100 150" preserveAspectRatio="none">
+            <MetallicGradients />
+            {/* Outer decorative frame */}
+            <rect x="4" y="5" width="92" height="140" fill="none" stroke={strokeColor} strokeWidth="0.8" />
+            {/* Inner frame with slight gap */}
+            <rect x="7" y="8" width="86" height="134" fill="none" stroke={strokeColor} strokeWidth="0.4" />
+            
+            {/* Top Left Corner Flourish */}
+            <path d="M4 5 L4 18" fill="none" stroke={strokeColor} strokeWidth="0.8" />
+            <path d="M4 5 L17 5" fill="none" stroke={strokeColor} strokeWidth="0.8" />
+            <path d="M7 8 C10 8 12 10 12 13" fill="none" stroke={strokeColor} strokeWidth="0.5" />
+            <path d="M7 8 C7 11 9 13 12 13" fill="none" stroke={strokeColor} strokeWidth="0.5" />
+            <circle cx="10" cy="11" r="1.5" fill={fillColor} />
+            {/* Decorative curls */}
+            <path d="M4 14 Q8 12 10 16 Q7 18 4 14" fill="none" stroke={strokeColor} strokeWidth="0.4" />
+            <path d="M14 5 Q12 9 16 11 Q18 8 14 5" fill="none" stroke={strokeColor} strokeWidth="0.4" />
+            
+            {/* Top Right Corner Flourish */}
+            <path d="M96 5 L96 18" fill="none" stroke={strokeColor} strokeWidth="0.8" />
+            <path d="M96 5 L83 5" fill="none" stroke={strokeColor} strokeWidth="0.8" />
+            <path d="M93 8 C90 8 88 10 88 13" fill="none" stroke={strokeColor} strokeWidth="0.5" />
+            <path d="M93 8 C93 11 91 13 88 13" fill="none" stroke={strokeColor} strokeWidth="0.5" />
+            <circle cx="90" cy="11" r="1.5" fill={fillColor} />
+            {/* Decorative curls */}
+            <path d="M96 14 Q92 12 90 16 Q93 18 96 14" fill="none" stroke={strokeColor} strokeWidth="0.4" />
+            <path d="M86 5 Q88 9 84 11 Q82 8 86 5" fill="none" stroke={strokeColor} strokeWidth="0.4" />
+            
+            {/* Bottom Left Corner Flourish */}
+            <path d="M4 145 L4 132" fill="none" stroke={strokeColor} strokeWidth="0.8" />
+            <path d="M4 145 L17 145" fill="none" stroke={strokeColor} strokeWidth="0.8" />
+            <path d="M7 142 C10 142 12 140 12 137" fill="none" stroke={strokeColor} strokeWidth="0.5" />
+            <path d="M7 142 C7 139 9 137 12 137" fill="none" stroke={strokeColor} strokeWidth="0.5" />
+            <circle cx="10" cy="139" r="1.5" fill={fillColor} />
+            {/* Decorative curls */}
+            <path d="M4 136 Q8 138 10 134 Q7 132 4 136" fill="none" stroke={strokeColor} strokeWidth="0.4" />
+            <path d="M14 145 Q12 141 16 139 Q18 142 14 145" fill="none" stroke={strokeColor} strokeWidth="0.4" />
+            
+            {/* Bottom Right Corner Flourish */}
+            <path d="M96 145 L96 132" fill="none" stroke={strokeColor} strokeWidth="0.8" />
+            <path d="M96 145 L83 145" fill="none" stroke={strokeColor} strokeWidth="0.8" />
+            <path d="M93 142 C90 142 88 140 88 137" fill="none" stroke={strokeColor} strokeWidth="0.5" />
+            <path d="M93 142 C93 139 91 137 88 137" fill="none" stroke={strokeColor} strokeWidth="0.5" />
+            <circle cx="90" cy="139" r="1.5" fill={fillColor} />
+            {/* Decorative curls */}
+            <path d="M96 136 Q92 138 90 134 Q93 132 96 136" fill="none" stroke={strokeColor} strokeWidth="0.4" />
+            <path d="M86 145 Q88 141 84 139 Q82 142 86 145" fill="none" stroke={strokeColor} strokeWidth="0.4" />
+            
+            {/* Top center ornament */}
+            <path d="M45 5 L45 3 Q50 0 55 3 L55 5" fill="none" stroke={strokeColor} strokeWidth="0.5" />
+            <circle cx="50" cy="5" r="1" fill={fillColor} />
+            <path d="M42 5 Q44 7 46 5" fill="none" stroke={strokeColor} strokeWidth="0.3" />
+            <path d="M54 5 Q56 7 58 5" fill="none" stroke={strokeColor} strokeWidth="0.3" />
+            
+            {/* Bottom center ornament */}
+            <path d="M45 145 L45 147 Q50 150 55 147 L55 145" fill="none" stroke={strokeColor} strokeWidth="0.5" />
+            <circle cx="50" cy="145" r="1" fill={fillColor} />
+            <path d="M42 145 Q44 143 46 145" fill="none" stroke={strokeColor} strokeWidth="0.3" />
+            <path d="M54 145 Q56 143 58 145" fill="none" stroke={strokeColor} strokeWidth="0.3" />
           </svg>
         );
 
