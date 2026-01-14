@@ -1507,29 +1507,31 @@ const Design = () => {
   const currentFinish = METAL_FINISHES.find(f => f.id === metalFinish) || METAL_FINISHES[0];
 
   // Metal cards: 2" x 3.5" (credit card size), Paper cards: 2.625x4.375 or 3.125x4.875
-  // Designer cards at actual size (96 DPI screen standard)
-  const SCREEN_DPI = 96;
+  // Designer cards use CSS physical units (in) so they can be calibrated by the browser.
+  // Note: true physical size still depends on OS scaling + browser zoom.
   const getCardClass = (forSidebar = false) => {
     if (cardType === 'paper') {
-      // Paper prayer cards - actual size based on active design's size selection
-      const activeSize = activeDesignIndex === -1 ? mainDesignSize : (additionalDesigns[activeDesignIndex]?.size || '2.625x4.375');
-      // Smaller size for sidebar to fit without scrolling
+      const activeSize =
+        activeDesignIndex === -1
+          ? mainDesignSize
+          : (additionalDesigns[activeDesignIndex]?.size || '2.625x4.375');
+
       if (forSidebar) {
         return activeSize === '3.125x4.875' ? 'aspect-[3.125/4.875] w-48' : 'aspect-[2.625/4.375] w-44';
       }
-      // Actual size: 2.625" x 4.375" = 252px x 420px, 3.125" x 4.875" = 300px x 468px at 96 DPI
-      return activeSize === '3.125x4.875' ? 'aspect-[3.125/4.875] w-[300px]' : 'aspect-[2.625/4.375] w-[252px]';
+
+      return activeSize === '3.125x4.875'
+        ? 'aspect-[3.125/4.875] w-[3.125in]'
+        : 'aspect-[2.625/4.375] w-[2.625in]';
     }
-    // Metal cards 2" x 3.5" at 96 DPI = 192px x 336px
+
+    // Metal cards
     if (forSidebar) {
-      return orientation === 'landscape' 
-        ? 'aspect-[3.5/2] w-56' 
-        : 'aspect-[2/3.5] w-40';
+      return orientation === 'landscape' ? 'aspect-[3.5/2] w-56' : 'aspect-[2/3.5] w-40';
     }
-    // Actual size: 2" x 3.5" = 192px x 336px (portrait), 336px x 192px (landscape)
-    return orientation === 'landscape' 
-      ? 'aspect-[3.5/2] w-[336px]' 
-      : 'aspect-[2/3.5] w-[192px]';
+
+    // Width determines height via aspect ratio: portrait 2in x 3.5in, landscape 3.5in x 2in
+    return orientation === 'landscape' ? 'aspect-[3.5/2] w-[3.5in]' : 'aspect-[2/3.5] w-[2in]';
   };
   const cardClass = getCardClass();
   const sidebarCardClass = getCardClass(true);
