@@ -2000,6 +2000,38 @@ const Design = () => {
                               </div>
                             )}
                             
+                            {/* Funeral Home Logo - Front Card (Desktop) */}
+                            {funeralHomeLogo && (
+                              <div 
+                                className="absolute left-1/2 -translate-x-1/2 z-10 pointer-events-none"
+                                style={{ 
+                                  [funeralHomeLogoPosition === 'top' ? 'top' : 'bottom']: frontBorderDesign !== 'none' ? '10px' : '6px'
+                                }}
+                              >
+                                <img 
+                                  src={funeralHomeLogo} 
+                                  alt="Funeral Home Logo" 
+                                  className="object-contain drop-shadow-md"
+                                  style={{ height: `${Math.min(funeralHomeLogoSize * 0.4, 24)}px`, maxWidth: '50%' }}
+                                />
+                              </div>
+                            )}
+                            
+                            {/* QR Code - Front Card (Desktop) */}
+                            {showQrCode && qrUrl && (
+                              <div 
+                                className="absolute z-10 pointer-events-none"
+                                style={{ 
+                                  bottom: frontBorderDesign !== 'none' ? '10px' : '4px',
+                                  right: frontBorderDesign !== 'none' ? '10px' : '4px',
+                                }}
+                              >
+                                <div className="bg-white rounded p-0.5 shadow-md">
+                                  <QRCodeSVG value={qrUrl} size={18} />
+                                </div>
+                              </div>
+                            )}
+                            
                             {/* Decorative Border Overlay */}
                             {cardType === 'paper' && frontBorderDesign !== 'none' && (
                               <div className="absolute inset-0 z-20 pointer-events-none">
@@ -2432,6 +2464,38 @@ const Design = () => {
                                   <span style={{ fontSize: `${additionalTextSize}px`, color: additionalTextColor, whiteSpace: 'pre-wrap', textAlign: 'center', display: 'block', fontWeight: additionalTextBold ? 'bold' : 'normal' }}>
                                     {additionalText || 'Your text here'}
                                   </span>
+                                </div>
+                              )}
+                              
+                              {/* Funeral Home Logo - Front Card */}
+                              {funeralHomeLogo && (
+                                <div 
+                                  className="absolute left-1/2 -translate-x-1/2 z-10 pointer-events-none"
+                                  style={{ 
+                                    [funeralHomeLogoPosition === 'top' ? 'top' : 'bottom']: frontBorderDesign !== 'none' ? '16px' : '8px'
+                                  }}
+                                >
+                                  <img 
+                                    src={funeralHomeLogo} 
+                                    alt="Funeral Home Logo" 
+                                    className="object-contain drop-shadow-md"
+                                    style={{ height: `${Math.min(funeralHomeLogoSize * 0.6, 35)}px`, maxWidth: '60%' }}
+                                  />
+                                </div>
+                              )}
+                              
+                              {/* QR Code - Front Card (bottom corner) */}
+                              {showQrCode && qrUrl && (
+                                <div 
+                                  className="absolute bottom-2 right-2 z-10 pointer-events-none"
+                                  style={{ 
+                                    bottom: frontBorderDesign !== 'none' ? '14px' : '6px',
+                                    right: frontBorderDesign !== 'none' ? '14px' : '6px',
+                                  }}
+                                >
+                                  <div className="bg-white rounded p-0.5 shadow-md">
+                                    <QRCodeSVG value={qrUrl} size={28} />
+                                  </div>
                                 </div>
                               )}
                               
@@ -5252,6 +5316,38 @@ const Design = () => {
                     allowWrap={false}
                     style={{ font: 'inherit', color: 'inherit', fontWeight: 'inherit' }}
                   />
+                </div>
+              )}
+              
+              {/* Funeral Home Logo - Print Front */}
+              {funeralHomeLogo && (
+                <div 
+                  className="absolute left-1/2 -translate-x-1/2 z-10"
+                  style={{ 
+                    [funeralHomeLogoPosition === 'top' ? 'top' : 'bottom']: frontBorderDesign !== 'none' ? '48px' : '24px'
+                  }}
+                >
+                  <img 
+                    src={funeralHomeLogo} 
+                    alt="Funeral Home Logo" 
+                    className="object-contain"
+                    style={{ height: `${funeralHomeLogoSize * 2}px`, maxWidth: '60%' }}
+                  />
+                </div>
+              )}
+              
+              {/* QR Code - Print Front */}
+              {showQrCode && qrUrl && (
+                <div 
+                  className="absolute z-10"
+                  style={{ 
+                    bottom: frontBorderDesign !== 'none' ? '48px' : '18px',
+                    right: frontBorderDesign !== 'none' ? '48px' : '18px',
+                  }}
+                >
+                  <div className="bg-white rounded p-2 shadow-md">
+                    <QRCodeSVG value={qrUrl} size={72} />
+                  </div>
                 </div>
               )}
             </div>
