@@ -477,10 +477,10 @@ const MemorialPhotoEditor = () => {
       <header className="border-b border-slate-700 bg-slate-800/80 backdrop-blur-sm sticky top-0 z-50">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <Link to="/">
+            <Link to="/design">
               <Button variant="ghost" size="sm" className="text-slate-300 hover:text-white">
                 <ArrowLeft className="h-4 w-4 mr-2" />
-                Back
+                Back to Cards
               </Button>
             </Link>
             <span className="text-xl font-bold text-white">Memorial Photo Editor</span>
