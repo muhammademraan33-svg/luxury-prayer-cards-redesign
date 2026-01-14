@@ -1554,8 +1554,11 @@ const Design = () => {
           ? mainDesignSize
           : (additionalDesigns[activeDesignIndex]?.size || '2.625x4.375');
 
+      // Use actual inch-based sizes for sidebar preview (scaled up for visibility)
       if (forSidebar) {
-        return activeSize === '3.125x4.875' ? 'aspect-[3.125/4.875] w-48' : 'aspect-[2.625/4.375] w-44';
+        return activeSize === '3.125x4.875' 
+          ? 'aspect-[3.125/4.875] w-[3.125in]' 
+          : 'aspect-[2.625/4.375] w-[2.625in]';
       }
 
       return activeSize === '3.125x4.875'
@@ -1565,7 +1568,7 @@ const Design = () => {
 
     // Metal cards
     if (forSidebar) {
-      return orientation === 'landscape' ? 'aspect-[3.5/2] w-56' : 'aspect-[2/3.5] w-40';
+      return orientation === 'landscape' ? 'aspect-[3.5/2] w-[3.5in]' : 'aspect-[2/3.5] w-[2in]';
     }
 
     // Width determines height via aspect ratio: portrait 2in x 3.5in, landscape 3.5in x 2in
@@ -1736,7 +1739,7 @@ const Design = () => {
               {step === 1 && (
                 <div className="md:flex md:gap-6">
                   {/* Left Column: Preview (sticky on medium+ screens) */}
-                  <div className="hidden md:flex md:flex-col md:items-center md:flex-1 md:min-w-0 md:sticky md:top-14 md:self-start">
+                  <div className="hidden md:flex md:flex-col md:items-center md:justify-start md:flex-shrink-0 md:sticky md:top-14 md:self-start">
                     {/* Paper Card Size Selection - Above Front/Back */}
                     {cardType === 'paper' && (
                       <div className="w-full bg-slate-700/50 rounded-lg p-2 mb-2">
@@ -2096,7 +2099,7 @@ const Design = () => {
                   </div>
                   
                   {/* Right Column: All Controls */}
-                  <div className="md:w-[320px] md:flex-shrink-0 space-y-3 min-w-0">
+                  <div className="flex-1 space-y-3 min-w-0">
 
                   {/* Border Style Selection - Paper cards only, at top for easy access on desktop */}
                   {cardType === 'paper' && (
