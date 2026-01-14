@@ -819,104 +819,95 @@ const MemorialPhotoEditor = () => {
                 </div>
                 
                 {selectedTextBox ? (
-                  <div className="space-y-4">
+                  <div className="space-y-3">
                     {/* Content */}
-                    <div>
-                      <Label className="text-slate-400 text-xs">Text Content</Label>
-                      <Input 
-                        value={selectedTextBox.content}
-                        onChange={(e) => updateTextBox(selectedTextBox.id, { content: e.target.value })}
-                        placeholder="Enter text..."
-                        className="bg-slate-700 border-slate-600 text-white mt-1"
-                      />
-                    </div>
+                    <Input 
+                      value={selectedTextBox.content}
+                      onChange={(e) => updateTextBox(selectedTextBox.id, { content: e.target.value })}
+                      placeholder="Enter text..."
+                      className="bg-slate-700 border-slate-600 text-white h-9"
+                    />
                     
-                    {/* Font */}
-                    <div>
-                      <Label className="text-slate-400 text-xs">Font</Label>
+                    {/* Font & Size Row */}
+                    <div className="flex gap-2">
                       <Select 
                         value={selectedTextBox.fontFamily} 
                         onValueChange={(value) => updateTextBox(selectedTextBox.id, { fontFamily: value })}
                       >
-                        <SelectTrigger className="bg-slate-700 border-slate-600 text-white mt-1">
+                        <SelectTrigger className="bg-slate-700 border-slate-600 text-white h-9 flex-1">
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent className="bg-slate-700 border-slate-600">
                           {FONT_OPTIONS.map((font) => (
-                            <SelectItem 
-                              key={font.value} 
-                              value={font.value}
-                              style={{ fontFamily: font.value }}
-                            >
+                            <SelectItem key={font.value} value={font.value} style={{ fontFamily: font.value }}>
                               {font.name}
                             </SelectItem>
                           ))}
                         </SelectContent>
                       </Select>
-                    </div>
-                    
-                    {/* Font Size */}
-                    <div>
-                      <Label className="text-slate-400 text-xs">Size: {selectedTextBox.fontSize}px</Label>
-                      <input
-                        type="range"
-                        min="12"
-                        max="72"
-                        value={selectedTextBox.fontSize}
-                        onChange={(e) => updateTextBox(selectedTextBox.id, { fontSize: parseInt(e.target.value) })}
-                        className="w-full accent-amber-600 mt-1"
-                      />
-                    </div>
-                    
-                    {/* Horizontal Position */}
-                    <div>
-                      <Label className="text-slate-400 text-xs">Left/Right: {Math.round(selectedTextBox.x)}%</Label>
-                      <input
-                        type="range"
-                        min="5"
-                        max="95"
-                        value={selectedTextBox.x}
-                        onChange={(e) => updateTextBox(selectedTextBox.id, { x: parseFloat(e.target.value) })}
-                        className="w-full accent-amber-600 mt-1"
-                      />
-                    </div>
-                    
-                    {/* Vertical Position */}
-                    <div>
-                      <Label className="text-slate-400 text-xs">Up/Down: {Math.round(selectedTextBox.y)}%</Label>
-                      <input
-                        type="range"
-                        min="5"
-                        max="95"
-                        value={selectedTextBox.y}
-                        onChange={(e) => updateTextBox(selectedTextBox.id, { y: parseFloat(e.target.value) })}
-                        className="w-full accent-amber-600 mt-1"
-                      />
-                    </div>
-                    
-                    {/* Color */}
-                    <div>
-                      <Label className="text-slate-400 text-xs">Color</Label>
-                      <div className="flex gap-2 mt-1 flex-wrap">
-                        {COLOR_PRESETS.map((color) => (
-                          <button
-                            key={color}
-                            onClick={() => updateTextBox(selectedTextBox.id, { color })}
-                            className={`w-8 h-8 rounded-full border-2 transition-all ${
-                              selectedTextBox.color === color 
-                                ? 'border-amber-500 ring-2 ring-amber-500/30' 
-                                : 'border-slate-600'
-                            }`}
-                            style={{ backgroundColor: color }}
-                          />
-                        ))}
-                        <input 
-                          type="color" 
-                          value={selectedTextBox.color}
-                          onChange={(e) => updateTextBox(selectedTextBox.id, { color: e.target.value })}
-                          className="w-8 h-8 rounded cursor-pointer"
+                      <div className="flex items-center gap-1 bg-slate-700 border border-slate-600 rounded px-2">
+                        <span className="text-slate-400 text-xs">Size</span>
+                        <input
+                          type="number"
+                          min="12"
+                          max="72"
+                          value={selectedTextBox.fontSize}
+                          onChange={(e) => updateTextBox(selectedTextBox.id, { fontSize: parseInt(e.target.value) || 12 })}
+                          className="w-12 bg-transparent text-white text-sm text-center outline-none"
                         />
                       </div>
+                    </div>
+                    
+                    {/* Position Sliders - Compact */}
+                    <div className="grid grid-cols-2 gap-2">
+                      <div>
+                        <div className="flex justify-between text-[10px] text-slate-500 mb-0.5">
+                          <span>← Left</span><span>Right →</span>
+                        </div>
+                        <input
+                          type="range"
+                          min="5"
+                          max="95"
+                          value={selectedTextBox.x}
+                          onChange={(e) => updateTextBox(selectedTextBox.id, { x: parseFloat(e.target.value) })}
+                          className="w-full accent-amber-600 h-4"
+                        />
+                      </div>
+                      <div>
+                        <div className="flex justify-between text-[10px] text-slate-500 mb-0.5">
+                          <span>↑ Up</span><span>Down ↓</span>
+                        </div>
+                        <input
+                          type="range"
+                          min="5"
+                          max="95"
+                          value={selectedTextBox.y}
+                          onChange={(e) => updateTextBox(selectedTextBox.id, { y: parseFloat(e.target.value) })}
+                          className="w-full accent-amber-600 h-4"
+                        />
+                      </div>
+                    </div>
+                    
+                    {/* Color - Compact */}
+                    <div className="flex items-center gap-1.5 flex-wrap">
+                      {COLOR_PRESETS.map((color) => (
+                        <button
+                          key={color}
+                          onClick={() => updateTextBox(selectedTextBox.id, { color })}
+                          className={`w-6 h-6 rounded-full border-2 transition-all ${
+                            selectedTextBox.color === color 
+                              ? 'border-amber-500 ring-1 ring-amber-500/30' 
+                              : 'border-slate-600'
+                          }`}
+                          style={{ backgroundColor: color }}
+                        />
+                      ))}
+                      <input 
+                        type="color" 
+                        value={selectedTextBox.color}
+                        onChange={(e) => updateTextBox(selectedTextBox.id, { color: e.target.value })}
+                        className="w-6 h-6 rounded cursor-pointer"
+                      />
                     </div>
                     
                     {/* Actions */}
