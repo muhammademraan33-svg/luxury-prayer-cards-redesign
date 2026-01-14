@@ -166,6 +166,10 @@ const MemorialPhotoEditor = () => {
   // Funeral home logo state
   const [funeralHomeLogo, setFuneralHomeLogo] = useState<string | null>(null);
   const [showFuneralLogo, setShowFuneralLogo] = useState(false);
+  const [logoPosition, setLogoPosition] = useState<'top' | 'bottom'>('bottom');
+  const [logoZoom, setLogoZoom] = useState(1);
+  const [logoPanX, setLogoPanX] = useState(0);
+  const [logoPanY, setLogoPanY] = useState(0);
   
   // Saved designs state
   const [savedDesigns, setSavedDesigns] = useState<SavedDesign[]>([]);
@@ -570,7 +574,12 @@ const MemorialPhotoEditor = () => {
               
               {/* Funeral Home Logo */}
               {showFuneralLogo && funeralHomeLogo && (
-                <div className="absolute bottom-3 left-1/2 transform -translate-x-1/2 pointer-events-none">
+                <div 
+                  className={`absolute left-1/2 pointer-events-none ${logoPosition === 'top' ? 'top-3' : 'bottom-3'}`}
+                  style={{
+                    transform: `translateX(-50%) translateX(${logoPanX}px) translateY(${logoPanY}px) scale(${logoZoom})`,
+                  }}
+                >
                   <img 
                     src={funeralHomeLogo} 
                     alt="Funeral Home Logo" 
@@ -717,6 +726,90 @@ const MemorialPhotoEditor = () => {
                       onCheckedChange={setShowFuneralLogo}
                     />
                   </div>
+                  
+                  {showFuneralLogo && (
+                    <div className="space-y-3 pt-4 border-t border-slate-600">
+                      {/* Position Toggle */}
+                      <div className="flex items-center gap-3">
+                        <Label className="text-slate-400 text-xs w-16">Position</Label>
+                        <div className="flex gap-2">
+                          <Button
+                            size="sm"
+                            variant={logoPosition === 'top' ? 'default' : 'outline'}
+                            onClick={() => setLogoPosition('top')}
+                            className={logoPosition === 'top' ? 'bg-amber-600 hover:bg-amber-700' : 'border-slate-600 text-slate-300'}
+                          >
+                            Top
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant={logoPosition === 'bottom' ? 'default' : 'outline'}
+                            onClick={() => setLogoPosition('bottom')}
+                            className={logoPosition === 'bottom' ? 'bg-amber-600 hover:bg-amber-700' : 'border-slate-600 text-slate-300'}
+                          >
+                            Bottom
+                          </Button>
+                        </div>
+                      </div>
+                      
+                      {/* Zoom */}
+                      <div className="flex items-center gap-3">
+                        <Label className="text-slate-400 text-xs w-16">Zoom</Label>
+                        <input
+                          type="range"
+                          min="0.5"
+                          max="2"
+                          step="0.05"
+                          value={logoZoom}
+                          onChange={(e) => setLogoZoom(parseFloat(e.target.value))}
+                          className="flex-1 accent-amber-600"
+                        />
+                      </div>
+                      
+                      {/* Left/Right */}
+                      <div className="flex items-center gap-3">
+                        <Label className="text-slate-400 text-xs w-16">Left/Right</Label>
+                        <input
+                          type="range"
+                          min="-100"
+                          max="100"
+                          step="1"
+                          value={logoPanX}
+                          onChange={(e) => setLogoPanX(parseFloat(e.target.value))}
+                          className="flex-1 accent-amber-600"
+                        />
+                      </div>
+                      
+                      {/* Up/Down */}
+                      <div className="flex items-center gap-3">
+                        <Label className="text-slate-400 text-xs w-16">Up/Down</Label>
+                        <input
+                          type="range"
+                          min="-50"
+                          max="50"
+                          step="1"
+                          value={logoPanY}
+                          onChange={(e) => setLogoPanY(parseFloat(e.target.value))}
+                          className="flex-1 accent-amber-600"
+                        />
+                      </div>
+                      
+                      {/* Reset */}
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          setLogoZoom(1);
+                          setLogoPanX(0);
+                          setLogoPanY(0);
+                        }}
+                        className="border-slate-600 text-slate-300 text-xs w-full"
+                      >
+                        <RotateCcw className="h-3 w-3 mr-2" />
+                        Reset Logo Position
+                      </Button>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             )}
