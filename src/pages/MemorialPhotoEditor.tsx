@@ -85,6 +85,19 @@ interface TextBox {
   color: string;
 }
 
+interface SavedDesign {
+  id: string;
+  photo: string;
+  photoZoom: number;
+  photoPanX: number;
+  photoPanY: number;
+  backgroundId: string;
+  customBg: string | null;
+  textBoxes: TextBox[];
+  photoSize: PhotoSize;
+  showFuneralLogo: boolean;
+}
+
 // Helper to format dates for display - MMMM DD, YYYY format
 const formatDateForDisplay = (dateStr: string): string => {
   if (!dateStr) return '';
@@ -153,6 +166,10 @@ const MemorialPhotoEditor = () => {
   // Funeral home logo state
   const [funeralHomeLogo, setFuneralHomeLogo] = useState<string | null>(null);
   const [showFuneralLogo, setShowFuneralLogo] = useState(false);
+  
+  // Saved designs state
+  const [savedDesigns, setSavedDesigns] = useState<SavedDesign[]>([]);
+  const [editingDesignId, setEditingDesignId] = useState<string | null>(null);
   
   // Order state
   const [photoSize, setPhotoSize] = useState<PhotoSize>('16x20');
@@ -311,6 +328,133 @@ const MemorialPhotoEditor = () => {
   };
 
   const aspectRatio = photoSize === '16x20' ? '4/5' : '3/4';
+
+  // Save current design and reset for new one
+  const saveDesignAndCreateNew = () => {
+    if (!photo) return;
+    
+    const currentDesign: SavedDesign = {
+      id: editingDesignId || `design-${Date.now()}`,
+      photo,
+      photoZoom,
+      photoPanX,
+      photoPanY,
+      backgroundId: selectedBg.id,
+      customBg,
+      textBoxes,
+      photoSize,
+      showFuneralLogo,
+    };
+    
+    if (editingDesignId) {
+      // Update existing design
+      setSavedDesigns(prev => prev.map(d => d.id === editingDesignId ? currentDesign : d));
+    } else {
+      // Add new design
+      setSavedDesigns(prev => [...prev, currentDesign]);
+    }
+    
+    // Reset editor for new design
+    setPhoto(null);
+    setPhotoZoom(1);
+    setPhotoPanX(0);
+    setPhotoPanY(0);
+    setCustomBg(null);
+    setSelectedBg(BACKGROUNDS[0]);
+    setTextBoxes(createDefaultTextBoxes());
+    setSelectedTextId(null);
+    setPhotoSize('16x20');
+    setEditingDesignId(null);
+    
+    toast.success('Design saved! Create another design or continue to checkout.');
+  };
+
+  // Load a saved design for editing
+  const loadDesign = (design: SavedDesign) => {
+    setPhoto(design.photo);
+    setPhotoZoom(design.photoZoom);
+    setPhotoPanX(design.photoPanX);
+    setPhotoPanY(design.photoPanY);
+    setCustomBg(design.customBg);
+    setSelectedBg(BACKGROUNDS.find(bg => bg.id === design.backgroundId) || BACKGROUNDS[0]);
+    setTextBoxes(design.textBoxes);
+    setPhotoSize(design.photoSize);
+    setShowFuneralLogo(design.showFuneralLogo);
+    setEditingDesignId(design.id);
+    setSelectedTextId(null);
+  };
+
+  // Delete a saved design
+  const deleteDesign = (designId: string) => {
+    setSavedDesigns(prev => prev.filter(d => d.id !== designId));
+    if (editingDesignId === designId) {
+      setEditingDesignId(null);
+    }
+    toast.success('Design removed');
+  };
+
+  // Add to cart handler
+  const handleAddToCart = () => {
+    if (!photo) return;
+    
+    // Save current design if not already saved
+    const currentDesign: SavedDesign = {
+      id: editingDesignId || `design-${Date.now()}`,
+      photo,
+      photoZoom,
+      photoPanX,
+      photoPanY,
+      backgroundId: selectedBg.id,
+      customBg,
+      textBoxes,
+      photoSize,
+      showFuneralLogo,
+    };
+    
+    let allDesigns = [...savedDesigns];
+    if (editingDesignId) {
+      allDesigns = allDesigns.map(d => d.id === editingDesignId ? currentDesign : d);
+    } else {
+      allDesigns = [...allDesigns, currentDesign];
+    }
+    
+    // Store designs for checkout
+    sessionStorage.setItem('memorialPhotoDesigns', JSON.stringify(allDesigns));
+    
+    toast.success(`${allDesigns.length} memorial photo design${allDesigns.length > 1 ? 's' : ''} ready for checkout!`);
+    
+    // Navigate back or to checkout
+    window.history.back();
+  };
+
+  // Calculate total price
+  const getTotalPrice = () => {
+    // Current design
+    let total = 0;
+    const currentSize = photoSize;
+    
+    // First design is included (16x20), charge upgrade if 18x24
+    if (photo && !editingDesignId) {
+      if (currentSize === '18x24') total += upsellPrice;
+    }
+    
+    // Add quantity extras
+    if (quantity > 1) {
+      total += (quantity - 1) * getPrice();
+    }
+    
+    // Add saved designs (each at base price + upgrade if applicable)
+    savedDesigns.forEach((design, index) => {
+      if (index === 0 && !editingDesignId && !photo) {
+        // First saved design is the "included" one
+        if (design.photoSize === '18x24') total += upsellPrice;
+      } else {
+        total += design.photoSize === '16x20' ? basePrice : basePrice + upsellPrice;
+      }
+    });
+    
+    return total;
+  };
 
   return (
     <div className="min-h-screen bg-slate-900">
@@ -881,28 +1025,84 @@ const MemorialPhotoEditor = () => {
                   </div>
                 </div>
                 
+                {/* Saved Designs */}
+                {savedDesigns.length > 0 && (
+                  <div className="space-y-3 pt-3 border-t border-slate-700">
+                    <div className="flex items-center justify-between">
+                      <Label className="text-white font-semibold text-sm">Your Designs ({savedDesigns.length})</Label>
+                    </div>
+                    <div className="grid grid-cols-3 gap-2">
+                      {savedDesigns.map((design, index) => {
+                        const bg = BACKGROUNDS.find(b => b.id === design.backgroundId) || BACKGROUNDS[0];
+                        return (
+                          <div 
+                            key={design.id}
+                            className={`relative aspect-[4/5] rounded-lg overflow-hidden cursor-pointer border-2 transition-all ${
+                              editingDesignId === design.id 
+                                ? 'border-amber-400 ring-2 ring-amber-400/50' 
+                                : 'border-slate-600 hover:border-slate-500'
+                            }`}
+                            onClick={() => loadDesign(design)}
+                          >
+                            <img src={design.customBg || bg.src} alt="" className="absolute inset-0 w-full h-full object-cover" />
+                            <div className="absolute inset-0 flex items-center justify-center">
+                              <img src={design.photo} alt="" className="w-3/4 h-3/4 object-cover rounded" />
+                            </div>
+                            <div className="absolute top-1 left-1 bg-black/70 text-white text-[10px] px-1.5 py-0.5 rounded">
+                              {index === 0 ? 'Included' : `+$${design.photoSize === '18x24' ? basePrice + upsellPrice : basePrice}`}
+                            </div>
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                deleteDesign(design.id);
+                              }}
+                              className="absolute top-1 right-1 bg-red-600/80 hover:bg-red-600 text-white p-1 rounded"
+                            >
+                              <Trash2 className="h-3 w-3" />
+                            </button>
+                            <div className="absolute bottom-1 right-1 bg-black/70 text-white text-[10px] px-1.5 py-0.5 rounded">
+                              {design.photoSize}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+                
                 {/* Pricing Summary */}
                 <div className="space-y-2 pt-3 border-t border-slate-700">
                   <div className="flex justify-between text-sm">
                     <span className="text-slate-400">Included photo (16x20)</span>
                     <span className="text-green-400">FREE</span>
                   </div>
-                  {photoSize === '18x24' && (
+                  {(photoSize === '18x24' && photo && !editingDesignId) && (
                     <div className="flex justify-between text-sm">
                       <span className="text-slate-400">Size upgrade to 18x24</span>
                       <span className="text-white">+$7</span>
                     </div>
                   )}
+                  {savedDesigns.length > 0 && (
+                    <div className="flex justify-between text-sm">
+                      <span className="text-slate-400">{savedDesigns.length} saved design{savedDesigns.length > 1 ? 's' : ''}</span>
+                      <span className="text-white">
+                        ${savedDesigns.reduce((sum, d, i) => {
+                          if (i === 0) return sum + (d.photoSize === '18x24' ? upsellPrice : 0);
+                          return sum + (d.photoSize === '18x24' ? basePrice + upsellPrice : basePrice);
+                        }, 0)}
+                      </span>
+                    </div>
+                  )}
                   {quantity > 1 && (
                     <div className="flex justify-between text-sm">
-                      <span className="text-slate-400">{quantity - 1} additional photo{quantity > 2 ? 's' : ''}</span>
+                      <span className="text-slate-400">{quantity - 1} extra copies</span>
                       <span className="text-white">+${(quantity - 1) * getPrice()}</span>
                     </div>
                   )}
                   <div className="flex items-center justify-between pt-2 border-t border-slate-600">
                     <span className="text-white font-semibold">Photo Total</span>
                     <span className="text-2xl font-bold text-amber-400">
-                      ${photoSize === '18x24' ? 7 : 0}{quantity > 1 ? ` + $${(quantity - 1) * getPrice()}` : ''}
+                      ${getTotalPrice()}
                     </span>
                   </div>
                 </div>
@@ -911,23 +1111,28 @@ const MemorialPhotoEditor = () => {
                 <div className="space-y-3 pt-2">
                   <Button 
                     className="w-full bg-amber-600 hover:bg-amber-700 text-lg py-6"
-                    disabled={!photo}
+                    disabled={!photo && savedDesigns.length === 0}
+                    onClick={handleAddToCart}
                   >
                     <ShoppingCart className="h-5 w-5 mr-2" />
-                    Add to Cart & Continue
+                    {savedDesigns.length > 0 
+                      ? `Continue with ${savedDesigns.length + (photo && !editingDesignId ? 1 : 0)} Design${savedDesigns.length + (photo && !editingDesignId ? 1 : 0) > 1 ? 's' : ''}`
+                      : 'Add to Cart & Continue'
+                    }
                   </Button>
                   
                   <Button 
                     variant="outline"
                     className="w-full border-slate-600 text-slate-300 hover:bg-slate-700"
                     disabled={!photo}
+                    onClick={saveDesignAndCreateNew}
                   >
                     <Plus className="h-4 w-4 mr-2" />
-                    Create Another Design
+                    {editingDesignId ? 'Save Changes & Create New' : 'Save & Create Another Design'}
                   </Button>
                 </div>
                 
-                {!photo && (
+                {!photo && savedDesigns.length === 0 && (
                   <p className="text-center text-slate-400 text-sm">Upload a photo to continue</p>
                 )}
               </CardContent>
