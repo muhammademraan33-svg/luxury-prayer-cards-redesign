@@ -7,7 +7,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { ArrowLeft, Upload, RotateCcw, Image as ImageIcon, Type, Trash2, ShoppingCart, Plus, Minus, Copy, Building } from 'lucide-react';
+import { ArrowLeft, Upload, RotateCcw, Image as ImageIcon, Type, Trash2, ShoppingCart, Plus, Minus, Copy, Building, CheckCircle2 } from 'lucide-react';
 import { toast } from 'sonner';
 
 // Import all backgrounds
@@ -807,78 +807,125 @@ const MemorialPhotoEditor = () => {
             {/* Order Options */}
             <Card className="bg-slate-800 border-slate-700">
               <CardContent className="p-6 space-y-4">
-                <div className="flex items-center gap-2 mb-2">
-                  <ShoppingCart className="h-5 w-5 text-amber-400" />
-                  <Label className="text-white font-semibold">Order</Label>
+                {/* Included Badge */}
+                <div className="bg-green-600/20 border border-green-500/40 rounded-lg p-3 text-center">
+                  <div className="flex items-center justify-center gap-2 text-green-400">
+                    <CheckCircle2 className="h-5 w-5" />
+                    <span className="font-semibold">1 Memorial Photo Included</span>
+                  </div>
+                  <p className="text-green-300/80 text-sm mt-1">16x20 size included with your order</p>
                 </div>
                 
                 {/* Size Selection with Upsell */}
                 <div className="space-y-3">
-                  <Label className="text-slate-400 text-xs">Size</Label>
+                  <Label className="text-slate-400 text-xs">Choose Your Size</Label>
                   <div className="grid grid-cols-2 gap-3">
                     <button
                       onClick={() => setPhotoSize('16x20')}
-                      className={`p-4 rounded-lg border-2 transition-all text-left ${
+                      className={`p-4 rounded-lg border-2 transition-all text-center ${
                         photoSize === '16x20'
-                          ? 'border-amber-500 bg-amber-500/10'
+                          ? 'border-green-500 bg-green-500/10'
                           : 'border-slate-600 hover:border-slate-500'
                       }`}
                     >
-                      <div className="text-white font-semibold">16x20</div>
-                      <div className="text-amber-400 text-lg font-bold">${basePrice}</div>
+                      <div className="text-white font-semibold text-lg">16x20</div>
+                      <div className="text-green-400 font-bold">Included</div>
+                      <div className="text-slate-400 text-xs mt-1">Standard size</div>
                     </button>
                     <button
                       onClick={() => setPhotoSize('18x24')}
-                      className={`p-4 rounded-lg border-2 transition-all text-left relative overflow-hidden ${
+                      className={`p-4 rounded-lg border-2 transition-all text-center relative overflow-hidden ${
                         photoSize === '18x24'
                           ? 'border-amber-500 bg-amber-500/10'
-                          : 'border-slate-600 hover:border-slate-500'
+                          : 'border-slate-600 hover:border-slate-500 bg-gradient-to-br from-amber-500/5 to-transparent'
                       }`}
                     >
-                      <div className="absolute top-0 right-0 bg-green-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-bl">
-                        UPGRADE
+                      <div className="absolute top-0 right-0 bg-green-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-bl">
+                        ONLY $7
                       </div>
-                      <div className="text-white font-semibold">18x24</div>
-                      <div className="text-amber-400 text-lg font-bold">${basePrice + upsellPrice} <span className="text-green-400 text-sm font-normal">(+${upsellPrice})</span></div>
+                      <div className="text-white font-semibold text-lg">18x24</div>
+                      <div className="text-amber-400 font-bold">+$7</div>
+                      <div className="text-slate-400 text-xs mt-1">20% larger</div>
                     </button>
                   </div>
                 </div>
                 
-                <div>
-                  <Label className="text-slate-400 text-xs">Quantity</Label>
-                  <div className="flex items-center gap-2 mt-1">
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                      className="border-slate-600 text-slate-300 h-10 w-10"
-                    >
-                      <Minus className="h-4 w-4" />
-                    </Button>
-                    <span className="text-white font-semibold w-8 text-center">{quantity}</span>
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      onClick={() => setQuantity(quantity + 1)}
-                      className="border-slate-600 text-slate-300 h-10 w-10"
-                    >
-                      <Plus className="h-4 w-4" />
-                    </Button>
+                {/* Additional Photos */}
+                <div className="space-y-2 pt-2 border-t border-slate-700">
+                  <Label className="text-slate-400 text-xs">Need Extra Photos?</Label>
+                  <div className="flex items-center justify-between bg-slate-700/50 rounded-lg p-3">
+                    <div>
+                      <div className="text-white text-sm">Additional Photos</div>
+                      <div className="text-slate-400 text-xs">${basePrice} each ({photoSize})</div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                        className="border-slate-600 text-slate-300 h-8 w-8"
+                        disabled={quantity <= 1}
+                      >
+                        <Minus className="h-3 w-3" />
+                      </Button>
+                      <span className="text-white font-semibold w-6 text-center">{quantity}</span>
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        onClick={() => setQuantity(quantity + 1)}
+                        className="border-slate-600 text-slate-300 h-8 w-8"
+                      >
+                        <Plus className="h-3 w-3" />
+                      </Button>
+                    </div>
                   </div>
                 </div>
                 
-                <div className="flex items-center justify-between pt-4 border-t border-slate-600">
-                  <span className="text-slate-300">Total</span>
-                  <span className="text-2xl font-bold text-amber-400">${getPrice() * quantity}</span>
+                {/* Pricing Summary */}
+                <div className="space-y-2 pt-3 border-t border-slate-700">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-slate-400">Included photo (16x20)</span>
+                    <span className="text-green-400">FREE</span>
+                  </div>
+                  {photoSize === '18x24' && (
+                    <div className="flex justify-between text-sm">
+                      <span className="text-slate-400">Size upgrade to 18x24</span>
+                      <span className="text-white">+$7</span>
+                    </div>
+                  )}
+                  {quantity > 1 && (
+                    <div className="flex justify-between text-sm">
+                      <span className="text-slate-400">{quantity - 1} additional photo{quantity > 2 ? 's' : ''}</span>
+                      <span className="text-white">+${(quantity - 1) * getPrice()}</span>
+                    </div>
+                  )}
+                  <div className="flex items-center justify-between pt-2 border-t border-slate-600">
+                    <span className="text-white font-semibold">Photo Total</span>
+                    <span className="text-2xl font-bold text-amber-400">
+                      ${photoSize === '18x24' ? 7 : 0}{quantity > 1 ? ` + $${(quantity - 1) * getPrice()}` : ''}
+                    </span>
+                  </div>
                 </div>
                 
-                <Button 
-                  className="w-full bg-amber-600 hover:bg-amber-700 text-lg py-6"
-                  disabled={!photo}
-                >
-                  <ShoppingCart className="h-5 w-5 mr-2" />
-                  Add to Cart
-                </Button>
+                {/* Action Buttons */}
+                <div className="space-y-3 pt-2">
+                  <Button 
+                    className="w-full bg-amber-600 hover:bg-amber-700 text-lg py-6"
+                    disabled={!photo}
+                  >
+                    <ShoppingCart className="h-5 w-5 mr-2" />
+                    Add to Cart & Continue
+                  </Button>
+                  
+                  <Button 
+                    variant="outline"
+                    className="w-full border-slate-600 text-slate-300 hover:bg-slate-700"
+                    disabled={!photo}
+                  >
+                    <Plus className="h-4 w-4 mr-2" />
+                    Create Another Design
+                  </Button>
+                </div>
                 
                 {!photo && (
                   <p className="text-center text-slate-400 text-sm">Upload a photo to continue</p>
