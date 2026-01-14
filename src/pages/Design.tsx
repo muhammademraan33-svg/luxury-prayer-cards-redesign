@@ -1506,29 +1506,30 @@ const Design = () => {
 
   const currentFinish = METAL_FINISHES.find(f => f.id === metalFinish) || METAL_FINISHES[0];
 
-  // Metal cards: 2" x 3.5" (credit card size), Paper cards: 2.5x4.25 or 3x4.75
-  // Designer cards sized to better match print preview proportions
+  // Metal cards: 2" x 3.5" (credit card size), Paper cards: 2.625x4.375 or 3.125x4.875
+  // Designer cards at actual size (96 DPI screen standard)
+  const SCREEN_DPI = 96;
   const getCardClass = (forSidebar = false) => {
     if (cardType === 'paper') {
-      // Paper prayer cards - aspect ratio based on active design's size selection
+      // Paper prayer cards - actual size based on active design's size selection
       const activeSize = activeDesignIndex === -1 ? mainDesignSize : (additionalDesigns[activeDesignIndex]?.size || '2.625x4.375');
       // Smaller size for sidebar to fit without scrolling
       if (forSidebar) {
         return activeSize === '3.125x4.875' ? 'aspect-[3.125/4.875] w-48' : 'aspect-[2.625/4.375] w-44';
       }
-      // Larger designer card to match print preview (was w-60/w-64)
-      return activeSize === '3.125x4.875' ? 'aspect-[3.125/4.875] w-[280px]' : 'aspect-[2.625/4.375] w-[260px]';
+      // Actual size: 2.625" x 4.375" = 252px x 420px, 3.125" x 4.875" = 300px x 468px at 96 DPI
+      return activeSize === '3.125x4.875' ? 'aspect-[3.125/4.875] w-[300px]' : 'aspect-[2.625/4.375] w-[252px]';
     }
-    // Metal cards 2" x 3.5"
+    // Metal cards 2" x 3.5" at 96 DPI = 192px x 336px
     if (forSidebar) {
       return orientation === 'landscape' 
         ? 'aspect-[3.5/2] w-56' 
         : 'aspect-[2/3.5] w-40';
     }
-    // Larger designer card (was w-80/w-56)
+    // Actual size: 2" x 3.5" = 192px x 336px (portrait), 336px x 192px (landscape)
     return orientation === 'landscape' 
-      ? 'aspect-[3.5/2] w-[340px]' 
-      : 'aspect-[2/3.5] w-[240px]';
+      ? 'aspect-[3.5/2] w-[336px]' 
+      : 'aspect-[2/3.5] w-[192px]';
   };
   const cardClass = getCardClass();
   const sidebarCardClass = getCardClass(true);
