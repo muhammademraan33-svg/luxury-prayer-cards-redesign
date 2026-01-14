@@ -3349,17 +3349,38 @@ const Design = () => {
 
                       {/* Controls Section - Always Visible */}
                       <div className="flex flex-col items-center gap-4">
-                        {/* Name on Back Controls */}
+                        {/* Hidden file inputs */}
+                        <input
+                          ref={backInputRef}
+                          type="file"
+                          accept="image/*"
+                          className="hidden"
+                          onChange={(e) => {
+                            if (e.target.files?.[0]) {
+                              handleImageUpload(e.target.files[0], 'back');
+                            }
+                          }}
+                        />
+                        <input
+                          ref={logoInputRef}
+                          type="file"
+                          accept="image/*"
+                          className="hidden"
+                          onChange={(e) => {
+                            if (e.target.files?.[0]) {
+                              handleImageUpload(e.target.files[0], 'logo');
+                              e.target.value = ''; // Reset for re-upload
+                            }
+                          }}
+                        />
+
+                        {/* 1. Name & Dates (consolidated) */}
                         <div className="w-full max-w-md space-y-3 p-3 bg-slate-700/30 rounded-lg">
+                          <Label className="text-white text-sm font-medium">Name & Dates</Label>
+                          
+                          {/* Name Controls */}
                           <div className="flex items-center justify-between">
-                            <div className="flex flex-col">
-                              <Label className="text-white text-sm font-medium">Name on Back</Label>
-                              {showNameOnBack && (
-                                <span className="text-xs text-primary truncate max-w-[180px]" style={{ fontFamily: backNameFont }}>
-                                  {deceasedName || 'Name Here'}
-                                </span>
-                              )}
-                            </div>
+                            <span className="text-slate-400 text-xs">Name</span>
                             <label className="flex items-center gap-2 cursor-pointer">
                               <input 
                                 type="checkbox" 
@@ -3371,9 +3392,9 @@ const Design = () => {
                             </label>
                           </div>
                           {showNameOnBack && (
-                            <>
+                            <div className="flex items-center gap-2 flex-wrap">
                               <Select value={backNameFont} onValueChange={setBackNameFont}>
-                                <SelectTrigger className="bg-slate-700 border-slate-600 text-white">
+                                <SelectTrigger className="bg-slate-700 border-slate-600 text-white h-8 w-[120px] text-xs">
                                   <SelectValue placeholder="Font" />
                                 </SelectTrigger>
                                 <SelectContent>
@@ -3384,35 +3405,27 @@ const Design = () => {
                                   ))}
                                 </SelectContent>
                               </Select>
-                              <div className="flex items-center gap-3 flex-wrap">
-                                <div className="flex items-center gap-2">
-                                  <Label className="text-slate-400 text-xs">Color</Label>
-                                  <input
-                                    type="color"
-                                    value={backNameColor}
-                                    onChange={(e) => setBackNameColor(e.target.value)}
-                                    className="w-7 h-7 rounded border border-slate-600 cursor-pointer"
-                                  />
-                                </div>
-                                <span className="text-xs text-slate-500">(Size syncs with front: {backNameSize}px)</span>
-                                <Button
-                                  type="button"
-                                  variant={backNameBold ? 'default' : 'outline'}
-                                  size="sm"
-                                  className={`h-7 px-3 text-xs font-bold ${backNameBold ? 'bg-amber-600 !text-white' : 'border-slate-600 text-slate-300'}`}
-                                  onClick={() => setBackNameBold(!backNameBold)}
-                                >
-                                  B
-                                </Button>
-                              </div>
-                            </>
+                              <input
+                                type="color"
+                                value={backNameColor}
+                                onChange={(e) => setBackNameColor(e.target.value)}
+                                className="w-7 h-7 rounded border border-slate-600 cursor-pointer"
+                              />
+                              <Button
+                                type="button"
+                                variant={backNameBold ? 'default' : 'outline'}
+                                size="sm"
+                                className={`h-7 px-3 text-xs font-bold ${backNameBold ? 'bg-amber-600 !text-white' : 'border-slate-600 text-slate-300'}`}
+                                onClick={() => setBackNameBold(!backNameBold)}
+                              >
+                                B
+                              </Button>
+                            </div>
                           )}
-                        </div>
-
-                        {/* Dates on Back Controls */}
-                        <div className="w-full max-w-md space-y-3 p-3 bg-slate-700/30 rounded-lg">
-                          <div className="flex items-center justify-between">
-                            <Label className="text-white text-sm font-medium">Dates on Back</Label>
+                          
+                          {/* Dates Controls */}
+                          <div className="flex items-center justify-between pt-2 border-t border-slate-600/50">
+                            <span className="text-slate-400 text-xs">Dates</span>
                             <label className="flex items-center gap-2 cursor-pointer">
                               <input 
                                 type="checkbox" 
@@ -3424,22 +3437,27 @@ const Design = () => {
                             </label>
                           </div>
                           {showDatesOnBack && (
-                            <>
-                              <p className="text-slate-400 text-xs">
-                                📱 Drag dates to reposition • Scroll/pinch to resize
-                              </p>
-                              <div className="flex items-center gap-3 flex-wrap">
-                                <div className="flex items-center gap-2">
-                                  <Label className="text-slate-400 text-xs">Color</Label>
-                                  <input
-                                    type="color"
-                                    value={backDatesColor}
-                                    onChange={(e) => setBackDatesColor(e.target.value)}
-                                    className="w-7 h-7 rounded border border-slate-600 cursor-pointer"
-                                  />
-                                </div>
+                            <div className="space-y-2">
+                              <div className="flex items-center gap-2 flex-wrap">
+                                <input
+                                  type="color"
+                                  value={backDatesColor}
+                                  onChange={(e) => setBackDatesColor(e.target.value)}
+                                  className="w-7 h-7 rounded border border-slate-600 cursor-pointer"
+                                />
+                                <Select value={backDateFormat} onValueChange={(v) => setBackDateFormat(v as any)}>
+                                  <SelectTrigger className="h-7 w-[130px] bg-slate-700 border-slate-600 text-white text-xs">
+                                    <SelectValue />
+                                  </SelectTrigger>
+                                  <SelectContent className="bg-slate-800 border-slate-600">
+                                    <SelectItem value="full" className="text-white text-xs">Full (January 1)</SelectItem>
+                                    <SelectItem value="short-month" className="text-white text-xs">Short (Jan 1)</SelectItem>
+                                    <SelectItem value="mmm-dd-yyyy" className="text-white text-xs">MMM DD, YYYY</SelectItem>
+                                    <SelectItem value="numeric" className="text-white text-xs">Numeric</SelectItem>
+                                    <SelectItem value="year" className="text-white text-xs">Year Only</SelectItem>
+                                  </SelectContent>
+                                </Select>
                                 <div className="flex items-center gap-1">
-                                  <Label className="text-slate-400 text-xs">Size</Label>
                                   <Button
                                     type="button"
                                     variant="outline"
@@ -3449,7 +3467,7 @@ const Design = () => {
                                   >
                                     <span className="text-xs">−</span>
                                   </Button>
-                                  <span className="text-xs text-white bg-slate-700 px-2 py-1 rounded min-w-[48px] text-center">
+                                  <span className="text-xs text-white bg-slate-700 px-2 py-1 rounded min-w-[40px] text-center">
                                     {backDatesSize === 'auto' ? 'Auto' : `${pxToPoints(backDatesSize)}pt`}
                                   </span>
                                   <Button
@@ -3461,76 +3479,11 @@ const Design = () => {
                                   >
                                     <span className="text-xs">+</span>
                                   </Button>
-                                  <Button
-                                    type="button"
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={() => setBackDatesSize('auto')}
-                                    className={`h-6 px-2 text-xs ${backDatesSize === 'auto' ? 'bg-amber-600 !text-white border-amber-600' : 'border-slate-600 text-slate-300'}`}
-                                  >
-                                    Auto
-                                  </Button>
                                 </div>
                               </div>
-                              <div className="flex items-center gap-3 flex-wrap">
-                                <Label className="text-slate-400 text-xs">Align</Label>
-                                <div className="flex gap-1">
-                                  <Button
-                                    type="button"
-                                    variant={backDatesAlign === 'left' ? 'default' : 'outline'}
-                                    size="sm"
-                                    className={`h-7 px-3 text-xs ${backDatesAlign === 'left' ? 'bg-amber-600 !text-white' : 'border-slate-600 text-slate-300'}`}
-                                    onClick={() => { setBackDatesAlign('left'); setBackDatesPosition(prev => ({ ...prev, x: 15 })); }}
-                                  >
-                                    Left
-                                  </Button>
-                                  <Button
-                                    type="button"
-                                    variant={backDatesAlign === 'center' ? 'default' : 'outline'}
-                                    size="sm"
-                                    className={`h-7 px-3 text-xs ${backDatesAlign === 'center' ? 'bg-amber-600 !text-white' : 'border-slate-600 text-slate-300'}`}
-                                    onClick={() => { setBackDatesAlign('center'); setBackDatesPosition(prev => ({ ...prev, x: 50 })); }}
-                                  >
-                                    Center
-                                  </Button>
-                                  <Button
-                                    type="button"
-                                    variant={backDatesAlign === 'right' ? 'default' : 'outline'}
-                                    size="sm"
-                                    className={`h-7 px-3 text-xs ${backDatesAlign === 'right' ? 'bg-amber-600 !text-white' : 'border-slate-600 text-slate-300'}`}
-                                    onClick={() => { setBackDatesAlign('right'); setBackDatesPosition(prev => ({ ...prev, x: 85 })); }}
-                                  >
-                                    Right
-                                  </Button>
-                                </div>
-                              </div>
-                              <div className="flex items-center gap-3 flex-wrap">
-                                <Label className="text-slate-400 text-xs">Format</Label>
-                                <Select value={backDateFormat} onValueChange={(v) => setBackDateFormat(v as any)}>
-                                  <SelectTrigger className="h-7 w-[140px] bg-slate-700 border-slate-600 text-white text-xs">
-                                    <SelectValue />
-                                  </SelectTrigger>
-                                  <SelectContent className="bg-slate-800 border-slate-600">
-                                    <SelectItem value="full" className="text-white text-xs">Full (January 1)</SelectItem>
-                                    <SelectItem value="short-month" className="text-white text-xs">Short (Jan 1)</SelectItem>
-                                    <SelectItem value="mmm-dd-yyyy" className="text-white text-xs">MMM DD, YYYY</SelectItem>
-                                    <SelectItem value="numeric" className="text-white text-xs">Numeric</SelectItem>
-                                    <SelectItem value="year" className="text-white text-xs">Year Only</SelectItem>
-                                  </SelectContent>
-                                </Select>
-                              </div>
-                            </>
+                            </div>
                           )}
                         </div>
-
-                        {/* Upload Back Background */}
-                        <input
-                          ref={backInputRef}
-                          type="file"
-                          accept="image/*"
-                          className="hidden"
-                          onChange={(e) => e.target.files?.[0] && handleImageUpload(e.target.files[0], 'back')}
-                        />
                         {/* Metal Finish Options - Only for metal cards */}
                         {cardType === 'metal' && (
                           <div className="w-full max-w-md">
@@ -3791,93 +3744,11 @@ const Design = () => {
                           )}
                         </div>
 
-                        {/* Funeral Home Logo Upload */}
+                        {/* 4. Prayer Selection */}
                         <div className="w-full max-w-md space-y-3 p-3 bg-slate-700/30 rounded-lg">
-                          <Label className="text-white text-sm font-medium">Funeral Home Logo/Image</Label>
-                          <input
-                            ref={logoInputRef}
-                            type="file"
-                            accept="image/*"
-                            className="hidden"
-                            onChange={(e) => e.target.files?.[0] && handleImageUpload(e.target.files[0], 'logo')}
-                          />
-                          <div className="flex gap-2 flex-wrap">
-                            <Button
-                              type="button"
-                              variant="outline"
-                              onClick={() => logoInputRef.current?.click()}
-                              className="border-amber-600/50 text-amber-400 hover:bg-amber-600/20"
-                            >
-                              <ImageIcon className="h-4 w-4 mr-2" />
-                              {funeralHomeLogo ? 'Change Logo' : 'Upload Logo'}
-                            </Button>
-                            {funeralHomeLogo && (
-                              <Button
-                                type="button"
-                                variant="outline"
-                                onClick={() => setFuneralHomeLogo(null)}
-                                className="border-rose-600/50 text-rose-400 hover:bg-rose-600/20"
-                              >
-                                <Trash2 className="h-4 w-4" />
-                              </Button>
-                            )}
-                          </div>
-                          {funeralHomeLogo && (
-                            <div className="space-y-2">
-                              <div className="flex items-center gap-3">
-                                <Label className="text-slate-400 text-xs">Position</Label>
-                                <div className="flex gap-1">
-                                  <Button
-                                    type="button"
-                                    variant={funeralHomeLogoPosition === 'top' ? 'default' : 'outline'}
-                                    size="sm"
-                                    className={`h-7 px-3 text-xs ${funeralHomeLogoPosition === 'top' ? 'bg-amber-600 text-white' : 'border-slate-600 text-slate-300'}`}
-                                    onClick={() => setFuneralHomeLogoPosition('top')}
-                                  >
-                                    Top
-                                  </Button>
-                                  <Button
-                                    type="button"
-                                    variant={funeralHomeLogoPosition === 'bottom' ? 'default' : 'outline'}
-                                    size="sm"
-                                    className={`h-7 px-3 text-xs ${funeralHomeLogoPosition === 'bottom' ? 'bg-amber-600 text-white' : 'border-slate-600 text-slate-300'}`}
-                                    onClick={() => setFuneralHomeLogoPosition('bottom')}
-                                  >
-                                    Bottom
-                                  </Button>
-                                </div>
-                              </div>
-                              <div className="flex items-center gap-2">
-                                <Label className="text-slate-400 text-xs">Size</Label>
-                                <Button
-                                  type="button"
-                                  variant="outline"
-                                  size="icon"
-                                  className="h-6 w-6 border-slate-600"
-                                  onClick={() => setFuneralHomeLogoSize(Math.max(20, funeralHomeLogoSize - 5))}
-                                >
-                                  <span className="text-xs">−</span>
-                                </Button>
-                                <span className="text-xs text-white bg-slate-700 px-2 py-1 rounded min-w-[40px] text-center">{funeralHomeLogoSize}px</span>
-                                <Button
-                                  type="button"
-                                  variant="outline"
-                                  size="icon"
-                                  className="h-6 w-6 border-slate-600"
-                                  onClick={() => setFuneralHomeLogoSize(Math.min(80, funeralHomeLogoSize + 5))}
-                                >
-                                  <span className="text-xs">+</span>
-                                </Button>
-                              </div>
-                            </div>
-                          )}
-                        </div>
-
-                        {/* Prayer Selection */}
-                        <div className="w-full max-w-md space-y-3">
                           <div className="flex items-center gap-2">
                             <Book className="h-4 w-4 text-slate-400" />
-                            <Label className="text-slate-400">Quick Select Prayer</Label>
+                            <Label className="text-white text-sm font-medium">Prayer</Label>
                           </div>
                           
                           <div className="flex flex-wrap gap-2">
@@ -3968,7 +3839,7 @@ const Design = () => {
                                     prayerTextSize === 'auto'
                                       ? autoPrayerFontSize
                                       : Math.min(prayerTextSize, autoPrayerFontSize);
-                                  const maxAllowed = autoPrayerFontSize; // Can't exceed what fits
+                                  const maxAllowed = autoPrayerFontSize;
                                   const newSize = Math.min(maxAllowed, current + 1);
                                   setPrayerTextSize(newSize);
                                 }}
@@ -4015,11 +3886,86 @@ const Design = () => {
                             </div>
                           </div>
                         </div>
-                        
-                        {/* QR Code URL */}
-                        <div className="w-full max-w-md space-y-2">
+
+                        {/* 5. Funeral Home Logo Upload */}
+                        <div className="w-full max-w-md space-y-3 p-3 bg-slate-700/30 rounded-lg">
+                          <Label className="text-white text-sm font-medium">Funeral Home Logo</Label>
+                          <div className="flex gap-2 flex-wrap">
+                            <Button
+                              type="button"
+                              variant="outline"
+                              onClick={() => logoInputRef.current?.click()}
+                              className="border-amber-600/50 text-amber-400 hover:bg-amber-600/20"
+                            >
+                              <ImageIcon className="h-4 w-4 mr-2" />
+                              {funeralHomeLogo ? 'Change Logo' : 'Upload Logo'}
+                            </Button>
+                            {funeralHomeLogo && (
+                              <Button
+                                type="button"
+                                variant="outline"
+                                onClick={() => setFuneralHomeLogo(null)}
+                                className="border-rose-600/50 text-rose-400 hover:bg-rose-600/20"
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            )}
+                          </div>
+                          {funeralHomeLogo && (
+                            <div className="space-y-2">
+                              <div className="flex items-center gap-3">
+                                <Label className="text-slate-400 text-xs">Position</Label>
+                                <div className="flex gap-1">
+                                  <Button
+                                    type="button"
+                                    variant={funeralHomeLogoPosition === 'top' ? 'default' : 'outline'}
+                                    size="sm"
+                                    className={`h-7 px-3 text-xs ${funeralHomeLogoPosition === 'top' ? 'bg-amber-600 text-white' : 'border-slate-600 text-slate-300'}`}
+                                    onClick={() => setFuneralHomeLogoPosition('top')}
+                                  >
+                                    Top
+                                  </Button>
+                                  <Button
+                                    type="button"
+                                    variant={funeralHomeLogoPosition === 'bottom' ? 'default' : 'outline'}
+                                    size="sm"
+                                    className={`h-7 px-3 text-xs ${funeralHomeLogoPosition === 'bottom' ? 'bg-amber-600 text-white' : 'border-slate-600 text-slate-300'}`}
+                                    onClick={() => setFuneralHomeLogoPosition('bottom')}
+                                  >
+                                    Bottom
+                                  </Button>
+                                </div>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <Label className="text-slate-400 text-xs">Size</Label>
+                                <Button
+                                  type="button"
+                                  variant="outline"
+                                  size="icon"
+                                  className="h-6 w-6 border-slate-600"
+                                  onClick={() => setFuneralHomeLogoSize(Math.max(20, funeralHomeLogoSize - 5))}
+                                >
+                                  <span className="text-xs">−</span>
+                                </Button>
+                                <span className="text-xs text-white bg-slate-700 px-2 py-1 rounded min-w-[40px] text-center">{funeralHomeLogoSize}px</span>
+                                <Button
+                                  type="button"
+                                  variant="outline"
+                                  size="icon"
+                                  className="h-6 w-6 border-slate-600"
+                                  onClick={() => setFuneralHomeLogoSize(Math.min(80, funeralHomeLogoSize + 5))}
+                                >
+                                  <span className="text-xs">+</span>
+                                </Button>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+
+                        {/* 6. QR Code URL */}
+                        <div className="w-full max-w-md space-y-2 p-3 bg-slate-700/30 rounded-lg">
                           <div className="flex items-center justify-between">
-                            <Label className="text-slate-400">QR Code Link (optional)</Label>
+                            <Label className="text-white text-sm font-medium">QR Code Link</Label>
                             <label className="flex items-center gap-2 cursor-pointer">
                               <input 
                                 type="checkbox" 
@@ -4027,17 +3973,20 @@ const Design = () => {
                                 onChange={(e) => setShowQrCode(e.target.checked)}
                                 className="accent-amber-600"
                               />
-                              <span className="text-slate-400 text-xs">Show QR</span>
+                              <span className="text-slate-400 text-xs">Show</span>
                             </label>
                           </div>
-                          <Input
-                            placeholder="https://example.com"
-                            value={qrUrl}
-                            onChange={(e) => setQrUrl(e.target.value)}
-                            className="bg-slate-700 border-slate-600 text-white"
-                            disabled={!showQrCode}
-                          />
-                          <p className="text-xs text-slate-500">Enter URL to generate QR code on card</p>
+                          {showQrCode && (
+                            <>
+                              <Input
+                                placeholder="https://example.com"
+                                value={qrUrl}
+                                onChange={(e) => setQrUrl(e.target.value)}
+                                className="bg-slate-700 border-slate-600 text-white"
+                              />
+                              <p className="text-xs text-slate-500">Enter URL to generate QR code on card</p>
+                            </>
+                          )}
                         </div>
                       </div>
                     </TabsContent>
