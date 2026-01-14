@@ -78,6 +78,7 @@ export const DecorativeBorderOverlay: React.FC<DecorativeBorderOverlayProps> = (
     inset: 0,
     pointerEvents: 'none',
     opacity: effectiveOpacity,
+    filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.15)) drop-shadow(0 0 1px rgba(0,0,0,0.1))',
   };
 
   const svgStyle: React.CSSProperties = {
