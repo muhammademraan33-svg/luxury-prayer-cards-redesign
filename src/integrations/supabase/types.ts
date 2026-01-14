@@ -153,6 +153,57 @@ export type Database = {
           },
         ]
       }
+      order_items: {
+        Row: {
+          created_at: string
+          design_data: Json | null
+          id: string
+          order_id: string
+          product_id: string | null
+          product_name: string
+          quantity: number
+          total_price: number
+          unit_price: number
+        }
+        Insert: {
+          created_at?: string
+          design_data?: Json | null
+          id?: string
+          order_id: string
+          product_id?: string | null
+          product_name: string
+          quantity?: number
+          total_price: number
+          unit_price: number
+        }
+        Update: {
+          created_at?: string
+          design_data?: Json | null
+          id?: string
+          order_id?: string
+          product_id?: string | null
+          product_name?: string
+          quantity?: number
+          total_price?: number
+          unit_price?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "order_items_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "order_items_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       orders: {
         Row: {
           back_design_url: string | null
@@ -163,12 +214,15 @@ export type Database = {
           front_design_url: string | null
           id: string
           package_name: string
+          payment_intent_id: string | null
+          payment_status: string | null
           shipping_address: string
           shipping_city: string
           shipping_state: string
           shipping_type: string
           shipping_zip: string
           status: string
+          stripe_session_id: string | null
           total_cards: number
           total_photos: number
           total_price: number
@@ -186,12 +240,15 @@ export type Database = {
           front_design_url?: string | null
           id?: string
           package_name: string
+          payment_intent_id?: string | null
+          payment_status?: string | null
           shipping_address: string
           shipping_city: string
           shipping_state: string
           shipping_type?: string
           shipping_zip: string
           status?: string
+          stripe_session_id?: string | null
           total_cards: number
           total_photos: number
           total_price: number
@@ -209,18 +266,72 @@ export type Database = {
           front_design_url?: string | null
           id?: string
           package_name?: string
+          payment_intent_id?: string | null
+          payment_status?: string | null
           shipping_address?: string
           shipping_city?: string
           shipping_state?: string
           shipping_type?: string
           shipping_zip?: string
           status?: string
+          stripe_session_id?: string | null
           total_cards?: number
           total_photos?: number
           total_price?: number
           tracking_carrier?: string | null
           tracking_number?: string | null
           tracking_sent_at?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      products: {
+        Row: {
+          additional_card_price: number | null
+          base_quantity: number
+          card_type: string
+          category: string
+          created_at: string
+          description: string | null
+          id: string
+          image_url: string | null
+          is_active: boolean
+          name: string
+          price: number
+          stripe_price_id: string | null
+          stripe_product_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          additional_card_price?: number | null
+          base_quantity?: number
+          card_type?: string
+          category?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean
+          name: string
+          price: number
+          stripe_price_id?: string | null
+          stripe_product_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          additional_card_price?: number | null
+          base_quantity?: number
+          card_type?: string
+          category?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean
+          name?: string
+          price?: number
+          stripe_price_id?: string | null
+          stripe_product_id?: string | null
           updated_at?: string
         }
         Relationships: []
