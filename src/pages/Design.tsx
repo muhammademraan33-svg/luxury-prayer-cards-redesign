@@ -471,6 +471,33 @@ const Design = () => {
   const [funeralHomeLogoPosition, setFuneralHomeLogoPosition] = useState<'top' | 'bottom'>('bottom');
   const [funeralHomeLogoSize, setFuneralHomeLogoSize] = useState(40);
 
+  // Calculate safe zones for text based on all elements (borders, QR codes, logos)
+  const getTextSafeZones = useCallback(() => {
+    const hasBorder = frontBorderDesign !== 'none';
+    const hasQrCode = showQrCode && qrUrl;
+    const hasLogoTop = funeralHomeLogo && funeralHomeLogoPosition === 'top';
+    const hasLogoBottom = funeralHomeLogo && funeralHomeLogoPosition === 'bottom';
+    
+    // Calculate safe zones based on all elements
+    let safeMinY = hasBorder ? 14 : 5;
+    let safeMaxY = hasBorder ? 86 : 95;
+    
+    // Account for logo at top
+    if (hasLogoTop) {
+      const logoHeightPercent = Math.min((funeralHomeLogoSize * 0.4) / 4.2, 12); // Estimate based on card height
+      safeMinY = Math.max(safeMinY, 8 + logoHeightPercent);
+    }
+    
+    // Account for QR code and logo at bottom
+    if (hasQrCode || hasLogoBottom) {
+      const qrHeightPercent = hasQrCode ? 12 : 0;
+      const logoHeightPercent = hasLogoBottom ? Math.min((funeralHomeLogoSize * 0.4) / 4.2, 8) : 0;
+      safeMaxY = Math.min(safeMaxY, 92 - Math.max(qrHeightPercent, logoHeightPercent));
+    }
+    
+    return { safeMinY, safeMaxY };
+  }, [frontBorderDesign, showQrCode, qrUrl, funeralHomeLogo, funeralHomeLogoPosition, funeralHomeLogoSize]);
+
   // Auto-adjust name/dates/additional text positions based on elements
   useEffect(() => {
     if (cardType !== 'paper') return;
@@ -480,9 +507,8 @@ const Design = () => {
     const borderJustAdded = hasBorder && !hadBorder;
     prevBorderRef.current = frontBorderDesign;
     
-    // Safe zones for text positioning
-    const SAFE_MAX_Y = hasBorder ? 84 : 96;
-    const SAFE_MIN_Y = hasBorder ? 12 : 5;
+    // Get dynamic safe zones based on all elements
+    const { safeMinY: SAFE_MIN_Y, safeMaxY: SAFE_MAX_Y } = getTextSafeZones();
     
     // Calculate text heights
     const nameText = deceasedName || 'Name Here';
@@ -533,7 +559,7 @@ const Design = () => {
       }
     }
     
-    // Ensure dates stay in safe zone
+    // Ensure dates stay in safe zone (account for QR codes and logos)
     if (showDatesOnFront && newDatesY + datesHeightPercent / 2 > SAFE_MAX_Y) {
       newDatesY = SAFE_MAX_Y - datesHeightPercent / 2;
       // Push name up to maintain gap
@@ -556,7 +582,7 @@ const Design = () => {
       }
     }
     
-    // Ensure name doesn't go too high
+    // Ensure name doesn't go too high (account for top logos)
     if (newNameY - nameHeightPercent / 2 < SAFE_MIN_Y) {
       newNameY = SAFE_MIN_Y + nameHeightPercent / 2;
       // Recalculate dates position
@@ -589,6 +615,13 @@ const Design = () => {
     namePosition.y,
     datesPosition.y,
     additionalTextPosition.y,
+    getTextSafeZones,
+    // Trigger repositioning when QR/logo changes
+    showQrCode,
+    qrUrl,
+    funeralHomeLogo,
+    funeralHomeLogoPosition,
+    funeralHomeLogoSize,
   ]);
 
   // Helper to apply front text colors based on background darkness
@@ -893,12 +926,16 @@ const Design = () => {
     const hasFrontBorder = cardType === 'paper' && frontBorderDesign !== 'none';
     const hasBackBorder = cardType === 'paper' && backBorderDesign !== 'none';
     const isBackText = draggingText === 'backDates' || draggingText === 'prayer' || draggingText === 'inLovingMemory' || draggingText === 'backName';
+    
+    // Use dynamic safe zones for front card elements
+    const { safeMinY: frontMinY, safeMaxY: frontMaxY } = getTextSafeZones();
     const borderPadding = (isBackText ? hasBackBorder : hasFrontBorder) ? 8 : 0;
     
     const minX = 10 + borderPadding;
     const maxX = 90 - borderPadding;
-    const minY = 5 + borderPadding;
-    const maxY = 95 - borderPadding;
+    // For front text, use dynamic safe zones that account for QR/logos
+    const minY = isBackText ? (5 + borderPadding) : frontMinY;
+    const maxY = isBackText ? (95 - borderPadding) : frontMaxY;
 
     const newX = Math.max(minX, Math.min(maxX, textDragStartRef.current.posX + dx));
     const newY = Math.max(minY, Math.min(maxY, textDragStartRef.current.posY + dy));
@@ -1574,8 +1611,7 @@ const Design = () => {
   const currentFinish = METAL_FINISHES.find(f => f.id === metalFinish) || METAL_FINISHES[0];
 
   // Metal cards: 2" x 3.5" (credit card size), Paper cards: 2.625x4.375 or 3.125x4.875
-  // Designer cards use CSS physical units (in) so they can be calibrated by the browser.
-  // Note: true physical size still depends on OS scaling + browser zoom.
+  // Maximized card preview for better editing - uses max available width
   const getCardClass = (forSidebar = false) => {
     if (cardType === 'paper') {
       const activeSize =
@@ -1583,25 +1619,25 @@ const Design = () => {
           ? mainDesignSize
           : (additionalDesigns[activeDesignIndex]?.size || '2.625x4.375');
 
-      // Use actual inch-based sizes for sidebar preview (scaled up for visibility)
+      // Maximized sidebar preview - use max-w to fill available space
       if (forSidebar) {
         return activeSize === '3.125x4.875' 
-          ? 'aspect-[3.125/4.875] w-[3.125in]' 
-          : 'aspect-[2.625/4.375] w-[2.625in]';
+          ? 'aspect-[3.125/4.875] w-full max-w-[340px]' 
+          : 'aspect-[2.625/4.375] w-full max-w-[320px]';
       }
 
       return activeSize === '3.125x4.875'
-        ? 'aspect-[3.125/4.875] w-[3.125in]'
-        : 'aspect-[2.625/4.375] w-[2.625in]';
+        ? 'aspect-[3.125/4.875] w-full max-w-[340px]'
+        : 'aspect-[2.625/4.375] w-full max-w-[320px]';
     }
 
-    // Metal cards
+    // Metal cards - maximized preview
     if (forSidebar) {
-      return orientation === 'landscape' ? 'aspect-[3.5/2] w-[3.5in]' : 'aspect-[2/3.5] w-[2in]';
+      return orientation === 'landscape' ? 'aspect-[3.5/2] w-full max-w-[400px]' : 'aspect-[2/3.5] w-full max-w-[280px]';
     }
 
     // Width determines height via aspect ratio: portrait 2in x 3.5in, landscape 3.5in x 2in
-    return orientation === 'landscape' ? 'aspect-[3.5/2] w-[3.5in]' : 'aspect-[2/3.5] w-[2in]';
+    return orientation === 'landscape' ? 'aspect-[3.5/2] w-full max-w-[400px]' : 'aspect-[2/3.5] w-full max-w-[280px]';
   };
   const cardClass = getCardClass();
   const sidebarCardClass = getCardClass(true);
