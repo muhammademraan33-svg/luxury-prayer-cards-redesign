@@ -180,6 +180,17 @@ const MemorialPhotoEditor = () => {
   const canvasRef = useRef<HTMLDivElement>(null);
   const logoInputRef = useRef<HTMLInputElement>(null);
 
+  // Layout: keep the photo centered, and reserve the bottom area for text (no overlap)
+  const TEXT_ZONE_TOP = 75; // % from top of canvas
+  const TEXT_ZONE_BOTTOM = 95; // % from top of canvas
+
+  const clampTextBoxesToZone = (boxes: TextBox[]) =>
+    boxes.map((tb) => ({
+      ...tb,
+      x: Math.max(5, Math.min(95, tb.x)),
+      y: Math.max(TEXT_ZONE_TOP, Math.min(TEXT_ZONE_BOTTOM, tb.y)),
+    }));
+
   // Load data from card design if available
   useEffect(() => {
     const storedData = sessionStorage.getItem('memorialPhotoData');
@@ -239,7 +250,7 @@ const MemorialPhotoEditor = () => {
       id: `text-${Date.now()}`,
       content: 'New Text',
       x: 50,
-      y: 50,
+      y: Math.min(TEXT_ZONE_TOP + 10, TEXT_ZONE_BOTTOM),
       fontFamily: 'Playfair Display',
       fontSize: 20,
       color: '#ffffff',
@@ -270,7 +281,7 @@ const MemorialPhotoEditor = () => {
         ...original,
         id: `text-${Date.now()}`,
         x: Math.min(original.x + 5, 95),
-        y: Math.min(original.y + 5, 95),
+        y: Math.min(Math.max(original.y + 5, TEXT_ZONE_TOP), TEXT_ZONE_BOTTOM),
       };
       setTextBoxes([...textBoxes, newTextBox]);
       setSelectedTextId(newTextBox.id);
@@ -297,14 +308,14 @@ const MemorialPhotoEditor = () => {
 
   const handleCanvasPointerMove = (e: React.PointerEvent) => {
     if (!isDragging || !selectedTextId || !canvasRef.current) return;
-    
+
     const rect = canvasRef.current.getBoundingClientRect();
     const percentX = ((e.clientX - rect.left) / rect.width) * 100;
     const percentY = ((e.clientY - rect.top) / rect.height) * 100;
-    
+
     const newX = Math.max(5, Math.min(95, percentX + dragOffset.x));
-    const newY = Math.max(5, Math.min(95, percentY + dragOffset.y));
-    
+    const newY = Math.max(TEXT_ZONE_TOP, Math.min(TEXT_ZONE_BOTTOM, percentY + dragOffset.y));
+
     updateTextBox(selectedTextId, { x: newX, y: newY });
   };
 
@@ -377,7 +388,7 @@ const MemorialPhotoEditor = () => {
     setPhotoPanY(design.photoPanY);
     setCustomBg(design.customBg);
     setSelectedBg(BACKGROUNDS.find(bg => bg.id === design.backgroundId) || BACKGROUNDS[0]);
-    setTextBoxes(design.textBoxes);
+    setTextBoxes(clampTextBoxesToZone(design.textBoxes));
     setPhotoSize(design.photoSize);
     setShowFuneralLogo(design.showFuneralLogo);
     setEditingDesignId(design.id);
@@ -510,11 +521,11 @@ const MemorialPhotoEditor = () => {
                 />
               </div>
               
-              {/* Photo - centered horizontally and vertically in the upper portion */}
+              {/* Photo - centered (text area is reserved below) */}
               {photo && (
-                <div className="absolute inset-x-0 top-0 bottom-[25%] flex items-center justify-center pointer-events-none">
+                <div className="absolute inset-x-0 top-[25%] bottom-[25%] flex items-center justify-center pointer-events-none">
                   <div 
-                    className="w-3/4 h-[85%] overflow-hidden shadow-xl border-4 border-white/20"
+                    className="w-3/4 h-full overflow-hidden shadow-xl border-4 border-white/20"
                     style={{
                       transform: `scale(${photoZoom}) translate(${photoPanX}px, ${photoPanY}px)`,
                     }}
@@ -539,13 +550,16 @@ const MemorialPhotoEditor = () => {
                   }`}
                   style={{
                     left: `${textBox.x}%`,
-                    top: `${textBox.y}%`,
+                    top: `${Math.max(TEXT_ZONE_TOP, Math.min(TEXT_ZONE_BOTTOM, textBox.y))}%`,
                     transform: 'translate(-50%, -50%)',
                     fontFamily: textBox.fontFamily,
                     fontSize: `${textBox.fontSize}px`,
                     color: textBox.color,
                     textShadow: '0 2px 8px rgba(0,0,0,0.8), 0 1px 3px rgba(0,0,0,0.9)',
-                    whiteSpace: 'nowrap',
+                    whiteSpace: 'pre-line',
+                    textAlign: 'center',
+                    maxWidth: '90%',
+                    wordBreak: 'break-word',
                     padding: '4px 8px',
                   }}
                   onPointerDown={(e) => handleTextPointerDown(e, textBox)}
