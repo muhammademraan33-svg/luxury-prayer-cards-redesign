@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
-import { Package, Truck, LogOut, Send, CheckCircle, Clock, Search } from 'lucide-react';
+import { Package, Truck, LogOut, Send, CheckCircle, Clock, Search, Eye, Download, X } from 'lucide-react';
 import { User, Session } from '@supabase/supabase-js';
 
 interface Order {
@@ -29,6 +29,8 @@ interface Order {
   tracking_carrier: string | null;
   tracking_sent_at: string | null;
   status: string;
+  front_design_url: string | null;
+  back_design_url: string | null;
 }
 
 const Admin = () => {
@@ -44,6 +46,7 @@ const Admin = () => {
   const [sendingTracking, setSendingTracking] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [grantingAdmin, setGrantingAdmin] = useState(false);
+  const [viewingDesigns, setViewingDesigns] = useState<Order | null>(null);
 
   // Auth email/password state
   const [email, setEmail] = useState('');
@@ -470,22 +473,35 @@ const Admin = () => {
                         )}
                       </td>
                       <td className="p-4">
-                        {order.status !== 'shipped' ? (
-                          <Button
-                            size="sm"
-                            onClick={() => {
-                              setSelectedOrder(order);
-                              setTrackingNumber(order.tracking_number || '');
-                              setTrackingCarrier(order.tracking_carrier || 'usps');
-                            }}
-                            className="bg-amber-600 hover:bg-amber-700"
-                          >
-                            <Truck className="h-4 w-4 mr-1" />
-                            Add Tracking
-                          </Button>
-                        ) : (
-                          <span className="text-slate-500 text-sm">{order.tracking_number}</span>
-                        )}
+                        <div className="flex items-center gap-2">
+                          {(order.front_design_url || order.back_design_url) && (
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => setViewingDesigns(order)}
+                              className="border-slate-600 text-slate-300 hover:bg-slate-700"
+                            >
+                              <Eye className="h-4 w-4 mr-1" />
+                              Designs
+                            </Button>
+                          )}
+                          {order.status !== 'shipped' ? (
+                            <Button
+                              size="sm"
+                              onClick={() => {
+                                setSelectedOrder(order);
+                                setTrackingNumber(order.tracking_number || '');
+                                setTrackingCarrier(order.tracking_carrier || 'usps');
+                              }}
+                              className="bg-amber-600 hover:bg-amber-700"
+                            >
+                              <Truck className="h-4 w-4 mr-1" />
+                              Tracking
+                            </Button>
+                          ) : (
+                            <span className="text-slate-500 text-sm">{order.tracking_number}</span>
+                          )}
+                        </div>
                       </td>
                     </tr>
                   ))}
@@ -554,6 +570,102 @@ const Admin = () => {
                       Send Tracking Email
                     </>
                   )}
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
+
+      {/* Designs Preview Modal */}
+      {viewingDesigns && (
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-50">
+          <Card className="w-full max-w-4xl bg-slate-800 border-slate-700 max-h-[90vh] overflow-y-auto">
+            <CardHeader className="flex flex-row items-center justify-between">
+              <div>
+                <CardTitle className="text-white flex items-center gap-2">
+                  <Eye className="h-5 w-5 text-amber-400" />
+                  Print Files for {viewingDesigns.customer_name}
+                </CardTitle>
+                <p className="text-slate-400 text-sm mt-1">
+                  Order placed {new Date(viewingDesigns.created_at).toLocaleDateString()}
+                </p>
+              </div>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setViewingDesigns(null)}
+                className="text-slate-400 hover:text-white"
+              >
+                <X className="h-5 w-5" />
+              </Button>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="grid md:grid-cols-2 gap-6">
+                {/* Front Design */}
+                <div className="space-y-3">
+                  <h3 className="text-sm font-semibold text-white text-center">Front Side</h3>
+                  <div className="bg-slate-900 rounded-lg p-4 flex items-center justify-center min-h-[300px]">
+                    {viewingDesigns.front_design_url ? (
+                      <img 
+                        src={viewingDesigns.front_design_url} 
+                        alt="Front card design" 
+                        className="max-h-[400px] w-auto rounded shadow-lg"
+                      />
+                    ) : (
+                      <div className="text-slate-500">No front design uploaded</div>
+                    )}
+                  </div>
+                  {viewingDesigns.front_design_url && (
+                    <a 
+                      href={viewingDesigns.front_design_url} 
+                      download={`${viewingDesigns.customer_name}-front.jpg`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center justify-center gap-2 w-full py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-lg text-sm font-medium transition-colors"
+                    >
+                      <Download className="h-4 w-4" />
+                      Download Front
+                    </a>
+                  )}
+                </div>
+
+                {/* Back Design */}
+                <div className="space-y-3">
+                  <h3 className="text-sm font-semibold text-white text-center">Back Side</h3>
+                  <div className="bg-slate-900 rounded-lg p-4 flex items-center justify-center min-h-[300px]">
+                    {viewingDesigns.back_design_url ? (
+                      <img 
+                        src={viewingDesigns.back_design_url} 
+                        alt="Back card design" 
+                        className="max-h-[400px] w-auto rounded shadow-lg"
+                      />
+                    ) : (
+                      <div className="text-slate-500">No back design uploaded</div>
+                    )}
+                  </div>
+                  {viewingDesigns.back_design_url && (
+                    <a 
+                      href={viewingDesigns.back_design_url} 
+                      download={`${viewingDesigns.customer_name}-back.jpg`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center justify-center gap-2 w-full py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-lg text-sm font-medium transition-colors"
+                    >
+                      <Download className="h-4 w-4" />
+                      Download Back
+                    </a>
+                  )}
+                </div>
+              </div>
+
+              <div className="flex justify-end">
+                <Button
+                  variant="outline"
+                  onClick={() => setViewingDesigns(null)}
+                  className="border-slate-600 text-slate-300"
+                >
+                  Close
                 </Button>
               </div>
             </CardContent>
