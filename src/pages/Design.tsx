@@ -426,8 +426,8 @@ const Design = () => {
   const [additionalTextFont, setAdditionalTextFont] = useState('Cormorant Garamond');
   const [showAdditionalText, setShowAdditionalText] = useState(false);
   const [selectedPrayerId, setSelectedPrayerId] = useState<string>('custom');
-  const [draggingText, setDraggingText] = useState<'name' | 'dates' | 'additional' | 'backDates' | 'prayer' | null>(null);
-  const [resizingText, setResizingText] = useState<'name' | 'dates' | 'additional' | 'backDates' | 'prayer' | null>(null);
+  const [draggingText, setDraggingText] = useState<'name' | 'dates' | 'additional' | 'backDates' | 'prayer' | 'inLovingMemory' | 'backName' | null>(null);
+  const [resizingText, setResizingText] = useState<'name' | 'dates' | 'additional' | 'backDates' | 'prayer' | 'inLovingMemory' | 'backName' | null>(null);
   
   // Prayer text position (percentage from center, 0 = centered)
   const [prayerPosition, setPrayerPosition] = useState({ x: 0, y: 0 });
@@ -803,7 +803,7 @@ const Design = () => {
   }, [photoZoom]);
 
   // Text drag handlers
-  const handleTextPointerDown = (e: React.PointerEvent, textType: 'name' | 'dates' | 'additional' | 'backDates' | 'prayer') => {
+  const handleTextPointerDown = (e: React.PointerEvent, textType: 'name' | 'dates' | 'additional' | 'backDates' | 'prayer' | 'inLovingMemory' | 'backName') => {
     e.stopPropagation();
     e.preventDefault();
 
@@ -821,6 +821,8 @@ const Design = () => {
         : textType === 'dates' ? datesPosition 
         : textType === 'backDates' ? backDatesPosition 
         : textType === 'prayer' ? { x: 50 + prayerPosition.x, y: 50 + prayerPosition.y }
+        : textType === 'inLovingMemory' ? { x: 50 + inLovingMemoryPosition.x, y: 50 + inLovingMemoryPosition.y }
+        : textType === 'backName' ? { x: 50 + backNamePosition.x, y: 50 + backNamePosition.y }
         : additionalTextPosition;
       textDragStartRef.current = { x: e.clientX, y: e.clientY, posX: currentPos.x, posY: currentPos.y };
     } else if (textPointerCacheRef.current.size === 2) {
@@ -839,7 +841,11 @@ const Design = () => {
                 : 10
               : textType === 'prayer'
                 ? prayerTextSize === 'auto' ? autoPrayerFontSize : prayerTextSize
-                : additionalTextSize;
+                : textType === 'inLovingMemory'
+                  ? inLovingMemorySize
+                  : textType === 'backName'
+                    ? backNameSize
+                    : additionalTextSize;
 
       textPinchStartRef.current = {
         distance: getDistance(pointers[0], pointers[1]),
@@ -855,7 +861,7 @@ const Design = () => {
       const pointers = Array.from(textPointerCacheRef.current.values());
       const currentDistance = getDistance(pointers[0], pointers[1]);
       const scaleChange = currentDistance / textPinchStartRef.current.distance;
-      const newSize = Math.max(10, Math.min(48, textPinchStartRef.current.size * scaleChange));
+      const newSize = Math.max(8, Math.min(60, textPinchStartRef.current.size * scaleChange));
       if (resizingText === 'name') {
         setNameSize(newSize);
       } else if (resizingText === 'dates') {
@@ -864,6 +870,10 @@ const Design = () => {
         setBackDatesSize(newSize);
       } else if (resizingText === 'prayer') {
         setPrayerTextSize(newSize);
+      } else if (resizingText === 'inLovingMemory') {
+        setInLovingMemorySize(newSize);
+      } else if (resizingText === 'backName') {
+        setBackNameSize(newSize);
       } else {
         setAdditionalTextSize(newSize);
       }
@@ -882,7 +892,7 @@ const Design = () => {
     // Adjust bounds based on whether border is active (keep text away from border)
     const hasFrontBorder = cardType === 'paper' && frontBorderDesign !== 'none';
     const hasBackBorder = cardType === 'paper' && backBorderDesign !== 'none';
-    const isBackText = draggingText === 'backDates' || draggingText === 'prayer';
+    const isBackText = draggingText === 'backDates' || draggingText === 'prayer' || draggingText === 'inLovingMemory' || draggingText === 'backName';
     const borderPadding = (isBackText ? hasBackBorder : hasFrontBorder) ? 8 : 0;
     
     const minX = 10 + borderPadding;
@@ -902,6 +912,10 @@ const Design = () => {
     } else if (draggingText === 'prayer') {
       // Prayer position is offset from center (0,0 = centered)
       setPrayerPosition({ x: newX - 50, y: newY - 50 });
+    } else if (draggingText === 'inLovingMemory') {
+      setInLovingMemoryPosition({ x: newX - 50, y: newY - 50 });
+    } else if (draggingText === 'backName') {
+      setBackNamePosition({ x: newX - 50, y: newY - 50 });
     } else {
       setAdditionalTextPosition({ x: newX, y: newY });
     }
@@ -925,7 +939,7 @@ const Design = () => {
     }
   };
 
-  const handleTextWheel = (e: React.WheelEvent, textType: 'name' | 'dates' | 'additional' | 'backDates' | 'prayer') => {
+  const handleTextWheel = (e: React.WheelEvent, textType: 'name' | 'dates' | 'additional' | 'backDates' | 'prayer' | 'inLovingMemory' | 'backName') => {
     e.preventDefault();
     e.stopPropagation();
     const delta = -e.deltaY * 0.05;
@@ -942,9 +956,13 @@ const Design = () => {
               : 10
             : textType === 'prayer'
               ? prayerTextSize === 'auto' ? autoPrayerFontSize : prayerTextSize
-              : additionalTextSize;
+              : textType === 'inLovingMemory'
+                ? inLovingMemorySize
+                : textType === 'backName'
+                  ? backNameSize
+                  : additionalTextSize;
 
-    const newSize = Math.max(10, Math.min(48, currentSize + delta));
+    const newSize = Math.max(8, Math.min(60, currentSize + delta));
     if (textType === 'name') {
       setNameSize(newSize);
     } else if (textType === 'dates') {
@@ -953,6 +971,10 @@ const Design = () => {
       setBackDatesSize(newSize);
     } else if (textType === 'prayer') {
       setPrayerTextSize(newSize);
+    } else if (textType === 'inLovingMemory') {
+      setInLovingMemorySize(newSize);
+    } else if (textType === 'backName') {
+      setBackNameSize(newSize);
     } else {
       setAdditionalTextSize(newSize);
     }
@@ -3444,36 +3466,62 @@ const Design = () => {
                                       )}
                                   
                                   {showInLovingMemory && (
-                                    <p 
-                                      className="uppercase tracking-[0.12em] touch-none select-none cursor-grab"
-                                      style={{ 
-                                        fontSize: `${inLovingMemorySize}px`,
-                                        color: inLovingMemoryColor,
-                                        fontWeight: inLovingMemoryBold ? 'bold' : 'normal',
-                                        fontFamily: inLovingMemoryFont,
-                                        textShadow: '1px 1px 3px rgba(0,0,0,0.4)',
-                                        marginBottom: '1px',
-                                        transform: `translate(${inLovingMemoryPosition.x}%, ${inLovingMemoryPosition.y}%)`,
+                                    <div 
+                                      className="touch-none select-none px-1 rounded"
+                                      style={{
+                                        cursor: draggingText === 'inLovingMemory' || resizingText === 'inLovingMemory' ? 'grabbing' : 'grab',
+                                        boxShadow: (draggingText === 'inLovingMemory' || resizingText === 'inLovingMemory') ? '0 0 0 2px #d97706' : 'none',
                                       }}
+                                      onPointerDown={(e) => handleTextPointerDown(e, 'inLovingMemory')}
+                                      onPointerMove={handleTextPointerMove}
+                                      onPointerUp={handleTextPointerUp}
+                                      onPointerCancel={handleTextPointerUp}
+                                      onWheel={(e) => handleTextWheel(e, 'inLovingMemory')}
                                     >
-                                      {inLovingMemoryText}
-                                    </p>
+                                      <p 
+                                        className="uppercase tracking-[0.12em]"
+                                        style={{ 
+                                          fontSize: `${inLovingMemorySize}px`,
+                                          color: inLovingMemoryColor,
+                                          fontWeight: inLovingMemoryBold ? 'bold' : 'normal',
+                                          fontFamily: inLovingMemoryFont,
+                                          textShadow: '1px 1px 3px rgba(0,0,0,0.4)',
+                                          marginBottom: '1px',
+                                          transform: `translate(${inLovingMemoryPosition.x}%, ${inLovingMemoryPosition.y}%)`,
+                                        }}
+                                      >
+                                        {inLovingMemoryText}
+                                      </p>
+                                    </div>
                                   )}
                                   {showNameOnBack && (
-                                    <p 
-                                      className="whitespace-pre text-center touch-none select-none cursor-grab"
-                                      style={{ 
-                                        fontSize: `${backNameSize}px`,
-                                        color: backNameColor,
-                                        fontWeight: backNameBold ? 'bold' : 'normal',
-                                        fontFamily: backNameFont,
-                                        textShadow: '1px 1px 3px rgba(0,0,0,0.4)',
-                                        marginBottom: '1px',
-                                        transform: `translate(${backNamePosition.x}%, ${backNamePosition.y}%)`,
+                                    <div 
+                                      className="touch-none select-none px-1 rounded"
+                                      style={{
+                                        cursor: draggingText === 'backName' || resizingText === 'backName' ? 'grabbing' : 'grab',
+                                        boxShadow: (draggingText === 'backName' || resizingText === 'backName') ? '0 0 0 2px #d97706' : 'none',
                                       }}
+                                      onPointerDown={(e) => handleTextPointerDown(e, 'backName')}
+                                      onPointerMove={handleTextPointerMove}
+                                      onPointerUp={handleTextPointerUp}
+                                      onPointerCancel={handleTextPointerUp}
+                                      onWheel={(e) => handleTextWheel(e, 'backName')}
                                     >
-                                      {deceasedName || 'Name Here'}
-                                    </p>
+                                      <p 
+                                        className="whitespace-pre text-center"
+                                        style={{ 
+                                          fontSize: `${backNameSize}px`,
+                                          color: backNameColor,
+                                          fontWeight: backNameBold ? 'bold' : 'normal',
+                                          fontFamily: backNameFont,
+                                          textShadow: '1px 1px 3px rgba(0,0,0,0.4)',
+                                          marginBottom: '1px',
+                                          transform: `translate(${backNamePosition.x}%, ${backNamePosition.y}%)`,
+                                        }}
+                                      >
+                                        {deceasedName || 'Name Here'}
+                                      </p>
+                                    </div>
                                   )}
                                   
                                   {/* Dates - now in flow, not absolute */}
@@ -3665,14 +3713,14 @@ const Design = () => {
                                 <Label className="text-slate-400 text-xs w-10">Size</Label>
                                 <input
                                   type="range"
-                                  min="10"
-                                  max="72"
+                                  min="8"
+                                  max="60"
                                   step="1"
-                                  value={pxToPoints(backNameSize)}
-                                  onChange={(e) => setBackNameSize(pointsToPx(parseFloat(e.target.value)))}
+                                  value={backNameSize}
+                                  onChange={(e) => setBackNameSize(parseFloat(e.target.value))}
                                   className="flex-1 accent-amber-600 h-1"
                                 />
-                                <span className="text-xs text-slate-400 w-12 text-right">{pxToPoints(backNameSize)}pt</span>
+                                <span className="text-xs text-slate-400 w-12 text-right">{backNameSize}px</span>
                               </div>
                               {/* Back Name Position Sliders */}
                               <div className="flex items-center gap-2">
@@ -3744,15 +3792,15 @@ const Design = () => {
                                 <Label className="text-slate-400 text-xs w-10">Size</Label>
                                 <input
                                   type="range"
-                                  min="10"
-                                  max="72"
+                                  min="6"
+                                  max="40"
                                   step="1"
-                                  value={pxToPoints(typeof backDatesSize === 'number' ? backDatesSize : 10)}
-                                  onChange={(e) => setBackDatesSize(pointsToPx(parseFloat(e.target.value)))}
+                                  value={typeof backDatesSize === 'number' ? backDatesSize : 14}
+                                  onChange={(e) => setBackDatesSize(parseFloat(e.target.value))}
                                   className="flex-1 accent-amber-600 h-1"
                                 />
                                 <span className="text-xs text-slate-400 w-12 text-right">
-                                  {backDatesSize === 'auto' ? 'Auto' : `${pxToPoints(backDatesSize)}pt`}
+                                  {backDatesSize === 'auto' ? 'Auto' : `${backDatesSize}px`}
                                 </span>
                               </div>
                               {/* Back Dates Position Sliders */}
