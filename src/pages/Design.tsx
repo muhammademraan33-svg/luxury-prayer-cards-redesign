@@ -4491,20 +4491,20 @@ const Design = () => {
                               onChange={(e) => handlePaperMemorialPhotoUpload(e.target.files)}
                             />
                             
-                            {/* Photo Grid */}
-                            <div className="space-y-3">
-                              {paperMemorialPhotos.map((photo, idx) => (
-                                <div 
-                                  key={idx}
-                                  className={`grid grid-cols-2 gap-4 p-3 rounded-lg border transition-all ${
-                                    editingPhotoIndex === idx 
-                                      ? 'bg-amber-900/20 border-amber-500/50' 
-                                      : 'bg-slate-700/30 border-slate-600 hover:border-slate-500'
-                                  }`}
-                                >
-                                  {/* Left Column - Photo Preview */}
+                            {/* Two Column Layout: Photos Left, Controls Right */}
+                            <div className="grid grid-cols-2 gap-4">
+                              {/* Left Column - Photo Previews */}
+                              <div className="space-y-3">
+                                <Label className="text-slate-400 text-xs mb-2 block">Photos</Label>
+                                
+                                {paperMemorialPhotos.map((photo, idx) => (
                                   <div 
-                                    className="aspect-[4/5] bg-slate-800 rounded-lg overflow-hidden cursor-pointer relative group"
+                                    key={idx}
+                                    className={`aspect-[4/5] bg-slate-800 rounded-lg overflow-hidden cursor-pointer relative group border-2 transition-all ${
+                                      editingPhotoIndex === idx 
+                                        ? 'border-amber-500' 
+                                        : 'border-slate-600 hover:border-slate-500'
+                                    }`}
                                     onClick={() => setEditingPhotoIndex(editingPhotoIndex === idx ? -1 : idx)}
                                   >
                                     <img 
@@ -4525,18 +4525,62 @@ const Design = () => {
                                       #{idx + 1}
                                     </div>
                                   </div>
-                                  
-                                  {/* Right Column - Controls */}
-                                  <div className="flex flex-col gap-2">
+                                ))}
+                                
+                                {/* Add Photo Button */}
+                                <button
+                                  type="button"
+                                  onClick={() => paperMemorialPhotoInputRef.current?.click()}
+                                  className="w-full aspect-[4/5] bg-slate-800/50 border-2 border-dashed border-amber-500/40 hover:border-amber-400 rounded-lg transition-all flex flex-col items-center justify-center gap-2 group"
+                                >
+                                  <div className="w-12 h-12 bg-slate-700/50 rounded-full flex items-center justify-center group-hover:bg-amber-600/20 transition-colors">
+                                    <Plus className="h-6 w-6 text-amber-400" />
+                                  </div>
+                                  <span className="text-amber-300 text-sm font-medium">
+                                    {paperMemorialPhotos.length === 0 ? 'Add Photo' : 'Add Another'}
+                                  </span>
+                                  <span className="text-slate-400 text-xs">
+                                    {paperMemorialPhotos.length === 0 ? '1 included' : `+$${ADDITIONAL_PHOTO_PRICE}`}
+                                  </span>
+                                </button>
+                              </div>
+                              
+                              {/* Right Column - Controls */}
+                              <div className="space-y-3">
+                                <Label className="text-slate-400 text-xs mb-2 block">Settings</Label>
+                                
+                                {paperMemorialPhotos.length === 0 ? (
+                                  <div className="p-4 bg-slate-700/30 rounded-lg border border-slate-600 text-center">
+                                    <p className="text-slate-400 text-sm">Upload a photo to see controls</p>
+                                  </div>
+                                ) : editingPhotoIndex === -1 ? (
+                                  <div className="p-4 bg-slate-700/30 rounded-lg border border-slate-600 text-center">
+                                    <p className="text-slate-400 text-sm">Click a photo to edit</p>
+                                  </div>
+                                ) : (
+                                  <div className="p-3 bg-slate-700/30 rounded-lg border border-amber-500/50 space-y-3">
+                                    <div className="flex items-center justify-between">
+                                      <span className="text-white font-medium text-sm">Photo #{editingPhotoIndex + 1}</span>
+                                      <Button
+                                        type="button"
+                                        variant="ghost"
+                                        size="sm"
+                                        onClick={() => removePaperMemorialPhoto(editingPhotoIndex)}
+                                        className="text-rose-400 hover:text-rose-300 hover:bg-rose-500/20 text-xs h-7"
+                                      >
+                                        <Trash2 className="h-3 w-3 mr-1" /> Remove
+                                      </Button>
+                                    </div>
+                                    
                                     {/* Size Toggle */}
                                     <div>
                                       <Label className="text-slate-400 text-xs mb-1 block">Size</Label>
                                       <div className="flex gap-1">
                                         <button
                                           type="button"
-                                          onClick={() => updatePaperMemorialPhoto(idx, { size: '16x20' })}
-                                          className={`flex-1 px-2 py-1.5 text-xs rounded transition-all ${
-                                            photo.size === '16x20'
+                                          onClick={() => updatePaperMemorialPhoto(editingPhotoIndex, { size: '16x20' })}
+                                          className={`flex-1 px-2 py-2 text-xs rounded transition-all ${
+                                            paperMemorialPhotos[editingPhotoIndex]?.size === '16x20'
                                               ? 'bg-amber-600 text-white'
                                               : 'bg-slate-600 text-slate-300 hover:bg-slate-500'
                                           }`}
@@ -4545,9 +4589,9 @@ const Design = () => {
                                         </button>
                                         <button
                                           type="button"
-                                          onClick={() => updatePaperMemorialPhoto(idx, { size: '18x24' })}
-                                          className={`flex-1 px-2 py-1.5 text-xs rounded transition-all ${
-                                            photo.size === '18x24'
+                                          onClick={() => updatePaperMemorialPhoto(editingPhotoIndex, { size: '18x24' })}
+                                          className={`flex-1 px-2 py-2 text-xs rounded transition-all ${
+                                            paperMemorialPhotos[editingPhotoIndex]?.size === '18x24'
                                               ? 'bg-amber-600 text-white'
                                               : 'bg-slate-600 text-slate-300 hover:bg-slate-500'
                                           }`}
@@ -4558,73 +4602,66 @@ const Design = () => {
                                     </div>
                                     
                                     {/* Zoom Slider */}
-                                    {editingPhotoIndex === idx && (
-                                      <>
-                                        <div>
-                                          <Label className="text-slate-400 text-xs mb-1 block">Zoom</Label>
-                                          <input
-                                            type="range"
-                                            min="1"
-                                            max="3"
-                                            step="0.1"
-                                            value={photo.zoom}
-                                            onChange={(e) => updatePaperMemorialPhoto(idx, { zoom: parseFloat(e.target.value) })}
-                                            className="w-full accent-amber-600 h-1"
-                                          />
-                                        </div>
-                                        
-                                        <div>
-                                          <Label className="text-slate-400 text-xs mb-1 block">Brightness</Label>
-                                          <input
-                                            type="range"
-                                            min="50"
-                                            max="150"
-                                            step="5"
-                                            value={photo.brightness}
-                                            onChange={(e) => updatePaperMemorialPhoto(idx, { brightness: parseFloat(e.target.value) })}
-                                            className="w-full accent-amber-600 h-1"
-                                          />
-                                        </div>
-                                      </>
-                                    )}
+                                    <div>
+                                      <Label className="text-slate-400 text-xs mb-1 block">Zoom</Label>
+                                      <input
+                                        type="range"
+                                        min="1"
+                                        max="3"
+                                        step="0.1"
+                                        value={paperMemorialPhotos[editingPhotoIndex]?.zoom || 1}
+                                        onChange={(e) => updatePaperMemorialPhoto(editingPhotoIndex, { zoom: parseFloat(e.target.value) })}
+                                        className="w-full accent-amber-600 h-2"
+                                      />
+                                    </div>
                                     
-                                    {/* Remove Button */}
-                                    <Button
-                                      type="button"
-                                      variant="ghost"
-                                      size="sm"
-                                      onClick={() => removePaperMemorialPhoto(idx)}
-                                      className="text-rose-400 hover:text-rose-300 hover:bg-rose-500/20 text-xs h-7 mt-auto"
-                                    >
-                                      <Trash2 className="h-3 w-3 mr-1" /> Remove
-                                    </Button>
+                                    {/* Brightness Slider */}
+                                    <div>
+                                      <Label className="text-slate-400 text-xs mb-1 block">Brightness</Label>
+                                      <input
+                                        type="range"
+                                        min="50"
+                                        max="150"
+                                        step="5"
+                                        value={paperMemorialPhotos[editingPhotoIndex]?.brightness || 100}
+                                        onChange={(e) => updatePaperMemorialPhoto(editingPhotoIndex, { brightness: parseFloat(e.target.value) })}
+                                        className="w-full accent-amber-600 h-2"
+                                      />
+                                    </div>
+                                    
+                                    {/* Position Controls */}
+                                    <div>
+                                      <Label className="text-slate-400 text-xs mb-1 block">Position</Label>
+                                      <div className="grid grid-cols-2 gap-2">
+                                        <div>
+                                          <span className="text-slate-500 text-xs">Left/Right</span>
+                                          <input
+                                            type="range"
+                                            min="-50"
+                                            max="50"
+                                            step="1"
+                                            value={paperMemorialPhotos[editingPhotoIndex]?.panX || 0}
+                                            onChange={(e) => updatePaperMemorialPhoto(editingPhotoIndex, { panX: parseFloat(e.target.value) })}
+                                            className="w-full accent-amber-600 h-2"
+                                          />
+                                        </div>
+                                        <div>
+                                          <span className="text-slate-500 text-xs">Up/Down</span>
+                                          <input
+                                            type="range"
+                                            min="-50"
+                                            max="50"
+                                            step="1"
+                                            value={paperMemorialPhotos[editingPhotoIndex]?.panY || 0}
+                                            onChange={(e) => updatePaperMemorialPhoto(editingPhotoIndex, { panY: parseFloat(e.target.value) })}
+                                            className="w-full accent-amber-600 h-2"
+                                          />
+                                        </div>
+                                      </div>
+                                    </div>
                                   </div>
-                                </div>
-                              ))}
-                              
-                              {/* Add Photo Button */}
-                              <button
-                                type="button"
-                                onClick={() => paperMemorialPhotoInputRef.current?.click()}
-                                className="w-full p-4 bg-gradient-to-r from-amber-600/15 via-amber-500/10 to-amber-600/15 border border-dashed border-amber-500/40 hover:border-amber-400 rounded-lg transition-all group"
-                              >
-                                <div className="flex items-center justify-center gap-3">
-                                  <div className="w-10 h-12 bg-slate-700/50 rounded-lg flex items-center justify-center group-hover:bg-amber-600/20 transition-colors">
-                                    <Plus className="h-5 w-5 text-amber-400" />
-                                  </div>
-                                  <div className="text-left">
-                                    <span className="font-medium text-amber-300 block">
-                                      {paperMemorialPhotos.length === 0 ? 'Add Memorial Photo' : 'Add Another Photo'}
-                                    </span>
-                                    <span className="text-slate-400 text-sm">
-                                      {paperMemorialPhotos.length === 0 
-                                        ? '16×20 included • Click to upload'
-                                        : `$${ADDITIONAL_PHOTO_PRICE} each • 16×20 or 18×24`
-                                      }
-                                    </span>
-                                  </div>
-                                </div>
-                              </button>
+                                )}
+                              </div>
                             </div>
                           </div>
                           
