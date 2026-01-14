@@ -408,8 +408,11 @@ const Design = () => {
   const [additionalTextFont, setAdditionalTextFont] = useState('Cormorant Garamond');
   const [showAdditionalText, setShowAdditionalText] = useState(false);
   const [selectedPrayerId, setSelectedPrayerId] = useState<string>('custom');
-  const [draggingText, setDraggingText] = useState<'name' | 'dates' | 'additional' | 'backDates' | null>(null);
-  const [resizingText, setResizingText] = useState<'name' | 'dates' | 'additional' | 'backDates' | null>(null);
+  const [draggingText, setDraggingText] = useState<'name' | 'dates' | 'additional' | 'backDates' | 'prayer' | null>(null);
+  const [resizingText, setResizingText] = useState<'name' | 'dates' | 'additional' | 'backDates' | 'prayer' | null>(null);
+  
+  // Prayer text position (percentage from center, 0 = centered)
+  const [prayerPosition, setPrayerPosition] = useState({ x: 0, y: 0 });
   
   // Back card dates position - default to middle horizontal alignment
   const [backDatesPosition, setBackDatesPosition] = useState({ x: 50, y: 18 });
@@ -778,7 +781,7 @@ const Design = () => {
   }, [photoZoom]);
 
   // Text drag handlers
-  const handleTextPointerDown = (e: React.PointerEvent, textType: 'name' | 'dates' | 'additional' | 'backDates') => {
+  const handleTextPointerDown = (e: React.PointerEvent, textType: 'name' | 'dates' | 'additional' | 'backDates' | 'prayer') => {
     e.stopPropagation();
     e.preventDefault();
 
@@ -792,7 +795,11 @@ const Design = () => {
     if (textPointerCacheRef.current.size === 1) {
       setDraggingText(textType);
       const currentPos =
-        textType === 'name' ? namePosition : textType === 'dates' ? datesPosition : textType === 'backDates' ? backDatesPosition : additionalTextPosition;
+        textType === 'name' ? namePosition 
+        : textType === 'dates' ? datesPosition 
+        : textType === 'backDates' ? backDatesPosition 
+        : textType === 'prayer' ? { x: 50 + prayerPosition.x, y: 50 + prayerPosition.y }
+        : additionalTextPosition;
       textDragStartRef.current = { x: e.clientX, y: e.clientY, posX: currentPos.x, posY: currentPos.y };
     } else if (textPointerCacheRef.current.size === 2) {
       setResizingText(textType);
@@ -808,7 +815,9 @@ const Design = () => {
               ? typeof backDatesSize === 'number'
                 ? backDatesSize
                 : 10
-              : additionalTextSize;
+              : textType === 'prayer'
+                ? prayerTextSize === 'auto' ? autoPrayerFontSize : prayerTextSize
+                : additionalTextSize;
 
       textPinchStartRef.current = {
         distance: getDistance(pointers[0], pointers[1]),
@@ -824,13 +833,15 @@ const Design = () => {
       const pointers = Array.from(textPointerCacheRef.current.values());
       const currentDistance = getDistance(pointers[0], pointers[1]);
       const scaleChange = currentDistance / textPinchStartRef.current.distance;
-      const newSize = Math.max(8, Math.min(48, textPinchStartRef.current.size * scaleChange));
+      const newSize = Math.max(10, Math.min(48, textPinchStartRef.current.size * scaleChange));
       if (resizingText === 'name') {
         setNameSize(newSize);
       } else if (resizingText === 'dates') {
         setFrontDatesSize(newSize);
       } else if (resizingText === 'backDates') {
         setBackDatesSize(newSize);
+      } else if (resizingText === 'prayer') {
+        setPrayerTextSize(newSize);
       } else {
         setAdditionalTextSize(newSize);
       }
@@ -849,7 +860,7 @@ const Design = () => {
     // Adjust bounds based on whether border is active (keep text away from border)
     const hasFrontBorder = cardType === 'paper' && frontBorderDesign !== 'none';
     const hasBackBorder = cardType === 'paper' && backBorderDesign !== 'none';
-    const isBackText = draggingText === 'backDates';
+    const isBackText = draggingText === 'backDates' || draggingText === 'prayer';
     const borderPadding = (isBackText ? hasBackBorder : hasFrontBorder) ? 8 : 0;
     
     const minX = 10 + borderPadding;
@@ -866,6 +877,9 @@ const Design = () => {
       setDatesPosition({ x: newX, y: newY });
     } else if (draggingText === 'backDates') {
       setBackDatesPosition({ x: newX, y: newY });
+    } else if (draggingText === 'prayer') {
+      // Prayer position is offset from center (0,0 = centered)
+      setPrayerPosition({ x: newX - 50, y: newY - 50 });
     } else {
       setAdditionalTextPosition({ x: newX, y: newY });
     }
@@ -889,7 +903,7 @@ const Design = () => {
     }
   };
 
-  const handleTextWheel = (e: React.WheelEvent, textType: 'name' | 'dates' | 'additional' | 'backDates') => {
+  const handleTextWheel = (e: React.WheelEvent, textType: 'name' | 'dates' | 'additional' | 'backDates' | 'prayer') => {
     e.preventDefault();
     e.stopPropagation();
     const delta = -e.deltaY * 0.05;
@@ -904,15 +918,19 @@ const Design = () => {
             ? typeof backDatesSize === 'number'
               ? backDatesSize
               : 10
-            : additionalTextSize;
+            : textType === 'prayer'
+              ? prayerTextSize === 'auto' ? autoPrayerFontSize : prayerTextSize
+              : additionalTextSize;
 
-    const newSize = Math.max(8, Math.min(48, currentSize + delta));
+    const newSize = Math.max(10, Math.min(48, currentSize + delta));
     if (textType === 'name') {
       setNameSize(newSize);
     } else if (textType === 'dates') {
       setFrontDatesSize(newSize);
     } else if (textType === 'backDates') {
       setBackDatesSize(newSize);
+    } else if (textType === 'prayer') {
+      setPrayerTextSize(newSize);
     } else {
       setAdditionalTextSize(newSize);
     }
@@ -981,7 +999,7 @@ const Design = () => {
 
   // Use pixel line-height to avoid mobile Safari rounding/clipping
   const getPrayerLineHeightPx = (fontPx: number) => {
-    const mult = fontPx <= 8 ? 1.05 : 1.15;
+    const mult = fontPx <= 10 ? 1.05 : 1.15;
     return Math.max(1, Math.round(fontPx * mult));
   };
 
@@ -1821,7 +1839,7 @@ const Design = () => {
                               >
                                 <span
                                   style={{
-                                    fontSize: `${Math.max(8, nameSize * 0.7)}px`,
+                                    fontSize: `${Math.max(10, nameSize * 0.7)}px`,
                                     color: nameColor,
                                     fontWeight: nameBold ? 'bold' : 'normal',
                                     whiteSpace: 'pre-line',
@@ -1912,7 +1930,7 @@ const Design = () => {
                               >
                                 <span
                                   style={{
-                                    fontSize: `${Math.max(8, additionalTextSize * 0.7)}px`,
+                                    fontSize: `${Math.max(10, additionalTextSize * 0.7)}px`,
                                     color: additionalTextColor,
                                     fontWeight: additionalTextBold ? 'bold' : 'normal',
                                     whiteSpace: 'pre-wrap',
@@ -2819,7 +2837,7 @@ const Design = () => {
                                 <Label className="text-slate-400 text-xs w-10">Size</Label>
                                 <input
                                   type="range"
-                                  min="6"
+                                  min="10"
                                   max="150"
                                   step="1"
                                   value={pxToPoints(nameSize)}
@@ -2960,7 +2978,7 @@ const Design = () => {
                                 <Label className="text-slate-400 text-xs w-10">Size</Label>
                                 <input
                                   type="range"
-                                  min="6"
+                                  min="10"
                                   max="72"
                                   step="1"
                                   value={pxToPoints(typeof frontDatesSize === 'number' ? frontDatesSize : 16)}
@@ -3070,7 +3088,7 @@ const Design = () => {
                                     <Label className="text-slate-400 text-xs w-10">Size</Label>
                                     <input
                                       type="range"
-                                      min="6"
+                                      min="10"
                                       max="72"
                                       step="1"
                                       value={pxToPoints(additionalTextSize)}
@@ -3272,7 +3290,15 @@ const Design = () => {
                                 {/* Prayer - takes remaining space, centered vertically */}
                                 <div
                                   ref={prayerContainerRef}
-                                  className="flex-1 flex items-center justify-center px-1 overflow-hidden min-h-0"
+                                  className="flex-1 flex items-center justify-center px-1 overflow-hidden min-h-0 touch-none select-none"
+                                  style={{
+                                    cursor: draggingText === 'prayer' || resizingText === 'prayer' ? 'grabbing' : 'grab',
+                                  }}
+                                  onPointerDown={(e) => handleTextPointerDown(e, 'prayer')}
+                                  onPointerMove={handleTextPointerMove}
+                                  onPointerUp={handleTextPointerUp}
+                                  onPointerCancel={handleTextPointerUp}
+                                  onWheel={(e) => handleTextWheel(e, 'prayer')}
                                 >
                                   <p 
                                     ref={prayerTextRef}
@@ -3291,9 +3317,13 @@ const Design = () => {
                                       )}px`,
                                       textWrap: 'pretty',
                                       overflowWrap: 'break-word',
+                                      wordBreak: 'break-word',
                                       fontWeight: prayerBold ? 'bold' : 'normal',
                                       paddingBottom: '2px',
                                       textShadow: '2px 2px 4px rgba(0,0,0,0.5)',
+                                      transform: `translate(${prayerPosition.x}%, ${prayerPosition.y}%)`,
+                                      boxShadow: (draggingText === 'prayer' || resizingText === 'prayer') ? '0 0 0 2px #d97706' : 'none',
+                                      borderRadius: '4px',
                                     }}
                                   >
                                     {preventOrphans(backText)}
@@ -3463,7 +3493,7 @@ const Design = () => {
                                     variant="outline"
                                     size="icon"
                                     className="h-6 w-6 border-slate-600"
-                                    onClick={() => setBackDatesSize(typeof backDatesSize === 'number' ? Math.max(6, backDatesSize - 3) : 9)}
+                                    onClick={() => setBackDatesSize(typeof backDatesSize === 'number' ? Math.max(10, backDatesSize - 3) : 9)}
                                   >
                                     <span className="text-xs">−</span>
                                   </Button>
@@ -3715,7 +3745,7 @@ const Design = () => {
                                     variant="outline"
                                     size="icon"
                                     className="h-6 w-6 border-slate-600"
-                                    onClick={() => setInLovingMemorySize(Math.max(6, inLovingMemorySize - 1))}
+                                    onClick={() => setInLovingMemorySize(Math.max(10, inLovingMemorySize - 1))}
                                   >
                                     <span className="text-xs">−</span>
                                   </Button>
@@ -3818,7 +3848,7 @@ const Design = () => {
                                     prayerTextSize === 'auto'
                                       ? autoPrayerFontSize
                                       : Math.min(prayerTextSize, autoPrayerFontSize);
-                                  const newSize = Math.max(3, current - 1);
+                                  const newSize = Math.max(10, current - 1);
                                   setPrayerTextSize(newSize);
                                 }}
                                 className="h-7 w-7 p-0 border-slate-600 text-slate-300 hover:bg-slate-700"
@@ -3884,6 +3914,46 @@ const Design = () => {
                                 </Button>
                               </div>
                             </div>
+                          </div>
+                          
+                          {/* Prayer Position Controls */}
+                          <div className="space-y-2 pt-2 border-t border-slate-600/50">
+                            <Label className="text-slate-400 text-xs">Prayer Position (drag text on card or use sliders)</Label>
+                            <div className="flex items-center gap-2">
+                              <Label className="text-slate-400 text-xs w-10">L/R</Label>
+                              <input
+                                type="range"
+                                min="-40"
+                                max="40"
+                                step="1"
+                                value={prayerPosition.x}
+                                onChange={(e) => setPrayerPosition(prev => ({ ...prev, x: parseFloat(e.target.value) }))}
+                                className="flex-1 accent-amber-600 h-1"
+                              />
+                              <span className="text-xs text-slate-400 w-10 text-right">{Math.round(prayerPosition.x)}%</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <Label className="text-slate-400 text-xs w-10">U/D</Label>
+                              <input
+                                type="range"
+                                min="-40"
+                                max="40"
+                                step="1"
+                                value={prayerPosition.y}
+                                onChange={(e) => setPrayerPosition(prev => ({ ...prev, y: parseFloat(e.target.value) }))}
+                                className="flex-1 accent-amber-600 h-1"
+                              />
+                              <span className="text-xs text-slate-400 w-10 text-right">{Math.round(prayerPosition.y)}%</span>
+                            </div>
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              onClick={() => setPrayerPosition({ x: 0, y: 0 })}
+                              className="border-slate-600 text-slate-300 text-xs w-full"
+                            >
+                              Center Prayer
+                            </Button>
                           </div>
                         </div>
 
@@ -5158,9 +5228,13 @@ const Design = () => {
                     fontWeight: prayerBold ? 'bold' : 'normal',
                     lineHeight: 1.5,
                     whiteSpace: 'pre-line',
+                    wordBreak: 'break-word',
+                    overflowWrap: 'break-word',
                   }}
                 >
-                  {backText}
+                  <span style={{ transform: `translate(${prayerPosition.x}%, ${prayerPosition.y}%)` }}>
+                    {backText}
+                  </span>
                 </div>
                 {showQrCode && qrUrl && (
                   <div className="flex justify-center mt-4">
