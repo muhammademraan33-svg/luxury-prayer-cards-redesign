@@ -294,7 +294,7 @@ const Design = () => {
   const [photoPanX, setPhotoPanX] = useState(savedState?.photoPanX || 0);
   const [photoPanY, setPhotoPanY] = useState(savedState?.photoPanY || 0);
   const [photoRotation, setPhotoRotation] = useState(savedState?.photoRotation || 0);
-  const [photoFade, setPhotoFade] = useState(savedState?.photoFade || false);
+  const [photoFade, setPhotoFade] = useState(savedState?.photoFade ?? true);
   const [fadeColor, setFadeColor] = useState(savedState?.fadeColor || '#000000');
   const [fadeShape, setFadeShape] = useState<'rectangle' | 'circle'>(savedState?.fadeShape || 'rectangle');
   const [metalBorderColor, setMetalBorderColor] = useState<string>(savedState?.metalBorderColor || '#d4af37'); // 'none' or metallic hex
