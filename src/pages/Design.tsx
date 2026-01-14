@@ -1734,9 +1734,9 @@ const Design = () => {
             <form onSubmit={handleSubmitOrder}>
               {/* Step 1: Card Design */}
               {step === 1 && (
-                <div className="md:flex md:gap-4">
+                <div className="md:flex md:gap-6">
                   {/* Left Column: Preview (sticky on medium+ screens) */}
-                  <div className="hidden md:flex md:flex-col md:items-center md:w-[240px] md:flex-shrink-0 md:sticky md:top-14 md:self-start">
+                  <div className="hidden md:flex md:flex-col md:items-center md:flex-1 md:min-w-0 md:sticky md:top-14 md:self-start">
                     {/* Paper Card Size Selection - Above Front/Back */}
                     {cardType === 'paper' && (
                       <div className="w-full bg-slate-700/50 rounded-lg p-2 mb-2">
@@ -2096,7 +2096,7 @@ const Design = () => {
                   </div>
                   
                   {/* Right Column: All Controls */}
-                  <div className="flex-1 space-y-3 min-w-0">
+                  <div className="md:w-[320px] md:flex-shrink-0 space-y-3 min-w-0">
 
                   {/* Border Style Selection - Paper cards only, at top for easy access on desktop */}
                   {cardType === 'paper' && (
