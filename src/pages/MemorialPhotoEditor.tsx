@@ -868,6 +868,32 @@ const MemorialPhotoEditor = () => {
                       />
                     </div>
                     
+                    {/* Horizontal Position */}
+                    <div>
+                      <Label className="text-slate-400 text-xs">Left/Right: {Math.round(selectedTextBox.x)}%</Label>
+                      <input
+                        type="range"
+                        min="5"
+                        max="95"
+                        value={selectedTextBox.x}
+                        onChange={(e) => updateTextBox(selectedTextBox.id, { x: parseFloat(e.target.value) })}
+                        className="w-full accent-amber-600 mt-1"
+                      />
+                    </div>
+                    
+                    {/* Vertical Position */}
+                    <div>
+                      <Label className="text-slate-400 text-xs">Up/Down: {Math.round(selectedTextBox.y)}%</Label>
+                      <input
+                        type="range"
+                        min="5"
+                        max="95"
+                        value={selectedTextBox.y}
+                        onChange={(e) => updateTextBox(selectedTextBox.id, { y: parseFloat(e.target.value) })}
+                        className="w-full accent-amber-600 mt-1"
+                      />
+                    </div>
+                    
                     {/* Color */}
                     <div>
                       <Label className="text-slate-400 text-xs">Color</Label>
