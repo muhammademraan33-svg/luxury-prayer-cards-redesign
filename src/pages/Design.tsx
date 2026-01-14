@@ -43,6 +43,7 @@ import html2canvas from 'html2canvas';
 import { hexToRgb, pickBestTextColor, relativeLuminance, rgbToHex } from '@/lib/color';
 import { supabase } from '@/integrations/supabase/client';
 import { AdditionalDesignData, createEmptyDesign } from '@/components/AdditionalDesignEditor';
+import { MemorialPhotoDesigner, MemorialPhotoData, createEmptyMemorialPhoto } from '@/components/MemorialPhotoDesigner';
 
 const PRESET_BACKGROUNDS = [
   { id: 'clouds', name: 'Soft Clouds', src: cloudsLightBg, isDark: false },
@@ -173,16 +174,6 @@ type CardThickness = 'standard' | 'premium';
 type EaselPhotoSize = '16x20' | '18x24';
 type PaperCardSize = '2.625x4.375' | '3.125x4.875';
 
-type PaperMemorialPhoto = {
-  src: string;
-  size: EaselPhotoSize;
-  zoom: number;
-  panX: number;
-  panY: number;
-  rotation: number;
-  brightness: number;
-};
-
 const Design = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
@@ -232,8 +223,7 @@ const Design = () => {
   const [extraPhotos, setExtraPhotos] = useState(0); // Extra photos beyond package (handled by easelPhotos length)
   
   // Paper memorial photos state
-  const [paperMemorialPhotos, setPaperMemorialPhotos] = useState<PaperMemorialPhoto[]>([]);
-  const [editingPhotoIndex, setEditingPhotoIndex] = useState<number>(-1);
+  const [paperMemorialPhotos, setPaperMemorialPhotos] = useState<MemorialPhotoData[]>([]);
   const paperMemorialPhotoInputRef = useRef<HTMLInputElement>(null);
   
   const [upgradeThickness, setUpgradeThickness] = useState(false);
@@ -1307,42 +1297,18 @@ const Design = () => {
   };
 
   // Paper memorial photo handlers
-  const handlePaperMemorialPhotoUpload = (files: FileList | null) => {
-    if (!files) return;
-    
-    const newPhotos: PaperMemorialPhoto[] = [];
-    Array.from(files).forEach(file => {
-      const previewUrl = URL.createObjectURL(file);
-      newPhotos.push({
-        src: previewUrl,
-        size: '16x20',
-        zoom: 1,
-        panX: 0,
-        panY: 0,
-        rotation: 0,
-        brightness: 100,
-      });
-    });
-    
-    setPaperMemorialPhotos(prev => [...prev, ...newPhotos]);
-    if (newPhotos.length === 1) {
-      setEditingPhotoIndex(paperMemorialPhotos.length);
-    }
-    toast.success(`${newPhotos.length} photo${newPhotos.length > 1 ? 's' : ''} added!`);
+  const addPaperMemorialPhoto = () => {
+    const newPhoto = createEmptyMemorialPhoto(deceasedName, birthDate, deathDate);
+    setPaperMemorialPhotos(prev => [...prev, newPhoto]);
   };
 
   const removePaperMemorialPhoto = (index: number) => {
     setPaperMemorialPhotos(prev => prev.filter((_, i) => i !== index));
-    if (editingPhotoIndex === index) {
-      setEditingPhotoIndex(-1);
-    } else if (editingPhotoIndex > index) {
-      setEditingPhotoIndex(editingPhotoIndex - 1);
-    }
   };
 
-  const updatePaperMemorialPhoto = (index: number, updates: Partial<PaperMemorialPhoto>) => {
+  const updatePaperMemorialPhoto = (index: number, data: MemorialPhotoData) => {
     setPaperMemorialPhotos(prev => prev.map((photo, i) => 
-      i === index ? { ...photo, ...updates } : photo
+      i === index ? data : photo
     ));
   };
 
@@ -4469,9 +4435,9 @@ const Design = () => {
                             </span>
                           </div>
                           
-                          {/* Memorial Photos Section - Two Column Layout */}
+                          {/* Memorial Photos Section - Designer Layout */}
                           <div className="py-3 border-b border-slate-600">
-                            <div className="flex items-center justify-between mb-3">
+                            <div className="flex items-center justify-between mb-4">
                               <span className="text-slate-300 font-medium">Memorial Photos</span>
                               <span className="text-amber-400 text-sm">
                                 {paperMemorialPhotos.length === 0 
@@ -4481,188 +4447,50 @@ const Design = () => {
                               </span>
                             </div>
                             
-                            {/* Hidden file input */}
-                            <input
-                              ref={paperMemorialPhotoInputRef}
-                              type="file"
-                              accept="image/*"
-                              multiple
-                              className="hidden"
-                              onChange={(e) => handlePaperMemorialPhotoUpload(e.target.files)}
-                            />
+                            {/* No photos yet - show add button */}
+                            {paperMemorialPhotos.length === 0 && (
+                              <button
+                                type="button"
+                                onClick={addPaperMemorialPhoto}
+                                className="w-full p-6 bg-slate-800/50 border-2 border-dashed border-amber-500/40 hover:border-amber-400 rounded-lg transition-all flex flex-col items-center justify-center gap-2 group"
+                              >
+                                <div className="w-12 h-12 bg-slate-700/50 rounded-full flex items-center justify-center group-hover:bg-amber-600/20 transition-colors">
+                                  <Plus className="h-6 w-6 text-amber-400" />
+                                </div>
+                                <span className="text-amber-300 text-sm font-medium">Add Memorial Photo</span>
+                                <span className="text-slate-400 text-xs">1 included in bundle</span>
+                              </button>
+                            )}
                             
-                            {/* Two Column Layout: Photos Left, Controls Right */}
-                            <div className="grid grid-cols-2 gap-4">
-                              {/* Left Column - Photo Previews */}
-                              <div className="space-y-3">
-                                <Label className="text-slate-400 text-xs mb-2 block">Photos</Label>
-                                
-                                {paperMemorialPhotos.map((photo, idx) => (
-                                  <div 
-                                    key={idx}
-                                    className={`aspect-[4/5] bg-slate-800 rounded-lg overflow-hidden cursor-pointer relative group border-2 transition-all ${
-                                      editingPhotoIndex === idx 
-                                        ? 'border-amber-500' 
-                                        : 'border-slate-600 hover:border-slate-500'
-                                    }`}
-                                    onClick={() => setEditingPhotoIndex(editingPhotoIndex === idx ? -1 : idx)}
-                                  >
-                                    <img 
-                                      src={photo.src} 
-                                      alt={`Memorial photo ${idx + 1}`}
-                                      className="w-full h-full object-cover transition-transform"
-                                      style={{
-                                        transform: `translate(${photo.panX}px, ${photo.panY}px) scale(${photo.zoom}) rotate(${photo.rotation}deg)`,
-                                        filter: `brightness(${photo.brightness}%)`,
-                                      }}
-                                    />
-                                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                                      <span className="text-white text-sm font-medium">
-                                        {editingPhotoIndex === idx ? 'Editing' : 'Click to edit'}
-                                      </span>
-                                    </div>
-                                    <div className="absolute top-2 left-2 bg-black/60 text-white text-xs px-2 py-1 rounded">
-                                      #{idx + 1}
-                                    </div>
-                                  </div>
-                                ))}
-                                
-                                {/* Add Photo Button */}
-                                <button
-                                  type="button"
-                                  onClick={() => paperMemorialPhotoInputRef.current?.click()}
-                                  className="w-full aspect-[4/5] bg-slate-800/50 border-2 border-dashed border-amber-500/40 hover:border-amber-400 rounded-lg transition-all flex flex-col items-center justify-center gap-2 group"
-                                >
-                                  <div className="w-12 h-12 bg-slate-700/50 rounded-full flex items-center justify-center group-hover:bg-amber-600/20 transition-colors">
-                                    <Plus className="h-6 w-6 text-amber-400" />
-                                  </div>
-                                  <span className="text-amber-300 text-sm font-medium">
-                                    {paperMemorialPhotos.length === 0 ? 'Add Photo' : 'Add Another'}
-                                  </span>
-                                  <span className="text-slate-400 text-xs">
-                                    {paperMemorialPhotos.length === 0 ? '1 included' : `+$${ADDITIONAL_PHOTO_PRICE}`}
-                                  </span>
-                                </button>
-                              </div>
-                              
-                              {/* Right Column - Controls */}
-                              <div className="space-y-3">
-                                <Label className="text-slate-400 text-xs mb-2 block">Settings</Label>
-                                
-                                {paperMemorialPhotos.length === 0 ? (
-                                  <div className="p-4 bg-slate-700/30 rounded-lg border border-slate-600 text-center">
-                                    <p className="text-slate-400 text-sm">Upload a photo to see controls</p>
-                                  </div>
-                                ) : editingPhotoIndex === -1 ? (
-                                  <div className="p-4 bg-slate-700/30 rounded-lg border border-slate-600 text-center">
-                                    <p className="text-slate-400 text-sm">Click a photo to edit</p>
-                                  </div>
-                                ) : (
-                                  <div className="p-3 bg-slate-700/30 rounded-lg border border-amber-500/50 space-y-3">
-                                    <div className="flex items-center justify-between">
-                                      <span className="text-white font-medium text-sm">Photo #{editingPhotoIndex + 1}</span>
-                                      <Button
-                                        type="button"
-                                        variant="ghost"
-                                        size="sm"
-                                        onClick={() => removePaperMemorialPhoto(editingPhotoIndex)}
-                                        className="text-rose-400 hover:text-rose-300 hover:bg-rose-500/20 text-xs h-7"
-                                      >
-                                        <Trash2 className="h-3 w-3 mr-1" /> Remove
-                                      </Button>
-                                    </div>
-                                    
-                                    {/* Size Toggle */}
-                                    <div>
-                                      <Label className="text-slate-400 text-xs mb-1 block">Size</Label>
-                                      <div className="flex gap-1">
-                                        <button
-                                          type="button"
-                                          onClick={() => updatePaperMemorialPhoto(editingPhotoIndex, { size: '16x20' })}
-                                          className={`flex-1 px-2 py-2 text-xs rounded transition-all ${
-                                            paperMemorialPhotos[editingPhotoIndex]?.size === '16x20'
-                                              ? 'bg-amber-600 text-white'
-                                              : 'bg-slate-600 text-slate-300 hover:bg-slate-500'
-                                          }`}
-                                        >
-                                          16×20
-                                        </button>
-                                        <button
-                                          type="button"
-                                          onClick={() => updatePaperMemorialPhoto(editingPhotoIndex, { size: '18x24' })}
-                                          className={`flex-1 px-2 py-2 text-xs rounded transition-all ${
-                                            paperMemorialPhotos[editingPhotoIndex]?.size === '18x24'
-                                              ? 'bg-amber-600 text-white'
-                                              : 'bg-slate-600 text-slate-300 hover:bg-slate-500'
-                                          }`}
-                                        >
-                                          18×24 <span className="text-amber-300">+$7</span>
-                                        </button>
-                                      </div>
-                                    </div>
-                                    
-                                    {/* Zoom Slider */}
-                                    <div>
-                                      <Label className="text-slate-400 text-xs mb-1 block">Zoom</Label>
-                                      <input
-                                        type="range"
-                                        min="1"
-                                        max="3"
-                                        step="0.1"
-                                        value={paperMemorialPhotos[editingPhotoIndex]?.zoom || 1}
-                                        onChange={(e) => updatePaperMemorialPhoto(editingPhotoIndex, { zoom: parseFloat(e.target.value) })}
-                                        className="w-full accent-amber-600 h-2"
-                                      />
-                                    </div>
-                                    
-                                    {/* Brightness Slider */}
-                                    <div>
-                                      <Label className="text-slate-400 text-xs mb-1 block">Brightness</Label>
-                                      <input
-                                        type="range"
-                                        min="50"
-                                        max="150"
-                                        step="5"
-                                        value={paperMemorialPhotos[editingPhotoIndex]?.brightness || 100}
-                                        onChange={(e) => updatePaperMemorialPhoto(editingPhotoIndex, { brightness: parseFloat(e.target.value) })}
-                                        className="w-full accent-amber-600 h-2"
-                                      />
-                                    </div>
-                                    
-                                    {/* Position Controls */}
-                                    <div>
-                                      <Label className="text-slate-400 text-xs mb-1 block">Position</Label>
-                                      <div className="grid grid-cols-2 gap-2">
-                                        <div>
-                                          <span className="text-slate-500 text-xs">Left/Right</span>
-                                          <input
-                                            type="range"
-                                            min="-50"
-                                            max="50"
-                                            step="1"
-                                            value={paperMemorialPhotos[editingPhotoIndex]?.panX || 0}
-                                            onChange={(e) => updatePaperMemorialPhoto(editingPhotoIndex, { panX: parseFloat(e.target.value) })}
-                                            className="w-full accent-amber-600 h-2"
-                                          />
-                                        </div>
-                                        <div>
-                                          <span className="text-slate-500 text-xs">Up/Down</span>
-                                          <input
-                                            type="range"
-                                            min="-50"
-                                            max="50"
-                                            step="1"
-                                            value={paperMemorialPhotos[editingPhotoIndex]?.panY || 0}
-                                            onChange={(e) => updatePaperMemorialPhoto(editingPhotoIndex, { panY: parseFloat(e.target.value) })}
-                                            className="w-full accent-amber-600 h-2"
-                                          />
-                                        </div>
-                                      </div>
-                                    </div>
-                                  </div>
-                                )}
-                              </div>
+                            {/* Photo designers */}
+                            <div className="space-y-6">
+                              {paperMemorialPhotos.map((photo, idx) => (
+                                <div key={idx} className="bg-slate-700/30 rounded-lg p-4 border border-slate-600">
+                                  <MemorialPhotoDesigner
+                                    data={photo}
+                                    onChange={(data) => updatePaperMemorialPhoto(idx, data)}
+                                    onRemove={idx > 0 ? () => removePaperMemorialPhoto(idx) : undefined}
+                                    photoIndex={idx}
+                                    deceasedName={deceasedName}
+                                    birthDate={birthDate}
+                                    deathDate={deathDate}
+                                  />
+                                </div>
+                              ))}
                             </div>
+                            
+                            {/* Add another photo button */}
+                            {paperMemorialPhotos.length > 0 && (
+                              <button
+                                type="button"
+                                onClick={addPaperMemorialPhoto}
+                                className="w-full mt-4 p-4 bg-slate-800/50 border-2 border-dashed border-amber-500/40 hover:border-amber-400 rounded-lg transition-all flex items-center justify-center gap-2 group"
+                              >
+                                <Plus className="h-5 w-5 text-amber-400" />
+                                <span className="text-amber-300 text-sm font-medium">Add Another Photo</span>
+                                <span className="text-slate-400 text-xs ml-2">+${ADDITIONAL_PHOTO_PRICE}</span>
+                              </button>
+                            )}
                           </div>
                           
                           {additionalDesigns.length > 0 && (
