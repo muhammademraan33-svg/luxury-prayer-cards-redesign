@@ -8,7 +8,9 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
-import { Sparkles, QrCode, Loader2, Truck, Zap, ArrowLeft, ArrowRight, ImageIcon, RotateCcw, RectangleHorizontal, RectangleVertical, Type, Book, Trash2, Package, Clock, MapPin, Layers, CheckCircle2, Plus, Eye, Download } from 'lucide-react';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Calendar } from '@/components/ui/calendar';
+import { CalendarIcon, Sparkles, QrCode, Loader2, Truck, Zap, ArrowLeft, ArrowRight, ImageIcon, RotateCcw, RectangleHorizontal, RectangleVertical, Type, Book, Trash2, Package, Clock, MapPin, Layers, CheckCircle2, Plus, Eye, Download } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 import { Textarea } from '@/components/ui/textarea';
 import { Slider } from '@/components/ui/slider';
@@ -18,6 +20,7 @@ import metalCardProduct from '@/assets/metal-card-product.jpg';
 import paperCardsProduct from '@/assets/paper-cards-product.jpg';
 import { AutoFitSingleLineText } from '@/components/AutoFitSingleLineText';
 import { AutoFitText } from '@/components/AutoFitText';
+import { format } from 'date-fns';
 
 import cloudsLightBg from '@/assets/backgrounds/clouds-light.jpg';
 import marbleGreyBg from '@/assets/backgrounds/marble-grey.jpg';
@@ -209,8 +212,8 @@ const Design = () => {
   
   // Form state
   const [deceasedName, setDeceasedName] = useState(savedState?.deceasedName || '');
-  const [birthDate, setBirthDate] = useState(savedState?.birthDate || '__/__/____');
-  const [deathDate, setDeathDate] = useState(savedState?.deathDate || '__/__/____');
+  const [birthDate, setBirthDate] = useState<Date | undefined>(savedState?.birthDate ? new Date(savedState.birthDate) : undefined);
+  const [deathDate, setDeathDate] = useState<Date | undefined>(savedState?.deathDate ? new Date(savedState.deathDate) : undefined);
   const [metalFinish, setMetalFinish] = useState<MetalFinish>(savedState?.metalFinish || 'white');
 
   // Card type from URL param (metal or paper)
@@ -951,41 +954,36 @@ const Design = () => {
     }
   };
 
-  const formatDates = (birth: string, death: string, format: 'full' | 'short-month' | 'mmm-dd-yyyy' | 'numeric' | 'year'): string => {
+  const formatDates = (birth: Date | undefined, death: Date | undefined, formatType: 'full' | 'short-month' | 'mmm-dd-yyyy' | 'numeric' | 'year'): string => {
     const monthsFull = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
     const monthsShort = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
     
-    // Parse mm/dd/yyyy format and format based on selected format
-    const parseToDisplay = (dateStr: string): string => {
-      if (!dateStr) return '';
-      const match = dateStr.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
-      if (match) {
-        const monthIdx = parseInt(match[1], 10) - 1;
-        const day = parseInt(match[2], 10);
-        const dayPadded = match[2].padStart(2, '0');
-        const year = match[3];
-        if (monthIdx >= 0 && monthIdx < 12) {
-          switch (format) {
-            case 'year':
-              return year;
-            case 'numeric':
-              return `${match[1].padStart(2, '0')}/${dayPadded}/${year}`;
-            case 'mmm-dd-yyyy':
-              return `${monthsShort[monthIdx]} ${dayPadded}, ${year}`;
-            case 'short-month':
-              return `${monthsShort[monthIdx]} ${day}, ${year}`;
-            case 'full':
-            default:
-              return `${monthsFull[monthIdx]} ${day}, ${year}`;
-          }
-        }
+    // Format a Date object based on selected format
+    const formatDate = (date: Date): string => {
+      const month = date.getMonth();
+      const day = date.getDate();
+      const dayPadded = String(day).padStart(2, '0');
+      const monthPadded = String(month + 1).padStart(2, '0');
+      const year = date.getFullYear();
+      
+      switch (formatType) {
+        case 'year':
+          return String(year);
+        case 'numeric':
+          return `${monthPadded}/${dayPadded}/${year}`;
+        case 'mmm-dd-yyyy':
+          return `${monthsShort[month]} ${dayPadded}, ${year}`;
+        case 'short-month':
+          return `${monthsShort[month]} ${day}, ${year}`;
+        case 'full':
+        default:
+          return `${monthsFull[month]} ${day}, ${year}`;
       }
-      return dateStr; // Return as-is if not in expected format
     };
     
     // If no dates provided, show placeholder
     if (!birth && !death) {
-      switch (format) {
+      switch (formatType) {
         case 'year': return '1945 – 2025';
         case 'numeric': return '01/01/1945 – 12/31/2025';
         case 'mmm-dd-yyyy': return 'Jan 01, 1945 – Dec 31, 2025';
@@ -994,8 +992,8 @@ const Design = () => {
       }
     }
     
-    const birthDisplay = birth ? parseToDisplay(birth) : 'Birth Date';
-    const deathDisplay = death ? parseToDisplay(death) : 'Death Date';
+    const birthDisplay = birth ? formatDate(birth) : 'Birth Date';
+    const deathDisplay = death ? formatDate(death) : 'Death Date';
     
     return `${birthDisplay} – ${deathDisplay}`;
   };
@@ -2958,22 +2956,46 @@ const Design = () => {
                               </label>
                             </div>
                             <div className="flex gap-2">
-                              <Input
-                                type="text"
-                                placeholder="__/__/____"
-                                value={birthDate}
-                                onChange={(e) => setBirthDate(e.target.value)}
-                                onFocus={(e) => { if (birthDate === '__/__/____') e.target.select(); }}
-                                className="bg-slate-700 border-slate-600 text-white placeholder:text-slate-400 h-8 text-sm"
-                              />
-                              <Input
-                                type="text"
-                                placeholder="__/__/____"
-                                value={deathDate}
-                                onChange={(e) => setDeathDate(e.target.value)}
-                                onFocus={(e) => { if (deathDate === '__/__/____') e.target.select(); }}
-                                className="bg-slate-700 border-slate-600 text-white placeholder:text-slate-400 h-8 text-sm"
-                              />
+                              <Popover>
+                                <PopoverTrigger asChild>
+                                  <Button
+                                    variant="outline"
+                                    className="bg-slate-700 border-slate-600 text-white hover:bg-slate-600 h-8 text-sm flex-1 justify-start"
+                                  >
+                                    <CalendarIcon className="mr-2 h-4 w-4" />
+                                    {birthDate ? format(birthDate, "MM/dd/yyyy") : "Birth Date"}
+                                  </Button>
+                                </PopoverTrigger>
+                                <PopoverContent className="w-auto p-0 bg-slate-800 border-slate-600" align="start">
+                                  <Calendar
+                                    mode="single"
+                                    selected={birthDate}
+                                    onSelect={setBirthDate}
+                                    initialFocus
+                                    className="bg-slate-800 text-white"
+                                  />
+                                </PopoverContent>
+                              </Popover>
+                              <Popover>
+                                <PopoverTrigger asChild>
+                                  <Button
+                                    variant="outline"
+                                    className="bg-slate-700 border-slate-600 text-white hover:bg-slate-600 h-8 text-sm flex-1 justify-start"
+                                  >
+                                    <CalendarIcon className="mr-2 h-4 w-4" />
+                                    {deathDate ? format(deathDate, "MM/dd/yyyy") : "Death Date"}
+                                  </Button>
+                                </PopoverTrigger>
+                                <PopoverContent className="w-auto p-0 bg-slate-800 border-slate-600" align="start">
+                                  <Calendar
+                                    mode="single"
+                                    selected={deathDate}
+                                    onSelect={setDeathDate}
+                                    initialFocus
+                                    className="bg-slate-800 text-white"
+                                  />
+                                </PopoverContent>
+                              </Popover>
                             </div>
                             <div className="flex items-center gap-2 flex-wrap">
                               <Select value={datesFont} onValueChange={setDatesFont}>
