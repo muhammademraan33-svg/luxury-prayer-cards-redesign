@@ -2,13 +2,13 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Shield, Truck, Clock, Heart, Star, CheckCircle2, ArrowRight, Gift, Image, Upload, X, ShoppingCart, Minus, Plus, Trash2 } from 'lucide-react';
+import { Shield, Truck, Clock, Heart, Star, CheckCircle2, ArrowRight, Gift, Image, Upload, X, ShoppingCart, Minus, Plus, Trash2, Loader2 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
-
+import { supabase } from '@/integrations/supabase/client';
 
 interface PhotoUploadItem {
   src: string;
@@ -31,7 +31,7 @@ const Index = () => {
   const [photoQuantities, setPhotoQuantities] = useState<Record<string, number>>({});
   const [cart, setCart] = useState<CartItem[]>([]);
   const [cartOpen, setCartOpen] = useState(false);
-
+  const [isCheckingOut, setIsCheckingOut] = useState(false);
   const handlePhotoUpload = (size: string, file: File) => {
     const reader = new FileReader();
     reader.onload = (e) => {
@@ -270,21 +270,47 @@ const Index = () => {
                         <Button 
                           className="w-full" 
                           size="lg"
-                          onClick={() => {
-                            // For now, redirect to design page - in production this would go to a checkout flow
-                            setCartOpen(false);
-                            toast.success('Proceeding to checkout...', {
-                              description: 'You will be redirected to complete your order.'
-                            });
-                            // Redirect to design page with first cart item
-                            const firstItem = cart[0];
-                            if (firstItem) {
-                              window.location.href = `/design?type=paper&quantity=${firstItem.packSize || 72}`;
+                          disabled={isCheckingOut}
+                          onClick={async () => {
+                            setIsCheckingOut(true);
+                            try {
+                              const { data, error } = await supabase.functions.invoke('create-checkout', {
+                                body: {
+                                  items: cart.map(item => ({
+                                    name: item.size + (item.packSize ? ' Pack' : ' Print'),
+                                    price: item.price,
+                                    quantity: item.quantity,
+                                    cardType: item.size.includes('Metal') ? 'metal' : 'paper',
+                                  })),
+                                },
+                              });
+
+                              if (error) throw error;
+
+                              if (data?.url) {
+                                window.location.href = data.url;
+                              } else {
+                                throw new Error('No checkout URL returned');
+                              }
+                            } catch (error: any) {
+                              console.error('Checkout error:', error);
+                              toast.error(error.message || 'Failed to start checkout');
+                            } finally {
+                              setIsCheckingOut(false);
                             }
                           }}
                         >
-                          Proceed to Checkout
-                          <ArrowRight className="ml-2 h-5 w-5" />
+                          {isCheckingOut ? (
+                            <>
+                              <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                              Processing...
+                            </>
+                          ) : (
+                            <>
+                              Proceed to Checkout
+                              <ArrowRight className="ml-2 h-5 w-5" />
+                            </>
+                          )}
                         </Button>
                       </div>
                     </>
