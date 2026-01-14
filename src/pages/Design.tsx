@@ -8,7 +8,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
-import { Sparkles, QrCode, Loader2, Truck, Zap, ArrowLeft, ArrowRight, ImageIcon, RotateCcw, RectangleHorizontal, RectangleVertical, Type, Book, Trash2, Package, Clock, MapPin, Layers, CheckCircle2, Plus } from 'lucide-react';
+import { Sparkles, QrCode, Loader2, Truck, Zap, ArrowLeft, ArrowRight, ImageIcon, RotateCcw, RectangleHorizontal, RectangleVertical, Type, Book, Trash2, Package, Clock, MapPin, Layers, CheckCircle2, Plus, Eye, Download } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 import { Textarea } from '@/components/ui/textarea';
 import { prayerTemplates } from '@/data/prayerTemplates';
@@ -268,6 +268,9 @@ const Design = () => {
   const [showQrCode, setShowQrCode] = useState(true);
   const [orientation, setOrientation] = useState<Orientation>('portrait');
   const [cardSide, setCardSide] = useState<CardSide>('front');
+  const [showPrintPreview, setShowPrintPreview] = useState(false);
+  const [printPreviewImages, setPrintPreviewImages] = useState<{ front: string; back: string } | null>(null);
+  const [generatingPreview, setGeneratingPreview] = useState(false);
   const [deceasedPhoto, setDeceasedPhoto] = useState<string | null>(null);
   const [photoZoom, setPhotoZoom] = useState(1);
   const [photoPanX, setPhotoPanX] = useState(0);
@@ -1341,6 +1344,62 @@ const Design = () => {
       ? 'premium'
       : 'standard';
   const effectiveShipping = 'express'; // 48-72 hours delivery
+
+  // Generate print preview images
+  const handleGeneratePrintPreview = async () => {
+    setGeneratingPreview(true);
+    try {
+      let frontImage = '';
+      let backImage = '';
+
+      // Capture front card
+      if (frontPrintRef.current) {
+        const frontCanvas = await html2canvas(frontPrintRef.current, {
+          scale: 3,
+          useCORS: true,
+          backgroundColor: '#ffffff',
+        });
+        frontImage = frontCanvas.toDataURL('image/jpeg', 0.95);
+      }
+
+      // Capture back card
+      if (backPrintRef.current) {
+        const backCanvas = await html2canvas(backPrintRef.current, {
+          scale: 3,
+          useCORS: true,
+          backgroundColor: '#ffffff',
+        });
+        backImage = backCanvas.toDataURL('image/jpeg', 0.95);
+      }
+
+      setPrintPreviewImages({ front: frontImage, back: backImage });
+      setShowPrintPreview(true);
+    } catch (error) {
+      console.error('Error generating preview:', error);
+      toast.error('Failed to generate print preview');
+    } finally {
+      setGeneratingPreview(false);
+    }
+  };
+
+  const handleDownloadPrintFiles = () => {
+    if (!printPreviewImages) return;
+
+    // Download front
+    const frontLink = document.createElement('a');
+    frontLink.href = printPreviewImages.front;
+    frontLink.download = `${deceasedName || 'prayer-card'}-front.jpg`;
+    frontLink.click();
+
+    // Download back
+    setTimeout(() => {
+      const backLink = document.createElement('a');
+      backLink.href = printPreviewImages.back;
+      backLink.download = `${deceasedName || 'prayer-card'}-back.jpg`;
+      backLink.click();
+    }, 500);
+  };
+
   const handleSubmitOrder = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!deceasedName.trim()) {
@@ -1552,6 +1611,23 @@ const Design = () => {
             <span className="text-lg font-bold text-white">LuxuryPrayerCards.com</span>
           </Link>
           <div className="flex items-center gap-3">
+            {step === 1 && (
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={handleGeneratePrintPreview}
+                disabled={generatingPreview}
+                className="border-slate-600 text-slate-300 hover:bg-slate-700"
+              >
+                {generatingPreview ? (
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                ) : (
+                  <Eye className="h-4 w-4 mr-2" />
+                )}
+                Print Preview
+              </Button>
+            )}
             <div className="flex items-center gap-2 bg-gradient-to-r from-amber-500/20 to-amber-600/20 border border-amber-500/40 rounded-full px-3 py-1.5 animate-pulse">
               <Zap className="h-4 w-4 text-amber-400" />
               <span className="text-sm font-semibold text-amber-300">Delivered in 48-72 Hours</span>
@@ -5160,6 +5236,72 @@ const Design = () => {
         </div>
       </footer>
     </div>
+
+    {/* Print Preview Modal */}
+    <Dialog open={showPrintPreview} onOpenChange={setShowPrintPreview}>
+      <DialogContent className="max-w-4xl bg-slate-800 border-slate-700">
+        <DialogHeader>
+          <DialogTitle className="text-white flex items-center gap-2">
+            <Eye className="h-5 w-5 text-amber-400" />
+            Print-Ready Preview
+          </DialogTitle>
+          <DialogDescription className="text-slate-400">
+            This is exactly what your cards will look like when printed. High-resolution files at 300 DPI with bleed margins.
+          </DialogDescription>
+        </DialogHeader>
+        
+        <div className="grid md:grid-cols-2 gap-4 mt-4">
+          {/* Front Preview */}
+          <div className="space-y-2">
+            <h3 className="text-sm font-semibold text-white text-center">Front Side</h3>
+            <div className="bg-slate-900 rounded-lg p-4 flex items-center justify-center">
+              {printPreviewImages?.front ? (
+                <img 
+                  src={printPreviewImages.front} 
+                  alt="Front card preview" 
+                  className="max-h-[400px] w-auto rounded shadow-lg"
+                />
+              ) : (
+                <div className="text-slate-500">No preview available</div>
+              )}
+            </div>
+          </div>
+          
+          {/* Back Preview */}
+          <div className="space-y-2">
+            <h3 className="text-sm font-semibold text-white text-center">Back Side</h3>
+            <div className="bg-slate-900 rounded-lg p-4 flex items-center justify-center">
+              {printPreviewImages?.back ? (
+                <img 
+                  src={printPreviewImages.back} 
+                  alt="Back card preview" 
+                  className="max-h-[400px] w-auto rounded shadow-lg"
+                />
+              ) : (
+                <div className="text-slate-500">No preview available</div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        <div className="flex justify-end gap-3 mt-4">
+          <Button
+            variant="outline"
+            onClick={() => setShowPrintPreview(false)}
+            className="border-slate-600 text-slate-300"
+          >
+            Close
+          </Button>
+          <Button
+            onClick={handleDownloadPrintFiles}
+            className="bg-amber-600 hover:bg-amber-700 text-white"
+          >
+            <Download className="h-4 w-4 mr-2" />
+            Download Print Files
+          </Button>
+        </div>
+      </DialogContent>
+    </Dialog>
     </>
   );
 };
