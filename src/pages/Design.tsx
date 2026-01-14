@@ -685,19 +685,16 @@ const Design = () => {
 
       const useLightText = best.toLowerCase() === '#ffffff';
 
+      // Keep a reference sample for any luminance checks elsewhere.
       setBackBgSampleHex(normalizedBg ?? (useLightText ? '#0b0b0f' : '#ffffff'));
 
-      if (useLightText) {
-        setInLovingMemoryColor('#ffffffcc');
-        setBackNameColor('#ffffff');
-        setBackDatesColor('#ffffffb3');
-        setPrayerColor('#ffffff');
-      } else {
-        setInLovingMemoryColor('#111827');
-        setBackNameColor('#111827');
-        setBackDatesColor('#111827cc');
-        setPrayerColor('#111827');
-      }
+      const light = '#ffffff';
+      const dark = '#111827';
+
+      setInLovingMemoryColor(useLightText ? light : dark);
+      setBackNameColor(useLightText ? light : dark);
+      setBackDatesColor(useLightText ? light : dark);
+      setPrayerColor(useLightText ? light : dark);
     },
     []
   );
@@ -708,15 +705,8 @@ const Design = () => {
       const imageSrc = typeof opts?.imageSrc !== 'undefined' ? opts?.imageSrc : backBgImage;
 
       if (imageSrc) {
-        // Paper card backs are always photo backgrounds — keep text consistently readable.
-        if (cardType === 'paper') {
-          applyBackTextPalette('#0b0b0f', true);
-          return;
-        }
-
         const avg = await getAverageImageHex(imageSrc);
-        const withOverlay = avg ? applyBlackOverlay(avg, BACK_IMAGE_OVERLAY_ALPHA) : null;
-        applyBackTextPalette(withOverlay, fallbackIsDark);
+        applyBackTextPalette(avg, fallbackIsDark);
         return;
       }
 
@@ -729,7 +719,7 @@ const Design = () => {
       const metalHex = METAL_SAMPLE_HEX[backMetalFinish] ?? '#ffffff';
       applyBackTextPalette(metalHex, relativeLuminance(metalHex) < 0.45);
     },
-    [applyBackTextPalette, applyBlackOverlay, backBgImage, backMetalFinish, cardType, getAverageImageHex]
+    [applyBackTextPalette, backBgImage, backMetalFinish, cardType, getAverageImageHex]
   );
 
   // Helper kept for existing call sites (now auto-detects instead of trusting the boolean).
@@ -844,9 +834,12 @@ const Design = () => {
       return;
     }
 
-    if (!draggingText || !textDragStartRef.current || !cardPreviewRef.current) return;
+    if (!draggingText || !textDragStartRef.current) return;
 
-    const rect = cardPreviewRef.current.getBoundingClientRect();
+    const cardEl = (e.currentTarget as HTMLElement).closest('[data-card-preview]') as HTMLElement | null;
+    const rect = (cardEl ?? cardPreviewRef.current)?.getBoundingClientRect();
+    if (!rect || rect.width === 0 || rect.height === 0) return;
+
     const dx = ((e.clientX - textDragStartRef.current.x) / rect.width) * 100;
     const dy = ((e.clientY - textDragStartRef.current.y) / rect.height) * 100;
 
@@ -1681,6 +1674,7 @@ const Design = () => {
                     {cardSide === 'front' && (
                       <div className="flex flex-col items-center gap-2">
                         <div 
+                          data-card-preview
                           className={`${sidebarCardClass} ${cardRounding} overflow-hidden shadow-2xl relative cursor-pointer ${cardType === 'metal' && metalBorderColor !== 'none' ? `bg-gradient-to-br ${getMetalBorderGradient(metalBorderColor)} p-1` : ''}`}
                           onClick={() => !deceasedPhoto && photoInputRef.current?.click()}
                         >
@@ -1726,18 +1720,40 @@ const Design = () => {
                             {/* Text Overlay - Name */}
                             {showNameOnFront && (
                               <div
-                                className="absolute px-1 py-0.5"
+                                className="absolute touch-none select-none px-1 py-0.5 rounded"
                                 style={{
                                   left: `${namePosition.x}%`,
                                   top: `${namePosition.y}%`,
                                   transform: 'translate(-50%, -50%)',
                                   fontFamily: nameFont,
+                                  cursor:
+                                    draggingText === 'name' || resizingText === 'name' ? 'grabbing' : 'grab',
                                   textShadow: nameTextShadow ? '0 1px 2px rgba(0,0,0,0.5)' : 'none',
+                                  boxShadow:
+                                    draggingText === 'name' || resizingText === 'name'
+                                      ? '0 0 0 2px #d97706'
+                                      : 'none',
                                   maxWidth: '95%',
                                   width: 'max-content',
+                                  textAlign: 'center',
                                 }}
+                                onPointerDown={(e) => handleTextPointerDown(e, 'name')}
+                                onPointerMove={handleTextPointerMove}
+                                onPointerUp={handleTextPointerUp}
+                                onPointerCancel={handleTextPointerUp}
+                                onWheel={(e) => handleTextWheel(e, 'name')}
                               >
-                                <span style={{ fontSize: `${Math.max(8, nameSize * 0.7)}px`, color: nameColor, fontWeight: nameBold ? 'bold' : 'normal', whiteSpace: 'pre-line', textAlign: 'center', display: 'block', lineHeight: 1.2 }}>
+                                <span
+                                  style={{
+                                    fontSize: `${Math.max(8, nameSize * 0.7)}px`,
+                                    color: nameColor,
+                                    fontWeight: nameBold ? 'bold' : 'normal',
+                                    whiteSpace: 'pre-line',
+                                    textAlign: 'center',
+                                    display: 'block',
+                                    lineHeight: 1.2,
+                                  }}
+                                >
                                   {deceasedName || 'Name Here'}
                                 </span>
                               </div>
@@ -1746,16 +1762,30 @@ const Design = () => {
                             {/* Text Overlay - Dates */}
                             {showDatesOnFront && (
                               <div
-                                className="absolute px-1"
+                                className="absolute touch-none select-none px-1 rounded"
                                 style={{
                                   left: `${datesPosition.x}%`,
                                   top: `${datesPosition.y}%`,
                                   transform: 'translate(-50%, -50%)',
                                   fontFamily: datesFont,
+                                  cursor:
+                                    draggingText === 'dates' || resizingText === 'dates'
+                                      ? 'grabbing'
+                                      : 'grab',
                                   textShadow: datesTextShadow ? '0 1px 2px rgba(0,0,0,0.5)' : 'none',
+                                  boxShadow:
+                                    draggingText === 'dates' || resizingText === 'dates'
+                                      ? '0 0 0 2px #d97706'
+                                      : 'none',
                                   width: '90%',
                                   overflow: 'visible',
+                                  textAlign: 'center',
                                 }}
+                                onPointerDown={(e) => handleTextPointerDown(e, 'dates')}
+                                onPointerMove={handleTextPointerMove}
+                                onPointerUp={handleTextPointerUp}
+                                onPointerCancel={handleTextPointerUp}
+                                onWheel={(e) => handleTextWheel(e, 'dates')}
                               >
                                 <AutoFitText
                                   text={formatDates(birthDate, deathDate, frontDateFormat)}
@@ -1776,6 +1806,48 @@ const Design = () => {
                                 />
                               </div>
                             )}
+
+                            {/* Text Overlay - Additional */}
+                            {showAdditionalText && (
+                              <div
+                                className="absolute touch-none select-none px-1 py-0.5 rounded"
+                                style={{
+                                  left: `${additionalTextPosition.x}%`,
+                                  top: `${additionalTextPosition.y}%`,
+                                  transform: 'translate(-50%, -50%)',
+                                  fontFamily: additionalTextFont,
+                                  cursor:
+                                    draggingText === 'additional' || resizingText === 'additional'
+                                      ? 'grabbing'
+                                      : 'grab',
+                                  textShadow: additionalTextShadow ? '0 1px 2px rgba(0,0,0,0.5)' : 'none',
+                                  boxShadow:
+                                    draggingText === 'additional' || resizingText === 'additional'
+                                      ? '0 0 0 2px #d97706'
+                                      : 'none',
+                                  maxWidth: '90%',
+                                  textAlign: 'center',
+                                }}
+                                onPointerDown={(e) => handleTextPointerDown(e, 'additional')}
+                                onPointerMove={handleTextPointerMove}
+                                onPointerUp={handleTextPointerUp}
+                                onPointerCancel={handleTextPointerUp}
+                                onWheel={(e) => handleTextWheel(e, 'additional')}
+                              >
+                                <span
+                                  style={{
+                                    fontSize: `${Math.max(8, additionalTextSize * 0.7)}px`,
+                                    color: additionalTextColor,
+                                    fontWeight: additionalTextBold ? 'bold' : 'normal',
+                                    whiteSpace: 'pre-wrap',
+                                    display: 'block',
+                                    lineHeight: 1.2,
+                                  }}
+                                >
+                                  {additionalText || 'Your text here'}
+                                </span>
+                              </div>
+                            )}
                             
                             {/* Decorative Border Overlay */}
                             {cardType === 'paper' && frontBorderDesign !== 'none' && (
@@ -1793,6 +1865,7 @@ const Design = () => {
                     {cardSide === 'back' && (
                       <div className="flex flex-col items-center gap-2">
                         <div 
+                          data-card-preview
                           className={`${sidebarCardClass} ${cardRounding} shadow-2xl relative overflow-hidden`}
                         >
                           {(() => {
@@ -2054,6 +2127,7 @@ const Design = () => {
                       <div className="flex flex-col items-center gap-4">
                         {/* Card Preview */}
                         <div 
+                          data-card-preview
                           ref={cardPreviewRef}
                           className={`md:hidden ${cardClass} ${cardRounding} overflow-hidden shadow-2xl relative ${cardType === 'metal' && metalBorderColor !== 'none' ? `bg-gradient-to-br ${getMetalBorderGradient(metalBorderColor)} p-1` : ''}`}
                         >
@@ -2996,6 +3070,7 @@ const Design = () => {
                       <div className="flex flex-col items-center gap-4 md:hidden">
                         {/* Card Preview */}
                         <div 
+                          data-card-preview
                           ref={cardPreviewRef}
                           className={`${cardClass} ${cardRounding} shadow-2xl relative overflow-hidden`}
                         >
