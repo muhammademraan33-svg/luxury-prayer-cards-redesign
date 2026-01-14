@@ -2071,48 +2071,58 @@ const Design = () => {
                                   />
                                 )}
                                 <div 
-                                  className={`relative z-10 h-full flex flex-col items-center justify-center p-4 text-center ${cardRounding}`}
+                                  className={`relative z-10 h-full flex flex-col items-center p-3 text-center ${cardRounding}`}
                                 >
-                                  <div style={{ fontFamily: inLovingMemoryFont, color: inLovingMemoryColor, fontSize: `${inLovingMemorySize}px`, fontWeight: inLovingMemoryBold ? 'bold' : 'normal' }} className="mb-1">
-                                    {inLovingMemoryText}
-                                  </div>
-                                  <div className="font-semibold mb-1" style={{ fontFamily: backNameFont, color: backNameColor, fontSize: `${backNameSize}px`, fontWeight: backNameBold ? 'bold' : 'normal' }}>
-                                    {deceasedName || 'Name Here'}
-                                  </div>
-                                  {showDatesOnBack && (
-                                    <div 
-                                      className="mb-3 w-full"
-                                      style={{ 
-                                        fontFamily: datesFont, 
-                                        color: backDatesColor,
-                                        fontSize: backDatesSize === 'auto' ? '10px' : `${backDatesSize}px`
-                                      }}
-                                    >
-                                      <AutoFitSingleLineText
-                                        text={formatDates(birthDate, deathDate, backDateFormat)}
-                                        maxWidth="100%"
+                                  {/* Header section - shrinks to content */}
+                                  <div className="shrink-0 flex flex-col items-center">
+                                    <div style={{ fontFamily: inLovingMemoryFont, color: inLovingMemoryColor, fontSize: `${Math.max(6, inLovingMemorySize * 0.6)}px`, fontWeight: inLovingMemoryBold ? 'bold' : 'normal' }} className="mb-0.5">
+                                      {inLovingMemoryText}
+                                    </div>
+                                    <div className="font-semibold mb-0.5" style={{ fontFamily: backNameFont, color: backNameColor, fontSize: `${Math.max(7, backNameSize * 0.6)}px`, fontWeight: backNameBold ? 'bold' : 'normal' }}>
+                                      {deceasedName || 'Name Here'}
+                                    </div>
+                                    {showDatesOnBack && (
+                                      <div 
+                                        className="mb-1 w-full"
                                         style={{ 
                                           fontFamily: datesFont, 
                                           color: backDatesColor,
-                                          fontSize: backDatesSize === 'auto' ? '10px' : `${backDatesSize}px`
+                                          fontSize: backDatesSize === 'auto' ? '6px' : `${Math.max(5, (typeof backDatesSize === 'number' ? backDatesSize : 9) * 0.6)}px`
                                         }}
-                                      />
-                                    </div>
-                                  )}
-                                  <div 
-                                    className="text-xs leading-relaxed max-w-[90%] flex-1 overflow-hidden"
-                                    style={{ 
-                                      fontFamily: 'Cormorant Garamond',
-                                      fontSize: `${prayerTextSize === 'auto' ? autoPrayerFontSize : Math.min(prayerTextSize, autoPrayerFontSize)}px`,
-                                      color: prayerColor,
-                                      fontWeight: prayerBold ? 'bold' : 'normal',
-                                    }}
-                                  >
-                                    {backText}
+                                      >
+                                        <AutoFitSingleLineText
+                                          text={formatDates(birthDate, deathDate, backDateFormat)}
+                                          maxWidth="100%"
+                                          style={{ 
+                                            fontFamily: datesFont, 
+                                            color: backDatesColor,
+                                            fontSize: backDatesSize === 'auto' ? '6px' : `${Math.max(5, (typeof backDatesSize === 'number' ? backDatesSize : 9) * 0.6)}px`
+                                          }}
+                                        />
+                                      </div>
+                                    )}
                                   </div>
+                                  {/* Prayer - takes remaining space, centered */}
+                                  <div 
+                                    className="flex-1 flex items-center justify-center max-w-[90%] min-h-0 overflow-hidden"
+                                  >
+                                    <div 
+                                      className="text-xs leading-relaxed"
+                                      style={{ 
+                                        fontFamily: 'Cormorant Garamond',
+                                        fontSize: `${Math.max(6, (prayerTextSize === 'auto' ? autoPrayerFontSize : Math.min(prayerTextSize, autoPrayerFontSize)) * 0.6)}px`,
+                                        color: prayerColor,
+                                        fontWeight: prayerBold ? 'bold' : 'normal',
+                                        lineHeight: 1.2,
+                                      }}
+                                    >
+                                      {backText}
+                                    </div>
+                                  </div>
+                                  {/* Footer - QR code */}
                                   {showQrCode && qrUrl && (
-                                    <div className="mt-2 bg-white p-1.5 rounded">
-                                      <QRCodeSVG value={qrUrl} size={40} />
+                                    <div className="shrink-0 mt-1 bg-white p-1 rounded">
+                                      <QRCodeSVG value={qrUrl} size={24} />
                                     </div>
                                   )}
                                 </div>
