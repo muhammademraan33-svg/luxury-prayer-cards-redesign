@@ -2100,7 +2100,12 @@ const Design = () => {
                                   />
                                 )}
                                 <div 
-                                  className={`relative z-10 h-full flex flex-col items-center p-2 text-center ${cardRounding}`}
+                                  className={`relative z-10 h-full flex flex-col items-center text-center ${cardRounding}`}
+                                  style={{
+                                    padding: '4px',
+                                    paddingTop: backBorderDesign !== 'none' ? '10px' : '4px',
+                                    paddingBottom: backBorderDesign !== 'none' ? '10px' : '4px',
+                                  }}
                                 >
                                   {/* Header section - shrinks to content */}
                                   <div className="shrink-0 flex flex-col items-center">
@@ -3445,8 +3450,8 @@ const Design = () => {
                                   className="relative z-10 w-full h-full"
                                   style={{ 
                                     padding: backBorderDesign !== 'none' ? '6px' : '8px',
-                                    paddingTop: backBorderDesign !== 'none' ? '14px' : '8px',
-                                    paddingBottom: backBorderDesign !== 'none' ? '14px' : '8px',
+                                    paddingTop: backBorderDesign !== 'none' ? '18px' : '8px',
+                                    paddingBottom: backBorderDesign !== 'none' ? '18px' : '8px',
                                   }}
                                 >
                                   <div className="h-full flex flex-col text-center gap-0">
