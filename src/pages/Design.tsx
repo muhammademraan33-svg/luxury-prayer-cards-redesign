@@ -451,7 +451,7 @@ const Design = () => {
   const [prayerBold, setPrayerBold] = useState(false);
   
   // Text shadow options
-  const [nameTextShadow, setNameTextShadow] = useState(false);
+  const [nameTextShadow, setNameTextShadow] = useState(true);
   const [datesTextShadow, setDatesTextShadow] = useState(true);
   const [additionalTextShadow, setAdditionalTextShadow] = useState(true);
   
