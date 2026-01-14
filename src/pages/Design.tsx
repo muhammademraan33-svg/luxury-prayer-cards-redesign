@@ -416,7 +416,7 @@ const Design = () => {
   const [backDatesColor, setBackDatesColor] = useState('#666666');
   const [nameSize, setNameSize] = useState(24);
   const [frontDatesSize, setFrontDatesSize] = useState<number | 'auto'>(16);
-  const [backDatesSize, setBackDatesSize] = useState<number | 'auto'>(4);
+  const [backDatesSize, setBackDatesSize] = useState<number | 'auto'>(14);
   const [frontDateFormat, setFrontDateFormat] = useState<'full' | 'short-month' | 'mmm-dd-yyyy' | 'numeric' | 'year'>('full');
   const [backDateFormat, setBackDateFormat] = useState<'full' | 'short-month' | 'mmm-dd-yyyy' | 'numeric' | 'year'>('full');
   const [additionalText, setAdditionalText] = useState('');
@@ -437,7 +437,7 @@ const Design = () => {
   const [backDatesAlign, setBackDatesAlign] = useState<'left' | 'center' | 'right'>('center');
   
   // Back name styling - now has its own size control
-  const [backNameSize, setBackNameSize] = useState(6);
+  const [backNameSize, setBackNameSize] = useState(22);
   const [backNameColor, setBackNameColor] = useState('#ffffff');
   const [backNameBold, setBackNameBold] = useState(true);
   const [backNameFont, setBackNameFont] = useState('Great Vibes');
@@ -458,7 +458,7 @@ const Design = () => {
   // "In Loving Memory" customization
   const [inLovingMemoryText, setInLovingMemoryText] = useState('In Loving Memory');
   const [inLovingMemoryColor, setInLovingMemoryColor] = useState('#ffffff');
-  const [inLovingMemorySize, setInLovingMemorySize] = useState(12);
+  const [inLovingMemorySize, setInLovingMemorySize] = useState(24);
   const [inLovingMemoryFont, setInLovingMemoryFont] = useState('Cormorant Garamond');
   const [showInLovingMemory, setShowInLovingMemory] = useState(true);
   const [inLovingMemoryPosition, setInLovingMemoryPosition] = useState({ x: 0, y: 0 });
@@ -1034,10 +1034,11 @@ const Design = () => {
     const recompute = () => {
       if (disposed) return;
 
-      const minPx = 10;
-      // Scale max font size based on container height for proper auto-sizing
+      // Industry standard: prayer text should be minimum 10pt (approx 13px) for readability
+      const minPx = 13;
+      // Scale max font size based on container height - aim for 12-14pt body text
       const containerHeight = container.clientHeight || 200;
-      const maxPx = Math.max(36, Math.round(containerHeight * 0.25));
+      const maxPx = Math.max(48, Math.round(containerHeight * 0.3));
 
       // Compute available space inside the prayer container (clientHeight/Width includes padding)
       const cs = window.getComputedStyle(container);
