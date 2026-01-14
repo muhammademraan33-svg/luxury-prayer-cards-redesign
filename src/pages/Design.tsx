@@ -495,7 +495,7 @@ const Design = () => {
       : 0;
     
     // FIXED gap between name and dates - consistent regardless of borders
-    const NAME_DATES_GAP = 1;
+    const NAME_DATES_GAP = 0.5;
     const MIN_GAP = 2;
     
     let newNameY = namePosition.y;
