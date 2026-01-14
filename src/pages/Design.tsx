@@ -1274,14 +1274,39 @@ const Design = () => {
 
     const previewUrl = URL.createObjectURL(file);
     if (type === 'photo') {
-      setDeceasedPhoto(previewUrl);
-      setPhotoZoom(1);
-      setPhotoPanX(0);
-      setPhotoPanY(0);
-      void syncFrontTextColors(previewUrl); // Analyze photo and adjust text colors
+      // Check if we're editing an additional design
+      if (activeDesignIndex >= 0) {
+        const updated = [...additionalDesigns];
+        updated[activeDesignIndex] = {
+          ...updated[activeDesignIndex],
+          photo: previewUrl,
+          photoZoom: 1,
+          photoPanX: 0,
+          photoPanY: 0,
+          photoRotation: 0,
+        };
+        setAdditionalDesigns(updated);
+      } else {
+        setDeceasedPhoto(previewUrl);
+        setPhotoZoom(1);
+        setPhotoPanX(0);
+        setPhotoPanY(0);
+        void syncFrontTextColors(previewUrl); // Analyze photo and adjust text colors
+      }
     } else if (type === 'back') {
-      setBackBgImage(previewUrl);
-      void syncBackTextColors({ imageSrc: previewUrl, fallbackIsDark: true });
+      // For additional designs, update backgroundId/customBackground
+      if (activeDesignIndex >= 0) {
+        const updated = [...additionalDesigns];
+        updated[activeDesignIndex] = {
+          ...updated[activeDesignIndex],
+          customBackground: previewUrl,
+          backgroundId: null,
+        };
+        setAdditionalDesigns(updated);
+      } else {
+        setBackBgImage(previewUrl);
+        void syncBackTextColors({ imageSrc: previewUrl, fallbackIsDark: true });
+      }
     } else if (type === 'logo') {
       setFuneralHomeLogo(previewUrl);
     }
@@ -1561,6 +1586,16 @@ const Design = () => {
   };
   const cardRounding = getCardRounding();
 
+  // Compute active photo and settings based on which design is being edited
+  const activeDesign = activeDesignIndex >= 0 ? additionalDesigns[activeDesignIndex] : null;
+  const activePhoto = activeDesign?.photo ?? deceasedPhoto;
+  const activePhotoZoom = activeDesign?.photoZoom ?? photoZoom;
+  const activePhotoPanX = activeDesign?.photoPanX ?? photoPanX;
+  const activePhotoPanY = activeDesign?.photoPanY ?? photoPanY;
+  const activePhotoRotation = activeDesign?.photoRotation ?? photoRotation;
+  const activePhotoBrightness = activeDesign?.photoBrightness ?? photoBrightness;
+  const activePhotoFade = activeDesign?.photoFade ?? photoFade;
+
   return (
     <>
       {/* Card Type Selection Modal */}
@@ -1791,25 +1826,25 @@ const Design = () => {
                         <div 
                           data-card-preview
                           className={`${sidebarCardClass} ${cardRounding} overflow-hidden shadow-2xl relative cursor-pointer ${cardType === 'metal' && metalBorderColor !== 'none' ? `bg-gradient-to-br ${getMetalBorderGradient(metalBorderColor)} p-1` : ''}`}
-                          onClick={() => !deceasedPhoto && photoInputRef.current?.click()}
+                          onClick={() => !activePhoto && photoInputRef.current?.click()}
                         >
                           <div 
-                            className={`w-full h-full ${cardType === 'metal' && metalBorderColor !== 'none' ? 'rounded-lg' : cardRounding} overflow-hidden bg-slate-700 flex items-center justify-center relative ${!deceasedPhoto ? 'hover:bg-slate-600 transition-colors' : ''}`}
+                            className={`w-full h-full ${cardType === 'metal' && metalBorderColor !== 'none' ? 'rounded-lg' : cardRounding} overflow-hidden bg-slate-700 flex items-center justify-center relative ${!activePhoto ? 'hover:bg-slate-600 transition-colors' : ''}`}
                           >
-                            {deceasedPhoto ? (
+                            {activePhoto ? (
                               <>
                                 <img
-                                  src={deceasedPhoto}
+                                  src={activePhoto}
                                   alt="Deceased"
                                   draggable={false}
                                   className="w-full h-full object-cover pointer-events-none select-none"
                                   style={{
-                                    transform: `translate(${photoPanX}px, ${photoPanY}px) scale(${photoZoom}) rotate(${photoRotation}deg)`,
+                                    transform: `translate(${activePhotoPanX}px, ${activePhotoPanY}px) scale(${activePhotoZoom}) rotate(${activePhotoRotation}deg)`,
                                     transformOrigin: 'center',
-                                    filter: `brightness(${photoBrightness}%)`,
+                                    filter: `brightness(${activePhotoBrightness}%)`,
                                   }}
                                 />
-                                {photoFade && (() => {
+                                {activePhotoFade && (() => {
                                   const hex = fadeColor;
                                   const r = parseInt(hex.slice(1,3), 16);
                                   const g = parseInt(hex.slice(3,5), 16);
@@ -2248,35 +2283,35 @@ const Design = () => {
                         >
                             <div 
                               ref={photoContainerRef}
-                              className={`w-full h-full ${cardType === 'metal' && metalBorderColor !== 'none' ? 'rounded-lg' : cardRounding} overflow-hidden bg-slate-700 flex items-center justify-center touch-none relative ${!deceasedPhoto ? 'cursor-pointer hover:bg-slate-600 transition-colors' : ''}`}
-                              style={{ cursor: deceasedPhoto && !draggingText ? (isPanning ? 'grabbing' : 'grab') : (!deceasedPhoto ? 'pointer' : 'default') }}
+                              className={`w-full h-full ${cardType === 'metal' && metalBorderColor !== 'none' ? 'rounded-lg' : cardRounding} overflow-hidden bg-slate-700 flex items-center justify-center touch-none relative ${!activePhoto ? 'cursor-pointer hover:bg-slate-600 transition-colors' : ''}`}
+                              style={{ cursor: activePhoto && !draggingText ? (isPanning ? 'grabbing' : 'grab') : (!activePhoto ? 'pointer' : 'default') }}
                               onPointerDown={handlePhotoPointerDown}
                               onPointerMove={handlePhotoPointerMove}
                               onPointerUp={handlePhotoPointerUp}
                               onPointerCancel={handlePhotoPointerUp}
                               onWheel={handlePhotoWheel}
                               onClick={() => {
-                                if (!deceasedPhoto) {
+                                if (!activePhoto) {
                                   photoInputRef.current?.click();
                                 }
                               }}
                             >
-                              {deceasedPhoto ? (
+                              {activePhoto ? (
                                 <>
                                   <img
-                                    src={deceasedPhoto}
+                                    src={activePhoto}
                                     alt="Deceased"
                                     draggable={false}
                                     className="w-full h-full object-cover pointer-events-none select-none"
                                     style={{
-                                      transform: `translate(${photoPanX}px, ${photoPanY}px) scale(${photoZoom}) rotate(${photoRotation}deg)`,
+                                      transform: `translate(${activePhotoPanX}px, ${activePhotoPanY}px) scale(${activePhotoZoom}) rotate(${activePhotoRotation}deg)`,
                                       transformOrigin: 'center',
                                       willChange: 'transform',
-                                      filter: `brightness(${photoBrightness}%)`,
+                                      filter: `brightness(${activePhotoBrightness}%)`,
                                     }}
                                   />
                                   {/* Fade overlay */}
-                                  {photoFade && (() => {
+                                  {activePhotoFade && (() => {
                                     const hex = fadeColor;
                                     const r = parseInt(hex.slice(1,3), 16);
                                     const g = parseInt(hex.slice(3,5), 16);
@@ -2490,7 +2525,7 @@ const Design = () => {
                           className="hidden"
                           onChange={(e) => e.target.files?.[0] && handleImageUpload(e.target.files[0], 'photo')}
                         />
-                        {deceasedPhoto && (
+                        {activePhoto && (
                           <div className="flex gap-2 flex-wrap justify-center">
                             <Button
                               type="button"
@@ -2505,10 +2540,16 @@ const Design = () => {
                               type="button"
                               variant="outline"
                               onClick={() => {
-                                setPhotoZoom(1);
-                                setPhotoPanX(0);
-                                setPhotoPanY(0);
-                                setPhotoRotation(0);
+                                if (activeDesignIndex >= 0) {
+                                  const updated = [...additionalDesigns];
+                                  updated[activeDesignIndex] = { ...updated[activeDesignIndex], photoZoom: 1, photoPanX: 0, photoPanY: 0, photoRotation: 0 };
+                                  setAdditionalDesigns(updated);
+                                } else {
+                                  setPhotoZoom(1);
+                                  setPhotoPanX(0);
+                                  setPhotoPanY(0);
+                                  setPhotoRotation(0);
+                                }
                               }}
                               className="border-slate-600 text-slate-300 hover:bg-slate-700"
                             >
@@ -2519,12 +2560,18 @@ const Design = () => {
                               type="button"
                               variant="outline"
                               onClick={() => {
-                                setDeceasedPhoto(null);
-                                setPhotoZoom(1);
-                                setPhotoPanX(0);
-                                setPhotoPanY(0);
-                                setPhotoRotation(0);
-                                void syncFrontTextColors(null); // No photo - analyze and reset colors
+                                if (activeDesignIndex >= 0) {
+                                  const updated = [...additionalDesigns];
+                                  updated[activeDesignIndex] = { ...updated[activeDesignIndex], photo: null, photoZoom: 1, photoPanX: 0, photoPanY: 0, photoRotation: 0 };
+                                  setAdditionalDesigns(updated);
+                                } else {
+                                  setDeceasedPhoto(null);
+                                  setPhotoZoom(1);
+                                  setPhotoPanX(0);
+                                  setPhotoPanY(0);
+                                  setPhotoRotation(0);
+                                  void syncFrontTextColors(null);
+                                }
                               }}
                               className="border-rose-600/50 text-rose-400 hover:bg-rose-600/20"
                             >
@@ -2534,7 +2581,7 @@ const Design = () => {
                         )}
 
                         {/* Photo Controls Panel */}
-                        {deceasedPhoto && (
+                        {activePhoto && (
                           <div className="w-full max-w-md space-y-2 p-3 bg-slate-700/30 rounded-lg">
                             <Label className="text-white text-sm font-medium">Adjust Photo</Label>
                             <div className="flex items-center gap-3">
