@@ -11,6 +11,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Sparkles, QrCode, Loader2, Truck, Zap, ArrowLeft, ArrowRight, ImageIcon, RotateCcw, RectangleHorizontal, RectangleVertical, Type, Book, Trash2, Package, Clock, MapPin, Layers, CheckCircle2, Plus, Eye, Download } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 import { Textarea } from '@/components/ui/textarea';
+import { Slider } from '@/components/ui/slider';
 import { prayerTemplates } from '@/data/prayerTemplates';
 import { toast } from 'sonner';
 import metalCardProduct from '@/assets/metal-card-product.jpg';
@@ -3985,27 +3986,19 @@ const Design = () => {
                                   </Button>
                                 </div>
                               </div>
-                              <div className="flex items-center gap-2">
-                                <Label className="text-slate-400 text-xs">Size</Label>
-                                <Button
-                                  type="button"
-                                  variant="outline"
-                                  size="icon"
-                                  className="h-6 w-6 border-slate-600"
-                                  onClick={() => setFuneralHomeLogoSize(Math.max(20, funeralHomeLogoSize - 5))}
-                                >
-                                  <span className="text-xs">−</span>
-                                </Button>
-                                <span className="text-xs text-white bg-slate-700 px-2 py-1 rounded min-w-[40px] text-center">{funeralHomeLogoSize}px</span>
-                                <Button
-                                  type="button"
-                                  variant="outline"
-                                  size="icon"
-                                  className="h-6 w-6 border-slate-600"
-                                  onClick={() => setFuneralHomeLogoSize(Math.min(80, funeralHomeLogoSize + 5))}
-                                >
-                                  <span className="text-xs">+</span>
-                                </Button>
+                              <div className="space-y-2">
+                                <div className="flex items-center justify-between">
+                                  <Label className="text-slate-400 text-xs">Size</Label>
+                                  <span className="text-xs text-white bg-slate-700 px-2 py-1 rounded">{funeralHomeLogoSize}px</span>
+                                </div>
+                                <Slider
+                                  value={[funeralHomeLogoSize]}
+                                  onValueChange={(val) => setFuneralHomeLogoSize(val[0])}
+                                  min={20}
+                                  max={100}
+                                  step={5}
+                                  className="w-full"
+                                />
                               </div>
                             </div>
                           )}
