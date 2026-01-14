@@ -330,9 +330,9 @@ const MemorialPhotoEditor = () => {
       </header>
 
       <div className="container mx-auto px-4 py-6">
-        <div className="grid lg:grid-cols-[1fr,380px] gap-6">
+        <div className="md:flex md:gap-6">
           {/* Left Column - Preview Canvas */}
-          <div className="space-y-4">
+          <div className="space-y-4 md:flex-1 md:min-w-0">
             <div className="flex items-center justify-between">
               <Label className="text-white text-lg font-semibold">Preview</Label>
               <Button 
@@ -442,8 +442,9 @@ const MemorialPhotoEditor = () => {
           </div>
 
           {/* Right Column - Controls */}
-          <ScrollArea className="h-[calc(100vh-140px)]">
-            <div className="space-y-4 pr-4">
+          <div className="mt-6 md:mt-0 md:w-[380px] md:flex-shrink-0">
+            <ScrollArea className="h-auto md:h-[calc(100vh-140px)]">
+              <div className="space-y-4 pr-4">
             {/* Photo Upload */}
             <Card className="bg-slate-800 border-slate-700">
               <CardContent className="p-6 space-y-4">
@@ -889,6 +890,7 @@ const MemorialPhotoEditor = () => {
         </div>
       </div>
     </div>
+  </div>
   );
 };
 
