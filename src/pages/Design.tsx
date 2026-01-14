@@ -363,8 +363,8 @@ const Design = () => {
   const [showDatesOnBack, setShowDatesOnBack] = useState(savedState?.showDatesOnBack ?? true);
   const [nameFont, setNameFont] = useState(savedState?.nameFont || 'Great Vibes');
   const [datesFont, setDatesFont] = useState(savedState?.datesFont || (cardType === 'paper' ? 'Montserrat' : 'Cormorant Garamond'));
-  const [namePosition, setNamePosition] = useState(savedState?.namePosition || { x: 50, y: 80 });
-  const [datesPosition, setDatesPosition] = useState(savedState?.datesPosition || { x: 50, y: cardType === 'metal' ? 87 : 88 });
+  const [namePosition, setNamePosition] = useState(savedState?.namePosition || { x: 50, y: 82 });
+  const [datesPosition, setDatesPosition] = useState(savedState?.datesPosition || { x: 50, y: cardType === 'metal' ? 86 : 86 });
 
   // Calculate estimated text height as percentage of card height
   // Based on 300 DPI and typical card dimensions
@@ -417,8 +417,8 @@ const Design = () => {
   const [nameSize, setNameSize] = useState(24);
   const [frontDatesSize, setFrontDatesSize] = useState<number | 'auto'>(16);
   const [backDatesSize, setBackDatesSize] = useState<number | 'auto'>(14);
-  const [frontDateFormat, setFrontDateFormat] = useState<'full' | 'short-month' | 'mmm-dd-yyyy' | 'numeric' | 'year'>('mmm-dd-yyyy');
-  const [backDateFormat, setBackDateFormat] = useState<'full' | 'short-month' | 'mmm-dd-yyyy' | 'numeric' | 'year'>('mmm-dd-yyyy');
+  const [frontDateFormat, setFrontDateFormat] = useState<'full' | 'short-month' | 'mmm-dd-yyyy' | 'numeric' | 'year'>('full');
+  const [backDateFormat, setBackDateFormat] = useState<'full' | 'short-month' | 'mmm-dd-yyyy' | 'numeric' | 'year'>('full');
   const [additionalText, setAdditionalText] = useState('');
   const [additionalTextPosition, setAdditionalTextPosition] = useState({ x: 50, y: 70 });
   const [additionalTextColor, setAdditionalTextColor] = useState('#ffffff');
@@ -495,7 +495,7 @@ const Design = () => {
       : 0;
     
     // FIXED gap between name and dates - consistent regardless of borders
-    const NAME_DATES_GAP = 2;
+    const NAME_DATES_GAP = 1;
     const MIN_GAP = 2;
     
     let newNameY = namePosition.y;
