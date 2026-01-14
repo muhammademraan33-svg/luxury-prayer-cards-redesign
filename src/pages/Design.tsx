@@ -2388,7 +2388,7 @@ const Design = () => {
 
                     {/* Front Card */}
                     <TabsContent value="front" className="mt-4 md:mt-0">
-                      <div className="flex flex-col items-center gap-4">
+                      <div className="flex flex-col items-center gap-4 md:hidden">
                         {/* Card Preview */}
                         <div 
                           data-card-preview
