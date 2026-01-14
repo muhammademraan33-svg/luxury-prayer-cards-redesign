@@ -418,8 +418,8 @@ const Design = () => {
   const [backDatesPosition, setBackDatesPosition] = useState({ x: 50, y: 18 });
   const [backDatesAlign, setBackDatesAlign] = useState<'left' | 'center' | 'right'>('center');
   
-  // Back name styling - syncs with front name size
-  const backNameSize = nameSize; // Always match front name size
+  // Back name styling - now has its own size control
+  const [backNameSize, setBackNameSize] = useState(20);
   const [backNameColor, setBackNameColor] = useState('#ffffff');
   const [backNameBold, setBackNameBold] = useState(true);
   const [backNameFont, setBackNameFont] = useState('Great Vibes');
@@ -1507,6 +1507,7 @@ const Design = () => {
   const currentFinish = METAL_FINISHES.find(f => f.id === metalFinish) || METAL_FINISHES[0];
 
   // Metal cards: 2" x 3.5" (credit card size), Paper cards: 2.5x4.25 or 3x4.75
+  // Designer cards sized to better match print preview proportions
   const getCardClass = (forSidebar = false) => {
     if (cardType === 'paper') {
       // Paper prayer cards - aspect ratio based on active design's size selection
@@ -1515,7 +1516,8 @@ const Design = () => {
       if (forSidebar) {
         return activeSize === '3.125x4.875' ? 'aspect-[3.125/4.875] w-48' : 'aspect-[2.625/4.375] w-44';
       }
-      return activeSize === '3.125x4.875' ? 'aspect-[3.125/4.875] w-64' : 'aspect-[2.625/4.375] w-60';
+      // Larger designer card to match print preview (was w-60/w-64)
+      return activeSize === '3.125x4.875' ? 'aspect-[3.125/4.875] w-[280px]' : 'aspect-[2.625/4.375] w-[260px]';
     }
     // Metal cards 2" x 3.5"
     if (forSidebar) {
@@ -1523,9 +1525,10 @@ const Design = () => {
         ? 'aspect-[3.5/2] w-56' 
         : 'aspect-[2/3.5] w-40';
     }
+    // Larger designer card (was w-80/w-56)
     return orientation === 'landscape' 
-      ? 'aspect-[3.5/2] w-80' 
-      : 'aspect-[2/3.5] w-56';
+      ? 'aspect-[3.5/2] w-[340px]' 
+      : 'aspect-[2/3.5] w-[240px]';
   };
   const cardClass = getCardClass();
   const sidebarCardClass = getCardClass(true);
@@ -3422,34 +3425,50 @@ const Design = () => {
                             </label>
                           </div>
                           {showNameOnBack && (
-                            <div className="flex items-center gap-2 flex-wrap">
-                              <Select value={backNameFont} onValueChange={setBackNameFont}>
-                                <SelectTrigger className="bg-slate-700 border-slate-600 text-white h-8 w-[120px] text-xs">
-                                  <SelectValue placeholder="Font" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  {FONT_OPTIONS.map((font) => (
-                                    <SelectItem key={font.value} value={font.value} style={{ fontFamily: font.value }}>
-                                      {font.name}
-                                    </SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
-                              <input
-                                type="color"
-                                value={backNameColor}
-                                onChange={(e) => setBackNameColor(e.target.value)}
-                                className="w-7 h-7 rounded border border-slate-600 cursor-pointer"
-                              />
-                              <Button
-                                type="button"
-                                variant={backNameBold ? 'default' : 'outline'}
-                                size="sm"
-                                className={`h-7 px-3 text-xs font-bold ${backNameBold ? 'bg-amber-600 !text-white' : 'border-slate-600 text-slate-300'}`}
-                                onClick={() => setBackNameBold(!backNameBold)}
-                              >
-                                B
-                              </Button>
+                            <div className="space-y-2">
+                              <div className="flex items-center gap-2 flex-wrap">
+                                <Select value={backNameFont} onValueChange={setBackNameFont}>
+                                  <SelectTrigger className="bg-slate-700 border-slate-600 text-white h-8 w-[120px] text-xs">
+                                    <SelectValue placeholder="Font" />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    {FONT_OPTIONS.map((font) => (
+                                      <SelectItem key={font.value} value={font.value} style={{ fontFamily: font.value }}>
+                                        {font.name}
+                                      </SelectItem>
+                                    ))}
+                                  </SelectContent>
+                                </Select>
+                                <input
+                                  type="color"
+                                  value={backNameColor}
+                                  onChange={(e) => setBackNameColor(e.target.value)}
+                                  className="w-7 h-7 rounded border border-slate-600 cursor-pointer"
+                                />
+                                <Button
+                                  type="button"
+                                  variant={backNameBold ? 'default' : 'outline'}
+                                  size="sm"
+                                  className={`h-7 px-3 text-xs font-bold ${backNameBold ? 'bg-amber-600 !text-white' : 'border-slate-600 text-slate-300'}`}
+                                  onClick={() => setBackNameBold(!backNameBold)}
+                                >
+                                  B
+                                </Button>
+                              </div>
+                              {/* Back Name Size Slider */}
+                              <div className="flex items-center gap-2">
+                                <Label className="text-slate-400 text-xs w-10">Size</Label>
+                                <input
+                                  type="range"
+                                  min="10"
+                                  max="72"
+                                  step="1"
+                                  value={pxToPoints(backNameSize)}
+                                  onChange={(e) => setBackNameSize(pointsToPx(parseFloat(e.target.value)))}
+                                  className="flex-1 accent-amber-600 h-1"
+                                />
+                                <span className="text-xs text-slate-400 w-12 text-right">{pxToPoints(backNameSize)}pt</span>
+                              </div>
                             </div>
                           )}
                           
@@ -3487,29 +3506,22 @@ const Design = () => {
                                     <SelectItem value="year" className="text-white text-xs">Year Only</SelectItem>
                                   </SelectContent>
                                 </Select>
-                                <div className="flex items-center gap-1">
-                                  <Button
-                                    type="button"
-                                    variant="outline"
-                                    size="icon"
-                                    className="h-6 w-6 border-slate-600"
-                                    onClick={() => setBackDatesSize(typeof backDatesSize === 'number' ? Math.max(10, backDatesSize - 3) : 9)}
-                                  >
-                                    <span className="text-xs">−</span>
-                                  </Button>
-                                  <span className="text-xs text-white bg-slate-700 px-2 py-1 rounded min-w-[40px] text-center">
-                                    {backDatesSize === 'auto' ? 'Auto' : `${pxToPoints(backDatesSize)}pt`}
-                                  </span>
-                                  <Button
-                                    type="button"
-                                    variant="outline"
-                                    size="icon"
-                                    className="h-6 w-6 border-slate-600"
-                                    onClick={() => setBackDatesSize(typeof backDatesSize === 'number' ? Math.min(100, backDatesSize + 3) : 11)}
-                                  >
-                                    <span className="text-xs">+</span>
-                                  </Button>
-                                </div>
+                              </div>
+                              {/* Back Dates Size Slider */}
+                              <div className="flex items-center gap-2">
+                                <Label className="text-slate-400 text-xs w-10">Size</Label>
+                                <input
+                                  type="range"
+                                  min="10"
+                                  max="72"
+                                  step="1"
+                                  value={pxToPoints(typeof backDatesSize === 'number' ? backDatesSize : 10)}
+                                  onChange={(e) => setBackDatesSize(pointsToPx(parseFloat(e.target.value)))}
+                                  className="flex-1 accent-amber-600 h-1"
+                                />
+                                <span className="text-xs text-slate-400 w-12 text-right">
+                                  {backDatesSize === 'auto' ? 'Auto' : `${pxToPoints(backDatesSize)}pt`}
+                                </span>
                               </div>
                             </div>
                           )}
@@ -3728,38 +3740,13 @@ const Design = () => {
                                   </SelectContent>
                                 </Select>
                               </div>
-                              <div className="flex items-center gap-3 flex-wrap">
-                                <div className="flex items-center gap-2">
-                                  <Label className="text-slate-400 text-xs">Color</Label>
-                                  <input
-                                    type="color"
-                                    value={inLovingMemoryColor}
-                                    onChange={(e) => setInLovingMemoryColor(e.target.value)}
-                                    className="w-7 h-7 rounded border border-slate-600 cursor-pointer"
-                                  />
-                                </div>
-                                <div className="flex items-center gap-1">
-                                  <Label className="text-slate-400 text-xs">Size</Label>
-                                  <Button
-                                    type="button"
-                                    variant="outline"
-                                    size="icon"
-                                    className="h-6 w-6 border-slate-600"
-                                    onClick={() => setInLovingMemorySize(Math.max(10, inLovingMemorySize - 1))}
-                                  >
-                                    <span className="text-xs">−</span>
-                                  </Button>
-                                  <span className="text-xs text-white bg-slate-700 px-2 py-1 rounded min-w-[40px] text-center">{inLovingMemorySize}px</span>
-                                  <Button
-                                    type="button"
-                                    variant="outline"
-                                    size="icon"
-                                    className="h-6 w-6 border-slate-600"
-                                    onClick={() => setInLovingMemorySize(Math.min(20, inLovingMemorySize + 1))}
-                                  >
-                                    <span className="text-xs">+</span>
-                                  </Button>
-                                </div>
+                              <div className="flex items-center gap-2 flex-wrap">
+                                <input
+                                  type="color"
+                                  value={inLovingMemoryColor}
+                                  onChange={(e) => setInLovingMemoryColor(e.target.value)}
+                                  className="w-7 h-7 rounded border border-slate-600 cursor-pointer"
+                                />
                                 <Button
                                   type="button"
                                   variant={inLovingMemoryBold ? 'default' : 'outline'}
@@ -3769,6 +3756,20 @@ const Design = () => {
                                 >
                                   B
                                 </Button>
+                              </div>
+                              {/* In Loving Memory Size Slider */}
+                              <div className="flex items-center gap-2">
+                                <Label className="text-slate-400 text-xs w-10">Size</Label>
+                                <input
+                                  type="range"
+                                  min="10"
+                                  max="48"
+                                  step="1"
+                                  value={inLovingMemorySize}
+                                  onChange={(e) => setInLovingMemorySize(parseFloat(e.target.value))}
+                                  className="flex-1 accent-amber-600 h-1"
+                                />
+                                <span className="text-xs text-slate-400 w-12 text-right">{inLovingMemorySize}px</span>
                               </div>
                             </>
                           )}
@@ -3831,51 +3832,13 @@ const Design = () => {
                             <Label className="text-slate-400 text-xs">Text Size:</Label>
                             <div className="flex items-center gap-1">
                               <Button
-                                type="button"
+                              type="button"
                                 variant="outline"
                                 size="sm"
                                 onClick={() => setPrayerTextSize('auto')}
                                 className={`text-xs px-2 py-1 h-7 ${prayerTextSize === 'auto' ? 'bg-amber-600 !text-white border-amber-600' : 'border-slate-600 text-slate-300'}`}
                               >
-                                Auto
-                              </Button>
-                              <Button
-                                type="button"
-                                variant="outline"
-                                size="sm"
-                                onClick={() => {
-                                  const current =
-                                    prayerTextSize === 'auto'
-                                      ? autoPrayerFontSize
-                                      : Math.min(prayerTextSize, autoPrayerFontSize);
-                                  const newSize = Math.max(10, current - 1);
-                                  setPrayerTextSize(newSize);
-                                }}
-                                className="h-7 w-7 p-0 border-slate-600 text-slate-300 hover:bg-slate-700"
-                              >
-                                −
-                              </Button>
-                              <span className="text-slate-300 text-xs w-8 text-center">
-                                {(prayerTextSize === 'auto'
-                                  ? autoPrayerFontSize
-                                  : Math.min(prayerTextSize, autoPrayerFontSize))}px
-                              </span>
-                              <Button
-                                type="button"
-                                variant="outline"
-                                size="sm"
-                                onClick={() => {
-                                  const current =
-                                    prayerTextSize === 'auto'
-                                      ? autoPrayerFontSize
-                                      : Math.min(prayerTextSize, autoPrayerFontSize);
-                                  const maxAllowed = autoPrayerFontSize;
-                                  const newSize = Math.min(maxAllowed, current + 1);
-                                  setPrayerTextSize(newSize);
-                                }}
-                                className="h-7 w-7 p-0 border-slate-600 text-slate-300 hover:bg-slate-700"
-                              >
-                                +
+                                Auto Max
                               </Button>
                               <Button
                                 type="button"
@@ -3886,33 +3849,46 @@ const Design = () => {
                               >
                                 B
                               </Button>
-                              <div className="flex items-center gap-1 ml-2">
-                                <Label className="text-slate-400 text-xs">Color:</Label>
-                                <input
-                                  type="color"
-                                  value={prayerColor}
-                                  onChange={(e) => setPrayerColor(e.target.value)}
-                                  className="w-7 h-7 rounded border border-slate-600 cursor-pointer bg-transparent"
-                                />
-                                <Button
-                                  type="button"
-                                  variant="outline"
-                                  size="sm"
-                                  onClick={() => setPrayerColor('#ffffff')}
-                                  className={`h-7 px-2 text-xs ${prayerColor === '#ffffff' ? 'bg-white text-black border-amber-500' : 'border-slate-600 text-slate-300'}`}
-                                >
-                                  White
-                                </Button>
-                                <Button
-                                  type="button"
-                                  variant="outline"
-                                  size="sm"
-                                  onClick={() => setPrayerColor('#000000')}
-                                  className={`h-7 px-2 text-xs ${prayerColor === '#000000' ? 'bg-black text-white border-amber-500' : 'border-slate-600 text-slate-300'}`}
-                                >
-                                  Black
-                                </Button>
-                              </div>
+                              <input
+                                type="color"
+                                value={prayerColor}
+                                onChange={(e) => setPrayerColor(e.target.value)}
+                                className="w-7 h-7 rounded border border-slate-600 cursor-pointer bg-transparent"
+                              />
+                              <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                onClick={() => setPrayerColor('#ffffff')}
+                                className={`h-7 px-2 text-xs ${prayerColor === '#ffffff' ? 'bg-white text-black border-amber-500' : 'border-slate-600 text-slate-300'}`}
+                              >
+                                W
+                              </Button>
+                              <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                onClick={() => setPrayerColor('#000000')}
+                                className={`h-7 px-2 text-xs ${prayerColor === '#000000' ? 'bg-black text-white border-amber-500' : 'border-slate-600 text-slate-300'}`}
+                              >
+                                B
+                              </Button>
+                            </div>
+                            {/* Prayer Size Slider */}
+                            <div className="flex items-center gap-2">
+                              <Label className="text-slate-400 text-xs w-10">Size</Label>
+                              <input
+                                type="range"
+                                min="10"
+                                max={autoPrayerFontSize}
+                                step="1"
+                                value={prayerTextSize === 'auto' ? autoPrayerFontSize : Math.min(prayerTextSize, autoPrayerFontSize)}
+                                onChange={(e) => setPrayerTextSize(parseFloat(e.target.value))}
+                                className="flex-1 accent-amber-600 h-1"
+                              />
+                              <span className="text-xs text-slate-400 w-12 text-right">
+                                {prayerTextSize === 'auto' ? `${autoPrayerFontSize}px` : `${Math.min(prayerTextSize, autoPrayerFontSize)}px`}
+                              </span>
                             </div>
                           </div>
                           
