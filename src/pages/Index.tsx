@@ -9,6 +9,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/co
 import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
+import { ThemeToggle } from '@/components/ThemeToggle';
 
 interface PhotoUploadItem {
   src: string;
@@ -169,6 +170,7 @@ const Index = () => {
             <span className="text-xl font-bold text-foreground">LuxuryPrayerCards.com</span>
           </div>
           <div className="flex items-center gap-4">
+            <ThemeToggle />
             <nav className="hidden md:flex items-center gap-8">
               <a href="#pricing" className="text-muted-foreground hover:text-foreground transition-colors text-sm font-medium">Pricing</a>
               <a href="#how-it-works" className="text-muted-foreground hover:text-foreground transition-colors text-sm font-medium">How It Works</a>
