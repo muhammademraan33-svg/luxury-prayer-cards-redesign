@@ -2294,6 +2294,20 @@ const Design = () => {
                     </div>
                   )}
 
+                  {/* Hidden file inputs - moved outside tabs so they're always accessible */}
+                  <input
+                    ref={logoInputRef}
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={(e) => {
+                      if (e.target.files?.[0]) {
+                        handleImageUpload(e.target.files[0], 'logo');
+                        e.target.value = ''; // Reset for re-upload
+                      }
+                    }}
+                  />
+
                   {/* Front/Back Tabs */}
                   <Tabs value={cardSide} onValueChange={(v) => setCardSide(v as CardSide)} className="w-full">
                     <TabsList className="grid w-full grid-cols-2 bg-slate-700 md:hidden">
@@ -3538,7 +3552,7 @@ const Design = () => {
 
                       {/* Controls Section - Always Visible */}
                       <div className="flex flex-col items-center gap-4">
-                        {/* Hidden file inputs */}
+                        {/* Hidden file input for back background */}
                         <input
                           ref={backInputRef}
                           type="file"
@@ -3547,18 +3561,6 @@ const Design = () => {
                           onChange={(e) => {
                             if (e.target.files?.[0]) {
                               handleImageUpload(e.target.files[0], 'back');
-                            }
-                          }}
-                        />
-                        <input
-                          ref={logoInputRef}
-                          type="file"
-                          accept="image/*"
-                          className="hidden"
-                          onChange={(e) => {
-                            if (e.target.files?.[0]) {
-                              handleImageUpload(e.target.files[0], 'logo');
-                              e.target.value = ''; // Reset for re-upload
                             }
                           }}
                         />
