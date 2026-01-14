@@ -1033,7 +1033,7 @@ const Design = () => {
       const minPx = 10;
       // Scale max font size based on container height for proper auto-sizing
       const containerHeight = container.clientHeight || 200;
-      const maxPx = Math.max(28, Math.round(containerHeight * 0.18));
+      const maxPx = Math.max(36, Math.round(containerHeight * 0.25));
 
       // Compute available space inside the prayer container (clientHeight/Width includes padding)
       const cs = window.getComputedStyle(container);
@@ -4189,7 +4189,7 @@ const Design = () => {
                                   value={[funeralHomeLogoSize]}
                                   onValueChange={(val) => setFuneralHomeLogoSize(val[0])}
                                   min={20}
-                                  max={100}
+                                  max={200}
                                   step={5}
                                   className="w-full"
                                 />
