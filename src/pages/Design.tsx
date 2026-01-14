@@ -4618,28 +4618,76 @@ const Design = () => {
                       </div>
                     )}
 
-                    {/* Paper Card Size info - size is now per-design in step 2 */}
+                    {/* Paper Card Size Upsell - prominent clickable upgrade */}
                     {cardType === 'paper' && (
-                      <div className="p-4 rounded-lg bg-slate-700/30 border border-slate-600">
-                        <div className="flex items-start gap-3">
-                          <div>
-                            <p className="text-white font-medium">Card Size Options</p>
-                            <p className="text-slate-400 text-sm">Each design can have its own size (+${PAPER_SIZE_UPSELL} for large)</p>
-                            <div className="flex items-end gap-4 mt-2">
-                              <div className="flex flex-col items-center">
-                                <div className="w-10 h-14 border border-slate-500 rounded-sm" />
-                                <span className="text-xs text-slate-500 mt-1">2.5×4.25</span>
+                      <div 
+                        className={`p-4 rounded-lg border-2 cursor-pointer transition-all ${
+                          mainDesignSize === '3.125x4.875' 
+                            ? 'bg-gradient-to-br from-amber-900/40 to-amber-800/20 border-amber-500 shadow-lg shadow-amber-500/20' 
+                            : 'bg-slate-700/30 border-slate-600 hover:border-amber-500/50 hover:bg-slate-700/50'
+                        }`}
+                        onClick={() => setMainDesignSize(mainDesignSize === '3.125x4.875' ? '2.625x4.375' : '3.125x4.875')}
+                      >
+                        <div className="flex items-start justify-between gap-4">
+                          <div className="flex items-start gap-3">
+                            <input
+                              type="checkbox"
+                              checked={mainDesignSize === '3.125x4.875'}
+                              onChange={() => setMainDesignSize(mainDesignSize === '3.125x4.875' ? '2.625x4.375' : '3.125x4.875')}
+                              className="accent-amber-600 w-5 h-5 mt-1"
+                              onClick={(e) => e.stopPropagation()}
+                            />
+                            <div>
+                              <div className="flex items-center gap-2 mb-1">
+                                <p className="text-white font-medium">Upgrade to Larger Cards</p>
+                                {mainDesignSize !== '3.125x4.875' && (
+                                  <span className="bg-green-500/20 text-green-400 text-[10px] font-bold px-2 py-0.5 rounded animate-pulse">
+                                    RECOMMENDED
+                                  </span>
+                                )}
                               </div>
-                              <div className="flex flex-col items-center">
-                                <div className="w-12 h-16 border-2 border-amber-500 rounded-sm bg-amber-500/10" />
-                                <span className="text-xs text-amber-400 mt-1 font-medium">3×4.75</span>
+                              <p className="text-slate-400 text-sm mb-3">
+                                20% bigger — easier to read, more impactful
+                              </p>
+                              
+                              {/* Visual comparison */}
+                              <div className="flex items-end gap-6 mt-2">
+                                <div className="flex flex-col items-center">
+                                  <div className={`w-10 h-14 rounded-sm shadow-md transition-all ${
+                                    mainDesignSize === '2.625x4.375' 
+                                      ? 'border-2 border-white/50 bg-white/5' 
+                                      : 'border border-slate-500'
+                                  }`} />
+                                  <span className={`text-xs mt-1.5 ${mainDesignSize === '2.625x4.375' ? 'text-white' : 'text-slate-500'}`}>
+                                    Standard
+                                  </span>
+                                  <span className="text-[10px] text-slate-600">2.5×4.25"</span>
+                                </div>
+                                <div className="flex flex-col items-center">
+                                  <div className={`w-12 h-[4.25rem] rounded-sm shadow-lg transition-all ${
+                                    mainDesignSize === '3.125x4.875' 
+                                      ? 'border-2 border-amber-400 bg-gradient-to-b from-amber-400/20 to-amber-600/20' 
+                                      : 'border-2 border-amber-500/50 bg-amber-500/10'
+                                  }`} />
+                                  <span className={`text-xs mt-1.5 font-medium ${mainDesignSize === '3.125x4.875' ? 'text-amber-400' : 'text-amber-500'}`}>
+                                    Large
+                                  </span>
+                                  <span className="text-[10px] text-amber-500/80">3×4.75"</span>
+                                </div>
                               </div>
                             </div>
-                            <p className="text-amber-400 text-sm mt-2">
-                              Large designs: {(mainDesignSize === '3.125x4.875' ? 1 : 0) + additionalDesigns.filter(d => d.size === '3.125x4.875').length}
-                            </p>
+                          </div>
+                          <div className="text-right">
+                            <span className="text-amber-400 font-bold text-lg">+${PAPER_SIZE_UPSELL}</span>
+                            <p className="text-slate-500 text-xs">one-time</p>
                           </div>
                         </div>
+                        {mainDesignSize === '3.125x4.875' && (
+                          <div className="mt-3 pt-3 border-t border-amber-500/30 flex items-center gap-2">
+                            <CheckCircle2 className="h-4 w-4 text-green-400" />
+                            <span className="text-green-400 text-sm font-medium">Large size selected</span>
+                          </div>
+                        )}
                       </div>
                     )}
 
