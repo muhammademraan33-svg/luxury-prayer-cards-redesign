@@ -85,28 +85,28 @@ interface TextBox {
   color: string;
 }
 
-// Helper to format dates for display
+// Helper to format dates for display - MMMM DD, YYYY format
 const formatDateForDisplay = (dateStr: string): string => {
   if (!dateStr) return '';
   try {
     const date = new Date(dateStr + 'T00:00:00');
-    return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+    return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
   } catch {
     return dateStr;
   }
 };
 
 const createDefaultTextBoxes = (name?: string, birthDate?: string, deathDate?: string): TextBox[] => {
-  // Format dates if available
-  let datesContent = '1950 - 2024';
+  // Format full dates if available
+  let datesContent = 'January 1, 1950 - December 31, 2024';
   if (birthDate && deathDate) {
-    const birthYear = birthDate.split('-')[0];
-    const deathYear = deathDate.split('-')[0];
-    datesContent = `${birthYear} - ${deathYear}`;
+    const formattedBirth = formatDateForDisplay(birthDate);
+    const formattedDeath = formatDateForDisplay(deathDate);
+    datesContent = `${formattedBirth} - ${formattedDeath}`;
   } else if (birthDate) {
-    datesContent = birthDate.split('-')[0];
+    datesContent = formatDateForDisplay(birthDate);
   } else if (deathDate) {
-    datesContent = deathDate.split('-')[0];
+    datesContent = formatDateForDisplay(deathDate);
   }
 
   return [
@@ -116,16 +116,16 @@ const createDefaultTextBoxes = (name?: string, birthDate?: string, deathDate?: s
       x: 50,
       y: 80,
       fontFamily: 'Great Vibes',
-      fontSize: 32,
+      fontSize: 36,
       color: '#ffffff',
     },
     {
       id: 'dates',
       content: datesContent,
       x: 50,
-      y: 90,
+      y: 88,
       fontFamily: 'Cormorant Garamond',
-      fontSize: 18,
+      fontSize: 16,
       color: '#ffffff',
     },
   ];
