@@ -209,8 +209,8 @@ const Design = () => {
   
   // Form state
   const [deceasedName, setDeceasedName] = useState(savedState?.deceasedName || '');
-  const [birthDate, setBirthDate] = useState(savedState?.birthDate || '');
-  const [deathDate, setDeathDate] = useState(savedState?.deathDate || '');
+  const [birthDate, setBirthDate] = useState(savedState?.birthDate || '__/__/____');
+  const [deathDate, setDeathDate] = useState(savedState?.deathDate || '__/__/____');
   const [metalFinish, setMetalFinish] = useState<MetalFinish>(savedState?.metalFinish || 'white');
 
   // Card type from URL param (metal or paper)
@@ -2960,16 +2960,18 @@ const Design = () => {
                             <div className="flex gap-2">
                               <Input
                                 type="text"
-                                placeholder="mm/dd/yyyy"
+                                placeholder="__/__/____"
                                 value={birthDate}
                                 onChange={(e) => setBirthDate(e.target.value)}
+                                onFocus={(e) => { if (birthDate === '__/__/____') e.target.select(); }}
                                 className="bg-slate-700 border-slate-600 text-white placeholder:text-slate-400 h-8 text-sm"
                               />
                               <Input
                                 type="text"
-                                placeholder="mm/dd/yyyy"
+                                placeholder="__/__/____"
                                 value={deathDate}
                                 onChange={(e) => setDeathDate(e.target.value)}
+                                onFocus={(e) => { if (deathDate === '__/__/____') e.target.select(); }}
                                 className="bg-slate-700 border-slate-600 text-white placeholder:text-slate-400 h-8 text-sm"
                               />
                             </div>
