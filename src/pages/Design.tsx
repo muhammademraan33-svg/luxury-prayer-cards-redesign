@@ -532,7 +532,7 @@ const Design = () => {
   const [backDatesColor, setBackDatesColor] = useState('#666666');
   const [nameSize, setNameSize] = useState(24);
   const [frontDatesSize, setFrontDatesSize] = useState<number | 'auto'>(16);
-  const [backDatesSize, setBackDatesSize] = useState<number | 'auto'>(16);
+  const [backDatesSize, setBackDatesSize] = useState<number | 'auto'>(24);
   const [frontDateFormat, setFrontDateFormat] = useState<'full' | 'short-month' | 'mmm-dd-yyyy' | 'numeric' | 'year'>('full');
   const [backDateFormat, setBackDateFormat] = useState<'full' | 'short-month' | 'mmm-dd-yyyy' | 'numeric' | 'year'>('full');
   const [additionalText, setAdditionalText] = useState('');
@@ -557,7 +557,7 @@ const Design = () => {
   // Back card dates position - default to middle horizontal alignment
   const [backDatesPosition, setBackDatesPosition] = useState({
     x: 50,
-    y: 18
+    y: 28
   });
   const [backDatesAlign, setBackDatesAlign] = useState<'left' | 'center' | 'right'>('center');
 
@@ -2996,11 +2996,11 @@ const Design = () => {
                               </div>
                               <div className="flex items-center gap-2">
                                 <Label className="text-slate-400 text-xs w-10">U/D</Label>
-                                <input type="range" min="-30" max="30" step="1" value={backDatesPosition.y - 18} onChange={e => setBackDatesPosition(prev => ({
+                                <input type="range" min="-20" max="40" step="1" value={backDatesPosition.y - 28} onChange={e => setBackDatesPosition(prev => ({
                                 ...prev,
-                                y: parseFloat(e.target.value) + 18
+                                y: parseFloat(e.target.value) + 28
                               }))} className="flex-1 accent-amber-600 h-1" />
-                                <span className="text-xs text-slate-400 w-10 text-right">{Math.round(backDatesPosition.y - 18)}%</span>
+                                <span className="text-xs text-slate-400 w-10 text-right">{Math.round(backDatesPosition.y - 28)}%</span>
                               </div>
                             </div>}
                         </div>
