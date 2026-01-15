@@ -1151,17 +1151,17 @@ const Design = () => {
 
       // Industry standard: prayer text should be minimum 10pt (approx 13px) for readability
       const minPx = 16;
-      // Scale max font size based on container height - allow larger prayer text
+      // Scale max font size based on container height - maximize text space
       const containerHeight = container.clientHeight || 200;
-      const maxPx = Math.max(80, Math.round(containerHeight * 0.55));
+      const maxPx = Math.max(120, Math.round(containerHeight * 0.75));
 
       // Compute available space inside the prayer container (clientHeight/Width includes padding)
       const cs = window.getComputedStyle(container);
       const padY = (parseFloat(cs.paddingTop) || 0) + (parseFloat(cs.paddingBottom) || 0);
       const padX = (parseFloat(cs.paddingLeft) || 0) + (parseFloat(cs.paddingRight) || 0);
 
-      // Account for border padding when calculating available space
-      const borderPadding = backBorderDesign !== 'none' ? 16 : 0;
+      // Account for border padding when calculating available space - minimal offset
+      const borderPadding = backBorderDesign !== 'none' ? 8 : 0;
       const availH = Math.max(0, container.clientHeight - padY - borderPadding);
       const availW = Math.max(0, container.clientWidth - padX - borderPadding);
 
@@ -1184,9 +1184,8 @@ const Design = () => {
         textEl.offsetHeight;
         const rect = textEl.getBoundingClientRect();
 
-        // Safety margin to prevent bottom-line clipping (mobile Safari can round line boxes)
-        // Use ~1 line of safety, scaled by current line height.
-        const safety = Math.max(10, Math.round(lhPx * 0.9));
+        // Minimal safety margin to maximize text space
+        const safety = Math.max(4, Math.round(lhPx * 0.3));
         return rect.height <= availH - safety;
       };
       let best = minPx;
