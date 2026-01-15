@@ -532,7 +532,7 @@ const Design = () => {
   const [backDatesColor, setBackDatesColor] = useState('#666666');
   const [nameSize, setNameSize] = useState(24);
   const [frontDatesSize, setFrontDatesSize] = useState<number | 'auto'>(16);
-  const [backDatesSize, setBackDatesSize] = useState<number | 'auto'>(24);
+  const [backDatesSize, setBackDatesSize] = useState<number | 'auto'>(16);
   const [frontDateFormat, setFrontDateFormat] = useState<'full' | 'short-month' | 'mmm-dd-yyyy' | 'numeric' | 'year'>('full');
   const [backDateFormat, setBackDateFormat] = useState<'full' | 'short-month' | 'mmm-dd-yyyy' | 'numeric' | 'year'>('full');
   const [additionalText, setAdditionalText] = useState('');
@@ -583,7 +583,7 @@ const Design = () => {
   // "In Loving Memory" customization
   const [inLovingMemoryText, setInLovingMemoryText] = useState('In Loving Memory');
   const [inLovingMemoryColor, setInLovingMemoryColor] = useState('#ffffff');
-  const [inLovingMemorySize, setInLovingMemorySize] = useState(16);
+  const [inLovingMemorySize, setInLovingMemorySize] = useState(14);
   const [inLovingMemoryFont, setInLovingMemoryFont] = useState('Cormorant Garamond');
   const [showInLovingMemory, setShowInLovingMemory] = useState(true);
   const [inLovingMemoryPosition, setInLovingMemoryPosition] = useState({
@@ -1971,9 +1971,9 @@ const Design = () => {
                             transformOrigin: 'center center'
                           }} />}
                                 <div className={`relative z-10 h-full flex flex-col items-center text-center ${cardRounding}`} style={{
-                            padding: '4px',
-                            paddingTop: backBorderDesign !== 'none' ? '14px' : '4px',
-                            paddingBottom: backBorderDesign !== 'none' ? '14px' : '4px'
+                            padding: '6px',
+                            paddingTop: backBorderDesign !== 'none' ? '18px' : '6px',
+                            paddingBottom: backBorderDesign !== 'none' ? '18px' : '6px'
                           }}>
                                   {/* Header section - shrinks to content */}
                                   <div className="shrink-0 items-center flex flex-col">
@@ -2769,9 +2769,9 @@ const Design = () => {
                                 backgroundImage: 'repeating-linear-gradient(90deg, transparent, transparent 1px, rgba(255,255,255,0.1) 1px, rgba(255,255,255,0.1) 2px)'
                               }} />}
                                 <div className="relative z-10 w-full h-full" style={{
-                                padding: backBorderDesign !== 'none' ? '8px' : '8px',
-                                paddingTop: backBorderDesign !== 'none' ? '24px' : '8px',
-                                paddingBottom: backBorderDesign !== 'none' ? '24px' : '8px'
+                                padding: backBorderDesign !== 'none' ? '12px' : '8px',
+                                paddingTop: backBorderDesign !== 'none' ? '32px' : '12px',
+                                paddingBottom: backBorderDesign !== 'none' ? '32px' : '12px'
                               }}>
                                   <div className="h-full flex flex-col text-center gap-0">
                                     {/* Header Section - Logo, In Loving Memory, Name, Dates */}
