@@ -1150,10 +1150,10 @@ const Design = () => {
       if (disposed) return;
 
       // Industry standard: prayer text should be minimum 10pt (approx 13px) for readability
-      const minPx = 13;
-      // Scale max font size based on container height - aim for 12-14pt body text
+      const minPx = 16;
+      // Scale max font size based on container height - allow larger prayer text
       const containerHeight = container.clientHeight || 200;
-      const maxPx = Math.max(60, Math.round(containerHeight * 0.4));
+      const maxPx = Math.max(80, Math.round(containerHeight * 0.55));
 
       // Compute available space inside the prayer container (clientHeight/Width includes padding)
       const cs = window.getComputedStyle(container);
