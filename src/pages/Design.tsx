@@ -562,7 +562,7 @@ const Design = () => {
   const [backDatesAlign, setBackDatesAlign] = useState<'left' | 'center' | 'right'>('center');
 
   // Back name styling - now has its own size control
-  const [backNameSize, setBackNameSize] = useState(24);
+  const [backNameSize, setBackNameSize] = useState(32);
   const [backNameColor, setBackNameColor] = useState('#ffffff');
   const [backNameBold, setBackNameBold] = useState(true);
   const [backNameFont, setBackNameFont] = useState('Great Vibes');
@@ -594,7 +594,7 @@ const Design = () => {
   // Back name position
   const [backNamePosition, setBackNamePosition] = useState({
     x: 0,
-    y: 0
+    y: 12
   });
 
   // Funeral home logo
