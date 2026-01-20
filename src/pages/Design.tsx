@@ -1951,13 +1951,11 @@ const Design = () => {
                               </div>}
                             
                             {/* QR Code - Front Card (Desktop) */}
-                            {showQrCode && qrUrl && <div className="absolute z-10 pointer-events-none" style={{
+                            {qrValue && <div className="absolute z-10 pointer-events-none" style={{
                           bottom: frontBorderDesign !== 'none' ? '10px' : '4px',
                           right: frontBorderDesign !== 'none' ? '10px' : '4px'
                         }}>
-                                <div className="bg-white rounded p-0.5 shadow-md">
-                                  <QRCodeSVG value={qrUrl} size={18} />
-                                </div>
+                                <QrCodeBadge value={qrValue} size={24} level="M" paddingClassName="p-1" />
                               </div>}
                             
                             {/* Decorative Border Overlay */}
@@ -2042,9 +2040,7 @@ const Design = () => {
                                   <div className="shrink-0 flex flex-col items-center" style={{
                                 marginBottom: backBorderDesign !== 'none' ? '4px' : '0px'
                               }}>
-                                    {showQrCode && qrUrl && <div className="bg-white border border-border rounded p-1 shadow-md">
-                                        <QRCodeSVG value={qrUrl} size={28} level="H" bgColor="#ffffff" fgColor="#000000" includeMargin={true} />
-                                      </div>}
+                                    {qrValue && <QrCodeBadge value={qrValue} size={36} level="M" paddingClassName="p-1.5" />}
                                     {/* Funeral Home Logo - Bottom */}
                                     {funeralHomeLogo && funeralHomeLogoPosition === 'bottom' && <div className="flex justify-center mt-0.5">
                                         <img src={funeralHomeLogo} alt="Funeral Home Logo" className="object-contain" style={{
@@ -2295,13 +2291,11 @@ const Design = () => {
                                 </div>}
                               
                               {/* QR Code - Front Card (bottom corner) */}
-                              {showQrCode && qrUrl && <div className="absolute bottom-2 right-2 z-10 pointer-events-none" style={{
+                              {qrValue && <div className="absolute z-10 pointer-events-none" style={{
                               bottom: frontBorderDesign !== 'none' ? '14px' : '6px',
                               right: frontBorderDesign !== 'none' ? '14px' : '6px'
                             }}>
-                                  <div className="bg-white rounded p-0.5 shadow-md">
-                                    <QRCodeSVG value={qrUrl} size={28} />
-                                  </div>
+                                  <QrCodeBadge value={qrValue} size={36} level="M" paddingClassName="p-1.5" />
                                 </div>}
                               
                               {/* Decorative Border Overlay - Paper cards only (Front) */}
@@ -2880,17 +2874,8 @@ const Design = () => {
                                 marginBottom: backBorderDesign !== 'none' ? '8px' : '0px'
                               }}>
                                   {/* QR Code */}
-                                  {showQrCode && qrUrl && <div className="flex flex-col items-center">
-                                      <div className={`${orientation === 'portrait' ? 'w-40 h-40' : 'w-36 h-36'} bg-white border border-border rounded-lg flex items-center justify-center shadow-md p-4`}>
-                                        <QRCodeSVG 
-                                          value={qrUrl} 
-                                          size={orientation === 'portrait' ? 128 : 112} 
-                                          level="H"
-                                          bgColor="#ffffff"
-                                          fgColor="#000000"
-                                          includeMargin={true}
-                                        />
-                                      </div>
+                                  {qrValue && <div className="flex flex-col items-center">
+                                      <QrCodeBadge value={qrValue} size={orientation === 'portrait' ? 140 : 120} level="M" paddingClassName="p-4" />
                                       <p className={`text-[8px] mt-1 ${mutedTextColorClass}`}>
                                         Scan to visit
                                       </p>
@@ -4190,13 +4175,11 @@ const Design = () => {
                 </div>}
               
               {/* QR Code - Print Front */}
-              {showQrCode && qrUrl && <div className="absolute z-10" style={{
+              {qrValue && <div className="absolute z-10" style={{
                 bottom: frontBorderDesign !== 'none' ? '48px' : '18px',
                 right: frontBorderDesign !== 'none' ? '48px' : '18px'
               }}>
-                  <div className="bg-white rounded p-2 shadow-md">
-                    <QRCodeSVG value={qrUrl} size={72} />
-                  </div>
+                  <QrCodeBadge value={qrValue} size={96} level="M" paddingClassName="p-3" />
                 </div>}
             </div>
           </div>
@@ -4272,13 +4255,11 @@ const Design = () => {
                     {backText}
                   </span>
                 </div>
-                {showQrCode && qrUrl && <div className="flex justify-center mt-4" style={{
+                {qrValue && <div className="flex justify-center mt-4" style={{
                 // Push up from bottom safe area and keep clear of borders/overlays.
                 marginBottom: funeralHomeLogo && funeralHomeLogoPosition === 'bottom' ? '24px' : '12px'
               }}>
-                    <div className="bg-white border border-border rounded-lg p-4 shadow-md">
-                      <QRCodeSVG value={qrUrl} size={orientation === 'portrait' ? 240 : 220} level="H" bgColor="#ffffff" fgColor="#000000" includeMargin={true} />
-                    </div>
+                    <QrCodeBadge value={qrValue} size={orientation === 'portrait' ? 260 : 240} level="M" paddingClassName="p-5" />
                   </div>}
                 {funeralHomeLogo && funeralHomeLogoPosition === 'bottom' && <div className="flex justify-center mt-4">
                     <img src={funeralHomeLogo} alt="Logo" style={{
