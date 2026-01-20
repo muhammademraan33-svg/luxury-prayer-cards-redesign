@@ -11,7 +11,6 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
 import { CalendarIcon, Sparkles, QrCode, Loader2, Truck, Zap, ArrowLeft, ArrowRight, ImageIcon, RotateCcw, RectangleHorizontal, RectangleVertical, Type, Book, Trash2, Package, Clock, MapPin, Layers, CheckCircle2, Plus, Eye, Download } from 'lucide-react';
-import { QRCodeSVG } from 'qrcode.react';
 import { Textarea } from '@/components/ui/textarea';
 import { Slider } from '@/components/ui/slider';
 import { prayerTemplates } from '@/data/prayerTemplates';
@@ -45,6 +44,7 @@ import html2canvas from 'html2canvas';
 import { hexToRgb, pickBestTextColor, relativeLuminance, rgbToHex } from '@/lib/color';
 import { supabase } from '@/integrations/supabase/client';
 import { AdditionalDesignData, createEmptyDesign } from '@/components/AdditionalDesignEditor';
+import { QrCodeBadge } from '@/components/QrCodeBadge';
 const PRESET_BACKGROUNDS = [{
   id: 'clouds',
   name: 'Soft Clouds',
@@ -388,6 +388,15 @@ const Design = () => {
   const [activeDesignIndex, setActiveDesignIndex] = useState<number>(savedState?.activeDesignIndex ?? -1); // -1 = main design, 0+ = additional designs
   const [qrUrl, setQrUrl] = useState(savedState?.qrUrl || '');
   const [showQrCode, setShowQrCode] = useState(savedState?.showQrCode ?? true);
+
+  const normalizeQrUrl = (value: string): string => {
+    const v = value.trim();
+    if (!v) return '';
+    if (/^https?:\/\//i.test(v)) return v;
+    return `https://${v}`;
+  };
+
+  const qrValue = showQrCode ? normalizeQrUrl(qrUrl) : '';
   const [orientation, setOrientation] = useState<Orientation>(savedState?.orientation || 'portrait');
   const [cardSide, setCardSide] = useState<CardSide>(savedState?.cardSide || 'front');
   const [showPrintPreview, setShowPrintPreview] = useState(false);

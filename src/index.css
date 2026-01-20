@@ -63,6 +63,10 @@
     --sidebar-accent-foreground: 220 45% 15%;
     --sidebar-border: 35 22% 80%;
     --sidebar-ring: 42 65% 55%;
+
+    /* QR code tokens (keep high-contrast in all themes for reliable scanning) */
+    --qr-bg: 0 0% 100%;
+    --qr-fg: 0 0% 0%;
   }
 
   .dark {
@@ -108,6 +112,10 @@
     --sidebar-accent-foreground: 40 22% 88%;
     --sidebar-border: 220 35% 18%;
     --sidebar-ring: 42 65% 60%;
+
+    /* QR code tokens (keep high-contrast in all themes for reliable scanning) */
+    --qr-bg: 0 0% 100%;
+    --qr-fg: 0 0% 0%;
   }
 }
 
