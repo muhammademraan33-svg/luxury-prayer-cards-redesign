@@ -1171,8 +1171,9 @@ const Design = () => {
       const padY = (parseFloat(cs.paddingTop) || 0) + (parseFloat(cs.paddingBottom) || 0);
       const padX = (parseFloat(cs.paddingLeft) || 0) + (parseFloat(cs.paddingRight) || 0);
 
-      // Small safety margin for border
-      const borderPadding = backBorderDesign !== 'none' ? 4 : 0;
+      // Extra safety margin so wrapped text stays fully inside decorative borders.
+      // (Borders are mostly strokes, so text can show through if it reaches the edges.)
+      const borderPadding = backBorderDesign !== 'none' ? 16 : 0;
       const availH = Math.max(0, container.clientHeight - padY - borderPadding);
       const availW = Math.max(0, container.clientWidth - padX - borderPadding);
 
@@ -1197,7 +1198,7 @@ const Design = () => {
 
         // Minimal safety margin
         const safety = 2;
-        return rect.height <= availH - safety;
+        return rect.height <= availH - safety && rect.width <= availW - safety;
       };
       let best = minPx;
       if (fits(maxPx)) {
@@ -1973,6 +1974,7 @@ const Design = () => {
                           {(() => {
                         const currentBackMetal = METAL_BG_OPTIONS.find(m => m.id === backMetalFinish) || METAL_BG_OPTIONS[0];
                         const isBackDark = relativeLuminance(backBgSampleHex) < 0.45;
+                         const resolvedPrayerFontPx = prayerTextSize === 'auto' ? autoPrayerFontSize : prayerTextSize;
                         return <div className={`absolute inset-0 ${cardRounding} overflow-hidden ${!backBgImage ? cardType === 'metal' ? `bg-gradient-to-br ${currentBackMetal.gradient}` : 'bg-white' : ''}`}>
                                 {backBgImage && <img src={backBgImage} alt="Background" className="absolute w-full h-full object-cover" style={{
                             transform: `scale(${backBgZoom}) translate(${backBgPanX}%, ${backBgPanY}%) rotate(${backBgRotation}deg)`,
@@ -2022,20 +2024,32 @@ const Design = () => {
                                       </div>}
                                   </div>
                                   {/* Prayer - takes remaining space, centered */}
-                                  <div className="flex-1 flex items-center justify-center w-full min-h-0 overflow-hidden px-0.5">
-                                    <div className="text-center w-full" style={{
-                                fontSize: backDatesSize === 'auto' ? '5px' : `${Math.max(5, (typeof backDatesSize === 'number' ? backDatesSize : 9) * 0.5)}px`,
-                                color: prayerColor,
-                                fontWeight: prayerBold ? 'bold' : 'normal',
-                                fontStyle: prayerItalic ? 'italic' : 'normal',
-                                lineHeight: 1.1,
-                                whiteSpace: 'pre-wrap',
-                                wordWrap: 'break-word',
-                                overflowWrap: 'break-word'
-                              }}>
-                                      {backText}
-                                    </div>
-                                  </div>
+                                   <div
+                                     className="flex-1 flex items-center justify-center w-full min-h-0 overflow-hidden"
+                                     style={{
+                                       paddingLeft: backBorderDesign !== 'none' ? 10 : 2,
+                                       paddingRight: backBorderDesign !== 'none' ? 10 : 2,
+                                       paddingTop: backBorderDesign !== 'none' ? 6 : 0,
+                                       paddingBottom: backBorderDesign !== 'none' ? 6 : 0,
+                                       boxSizing: 'border-box',
+                                     }}
+                                   >
+                                     <div
+                                       className="text-center w-full"
+                                       style={{
+                                         fontSize: `${Math.max(5, resolvedPrayerFontPx * 0.5)}px`,
+                                         color: prayerColor,
+                                         fontWeight: prayerBold ? 'bold' : 'normal',
+                                         fontStyle: prayerItalic ? 'italic' : 'normal',
+                                         lineHeight: 1.25,
+                                         whiteSpace: 'pre-wrap',
+                                         overflowWrap: 'anywhere',
+                                         wordBreak: 'break-word',
+                                       }}
+                                     >
+                                       {backText}
+                                     </div>
+                                   </div>
                                   {/* Footer - QR code and/or Logo */}
                                   <div className="shrink-0 flex flex-col items-center" style={{
                                 marginBottom: backBorderDesign !== 'none' ? '4px' : '0px'
@@ -2767,6 +2781,7 @@ const Design = () => {
                             const isBackDark = relativeLuminance(backBgSampleHex) < 0.45;
                             const textColorClass = isBackDark ? 'text-zinc-200' : 'text-zinc-700';
                             const mutedTextColorClass = isBackDark ? 'text-zinc-400' : 'text-zinc-600';
+                             const resolvedPrayerFontPx = prayerTextSize === 'auto' ? autoPrayerFontSize : prayerTextSize;
                             return <div className={`absolute inset-0 ${cardRounding} overflow-hidden ${!backBgImage ? cardType === 'metal' ? `bg-gradient-to-br ${currentBackMetal.gradient}` : 'bg-white' : ''}`}>
                                 {backBgImage && <>
                                     <img src={backBgImage} alt="Background" className="absolute w-full h-full object-cover" style={{
@@ -2848,16 +2863,18 @@ const Design = () => {
                                 {/* Prayer - takes remaining space, centered vertically */}
                                 <div ref={prayerContainerRef} className="flex-1 flex items-center justify-center overflow-hidden min-h-0 touch-none select-none" style={{
                                     cursor: draggingText === 'prayer' || resizingText === 'prayer' ? 'grabbing' : 'grab',
-                                    paddingLeft: backBorderDesign !== 'none' ? '8px' : '2px',
-                                    paddingRight: backBorderDesign !== 'none' ? '8px' : '2px'
+                                    paddingLeft: backBorderDesign !== 'none' ? '12px' : '2px',
+                                    paddingRight: backBorderDesign !== 'none' ? '12px' : '2px',
+                                    paddingTop: backBorderDesign !== 'none' ? '6px' : '0px',
+                                    paddingBottom: backBorderDesign !== 'none' ? '6px' : '0px',
+                                    boxSizing: 'border-box'
                                   }} onPointerDown={e => handleTextPointerDown(e, 'prayer')} onPointerMove={handleTextPointerMove} onPointerUp={handleTextPointerUp} onPointerCancel={handleTextPointerUp} onWheel={e => handleTextWheel(e, 'prayer')}>
                                   <p ref={prayerTextRef} className="font-serif text-center w-full" style={{
                                       color: prayerColor,
-                                      fontSize: backDatesSize === 'auto' ? '9px' : `${backDatesSize}px`,
-                                      lineHeight: 1.4,
+                                      fontSize: `${resolvedPrayerFontPx}px`,
+                                      lineHeight: `${getPrayerLineHeightPx(resolvedPrayerFontPx)}px`,
                                       whiteSpace: 'pre-wrap',
-                                      wordWrap: 'break-word',
-                                      overflowWrap: 'break-word',
+                                      overflowWrap: 'anywhere',
                                       wordBreak: 'break-word',
                                       fontWeight: prayerBold ? 'bold' : 'normal',
                                       fontStyle: prayerItalic ? 'italic' : 'normal',
@@ -2867,7 +2884,7 @@ const Design = () => {
                                       boxShadow: draggingText === 'prayer' || resizingText === 'prayer' ? '0 0 0 2px #d97706' : 'none',
                                       borderRadius: '4px'
                                     }}>
-                                    {preventOrphans(backText)}
+                                    {backText}
                                   </p>
                                 </div>
 
