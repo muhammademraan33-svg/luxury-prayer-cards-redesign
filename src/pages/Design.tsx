@@ -2015,8 +2015,7 @@ const Design = () => {
                                   {/* Prayer - takes remaining space, centered */}
                                   <div className="flex-1 flex items-center justify-center w-full min-h-0 overflow-hidden px-0.5">
                                     <div className="text-center w-full" style={{
-                                fontFamily: 'Cormorant Garamond',
-                                fontSize: `${Math.max(5, (prayerTextSize === 'auto' ? autoPrayerFontSize : Math.min(prayerTextSize, autoPrayerFontSize)) * 0.5)}px`,
+                                fontSize: backDatesSize === 'auto' ? '5px' : `${Math.max(5, (typeof backDatesSize === 'number' ? backDatesSize : 9) * 0.5)}px`,
                                 color: prayerColor,
                                 fontWeight: prayerBold ? 'bold' : 'normal',
                                 lineHeight: 1.1,
@@ -2843,8 +2842,8 @@ const Design = () => {
                                   }} onPointerDown={e => handleTextPointerDown(e, 'prayer')} onPointerMove={handleTextPointerMove} onPointerUp={handleTextPointerUp} onPointerCancel={handleTextPointerUp} onWheel={e => handleTextWheel(e, 'prayer')}>
                                   <p ref={prayerTextRef} className="font-serif italic text-center w-full" style={{
                                       color: prayerColor,
-                                      fontSize: `${prayerTextSize === 'auto' ? autoPrayerFontSize : Math.min(prayerTextSize, autoPrayerFontSize)}px`,
-                                      lineHeight: `${getPrayerLineHeightPx(prayerTextSize === 'auto' ? autoPrayerFontSize : Math.min(prayerTextSize, autoPrayerFontSize))}px`,
+                                      fontSize: backDatesSize === 'auto' ? '9px' : `${backDatesSize}px`,
+                                      lineHeight: 1.4,
                                       whiteSpace: 'pre-wrap',
                                       wordWrap: 'break-word',
                                       overflowWrap: 'break-word',
@@ -4235,7 +4234,7 @@ const Design = () => {
                   </div>}
                 <div className="flex-1 flex items-center justify-center mt-4 text-center" style={{
                   fontFamily: 'Cormorant Garamond',
-                  fontSize: `${(prayerTextSize === 'auto' ? autoPrayerFontSize : Math.min(prayerTextSize, autoPrayerFontSize)) * 3}px`,
+                  fontSize: backDatesSize === 'auto' ? '27px' : `${(typeof backDatesSize === 'number' ? backDatesSize : 9) * 3}px`,
                   color: prayerColor,
                   fontWeight: prayerBold ? 'bold' : 'normal',
                   lineHeight: 1.5,
