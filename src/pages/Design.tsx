@@ -2779,8 +2779,8 @@ const Design = () => {
                                 backgroundImage: 'repeating-linear-gradient(90deg, transparent, transparent 1px, rgba(255,255,255,0.1) 1px, rgba(255,255,255,0.1) 2px)'
                               }} />}
                                 <div className="relative z-10 w-full h-full" style={{
-                                padding: backBorderDesign !== 'none' ? '16px' : '8px',
-                                paddingTop: backBorderDesign !== 'none' ? '40px' : '12px',
+                                padding: backBorderDesign !== 'none' ? '20px' : '8px',
+                                paddingTop: backBorderDesign !== 'none' ? '44px' : '12px',
                                 // Extra safe area so QR isn't covered by decorative borders.
                                 paddingBottom: backBorderDesign !== 'none' ? '52px' : '12px'
                               }}>
@@ -2846,8 +2846,10 @@ const Design = () => {
                                 </div>
 
                                 {/* Prayer - takes remaining space, centered vertically */}
-                                <div ref={prayerContainerRef} className="flex-1 flex items-center justify-center px-0.5 overflow-hidden min-h-0 touch-none select-none" style={{
-                                    cursor: draggingText === 'prayer' || resizingText === 'prayer' ? 'grabbing' : 'grab'
+                                <div ref={prayerContainerRef} className="flex-1 flex items-center justify-center overflow-hidden min-h-0 touch-none select-none" style={{
+                                    cursor: draggingText === 'prayer' || resizingText === 'prayer' ? 'grabbing' : 'grab',
+                                    paddingLeft: backBorderDesign !== 'none' ? '8px' : '2px',
+                                    paddingRight: backBorderDesign !== 'none' ? '8px' : '2px'
                                   }} onPointerDown={e => handleTextPointerDown(e, 'prayer')} onPointerMove={handleTextPointerMove} onPointerUp={handleTextPointerUp} onPointerCancel={handleTextPointerUp} onWheel={e => handleTextWheel(e, 'prayer')}>
                                   <p ref={prayerTextRef} className="font-serif text-center w-full" style={{
                                       color: prayerColor,
