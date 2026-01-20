@@ -2860,10 +2860,10 @@ const Design = () => {
                                 <div className="shrink-0 flex flex-col items-center">
                                   {/* QR Code */}
                                   {showQrCode && qrUrl && <div className="flex flex-col items-center">
-                                      <div className={`${orientation === 'portrait' ? 'w-16 h-16' : 'w-12 h-12'} bg-white rounded-lg flex items-center justify-center shadow-md p-1.5`}>
-                                        <QRCodeSVG value={qrUrl} size={orientation === 'portrait' ? 56 : 40} level="H" includeMargin={true} />
+                                      <div className={`${orientation === 'portrait' ? 'w-24 h-24' : 'w-20 h-20'} bg-white rounded-lg flex items-center justify-center shadow-md p-2`}>
+                                        <QRCodeSVG value={qrUrl} size={orientation === 'portrait' ? 80 : 68} level="H" includeMargin={true} />
                                       </div>
-                                      <p className={`text-[7px] mt-0.5 ${mutedTextColorClass}`}>
+                                      <p className={`text-[8px] mt-1 ${mutedTextColorClass}`}>
                                         Scan to visit
                                       </p>
                                     </div>}
