@@ -532,7 +532,7 @@ const Design = () => {
   const [backDatesColor, setBackDatesColor] = useState('#666666');
   const [nameSize, setNameSize] = useState(24);
   const [frontDatesSize, setFrontDatesSize] = useState<number | 'auto'>(16);
-  const [backDatesSize, setBackDatesSize] = useState<number | 'auto'>(16);
+  const [backDatesSize, setBackDatesSize] = useState<number | 'auto'>(22);
   const [frontDateFormat, setFrontDateFormat] = useState<'full' | 'short-month' | 'mmm-dd-yyyy' | 'numeric' | 'year'>('full');
   const [backDateFormat, setBackDateFormat] = useState<'full' | 'short-month' | 'mmm-dd-yyyy' | 'numeric' | 'year'>('full');
   const [additionalText, setAdditionalText] = useState('');
@@ -557,7 +557,7 @@ const Design = () => {
   // Back card dates position - default to middle horizontal alignment
   const [backDatesPosition, setBackDatesPosition] = useState({
     x: 50,
-    y: 28
+    y: 38
   });
   const [backDatesAlign, setBackDatesAlign] = useState<'left' | 'center' | 'right'>('center');
 
