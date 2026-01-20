@@ -583,12 +583,12 @@ const Design = () => {
   // "In Loving Memory" customization
   const [inLovingMemoryText, setInLovingMemoryText] = useState('In Loving Memory');
   const [inLovingMemoryColor, setInLovingMemoryColor] = useState('#ffffff');
-  const [inLovingMemorySize, setInLovingMemorySize] = useState(14);
+  const [inLovingMemorySize, setInLovingMemorySize] = useState(18);
   const [inLovingMemoryFont, setInLovingMemoryFont] = useState('Cormorant Garamond');
   const [showInLovingMemory, setShowInLovingMemory] = useState(true);
   const [inLovingMemoryPosition, setInLovingMemoryPosition] = useState({
     x: 0,
-    y: 0
+    y: 8
   });
 
   // Back name position
