@@ -2292,10 +2292,10 @@ const Design = () => {
                               
                               {/* QR Code - Front Card (bottom corner) */}
                               {qrValue && <div className="absolute z-10 pointer-events-none" style={{
-                              bottom: frontBorderDesign !== 'none' ? '18px' : '10px',
-                              right: frontBorderDesign !== 'none' ? '18px' : '10px'
+                              bottom: frontBorderDesign !== 'none' ? '20px' : '10px',
+                              right: frontBorderDesign !== 'none' ? '20px' : '10px'
                             }}>
-                                  <QrCodeBadge value={qrValue} size={48} level="M" paddingClassName="p-2" />
+                                  <QrCodeBadge value={qrValue} size={56} level="M" paddingClassName="p-2" />
                                 </div>}
                               
                               {/* Decorative Border Overlay - Paper cards only (Front) */}
@@ -2779,10 +2779,10 @@ const Design = () => {
                                 backgroundImage: 'repeating-linear-gradient(90deg, transparent, transparent 1px, rgba(255,255,255,0.1) 1px, rgba(255,255,255,0.1) 2px)'
                               }} />}
                                 <div className="relative z-10 w-full h-full" style={{
-                                padding: backBorderDesign !== 'none' ? '12px' : '8px',
-                                paddingTop: backBorderDesign !== 'none' ? '32px' : '12px',
+                                padding: backBorderDesign !== 'none' ? '16px' : '8px',
+                                paddingTop: backBorderDesign !== 'none' ? '40px' : '12px',
                                 // Extra safe area so QR isn't covered by decorative borders.
-                                paddingBottom: backBorderDesign !== 'none' ? '44px' : '12px'
+                                paddingBottom: backBorderDesign !== 'none' ? '52px' : '12px'
                               }}>
                                   <div className="h-full flex flex-col text-center gap-0">
                                     {/* Header Section - Logo, In Loving Memory, Name, Dates */}
@@ -2875,7 +2875,7 @@ const Design = () => {
                               }}>
                                   {/* QR Code */}
                                   {qrValue && <div className="flex flex-col items-center">
-                                      <QrCodeBadge value={qrValue} size={orientation === 'portrait' ? 96 : 80} level="M" paddingClassName="p-3" />
+                                      <QrCodeBadge value={qrValue} size={orientation === 'portrait' ? 104 : 88} level="M" paddingClassName="p-3" />
                                       <p className={`text-[8px] mt-1 ${mutedTextColorClass}`}>
                                         Scan to visit
                                       </p>
@@ -4259,7 +4259,7 @@ const Design = () => {
                 // Push up from bottom safe area and keep clear of borders/overlays.
                 marginBottom: funeralHomeLogo && funeralHomeLogoPosition === 'bottom' ? '24px' : '12px'
               }}>
-                    <QrCodeBadge value={qrValue} size={orientation === 'portrait' ? 180 : 160} level="M" paddingClassName="p-4" />
+                    <QrCodeBadge value={qrValue} size={orientation === 'portrait' ? 200 : 180} level="M" paddingClassName="p-4" />
                   </div>}
                 {funeralHomeLogo && funeralHomeLogoPosition === 'bottom' && <div className="flex justify-center mt-4">
                     <img src={funeralHomeLogo} alt="Logo" style={{
