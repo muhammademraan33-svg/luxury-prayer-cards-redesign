@@ -1149,19 +1149,19 @@ const Design = () => {
     const recompute = () => {
       if (disposed) return;
 
-      // Industry standard: prayer text should be minimum 10pt (approx 13px) for readability
-      const minPx = 20;
-      // Scale max font size based on container height - maximize text space
+      // Maximize text space - use full available container
+      const minPx = 14;
+      // Scale max font size aggressively based on container height
       const containerHeight = container.clientHeight || 200;
-      const maxPx = Math.max(150, Math.round(containerHeight * 0.85));
+      const maxPx = Math.max(200, Math.round(containerHeight * 1.0));
 
       // Compute available space inside the prayer container (clientHeight/Width includes padding)
       const cs = window.getComputedStyle(container);
       const padY = (parseFloat(cs.paddingTop) || 0) + (parseFloat(cs.paddingBottom) || 0);
       const padX = (parseFloat(cs.paddingLeft) || 0) + (parseFloat(cs.paddingRight) || 0);
 
-      // Account for border padding when calculating available space - minimal offset
-      const borderPadding = backBorderDesign !== 'none' ? 8 : 0;
+      // Minimal border padding - let text fill the space
+      const borderPadding = backBorderDesign !== 'none' ? 4 : 0;
       const availH = Math.max(0, container.clientHeight - padY - borderPadding);
       const availW = Math.max(0, container.clientWidth - padX - borderPadding);
 
@@ -1184,8 +1184,8 @@ const Design = () => {
         textEl.offsetHeight;
         const rect = textEl.getBoundingClientRect();
 
-        // Minimal safety margin to maximize text space
-        const safety = Math.max(4, Math.round(lhPx * 0.3));
+        // Minimal safety margin - maximize text usage
+        const safety = Math.max(2, Math.round(lhPx * 0.15));
         return rect.height <= availH - safety;
       };
       let best = minPx;
