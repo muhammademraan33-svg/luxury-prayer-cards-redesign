@@ -2012,13 +2012,13 @@ const Design = () => {
                                       </div>}
                                   </div>
                                   {/* Prayer - takes remaining space, centered */}
-                                  <div className="flex-1 flex items-center justify-center w-full min-h-0 overflow-hidden px-1">
-                                    <div className="text-center whitespace-pre-line" style={{
+                                  <div className="flex-1 flex items-center justify-center w-full min-h-0 overflow-hidden px-0.5">
+                                    <div className="text-center whitespace-pre-line w-full" style={{
                                 fontFamily: 'Cormorant Garamond',
-                                fontSize: `${Math.max(5, (prayerTextSize === 'auto' ? autoPrayerFontSize : Math.min(prayerTextSize, autoPrayerFontSize)) * 0.45)}px`,
+                                fontSize: `${Math.max(5, (prayerTextSize === 'auto' ? autoPrayerFontSize : Math.min(prayerTextSize, autoPrayerFontSize)) * 0.5)}px`,
                                 color: prayerColor,
                                 fontWeight: prayerBold ? 'bold' : 'normal',
-                                lineHeight: 1.15
+                                lineHeight: 1.1
                               }}>
                                       {backText}
                                     </div>
@@ -2834,7 +2834,7 @@ const Design = () => {
                                 </div>
 
                                 {/* Prayer - takes remaining space, centered vertically */}
-                                <div ref={prayerContainerRef} className="flex-1 flex items-center justify-center px-1 overflow-hidden min-h-0 touch-none select-none" style={{
+                                <div ref={prayerContainerRef} className="flex-1 flex items-center justify-center px-0.5 overflow-hidden min-h-0 touch-none select-none" style={{
                                     cursor: draggingText === 'prayer' || resizingText === 'prayer' ? 'grabbing' : 'grab'
                                   }} onPointerDown={e => handleTextPointerDown(e, 'prayer')} onPointerMove={handleTextPointerMove} onPointerUp={handleTextPointerUp} onPointerCancel={handleTextPointerUp} onWheel={e => handleTextWheel(e, 'prayer')}>
                                   <p ref={prayerTextRef} className="font-serif italic whitespace-pre-line text-center w-full" style={{
@@ -2845,7 +2845,7 @@ const Design = () => {
                                       overflowWrap: 'break-word',
                                       wordBreak: 'break-word',
                                       fontWeight: prayerBold ? 'bold' : 'normal',
-                                      paddingBottom: '2px',
+                                      paddingBottom: '1px',
                                       textShadow: '2px 2px 4px rgba(0,0,0,0.5)',
                                       transform: `translate(${prayerPosition.x}%, ${prayerPosition.y}%)`,
                                       boxShadow: draggingText === 'prayer' || resizingText === 'prayer' ? '0 0 0 2px #d97706' : 'none',
