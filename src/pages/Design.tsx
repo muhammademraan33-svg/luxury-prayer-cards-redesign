@@ -1975,7 +1975,7 @@ const Design = () => {
                             paddingBottom: backBorderDesign !== 'none' ? '18px' : '6px'
                           }}>
                                   {/* Header section - shrinks to content */}
-                                  <div className="shrink-0 items-center flex flex-col">
+                                  <div className="shrink-0 items-center flex flex-col" style={{ marginTop: '24px' }}>
                                     {/* Funeral Home Logo - Top */}
                                     {funeralHomeLogo && funeralHomeLogoPosition === 'top' && <div className="flex justify-center mb-0.5">
                                         <img src={funeralHomeLogo} alt="Funeral Home Logo" className="object-contain" style={{
