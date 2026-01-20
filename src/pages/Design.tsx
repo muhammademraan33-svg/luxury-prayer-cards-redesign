@@ -1161,10 +1161,9 @@ const Design = () => {
       const padY = (parseFloat(cs.paddingTop) || 0) + (parseFloat(cs.paddingBottom) || 0);
       const padX = (parseFloat(cs.paddingLeft) || 0) + (parseFloat(cs.paddingRight) || 0);
 
-      // Minimal border padding - let text fill the space
-      const borderPadding = backBorderDesign !== 'none' ? 4 : 0;
-      const availH = Math.max(0, container.clientHeight - padY - borderPadding);
-      const availW = Math.max(0, container.clientWidth - padX - borderPadding);
+      // No border padding reduction - use full space
+      const availH = Math.max(0, container.clientHeight - padY);
+      const availW = Math.max(0, container.clientWidth - padX);
 
       // Temporarily remove clipping while measuring (clipping can make scrollHeight unreliable on some browsers)
       const prev = {
@@ -1185,9 +1184,8 @@ const Design = () => {
         textEl.offsetHeight;
         const rect = textEl.getBoundingClientRect();
 
-        // Minimal safety margin - maximize text usage
-        const safety = Math.max(2, Math.round(lhPx * 0.15));
-        return rect.height <= availH - safety;
+        // Zero safety margin - maximize text to fill entire space
+        return rect.height <= availH;
       };
       let best = minPx;
       if (fits(maxPx)) {
