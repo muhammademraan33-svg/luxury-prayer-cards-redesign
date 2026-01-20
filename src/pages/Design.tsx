@@ -573,7 +573,8 @@ const Design = () => {
   const [datesBold, setDatesBold] = useState(true);
   const [additionalTextBold, setAdditionalTextBold] = useState(false);
   const [inLovingMemoryBold, setInLovingMemoryBold] = useState(false);
-  const [prayerBold, setPrayerBold] = useState(false);
+  const [prayerBold, setPrayerBold] = useState(savedState?.prayerBold ?? false);
+  const [prayerItalic, setPrayerItalic] = useState(savedState?.prayerItalic ?? true); // Default to italic for traditional look
 
   // Text shadow options
   const [nameTextShadow, setNameTextShadow] = useState(true);
@@ -2018,6 +2019,7 @@ const Design = () => {
                                 fontSize: backDatesSize === 'auto' ? '5px' : `${Math.max(5, (typeof backDatesSize === 'number' ? backDatesSize : 9) * 0.5)}px`,
                                 color: prayerColor,
                                 fontWeight: prayerBold ? 'bold' : 'normal',
+                                fontStyle: prayerItalic ? 'italic' : 'normal',
                                 lineHeight: 1.1,
                                 whiteSpace: 'pre-wrap',
                                 wordWrap: 'break-word',
@@ -2840,7 +2842,7 @@ const Design = () => {
                                 <div ref={prayerContainerRef} className="flex-1 flex items-center justify-center px-0.5 overflow-hidden min-h-0 touch-none select-none" style={{
                                     cursor: draggingText === 'prayer' || resizingText === 'prayer' ? 'grabbing' : 'grab'
                                   }} onPointerDown={e => handleTextPointerDown(e, 'prayer')} onPointerMove={handleTextPointerMove} onPointerUp={handleTextPointerUp} onPointerCancel={handleTextPointerUp} onWheel={e => handleTextWheel(e, 'prayer')}>
-                                  <p ref={prayerTextRef} className="font-serif italic text-center w-full" style={{
+                                  <p ref={prayerTextRef} className="font-serif text-center w-full" style={{
                                       color: prayerColor,
                                       fontSize: backDatesSize === 'auto' ? '9px' : `${backDatesSize}px`,
                                       lineHeight: 1.4,
@@ -2849,6 +2851,7 @@ const Design = () => {
                                       overflowWrap: 'break-word',
                                       wordBreak: 'break-word',
                                       fontWeight: prayerBold ? 'bold' : 'normal',
+                                      fontStyle: prayerItalic ? 'italic' : 'normal',
                                       paddingBottom: '1px',
                                       textShadow: '2px 2px 4px rgba(0,0,0,0.5)',
                                       transform: `translate(${prayerPosition.x}%, ${prayerPosition.y}%)`,
@@ -2863,11 +2866,11 @@ const Design = () => {
                                 <div className="shrink-0 flex flex-col items-center">
                                   {/* QR Code */}
                                   {showQrCode && qrUrl && <div className="flex flex-col items-center">
-                                      <div className={`${orientation === 'portrait' ? 'w-32 h-32' : 'w-28 h-28'} bg-white rounded-lg flex items-center justify-center shadow-md p-3`}>
+                                      <div className={`${orientation === 'portrait' ? 'w-32 h-32' : 'w-28 h-28'} bg-white rounded-lg flex items-center justify-center shadow-md p-3`} style={{ border: '1px solid #e0e0e0' }}>
                                         <QRCodeSVG 
                                           value={qrUrl} 
                                           size={orientation === 'portrait' ? 112 : 96} 
-                                          level="L"
+                                          level="M"
                                           bgColor="#ffffff"
                                           fgColor="#000000"
                                           includeMargin={true}
@@ -3216,6 +3219,9 @@ const Design = () => {
                               </Button>
                               <Button type="button" variant={prayerBold ? 'default' : 'outline'} size="sm" className={`h-7 px-3 text-xs font-bold ${prayerBold ? 'bg-amber-600 !text-white' : 'border-slate-600 text-slate-300'}`} onClick={() => setPrayerBold(!prayerBold)}>
                                 B
+                              </Button>
+                              <Button type="button" variant={prayerItalic ? 'default' : 'outline'} size="sm" className={`h-7 px-3 text-xs italic ${prayerItalic ? 'bg-amber-600 !text-white' : 'border-slate-600 text-slate-300'}`} onClick={() => setPrayerItalic(!prayerItalic)}>
+                                I
                               </Button>
                               <input type="color" value={prayerColor} onChange={e => setPrayerColor(e.target.value)} className="w-7 h-7 rounded border border-slate-600 cursor-pointer bg-transparent" />
                               <Button type="button" variant="outline" size="sm" onClick={() => setPrayerColor('#ffffff')} className={`h-7 px-2 text-xs ${prayerColor === '#ffffff' ? 'bg-white text-black border-amber-500' : 'border-slate-600 text-slate-300'}`}>
@@ -3860,6 +3866,8 @@ const Design = () => {
                       backBgRotation,
                       backText,
                       prayerTextSize,
+                      prayerBold,
+                      prayerItalic,
                       autoPrayerFontSize,
                       prayerColor,
                       showNameOnFront,
@@ -4237,6 +4245,7 @@ const Design = () => {
                   fontSize: backDatesSize === 'auto' ? '27px' : `${(typeof backDatesSize === 'number' ? backDatesSize : 9) * 3}px`,
                   color: prayerColor,
                   fontWeight: prayerBold ? 'bold' : 'normal',
+                  fontStyle: prayerItalic ? 'italic' : 'normal',
                   lineHeight: 1.5,
                   whiteSpace: 'pre-line',
                   wordBreak: 'break-word',
