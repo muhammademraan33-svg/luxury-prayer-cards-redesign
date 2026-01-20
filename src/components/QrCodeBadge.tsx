@@ -23,7 +23,7 @@ export function QrCodeBadge({
 }: QrCodeBadgeProps) {
   return (
     <div
-      className={cn("rounded-lg shadow-md", className)}
+      className={cn("rounded-lg", className)}
       style={{
         backgroundColor: "hsl(var(--qr-bg))",
         color: "hsl(var(--qr-fg))",
