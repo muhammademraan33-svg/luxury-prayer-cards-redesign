@@ -557,7 +557,7 @@ const Design = () => {
   // Back card dates position - default to middle horizontal alignment
   const [backDatesPosition, setBackDatesPosition] = useState({
     x: 50,
-    y: 38
+    y: 48
   });
   const [backDatesAlign, setBackDatesAlign] = useState<'left' | 'center' | 'right'>('center');
 
