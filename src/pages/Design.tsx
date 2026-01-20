@@ -1134,8 +1134,8 @@ const Design = () => {
 
   // Use pixel line-height to avoid mobile Safari rounding/clipping
   const getPrayerLineHeightPx = (fontPx: number) => {
-    // Tighter line height to fit more text and allow larger fonts
-    const mult = fontPx <= 10 ? 1.0 : 1.05;
+    // Standard line height for readability (1.3-1.4 is typical for body text)
+    const mult = 1.35;
     return Math.max(1, Math.round(fontPx * mult));
   };
 
@@ -1150,11 +1150,9 @@ const Design = () => {
     const recompute = () => {
       if (disposed) return;
 
-      // Maximize text space - aggressive sizing to fill available area
-      const minPx = 12;
-      // Scale max font size very aggressively
-      const containerHeight = container.clientHeight || 200;
-      const maxPx = Math.max(250, Math.round(containerHeight * 1.2));
+      // 10-12pt readable text (1pt ≈ 1.333px, so 10pt=13px, 12pt=16px)
+      const minPx = 13;  // 10pt minimum
+      const maxPx = 16;  // 12pt maximum
 
       // Compute available space inside the prayer container (clientHeight/Width includes padding)
       const cs = window.getComputedStyle(container);
