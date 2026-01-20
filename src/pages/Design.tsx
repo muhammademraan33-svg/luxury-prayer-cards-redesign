@@ -2014,12 +2014,15 @@ const Design = () => {
                                   </div>
                                   {/* Prayer - takes remaining space, centered */}
                                   <div className="flex-1 flex items-center justify-center w-full min-h-0 overflow-hidden px-0.5">
-                                    <div className="text-center whitespace-pre-line w-full" style={{
+                                    <div className="text-center w-full" style={{
                                 fontFamily: 'Cormorant Garamond',
                                 fontSize: `${Math.max(5, (prayerTextSize === 'auto' ? autoPrayerFontSize : Math.min(prayerTextSize, autoPrayerFontSize)) * 0.5)}px`,
                                 color: prayerColor,
                                 fontWeight: prayerBold ? 'bold' : 'normal',
-                                lineHeight: 1.1
+                                lineHeight: 1.1,
+                                whiteSpace: 'pre-wrap',
+                                wordWrap: 'break-word',
+                                overflowWrap: 'break-word'
                               }}>
                                       {backText}
                                     </div>
@@ -2838,11 +2841,12 @@ const Design = () => {
                                 <div ref={prayerContainerRef} className="flex-1 flex items-center justify-center px-0.5 overflow-hidden min-h-0 touch-none select-none" style={{
                                     cursor: draggingText === 'prayer' || resizingText === 'prayer' ? 'grabbing' : 'grab'
                                   }} onPointerDown={e => handleTextPointerDown(e, 'prayer')} onPointerMove={handleTextPointerMove} onPointerUp={handleTextPointerUp} onPointerCancel={handleTextPointerUp} onWheel={e => handleTextWheel(e, 'prayer')}>
-                                  <p ref={prayerTextRef} className="font-serif italic whitespace-pre-line text-center w-full" style={{
+                                  <p ref={prayerTextRef} className="font-serif italic text-center w-full" style={{
                                       color: prayerColor,
                                       fontSize: `${prayerTextSize === 'auto' ? autoPrayerFontSize : Math.min(prayerTextSize, autoPrayerFontSize)}px`,
                                       lineHeight: `${getPrayerLineHeightPx(prayerTextSize === 'auto' ? autoPrayerFontSize : Math.min(prayerTextSize, autoPrayerFontSize))}px`,
-                                      textWrap: 'pretty',
+                                      whiteSpace: 'pre-wrap',
+                                      wordWrap: 'break-word',
                                       overflowWrap: 'break-word',
                                       wordBreak: 'break-word',
                                       fontWeight: prayerBold ? 'bold' : 'normal',
