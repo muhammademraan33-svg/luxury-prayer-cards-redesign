@@ -1974,7 +1974,8 @@ const Design = () => {
                                 <div className={`relative z-10 h-full flex flex-col items-center text-center ${cardRounding}`} style={{
                             padding: '6px',
                             paddingTop: backBorderDesign !== 'none' ? '18px' : '6px',
-                            paddingBottom: backBorderDesign !== 'none' ? '18px' : '6px'
+                            // Extra safe area so QR isn't covered by decorative borders.
+                            paddingBottom: backBorderDesign !== 'none' ? '24px' : '6px'
                           }}>
                                   {/* Header section - shrinks to content */}
                                   <div className="shrink-0 items-center flex flex-col" style={{ marginTop: '24px' }}>
@@ -2029,9 +2030,11 @@ const Design = () => {
                                     </div>
                                   </div>
                                   {/* Footer - QR code and/or Logo */}
-                                  <div className="shrink-0 flex flex-col items-center">
-                                    {showQrCode && qrUrl && <div className="bg-white p-0.5 rounded">
-                                        <QRCodeSVG value={qrUrl} size={18} />
+                                  <div className="shrink-0 flex flex-col items-center" style={{
+                                marginBottom: backBorderDesign !== 'none' ? '4px' : '0px'
+                              }}>
+                                    {showQrCode && qrUrl && <div className="bg-white border border-border rounded p-1 shadow-md">
+                                        <QRCodeSVG value={qrUrl} size={28} level="H" bgColor="#ffffff" fgColor="#000000" includeMargin={true} />
                                       </div>}
                                     {/* Funeral Home Logo - Bottom */}
                                     {funeralHomeLogo && funeralHomeLogoPosition === 'bottom' && <div className="flex justify-center mt-0.5">
@@ -2775,7 +2778,8 @@ const Design = () => {
                                 <div className="relative z-10 w-full h-full" style={{
                                 padding: backBorderDesign !== 'none' ? '12px' : '8px',
                                 paddingTop: backBorderDesign !== 'none' ? '32px' : '12px',
-                                paddingBottom: backBorderDesign !== 'none' ? '32px' : '12px'
+                                // Extra safe area so QR isn't covered by decorative borders.
+                                paddingBottom: backBorderDesign !== 'none' ? '44px' : '12px'
                               }}>
                                   <div className="h-full flex flex-col text-center gap-0">
                                     {/* Header Section - Logo, In Loving Memory, Name, Dates */}
@@ -2863,14 +2867,16 @@ const Design = () => {
                                 </div>
 
                                 {/* Footer Section - Logo and/or QR Code */}
-                                <div className="shrink-0 flex flex-col items-center">
+                                <div className="shrink-0 flex flex-col items-center" style={{
+                                marginBottom: backBorderDesign !== 'none' ? '8px' : '0px'
+                              }}>
                                   {/* QR Code */}
                                   {showQrCode && qrUrl && <div className="flex flex-col items-center">
-                                      <div className={`${orientation === 'portrait' ? 'w-32 h-32' : 'w-28 h-28'} bg-white rounded-lg flex items-center justify-center shadow-md p-3`} style={{ border: '1px solid #e0e0e0' }}>
+                                      <div className={`${orientation === 'portrait' ? 'w-40 h-40' : 'w-36 h-36'} bg-white border border-border rounded-lg flex items-center justify-center shadow-md p-4`}>
                                         <QRCodeSVG 
                                           value={qrUrl} 
-                                          size={orientation === 'portrait' ? 112 : 96} 
-                                          level="M"
+                                          size={orientation === 'portrait' ? 128 : 112} 
+                                          level="H"
                                           bgColor="#ffffff"
                                           fgColor="#000000"
                                           includeMargin={true}
@@ -4257,8 +4263,13 @@ const Design = () => {
                     {backText}
                   </span>
                 </div>
-                {showQrCode && qrUrl && <div className="flex justify-center mt-4">
-                    <QRCodeSVG value={qrUrl} size={120} />
+                {showQrCode && qrUrl && <div className="flex justify-center mt-4" style={{
+                // Push up from bottom safe area and keep clear of borders/overlays.
+                marginBottom: funeralHomeLogo && funeralHomeLogoPosition === 'bottom' ? '24px' : '12px'
+              }}>
+                    <div className="bg-white border border-border rounded-lg p-4 shadow-md">
+                      <QRCodeSVG value={qrUrl} size={orientation === 'portrait' ? 240 : 220} level="H" bgColor="#ffffff" fgColor="#000000" includeMargin={true} />
+                    </div>
                   </div>}
                 {funeralHomeLogo && funeralHomeLogoPosition === 'bottom' && <div className="flex justify-center mt-4">
                     <img src={funeralHomeLogo} alt="Logo" style={{
