@@ -1134,8 +1134,8 @@ const Design = () => {
 
   // Use pixel line-height to avoid mobile Safari rounding/clipping
   const getPrayerLineHeightPx = (fontPx: number) => {
-    // Standard line height for readability (1.3-1.4 is typical for body text)
-    const mult = 1.35;
+    // Comfortable line height for readability with word wrap
+    const mult = 1.25;
     return Math.max(1, Math.round(fontPx * mult));
   };
 
@@ -1150,17 +1150,19 @@ const Design = () => {
     const recompute = () => {
       if (disposed) return;
 
-      // 10-12pt readable text (1pt ≈ 1.333px, so 10pt=13px, 12pt=16px)
-      const minPx = 13;  // 10pt minimum
-      const maxPx = 16;  // 12pt maximum
+      // Auto-size to maximize text while keeping readable with word wrap
+      const minPx = 14;  // Minimum readable size
+      const containerHeight = container.clientHeight || 200;
+      // Scale max based on container - larger containers can have larger text
+      const maxPx = Math.max(28, Math.min(48, Math.round(containerHeight * 0.25)));
 
-      // Compute available space inside the prayer container (clientHeight/Width includes padding)
+      // Compute available space inside the prayer container
       const cs = window.getComputedStyle(container);
       const padY = (parseFloat(cs.paddingTop) || 0) + (parseFloat(cs.paddingBottom) || 0);
       const padX = (parseFloat(cs.paddingLeft) || 0) + (parseFloat(cs.paddingRight) || 0);
 
       // Small safety margin for border
-      const borderPadding = backBorderDesign !== 'none' ? 6 : 2;
+      const borderPadding = backBorderDesign !== 'none' ? 4 : 0;
       const availH = Math.max(0, container.clientHeight - padY - borderPadding);
       const availW = Math.max(0, container.clientWidth - padX - borderPadding);
 
@@ -1183,8 +1185,8 @@ const Design = () => {
         textEl.offsetHeight;
         const rect = textEl.getBoundingClientRect();
 
-        // Small safety margin to ensure text fits in box
-        const safety = Math.max(4, Math.round(lhPx * 0.2));
+        // Minimal safety margin
+        const safety = 2;
         return rect.height <= availH - safety;
       };
       let best = minPx;
