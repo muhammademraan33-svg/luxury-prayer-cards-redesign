@@ -344,7 +344,7 @@ const Index = () => {
             </p>
             
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-8">
-              <Link to="/design?type=paper&quantity=55">
+              <Link to="/design">
                 <Button size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold text-lg px-10 py-7 shadow-xl">
                   Design Prayer Cards
                   <ArrowRight className="ml-2 h-5 w-5" />
@@ -426,7 +426,7 @@ const Index = () => {
                   Need more? Add cards for just ${prayerCardPricing.perCardPrice.toFixed(2)} each
                 </p>
 
-                <Link to="/design?type=paper&quantity=55" className="block">
+                <Link to="/design?type=paper" className="block">
                   <Button size="lg" className="w-full font-semibold text-lg py-6">
                     Start Designing
                     <ArrowRight className="ml-2 h-5 w-5" />
@@ -455,7 +455,7 @@ const Index = () => {
                   Additional sets of 55: $77 each
                 </p>
 
-                <Link to="/design?type=metal&quantity=55" className="block">
+                <Link to="/design?type=metal" className="block">
                   <Button size="lg" variant="secondary" className="w-full font-semibold text-lg py-6">
                     Start Designing
                     <ArrowRight className="ml-2 h-5 w-5" />
