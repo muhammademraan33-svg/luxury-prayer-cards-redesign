@@ -907,12 +907,23 @@ const Design = () => {
     void syncFrontTextColors(deceasedPhoto);
   }, [deceasedPhoto, syncFrontTextColors]);
 
-  // Easel photo state - supports multiple photos with individual sizes
-  const [easelPhotos, setEaselPhotos] = useState<{
+  // Memorial photo state - supports multiple photos with individual sizes
+  const [memorialPhotos, setMemorialPhotos] = useState<{
     src: string;
     size: EaselPhotoSize;
   }[]>([]);
-  const easelPhotosInputRef = useRef<HTMLInputElement>(null);
+  const memorialPhotosInputRef = useRef<HTMLInputElement>(null);
+
+  // Celebration of Life photo state - separate from memorial photos
+  const [celebrationPhotos, setCelebrationPhotos] = useState<{
+    src: string;
+    size: EaselPhotoSize;
+  }[]>([]);
+  const celebrationPhotosInputRef = useRef<HTMLInputElement>(null);
+
+  // Legacy alias for compatibility (combines both types for total count)
+  const easelPhotos = [...memorialPhotos, ...celebrationPhotos];
+  const easelPhotosInputRef = memorialPhotosInputRef; // Keep for backward compat
 
   // Shipping address state
   const [customerName, setCustomerName] = useState('');
@@ -1441,7 +1452,8 @@ const Design = () => {
     }
     toast.success('Image uploaded!');
   };
-  const handleEaselPhotosUpload = (files: FileList | null) => {
+  // Memorial Photos handlers
+  const handleMemorialPhotosUpload = (files: FileList | null) => {
     if (!files) return;
     const newPhotos: {
       src: string;
@@ -1454,11 +1466,32 @@ const Design = () => {
         size: '16x20'
       });
     });
-    setEaselPhotos(prev => [...prev, ...newPhotos]);
-    toast.success(`${newPhotos.length} photo${newPhotos.length > 1 ? 's' : ''} added!`);
+    setMemorialPhotos(prev => [...prev, ...newPhotos]);
+    toast.success(`${newPhotos.length} memorial photo${newPhotos.length > 1 ? 's' : ''} added!`);
   };
-  const removeEaselPhoto = (index: number) => {
-    setEaselPhotos(prev => prev.filter((_, i) => i !== index));
+  const removeMemorialPhoto = (index: number) => {
+    setMemorialPhotos(prev => prev.filter((_, i) => i !== index));
+  };
+
+  // Celebration of Life Photos handlers
+  const handleCelebrationPhotosUpload = (files: FileList | null) => {
+    if (!files) return;
+    const newPhotos: {
+      src: string;
+      size: EaselPhotoSize;
+    }[] = [];
+    Array.from(files).forEach(file => {
+      const previewUrl = URL.createObjectURL(file);
+      newPhotos.push({
+        src: previewUrl,
+        size: '16x20'
+      });
+    });
+    setCelebrationPhotos(prev => [...prev, ...newPhotos]);
+    toast.success(`${newPhotos.length} celebration photo${newPhotos.length > 1 ? 's' : ''} added!`);
+  };
+  const removeCelebrationPhoto = (index: number) => {
+    setCelebrationPhotos(prev => prev.filter((_, i) => i !== index));
   };
   const currentPackage = (packages as Record<string, PackageConfig>)[selectedPackage] ?? Object.values(packages)[0];
   const calculatePrice = () => {
@@ -1497,14 +1530,15 @@ const Design = () => {
     // Extra card sets beyond package
     total += extraSets * METAL_ADDITIONAL_SET_PRICE;
 
-    // Additional photos beyond package includes
-    const includedPhotos = currentPackage.photos;
-    const additionalPhotosCount = Math.max(0, easelPhotos.length - includedPhotos);
-    total += additionalPhotosCount * ADDITIONAL_PHOTO_PRICE;
+    // Memorial Photos - all are additional (no included photos in packages now)
+    const memorialPhotosCost = memorialPhotos.length * ADDITIONAL_PHOTO_PRICE;
+    const memorialUpgradedCount = memorialPhotos.filter(p => p.size === '18x24').length;
+    total += memorialPhotosCost + memorialUpgradedCount * PHOTO_18X24_UPSELL;
 
-    // 18x24 upsell - count how many photos are upgraded
-    const upgradedCount = easelPhotos.filter(p => p.size === '18x24').length;
-    total += upgradedCount * PHOTO_18X24_UPSELL;
+    // Celebration of Life Photos - all are additional
+    const celebrationPhotosCost = celebrationPhotos.length * ADDITIONAL_PHOTO_PRICE;
+    const celebrationUpgradedCount = celebrationPhotos.filter(p => p.size === '18x24').length;
+    total += celebrationPhotosCost + celebrationUpgradedCount * PHOTO_18X24_UPSELL;
 
     // Premium thickness upgrade
     if (upgradeThickness && currentPackage.thickness !== 'premium') {
@@ -3580,11 +3614,106 @@ const Design = () => {
                         </div>
                       </div>}
 
-                    {/* Celebration of Life Photos - Prominent Upsell */}
+                    {/* Memorial Photos Section */}
+                    <div className="p-4 bg-gradient-to-br from-amber-900/30 to-amber-800/10 border-2 border-amber-500/40 rounded-lg">
+                      <div className="flex items-start gap-4">
+                        <div className="w-12 h-12 bg-amber-500/20 rounded-lg flex items-center justify-center shrink-0">
+                          <ImageIcon className="h-6 w-6 text-amber-400" />
+                        </div>
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-1">
+                            <p className="text-white font-semibold">Memorial Photos</p>
+                          </div>
+                          <p className="text-slate-400 text-sm mb-3">
+                            Large format prints for display at the service
+                          </p>
+                          
+                          {/* Photo sizes & pricing */}
+                          <div className="flex gap-3 mb-3">
+                            <div className="bg-slate-800/50 rounded-lg p-2 text-center flex-1">
+                              <p className="text-white font-bold text-sm">16×20"</p>
+                              <p className="text-amber-400 text-xs font-medium">$17/photo</p>
+                            </div>
+                            <div className="bg-slate-800/50 rounded-lg p-2 text-center flex-1 border border-amber-500/30">
+                              <p className="text-white font-bold text-sm">18×24"</p>
+                              <p className="text-amber-400 text-xs font-medium">$24/photo</p>
+                              <p className="text-[10px] text-slate-500">20% larger</p>
+                            </div>
+                          </div>
+
+                          {/* Current count if any */}
+                          {memorialPhotos.length > 0 && (
+                            <div className="flex items-center justify-between bg-amber-500/20 rounded-lg p-2 mb-3">
+                              <span className="text-amber-300 text-sm">{memorialPhotos.length} photo{memorialPhotos.length > 1 ? 's' : ''} selected</span>
+                              <span className="text-white font-bold">
+                                +${memorialPhotos.length * ADDITIONAL_PHOTO_PRICE + memorialPhotos.filter(p => p.size === '18x24').length * PHOTO_18X24_UPSELL}
+                              </span>
+                            </div>
+                          )}
+
+                          {/* Add Photos Button */}
+                          <input 
+                            ref={memorialPhotosInputRef}
+                            type="file" 
+                            accept="image/*" 
+                            multiple 
+                            className="hidden" 
+                            onChange={e => handleMemorialPhotosUpload(e.target.files)} 
+                          />
+                          <Button 
+                            type="button" 
+                            onClick={() => memorialPhotosInputRef.current?.click()}
+                            className="w-full bg-amber-600 hover:bg-amber-700 text-white"
+                          >
+                            <Plus className="h-4 w-4 mr-2" />
+                            {memorialPhotos.length > 0 ? 'Add More Memorial Photos' : 'Add Memorial Photos'}
+                          </Button>
+
+                          {/* Show uploaded photos thumbnails */}
+                          {memorialPhotos.length > 0 && (
+                            <div className="mt-3 grid grid-cols-4 gap-2">
+                              {memorialPhotos.map((photo, idx) => (
+                                <div key={idx} className="relative group">
+                                  <img 
+                                    src={photo.src} 
+                                    alt={`Memorial Photo ${idx + 1}`} 
+                                    className="w-full aspect-[4/5] object-cover rounded-lg border border-slate-600"
+                                  />
+                                  <div className="absolute bottom-1 left-1 bg-black/70 text-white text-[9px] px-1 rounded">
+                                    {photo.size}
+                                  </div>
+                                  <button
+                                    type="button"
+                                    onClick={() => removeMemorialPhoto(idx)}
+                                    className="absolute -top-1 -right-1 w-5 h-5 bg-rose-500 rounded-full text-white text-xs flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                                  >
+                                    ×
+                                  </button>
+                                  {/* Size toggle */}
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      const newPhotos = [...memorialPhotos];
+                                      newPhotos[idx].size = photo.size === '16x20' ? '18x24' : '16x20';
+                                      setMemorialPhotos(newPhotos);
+                                    }}
+                                    className="absolute bottom-1 right-1 bg-amber-600/90 hover:bg-amber-500 text-white text-[8px] px-1 py-0.5 rounded transition-colors"
+                                  >
+                                    ↔
+                                  </button>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Celebration of Life Photos Section */}
                     <div className="p-4 bg-gradient-to-br from-purple-900/30 to-purple-800/10 border-2 border-purple-500/40 rounded-lg">
                       <div className="flex items-start gap-4">
                         <div className="w-12 h-12 bg-purple-500/20 rounded-lg flex items-center justify-center shrink-0">
-                          <ImageIcon className="h-6 w-6 text-purple-400" />
+                          <Sparkles className="h-6 w-6 text-purple-400" />
                         </div>
                         <div className="flex-1">
                           <div className="flex items-center gap-2 mb-1">
@@ -3592,7 +3721,7 @@ const Design = () => {
                             <span className="bg-purple-500/30 text-purple-300 text-[10px] font-bold px-2 py-0.5 rounded">POPULAR</span>
                           </div>
                           <p className="text-slate-400 text-sm mb-3">
-                            Large format prints for the service & home display
+                            Beautiful prints for home display & keepsakes
                           </p>
                           
                           {/* Photo sizes & pricing */}
@@ -3609,41 +3738,41 @@ const Design = () => {
                           </div>
 
                           {/* Current count if any */}
-                          {easelPhotos.length > 0 && (
+                          {celebrationPhotos.length > 0 && (
                             <div className="flex items-center justify-between bg-purple-500/20 rounded-lg p-2 mb-3">
-                              <span className="text-purple-300 text-sm">{easelPhotos.length} photo{easelPhotos.length > 1 ? 's' : ''} selected</span>
+                              <span className="text-purple-300 text-sm">{celebrationPhotos.length} photo{celebrationPhotos.length > 1 ? 's' : ''} selected</span>
                               <span className="text-white font-bold">
-                                ${easelPhotos.length <= currentPackage.photos ? 'Included' : `+$${(easelPhotos.length - currentPackage.photos) * ADDITIONAL_PHOTO_PRICE + easelPhotos.filter(p => p.size === '18x24').length * PHOTO_18X24_UPSELL}`}
+                                +${celebrationPhotos.length * ADDITIONAL_PHOTO_PRICE + celebrationPhotos.filter(p => p.size === '18x24').length * PHOTO_18X24_UPSELL}
                               </span>
                             </div>
                           )}
 
                           {/* Add Photos Button */}
                           <input 
-                            ref={easelPhotosInputRef}
+                            ref={celebrationPhotosInputRef}
                             type="file" 
                             accept="image/*" 
                             multiple 
                             className="hidden" 
-                            onChange={e => handleEaselPhotosUpload(e.target.files)} 
+                            onChange={e => handleCelebrationPhotosUpload(e.target.files)} 
                           />
                           <Button 
                             type="button" 
-                            onClick={() => easelPhotosInputRef.current?.click()}
+                            onClick={() => celebrationPhotosInputRef.current?.click()}
                             className="w-full bg-purple-600 hover:bg-purple-700 text-white"
                           >
                             <Plus className="h-4 w-4 mr-2" />
-                            {easelPhotos.length > 0 ? 'Add More Photos' : 'Add Celebration Photos'}
+                            {celebrationPhotos.length > 0 ? 'Add More Celebration Photos' : 'Add Celebration Photos'}
                           </Button>
 
                           {/* Show uploaded photos thumbnails */}
-                          {easelPhotos.length > 0 && (
+                          {celebrationPhotos.length > 0 && (
                             <div className="mt-3 grid grid-cols-4 gap-2">
-                              {easelPhotos.map((photo, idx) => (
+                              {celebrationPhotos.map((photo, idx) => (
                                 <div key={idx} className="relative group">
                                   <img 
                                     src={photo.src} 
-                                    alt={`Photo ${idx + 1}`} 
+                                    alt={`Celebration Photo ${idx + 1}`} 
                                     className="w-full aspect-[4/5] object-cover rounded-lg border border-slate-600"
                                   />
                                   <div className="absolute bottom-1 left-1 bg-black/70 text-white text-[9px] px-1 rounded">
@@ -3651,7 +3780,7 @@ const Design = () => {
                                   </div>
                                   <button
                                     type="button"
-                                    onClick={() => removeEaselPhoto(idx)}
+                                    onClick={() => removeCelebrationPhoto(idx)}
                                     className="absolute -top-1 -right-1 w-5 h-5 bg-rose-500 rounded-full text-white text-xs flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
                                   >
                                     ×
@@ -3660,9 +3789,9 @@ const Design = () => {
                                   <button
                                     type="button"
                                     onClick={() => {
-                                      const newPhotos = [...easelPhotos];
+                                      const newPhotos = [...celebrationPhotos];
                                       newPhotos[idx].size = photo.size === '16x20' ? '18x24' : '16x20';
-                                      setEaselPhotos(newPhotos);
+                                      setCelebrationPhotos(newPhotos);
                                     }}
                                     className="absolute bottom-1 right-1 bg-purple-600/90 hover:bg-purple-500 text-white text-[8px] px-1 py-0.5 rounded transition-colors"
                                   >
@@ -3675,20 +3804,6 @@ const Design = () => {
                         </div>
                       </div>
                     </div>
-
-                    {/* Additional Photos beyond package */}
-                    {easelPhotos.length > currentPackage.photos && <div className="p-4 bg-slate-700/30 rounded-lg">
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <p className="text-white font-medium">Extra Memorial Photos</p>
-                            <p className="text-slate-400 text-sm">${ADDITIONAL_PHOTO_PRICE} each (beyond {currentPackage.photos} included)</p>
-                          </div>
-                          <div className="text-right">
-                            <span className="text-white font-medium">{easelPhotos.length - currentPackage.photos} extra</span>
-                            <p className="text-amber-400 text-sm">+${(easelPhotos.length - currentPackage.photos) * ADDITIONAL_PHOTO_PRICE}</p>
-                          </div>
-                        </div>
-                      </div>}
 
                     {/* Premium Thickness Upgrade (metal only, only if package doesn't include it) */}
                     {cardType === 'metal' && currentPackage.thickness !== 'premium' && <div className={`p-4 rounded-lg border-2 cursor-pointer transition-all ${upgradeThickness ? 'bg-amber-900/30 border-amber-500' : 'bg-slate-700/30 border-transparent hover:border-slate-500'}`} onClick={() => setUpgradeThickness(!upgradeThickness)}>
@@ -3966,14 +4081,26 @@ const Design = () => {
                           <span className="text-white">${extraSets * METAL_ADDITIONAL_SET_PRICE}</span>
                         </div>}
                       
-                      {easelPhotos.some(p => p.size === '18x24') && <div className="flex justify-between">
-                          <span className="text-slate-300">18×24 Memorial Photo Upgrade × {easelPhotos.filter(p => p.size === '18x24').length}</span>
-                          <span className="text-white">${PHOTO_18X24_UPSELL * easelPhotos.filter(p => p.size === '18x24').length}</span>
+                      {/* Memorial Photos */}
+                      {memorialPhotos.length > 0 && <div className="flex justify-between">
+                          <span className="text-slate-300">Memorial Photos × {memorialPhotos.length}</span>
+                          <span className="text-white">${memorialPhotos.length * ADDITIONAL_PHOTO_PRICE}</span>
                         </div>}
                       
-                      {easelPhotos.length > currentPackage.photos && <div className="flex justify-between">
-                          <span className="text-slate-300">Additional Easel Photos × {easelPhotos.length - currentPackage.photos}</span>
-                          <span className="text-white">${(easelPhotos.length - currentPackage.photos) * ADDITIONAL_PHOTO_PRICE}</span>
+                      {memorialPhotos.some(p => p.size === '18x24') && <div className="flex justify-between">
+                          <span className="text-slate-300">Memorial 18×24 Upgrades × {memorialPhotos.filter(p => p.size === '18x24').length}</span>
+                          <span className="text-white">${PHOTO_18X24_UPSELL * memorialPhotos.filter(p => p.size === '18x24').length}</span>
+                        </div>}
+                      
+                      {/* Celebration of Life Photos */}
+                      {celebrationPhotos.length > 0 && <div className="flex justify-between">
+                          <span className="text-slate-300">Celebration Photos × {celebrationPhotos.length}</span>
+                          <span className="text-white">${celebrationPhotos.length * ADDITIONAL_PHOTO_PRICE}</span>
+                        </div>}
+                      
+                      {celebrationPhotos.some(p => p.size === '18x24') && <div className="flex justify-between">
+                          <span className="text-slate-300">Celebration 18×24 Upgrades × {celebrationPhotos.filter(p => p.size === '18x24').length}</span>
+                          <span className="text-white">${PHOTO_18X24_UPSELL * celebrationPhotos.filter(p => p.size === '18x24').length}</span>
                         </div>}
                       
                       {cardType === 'metal' && upgradeThickness && currentPackage.thickness !== 'premium' && <div className="flex justify-between">
@@ -4028,9 +4155,12 @@ const Design = () => {
                         <span className="text-slate-400">Card Thickness:</span>{' '}
                         {effectiveThickness === 'premium' ? 'Premium .080"' : 'Standard .040"'}
                       </p>}
-                    <p className="text-slate-300">
-                      <span className="text-slate-400">Easel Photos:</span> {Math.max(currentPackage.photos, easelPhotos.length)} ({easelPhotos.filter(p => p.size === '18x24').length} upgraded to 18x24)
-                    </p>
+                    {memorialPhotos.length > 0 && <p className="text-slate-300">
+                        <span className="text-slate-400">Memorial Photos:</span> {memorialPhotos.length} ({memorialPhotos.filter(p => p.size === '18x24').length} at 18×24)
+                      </p>}
+                    {celebrationPhotos.length > 0 && <p className="text-slate-300">
+                        <span className="text-slate-400">Celebration Photos:</span> {celebrationPhotos.length} ({celebrationPhotos.filter(p => p.size === '18x24').length} at 18×24)
+                      </p>}
                     <p className="text-slate-300">
                       <span className="text-slate-400">Shipping:</span> {SHIPPING_PRICES[shippingSpeed].label}
                     </p>
