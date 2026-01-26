@@ -3058,20 +3058,23 @@ const Design = () => {
                               {/* Back Dates Position Sliders */}
                               <div className="flex items-center gap-2">
                                 <Label className="text-slate-400 text-xs w-10">L/R</Label>
-                                <input type="range" min="-50" max="50" step="1" value={backDatesPosition.x - 50} onChange={e => setBackDatesPosition(prev => ({
+                                <input type="range" min="0" max="100" step="1" value={backDatesPosition.x} onChange={e => setBackDatesPosition(prev => ({
                                 ...prev,
-                                x: parseFloat(e.target.value) + 50
+                                x: parseFloat(e.target.value)
                               }))} className="flex-1 accent-amber-600 h-1" />
-                                <span className="text-xs text-slate-400 w-10 text-right">{Math.round(backDatesPosition.x - 50)}%</span>
+                                <span className="text-xs text-slate-400 w-10 text-right">{Math.round(backDatesPosition.x)}%</span>
                               </div>
                               <div className="flex items-center gap-2">
                                 <Label className="text-slate-400 text-xs w-10">U/D</Label>
-                                <input type="range" min="-20" max="40" step="1" value={backDatesPosition.y - 28} onChange={e => setBackDatesPosition(prev => ({
+                                <input type="range" min="0" max="60" step="1" value={backDatesPosition.y} onChange={e => setBackDatesPosition(prev => ({
                                 ...prev,
-                                y: parseFloat(e.target.value) + 28
+                                y: parseFloat(e.target.value)
                               }))} className="flex-1 accent-amber-600 h-1" />
-                                <span className="text-xs text-slate-400 w-10 text-right">{Math.round(backDatesPosition.y - 28)}%</span>
+                                <span className="text-xs text-slate-400 w-10 text-right">{Math.round(backDatesPosition.y)}%</span>
                               </div>
+                              <Button type="button" variant="outline" size="sm" onClick={() => setBackDatesPosition({ x: 50, y: 8 })} className="border-slate-600 text-slate-300 text-xs w-full mt-1">
+                                Reset Dates Position
+                              </Button>
                             </div>}
                         </div>
                         {/* Metal Finish Options - Only for metal cards */}
@@ -3291,11 +3294,14 @@ const Design = () => {
                             {/* Prayer Size Slider */}
                             <div className="flex items-center gap-2">
                               <Label className="text-slate-400 text-xs w-10">Size</Label>
-                              <input type="range" min="10" max={Math.max(72, pxToPoints(autoPrayerFontSize))} step="1" value={prayerTextSize === 'auto' ? pxToPoints(autoPrayerFontSize) : pxToPoints(Math.min(prayerTextSize, autoPrayerFontSize))} onChange={e => setPrayerTextSize(pointsToPx(parseFloat(e.target.value)))} className="flex-1 accent-amber-600 h-1" />
+                              <input type="range" min="8" max="72" step="1" value={prayerTextSize === 'auto' ? pxToPoints(autoPrayerFontSize) : pxToPoints(prayerTextSize)} onChange={e => setPrayerTextSize(pointsToPx(parseFloat(e.target.value)))} className="flex-1 accent-amber-600 h-1" />
                               <span className="text-xs text-slate-400 w-12 text-right">
-                                {prayerTextSize === 'auto' ? `${pxToPoints(autoPrayerFontSize)}pt` : `${pxToPoints(Math.min(prayerTextSize, autoPrayerFontSize))}pt`}
+                                {prayerTextSize === 'auto' ? 'Auto' : `${pxToPoints(prayerTextSize)}pt`}
                               </span>
                             </div>
+                            <Button type="button" variant="outline" size="sm" onClick={() => setPrayerTextSize('auto')} className="border-slate-600 text-slate-300 text-xs w-full">
+                              Auto-Fit Prayer Text
+                            </Button>
                           </div>
                           
                           {/* Prayer Position Controls */}
