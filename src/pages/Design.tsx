@@ -2187,6 +2187,44 @@ const Design = () => {
 
                     {/* Front Card */}
                     <TabsContent value="front" className="mt-4 md:mt-0">
+                      {/* Mobile Paper Card Size Selector */}
+                      {cardType === 'paper' && (
+                        <div className="md:hidden w-full bg-slate-700/50 rounded-lg p-3 mb-4">
+                          <h3 className="text-sm font-semibold text-white mb-2 text-center">
+                            Card Size {activeDesignIndex >= 0 ? `(Design ${activeDesignIndex + 2})` : ''}
+                          </h3>
+                          <div className="grid grid-cols-2 gap-2">
+                            <button 
+                              type="button" 
+                              onClick={() => setMainDesignSize('2.625x4.375')}
+                              className={`p-2 rounded-lg border-2 transition-all ${
+                                mainDesignSize === '2.625x4.375' 
+                                  ? 'border-amber-500 bg-amber-500/20' 
+                                  : 'border-slate-600 hover:border-slate-500'
+                              }`}
+                            >
+                              <div className="text-center">
+                                <div className="text-sm font-bold text-white">2.5"×4.25"</div>
+                                <div className="text-amber-400 font-semibold text-xs">Included</div>
+                              </div>
+                            </button>
+                            <button 
+                              type="button" 
+                              onClick={() => setMainDesignSize('3.125x4.875')}
+                              className={`p-2 rounded-lg border-2 transition-all ${
+                                mainDesignSize === '3.125x4.875' 
+                                  ? 'border-amber-500 bg-amber-500/20' 
+                                  : 'border-slate-600 hover:border-slate-500'
+                              }`}
+                            >
+                              <div className="text-center">
+                                <div className="text-sm font-bold text-white">3"×4.75"</div>
+                                <div className="text-amber-400 font-semibold text-xs">+$7</div>
+                              </div>
+                            </button>
+                          </div>
+                        </div>
+                      )}
                       <div className="flex flex-col items-center gap-4 md:hidden">
                         {/* Card Preview */}
                         <div data-card-preview ref={cardPreviewRef} className={`${cardClass} ${cardRounding} overflow-hidden shadow-2xl relative ${cardType === 'metal' && metalBorderColor !== 'none' ? `bg-gradient-to-br ${getMetalBorderGradient(metalBorderColor)} p-1` : ''}`}>
