@@ -3580,6 +3580,102 @@ const Design = () => {
                         </div>
                       </div>}
 
+                    {/* Celebration of Life Photos - Prominent Upsell */}
+                    <div className="p-4 bg-gradient-to-br from-purple-900/30 to-purple-800/10 border-2 border-purple-500/40 rounded-lg">
+                      <div className="flex items-start gap-4">
+                        <div className="w-12 h-12 bg-purple-500/20 rounded-lg flex items-center justify-center shrink-0">
+                          <ImageIcon className="h-6 w-6 text-purple-400" />
+                        </div>
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-1">
+                            <p className="text-white font-semibold">Celebration of Life Photos</p>
+                            <span className="bg-purple-500/30 text-purple-300 text-[10px] font-bold px-2 py-0.5 rounded">POPULAR</span>
+                          </div>
+                          <p className="text-slate-400 text-sm mb-3">
+                            Large format prints for the service & home display
+                          </p>
+                          
+                          {/* Photo sizes & pricing */}
+                          <div className="flex gap-3 mb-3">
+                            <div className="bg-slate-800/50 rounded-lg p-2 text-center flex-1">
+                              <p className="text-white font-bold text-sm">16×20"</p>
+                              <p className="text-purple-400 text-xs font-medium">$17/photo</p>
+                            </div>
+                            <div className="bg-slate-800/50 rounded-lg p-2 text-center flex-1 border border-purple-500/30">
+                              <p className="text-white font-bold text-sm">18×24"</p>
+                              <p className="text-purple-400 text-xs font-medium">$24/photo</p>
+                              <p className="text-[10px] text-slate-500">20% larger</p>
+                            </div>
+                          </div>
+
+                          {/* Current count if any */}
+                          {easelPhotos.length > 0 && (
+                            <div className="flex items-center justify-between bg-purple-500/20 rounded-lg p-2 mb-3">
+                              <span className="text-purple-300 text-sm">{easelPhotos.length} photo{easelPhotos.length > 1 ? 's' : ''} selected</span>
+                              <span className="text-white font-bold">
+                                ${easelPhotos.length <= currentPackage.photos ? 'Included' : `+$${(easelPhotos.length - currentPackage.photos) * ADDITIONAL_PHOTO_PRICE + easelPhotos.filter(p => p.size === '18x24').length * PHOTO_18X24_UPSELL}`}
+                              </span>
+                            </div>
+                          )}
+
+                          {/* Add Photos Button */}
+                          <input 
+                            ref={easelPhotosInputRef}
+                            type="file" 
+                            accept="image/*" 
+                            multiple 
+                            className="hidden" 
+                            onChange={e => handleEaselPhotosUpload(e.target.files)} 
+                          />
+                          <Button 
+                            type="button" 
+                            onClick={() => easelPhotosInputRef.current?.click()}
+                            className="w-full bg-purple-600 hover:bg-purple-700 text-white"
+                          >
+                            <Plus className="h-4 w-4 mr-2" />
+                            {easelPhotos.length > 0 ? 'Add More Photos' : 'Add Celebration Photos'}
+                          </Button>
+
+                          {/* Show uploaded photos thumbnails */}
+                          {easelPhotos.length > 0 && (
+                            <div className="mt-3 grid grid-cols-4 gap-2">
+                              {easelPhotos.map((photo, idx) => (
+                                <div key={idx} className="relative group">
+                                  <img 
+                                    src={photo.src} 
+                                    alt={`Photo ${idx + 1}`} 
+                                    className="w-full aspect-[4/5] object-cover rounded-lg border border-slate-600"
+                                  />
+                                  <div className="absolute bottom-1 left-1 bg-black/70 text-white text-[9px] px-1 rounded">
+                                    {photo.size}
+                                  </div>
+                                  <button
+                                    type="button"
+                                    onClick={() => removeEaselPhoto(idx)}
+                                    className="absolute -top-1 -right-1 w-5 h-5 bg-rose-500 rounded-full text-white text-xs flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                                  >
+                                    ×
+                                  </button>
+                                  {/* Size toggle */}
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      const newPhotos = [...easelPhotos];
+                                      newPhotos[idx].size = photo.size === '16x20' ? '18x24' : '16x20';
+                                      setEaselPhotos(newPhotos);
+                                    }}
+                                    className="absolute bottom-1 right-1 bg-purple-600/90 hover:bg-purple-500 text-white text-[8px] px-1 py-0.5 rounded transition-colors"
+                                  >
+                                    ↔
+                                  </button>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+
                     {/* Additional Photos beyond package */}
                     {easelPhotos.length > currentPackage.photos && <div className="p-4 bg-slate-700/30 rounded-lg">
                         <div className="flex items-center justify-between">
