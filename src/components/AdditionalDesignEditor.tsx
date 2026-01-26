@@ -6,7 +6,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { ImageIcon, RotateCcw, Trash2, Book, Check } from 'lucide-react';
+import { ImageIcon, RotateCcw, Trash2, Book, Check, Minus, Plus } from 'lucide-react';
 import { prayerTemplates } from '@/data/prayerTemplates';
 
 // Imports for backgrounds
@@ -204,15 +204,38 @@ export const AdditionalDesignEditor = ({
         <ScrollArea className="flex-1 max-h-[calc(90vh-140px)]">
           <div className="p-4 space-y-6">
             {/* Quantity */}
-            <div className="flex items-center gap-4 p-4 bg-slate-700/50 rounded-lg">
-              <Label className="text-white font-medium">Quantity for this design:</Label>
-              <Input
-                type="number"
-                min="1"
-                value={localDesign.qty}
-                onChange={(e) => setLocalDesign({ ...localDesign, qty: Math.max(1, parseInt(e.target.value) || 1) })}
-                className="w-24 bg-slate-800 border-slate-600 text-white"
-              />
+            <div className="flex items-center justify-between p-4 bg-gradient-to-r from-amber-600/20 to-amber-500/10 border border-amber-500/30 rounded-lg">
+              <div>
+                <Label className="text-white font-semibold text-base">Cards with this design</Label>
+                <p className="text-amber-300/70 text-sm">How many cards should use this photo/prayer?</p>
+              </div>
+              <div className="flex items-center gap-1">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="icon"
+                  onClick={() => setLocalDesign({ ...localDesign, qty: Math.max(1, localDesign.qty - 5) })}
+                  className="h-10 w-10 border-amber-500/50 text-amber-400 hover:bg-amber-600/20 hover:text-amber-300"
+                >
+                  <Minus className="h-4 w-4" />
+                </Button>
+                <Input
+                  type="number"
+                  min="1"
+                  value={localDesign.qty}
+                  onChange={(e) => setLocalDesign({ ...localDesign, qty: Math.max(1, parseInt(e.target.value) || 1) })}
+                  className="w-20 h-10 bg-slate-800 border-amber-500/50 text-white text-center text-lg font-bold"
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="icon"
+                  onClick={() => setLocalDesign({ ...localDesign, qty: localDesign.qty + 5 })}
+                  className="h-10 w-10 border-amber-500/50 text-amber-400 hover:bg-amber-600/20 hover:text-amber-300"
+                >
+                  <Plus className="h-4 w-4" />
+                </Button>
+              </div>
             </div>
 
             {/* Two Column Layout */}
