@@ -2492,29 +2492,15 @@ const Design = () => {
                         {/* Photo Controls Panel */}
                         {activePhoto && <div className="w-full max-w-md space-y-2 p-3 bg-slate-700/30 rounded-lg">
                             <Label className="text-white text-sm font-medium">Adjust Photo</Label>
-                            <div className="flex items-center gap-3">
-                              <Label className="text-slate-400 text-xs w-12">Zoom</Label>
-                              <input type="range" min="1" max="3" step="0.1" value={photoZoom} onChange={e => setPhotoZoom(parseFloat(e.target.value))} className="flex-1 accent-amber-600" />
-                              <span className="text-xs text-slate-400 min-w-[40px]">{Math.round(photoZoom * 100)}%</span>
-                            </div>
-                            <div className="flex items-center gap-3">
-                              <Label className="text-slate-400 text-xs w-16">Left/Right</Label>
-                              <input type="range" min="-100" max="100" step="1" value={photoPanX} onChange={e => setPhotoPanX(parseFloat(e.target.value))} className="flex-1 accent-amber-600" />
-                            </div>
-                            <div className="flex items-center gap-3">
-                              <Label className="text-slate-400 text-xs w-16">Up/Down</Label>
-                              <input type="range" min="-100" max="100" step="1" value={photoPanY} onChange={e => setPhotoPanY(parseFloat(e.target.value))} className="flex-1 accent-amber-600" />
-                            </div>
-                            <div className="flex items-center gap-3">
-                              <Label className="text-slate-400 text-xs w-12">Rotate</Label>
-                              <input type="range" min="-180" max="180" step="1" value={photoRotation} onChange={e => setPhotoRotation(parseFloat(e.target.value))} className="flex-1 accent-amber-600" />
-                              <span className="text-xs text-slate-400 min-w-[40px]">{photoRotation}°</span>
-                            </div>
-                            <div className="flex items-center gap-3">
-                              <Label className="text-slate-400 text-xs w-12">Brightness</Label>
-                              <input type="range" min="50" max="150" step="5" value={photoBrightness} onChange={e => setPhotoBrightness(parseFloat(e.target.value))} className="flex-1 accent-amber-600" />
-                              <span className="text-xs text-slate-400 min-w-[40px]">{photoBrightness}%</span>
-                            </div>
+                            <Button type="button" variant="outline" size="sm" onClick={() => {
+                            setPhotoZoom(1);
+                            setPhotoPanX(0);
+                            setPhotoPanY(0);
+                            setPhotoRotation(0);
+                            setPhotoBrightness(100);
+                          }} className="border-slate-600 text-slate-300 text-xs w-full mb-2">
+                              Reset Photo Position
+                            </Button>
                             <div className="pt-2 border-t border-slate-600 space-y-2">
                               <div className="flex items-center justify-between">
                                 <Label className="text-slate-400 text-xs">Photo Fade Effect</Label>
