@@ -2979,8 +2979,8 @@ const Design = () => {
                               }}>
                                   {/* QR Code */}
                                   {qrValue && <div className="flex flex-col items-center">
-                                      <QrCodeBadge value={qrValue} size={orientation === 'portrait' ? 104 : 88} level="M" paddingClassName="p-3" />
-                                      <p className={`text-[8px] mt-1 ${mutedTextColorClass}`}>
+                                      <QrCodeBadge value={qrValue} size={orientation === 'portrait' ? 64 : 56} level="M" paddingClassName="p-2" />
+                                      <p className={`text-[7px] mt-0.5 ${mutedTextColorClass}`}>
                                         Scan to visit
                                       </p>
                                     </div>}
