@@ -1989,7 +1989,7 @@ const Design = () => {
                           bottom: frontBorderDesign !== 'none' ? '14px' : '8px',
                           right: frontBorderDesign !== 'none' ? '14px' : '8px'
                         }}>
-                                <QrCodeBadge value={qrValue} size={40} level="M" paddingClassName="p-2" />
+                                <QrCodeBadge value={qrValue} size={32} level="M" paddingClassName="p-1" />
                               </div>}
                             
                             {/* Decorative Border Overlay */}
@@ -2087,7 +2087,7 @@ const Design = () => {
                                   <div className="shrink-0 flex flex-col items-center" style={{
                                 marginBottom: backBorderDesign !== 'none' ? '4px' : '0px'
                               }}>
-                                    {qrValue && <QrCodeBadge value={qrValue} size={48} level="M" paddingClassName="p-2" />}
+                                    {qrValue && <QrCodeBadge value={qrValue} size={36} level="M" paddingClassName="p-1" />}
                                     {/* Funeral Home Logo - Bottom */}
                                     {funeralHomeLogo && funeralHomeLogoPosition === 'bottom' && <div className="flex justify-center mt-0.5">
                                         <img src={funeralHomeLogo} alt="Funeral Home Logo" className="object-contain" style={{
@@ -2380,7 +2380,7 @@ const Design = () => {
                               bottom: frontBorderDesign !== 'none' ? '20px' : '10px',
                               right: frontBorderDesign !== 'none' ? '20px' : '10px'
                             }}>
-                                  <QrCodeBadge value={qrValue} size={56} level="M" paddingClassName="p-2" />
+                                  <QrCodeBadge value={qrValue} size={40} level="M" paddingClassName="p-1" />
                                 </div>}
                               
                               {/* Decorative Border Overlay - Paper cards only (Front) */}
@@ -2914,12 +2914,7 @@ const Design = () => {
                                 marginBottom: backBorderDesign !== 'none' ? '8px' : '0px'
                               }}>
                                   {/* QR Code */}
-                                  {qrValue && <div className="flex flex-col items-center">
-                                      <QrCodeBadge value={qrValue} size={orientation === 'portrait' ? 64 : 56} level="M" paddingClassName="p-2" />
-                                      <p className={`text-[7px] mt-0.5 ${mutedTextColorClass}`}>
-                                        Scan to visit
-                                      </p>
-                                    </div>}
+                                  {qrValue && <QrCodeBadge value={qrValue} size={orientation === 'portrait' ? 48 : 40} level="M" paddingClassName="p-1" />}
 
                                   {/* Funeral Home Logo - Bottom */}
                                   {funeralHomeLogo && funeralHomeLogoPosition === 'bottom' && <div className="flex justify-center mt-1">
@@ -4077,7 +4072,7 @@ const Design = () => {
                 bottom: frontBorderDesign !== 'none' ? '40px' : '20px',
                 right: frontBorderDesign !== 'none' ? '40px' : '20px'
               }}>
-                  <QrCodeBadge value={qrValue} size={96} level="M" paddingClassName="p-3" />
+                  <QrCodeBadge value={qrValue} size={72} level="M" paddingClassName="p-2" />
                 </div>}
             </div>
           </div>
@@ -4157,7 +4152,7 @@ const Design = () => {
                 // Push up from bottom safe area and keep clear of borders/overlays.
                 marginBottom: funeralHomeLogo && funeralHomeLogoPosition === 'bottom' ? '24px' : '12px'
               }}>
-                    <QrCodeBadge value={qrValue} size={orientation === 'portrait' ? 200 : 180} level="M" paddingClassName="p-4" />
+                    <QrCodeBadge value={qrValue} size={orientation === 'portrait' ? 140 : 120} level="M" paddingClassName="p-2" />
                   </div>}
                 {funeralHomeLogo && funeralHomeLogoPosition === 'bottom' && <div className="flex justify-center mt-4">
                     <img src={funeralHomeLogo} alt="Logo" style={{
