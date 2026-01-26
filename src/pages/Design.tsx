@@ -612,6 +612,39 @@ const Design = () => {
   const [funeralHomeLogoPosition, setFuneralHomeLogoPosition] = useState<'top' | 'bottom'>('bottom');
   const [funeralHomeLogoSize, setFuneralHomeLogoSize] = useState(40);
 
+  // Reset all positions and sizes to defaults
+  const resetAllDesignSettings = useCallback(() => {
+    // Front card defaults
+    setNameSize(24);
+    setNamePosition({ x: 50, y: 82 });
+    setFrontDatesSize('auto');
+    setDatesPosition({ x: 50, y: 86 });
+    setAdditionalTextPosition({ x: 50, y: 70 });
+    setAdditionalTextSize(14);
+    
+    // Back card defaults
+    setBackNameSize(32);
+    setBackNamePosition({ x: 0, y: 12 });
+    setBackDatesSize('auto');
+    setBackDatesPosition({ x: 50, y: 48 });
+    setPrayerTextSize('auto');
+    setPrayerPosition({ x: 0, y: 0 });
+    setInLovingMemorySize(24);
+    setInLovingMemoryPosition({ x: 0, y: 8 });
+    
+    // Photo/background defaults
+    setPhotoZoom(1);
+    setPhotoPanX(0);
+    setPhotoPanY(0);
+    setPhotoRotation(0);
+    setPhotoBrightness(100);
+    setBackBgZoom(1);
+    setBackBgPanX(0);
+    setBackBgPanY(0);
+    setBackBgRotation(0);
+    
+    toast.success('All positions and sizes reset to defaults');
+  }, []);
   // Auto-adjust name/dates/additional text positions based on elements
   useEffect(() => {
     if (cardType !== 'paper') return;
@@ -2563,9 +2596,22 @@ const Design = () => {
 
                         {/* Text Controls - Compact layout */}
                         <div className="w-full space-y-1.5 border-t border-slate-700 pt-2">
-                          <div className="flex items-center gap-2">
-                            <Type className="h-3 w-3 text-slate-400" />
-                            <Label className="text-slate-400 text-xs font-medium">Front Card Text</Label>
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                              <Type className="h-3 w-3 text-slate-400" />
+                              <Label className="text-slate-400 text-xs font-medium">Front Card Text</Label>
+                            </div>
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              onClick={resetAllDesignSettings}
+                              className="h-5 px-2 text-xs text-slate-400 hover:text-amber-400"
+                              title="Reset all positions and sizes to defaults"
+                            >
+                              <RotateCcw className="h-3 w-3 mr-1" />
+                              Reset All
+                            </Button>
                           </div>
                           
                           {/* Name Controls - Compact */}

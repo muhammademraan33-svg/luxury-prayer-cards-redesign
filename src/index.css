@@ -238,4 +238,51 @@
     right: 12px;
     transform: rotate(180deg);
   }
+
+  /* Improved slider touch handling for mobile */
+  input[type="range"] {
+    touch-action: none;
+    -webkit-appearance: none;
+    appearance: none;
+    height: 8px;
+    background: hsl(220 30% 25%);
+    border-radius: 4px;
+    cursor: pointer;
+  }
+
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    background: hsl(42 90% 55%);
+    border-radius: 50%;
+    cursor: pointer;
+    border: 2px solid hsl(42 90% 70%);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  }
+
+  input[type="range"]::-webkit-slider-thumb:hover {
+    background: hsl(42 90% 60%);
+    transform: scale(1.1);
+  }
+
+  input[type="range"]::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    background: hsl(42 90% 55%);
+    border-radius: 50%;
+    cursor: pointer;
+    border: 2px solid hsl(42 90% 70%);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  }
+
+  input[type="range"]:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  input[type="range"]:disabled::-webkit-slider-thumb {
+    cursor: not-allowed;
+  }
 }

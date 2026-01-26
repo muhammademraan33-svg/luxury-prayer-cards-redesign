@@ -43,28 +43,87 @@ interface OrderEmailRequest {
   easelPhotos?: string[]; // Array of base64 data URLs for easel photos
 }
 
+// Card size configurations (in inches)
+const CARD_SIZES = {
+  standard: { width: 2.625, height: 4.375, name: "Standard (2.5×4.25)" },
+  large: { width: 3.125, height: 4.875, name: "Large (3×4.75)" },
+  metal: { width: 2.5, height: 4.25, name: "Metal Card" },
+} as const;
+
 // Generate a print-ready PDF from a base64 image
-// Card dimensions: 2.5" x 4.25" at 300 DPI for metal prayer cards
-function generatePrintPDF(imageBase64: string, title: string): string {
-  // Create PDF with custom size (2.5" x 4.25")
+// Supports multiple card sizes with proper bleed margins
+function generatePrintPDF(
+  imageBase64: string, 
+  title: string, 
+  cardSize: 'standard' | 'large' | 'metal' = 'metal'
+): string {
+  const size = CARD_SIZES[cardSize];
+  
+  // Add 0.125" bleed on each side for professional printing
+  const bleed = 0.125;
+  const pdfWidth = size.width + (bleed * 2);
+  const pdfHeight = size.height + (bleed * 2);
+  
+  // Create PDF with custom size including bleed
   const doc = new jsPDF({
-    orientation: "portrait",
+    orientation: size.height > size.width ? "portrait" : "landscape",
     unit: "in",
-    format: [2.5, 4.25],
+    format: [pdfWidth, pdfHeight],
   });
 
-  // Add title as metadata
+  // Add comprehensive metadata for print shops
   doc.setProperties({
     title: title,
-    subject: "Print-Ready Prayer Card",
-    creator: "Metal Prayer Cards",
+    subject: `Print-Ready Prayer Card - ${size.name}`,
+    creator: "Luxury Prayer Cards",
+    keywords: "prayer card, memorial, 300dpi, print-ready",
   });
 
-  // Add the image to fill the entire page
-  doc.addImage(imageBase64, "JPEG", 0, 0, 2.5, 4.25);
+  // Add crop marks for professional cutting (4 corner marks)
+  const markLength = 0.1;
+  const markOffset = 0.05;
+  doc.setDrawColor(0, 0, 0);
+  doc.setLineWidth(0.01);
+  
+  // Top-left corner marks
+  doc.line(markOffset, bleed, markOffset + markLength, bleed);
+  doc.line(bleed, markOffset, bleed, markOffset + markLength);
+  
+  // Top-right corner marks
+  doc.line(pdfWidth - markOffset - markLength, bleed, pdfWidth - markOffset, bleed);
+  doc.line(pdfWidth - bleed, markOffset, pdfWidth - bleed, markOffset + markLength);
+  
+  // Bottom-left corner marks
+  doc.line(markOffset, pdfHeight - bleed, markOffset + markLength, pdfHeight - bleed);
+  doc.line(bleed, pdfHeight - markOffset - markLength, bleed, pdfHeight - markOffset);
+  
+  // Bottom-right corner marks
+  doc.line(pdfWidth - markOffset - markLength, pdfHeight - bleed, pdfWidth - markOffset, pdfHeight - bleed);
+  doc.line(pdfWidth - bleed, pdfHeight - markOffset - markLength, pdfWidth - bleed, pdfHeight - markOffset);
+
+  // Add the image to fill the entire page (including bleed area)
+  doc.addImage(imageBase64, "JPEG", 0, 0, pdfWidth, pdfHeight);
 
   // Return as base64 string (without data URL prefix)
   return doc.output("datauristring").split(",")[1];
+}
+
+// Determine card size from order details
+function getCardSizeFromOrder(orderDetails: OrderEmailRequest['orderDetails']): 'standard' | 'large' | 'metal' {
+  const packageName = orderDetails.packageName?.toLowerCase() || '';
+  const metalFinish = orderDetails.metalFinish?.toLowerCase() || '';
+  
+  // Check if it's a metal card
+  if (metalFinish && metalFinish !== 'paper' && metalFinish !== 'none') {
+    return 'metal';
+  }
+  
+  // Check paper card size from package name
+  if (packageName.includes('3.125') || packageName.includes('3x4.75') || packageName.includes('large')) {
+    return 'large';
+  }
+  
+  return 'standard';
 }
 
 async function sendEmail(
@@ -323,22 +382,30 @@ const handler = async (req: Request): Promise<Response> => {
 
     const attachments = [];
 
+    // Determine card size for PDF generation
+    const cardSize = getCardSizeFromOrder(orderDetails);
+    console.log("Card size detected:", cardSize, CARD_SIZES[cardSize].name);
+
     // Generate print-ready PDFs for front and back cards
     if (frontCardImage && frontCardImage.includes(",")) {
       const frontBase64 = frontCardImage.split(",")[1];
       try {
-        console.log("Generating front card PDF...");
-        const frontPdfBase64 = generatePrintPDF(frontBase64, `Front Card - ${orderDetails.deceasedName}`);
+        console.log("Generating front card PDF with bleed margins...");
+        const frontPdfBase64 = generatePrintPDF(
+          frontBase64, 
+          `Front Card - ${orderDetails.deceasedName}`,
+          cardSize
+        );
         attachments.push({
-          filename: `front-card-${orderDetails.deceasedName.replace(/\s+/g, "-")}.pdf`,
+          filename: `front-card-${orderDetails.deceasedName.replace(/\s+/g, "-")}-PRINT-READY.pdf`,
           content: frontPdfBase64,
         });
-        console.log("Front card PDF generated successfully");
+        console.log("Front card PDF generated successfully with crop marks");
       } catch (pdfError) {
         console.error("Error generating front PDF:", pdfError);
-        // Fallback to JPG if PDF fails
+        // Fallback to high-quality JPG if PDF fails
         attachments.push({
-          filename: "front-card-print.jpg",
+          filename: `front-card-${orderDetails.deceasedName.replace(/\s+/g, "-")}-300dpi.jpg`,
           content: frontBase64,
         });
       }
@@ -348,18 +415,22 @@ const handler = async (req: Request): Promise<Response> => {
     if (backCardImage && backCardImage.includes(",")) {
       const backBase64 = backCardImage.split(",")[1];
       try {
-        console.log("Generating back card PDF...");
-        const backPdfBase64 = generatePrintPDF(backBase64, `Back Card - ${orderDetails.deceasedName}`);
+        console.log("Generating back card PDF with bleed margins...");
+        const backPdfBase64 = generatePrintPDF(
+          backBase64, 
+          `Back Card - ${orderDetails.deceasedName}`,
+          cardSize
+        );
         attachments.push({
-          filename: `back-card-${orderDetails.deceasedName.replace(/\s+/g, "-")}.pdf`,
+          filename: `back-card-${orderDetails.deceasedName.replace(/\s+/g, "-")}-PRINT-READY.pdf`,
           content: backPdfBase64,
         });
-        console.log("Back card PDF generated successfully");
+        console.log("Back card PDF generated successfully with crop marks");
       } catch (pdfError) {
         console.error("Error generating back PDF:", pdfError);
-        // Fallback to JPG if PDF fails
+        // Fallback to high-quality JPG if PDF fails
         attachments.push({
-          filename: "back-card-print.jpg",
+          filename: `back-card-${orderDetails.deceasedName.replace(/\s+/g, "-")}-300dpi.jpg`,
           content: backBase64,
         });
       }
