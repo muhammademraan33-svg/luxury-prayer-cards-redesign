@@ -3094,34 +3094,6 @@ const Design = () => {
                                   </SelectContent>
                                 </Select>
                               </div>
-                              {/* Back Dates Size Slider */}
-                              <div className="flex items-center gap-2">
-                                <Label className="text-slate-400 text-xs w-10">Size</Label>
-                                <input type="range" min="10" max="72" step="1" value={pxToPoints(typeof backDatesSize === 'number' ? backDatesSize : 16)} onChange={e => setBackDatesSize(pointsToPx(parseFloat(e.target.value)))} className="flex-1 accent-amber-600 h-1" />
-                                <span className="text-xs text-slate-400 w-12 text-right">
-                                  {backDatesSize === 'auto' ? 'Auto' : `${pxToPoints(backDatesSize)}pt`}
-                                </span>
-                              </div>
-                              {/* Back Dates Position Sliders */}
-                              <div className="flex items-center gap-2">
-                                <Label className="text-slate-400 text-xs w-10">L/R</Label>
-                                <input type="range" min="0" max="100" step="1" value={backDatesPosition.x} onChange={e => setBackDatesPosition(prev => ({
-                                ...prev,
-                                x: parseFloat(e.target.value)
-                              }))} className="flex-1 accent-amber-600 h-1" />
-                                <span className="text-xs text-slate-400 w-10 text-right">{Math.round(backDatesPosition.x)}%</span>
-                              </div>
-                              <div className="flex items-center gap-2">
-                                <Label className="text-slate-400 text-xs w-10">U/D</Label>
-                                <input type="range" min="0" max="60" step="1" value={backDatesPosition.y} onChange={e => setBackDatesPosition(prev => ({
-                                ...prev,
-                                y: parseFloat(e.target.value)
-                              }))} className="flex-1 accent-amber-600 h-1" />
-                                <span className="text-xs text-slate-400 w-10 text-right">{Math.round(backDatesPosition.y)}%</span>
-                              </div>
-                              <Button type="button" variant="outline" size="sm" onClick={() => setBackDatesPosition({ x: 50, y: 8 })} className="border-slate-600 text-slate-300 text-xs w-full mt-1">
-                                Reset Dates Position
-                              </Button>
                             </div>}
                         </div>
                         {/* Metal Finish Options - Only for metal cards */}
@@ -3193,35 +3165,6 @@ const Design = () => {
                             </Button>}
                         </div>
 
-                        {/* Zoom/Pan/Rotate Controls for Back Background */}
-                        {backBgImage && <div className="w-full max-w-md space-y-2 p-3 bg-slate-700/30 rounded-lg">
-                            <div className="flex items-center gap-3">
-                              <Label className="text-slate-400 text-xs w-12">Zoom</Label>
-                              <input type="range" min="1" max="3" step="0.1" value={backBgZoom} onChange={e => setBackBgZoom(parseFloat(e.target.value))} className="flex-1 accent-amber-600" />
-                              <span className="text-xs text-slate-400 min-w-[40px]">{Math.round(backBgZoom * 100)}%</span>
-                            </div>
-                            <div className="flex items-center gap-3">
-                              <Label className="text-slate-400 text-xs w-16">Left/Right</Label>
-                              <input type="range" min="-50" max="50" step="1" value={backBgPanX} onChange={e => setBackBgPanX(parseFloat(e.target.value))} className="flex-1 accent-amber-600" />
-                            </div>
-                            <div className="flex items-center gap-3">
-                              <Label className="text-slate-400 text-xs w-16">Up/Down</Label>
-                              <input type="range" min="-50" max="50" step="1" value={backBgPanY} onChange={e => setBackBgPanY(parseFloat(e.target.value))} className="flex-1 accent-amber-600" />
-                            </div>
-                            <div className="flex items-center gap-3">
-                              <Label className="text-slate-400 text-xs w-12">Rotate</Label>
-                              <input type="range" min="-180" max="180" step="1" value={backBgRotation} onChange={e => setBackBgRotation(parseFloat(e.target.value))} className="flex-1 accent-amber-600" />
-                              <span className="text-xs text-slate-400 min-w-[40px]">{backBgRotation}°</span>
-                            </div>
-                            <Button type="button" variant="outline" size="sm" onClick={() => {
-                            setBackBgZoom(1);
-                            setBackBgPanX(0);
-                            setBackBgPanY(0);
-                            setBackBgRotation(0);
-                          }} className="border-slate-600 text-slate-300 text-xs w-full">
-                              Reset Position
-                            </Button>
-                          </div>}
 
                         {/* In Loving Memory Controls */}
                         <div className="w-full max-w-md space-y-3 p-3 bg-slate-700/30 rounded-lg">
@@ -3254,29 +3197,6 @@ const Design = () => {
                                 <Button type="button" variant={inLovingMemoryBold ? 'default' : 'outline'} size="sm" className={`h-7 px-3 text-xs font-bold ${inLovingMemoryBold ? 'bg-amber-600 text-white' : 'border-slate-600 text-slate-300'}`} onClick={() => setInLovingMemoryBold(!inLovingMemoryBold)}>
                                   B
                                 </Button>
-                              </div>
-                              {/* In Loving Memory Size Slider */}
-                              <div className="flex items-center gap-2">
-                                <Label className="text-slate-400 text-xs w-10">Size</Label>
-                                <input type="range" min="10" max="72" step="1" value={pxToPoints(inLovingMemorySize)} onChange={e => setInLovingMemorySize(pointsToPx(parseFloat(e.target.value)))} className="flex-1 accent-amber-600 h-1" />
-                                <span className="text-xs text-slate-400 w-12 text-right">{pxToPoints(inLovingMemorySize)}pt</span>
-                              </div>
-                              {/* In Loving Memory Position Sliders */}
-                              <div className="flex items-center gap-2">
-                                <Label className="text-slate-400 text-xs w-10">L/R</Label>
-                                <input type="range" min="-50" max="50" step="1" value={inLovingMemoryPosition.x} onChange={e => setInLovingMemoryPosition(prev => ({
-                                ...prev,
-                                x: parseFloat(e.target.value)
-                              }))} className="flex-1 accent-amber-600 h-1" />
-                                <span className="text-xs text-slate-400 w-10 text-right">{inLovingMemoryPosition.x}%</span>
-                              </div>
-                              <div className="flex items-center gap-2">
-                                <Label className="text-slate-400 text-xs w-10">U/D</Label>
-                                <input type="range" min="-30" max="30" step="1" value={inLovingMemoryPosition.y} onChange={e => setInLovingMemoryPosition(prev => ({
-                                ...prev,
-                                y: parseFloat(e.target.value)
-                              }))} className="flex-1 accent-amber-600 h-1" />
-                                <span className="text-xs text-slate-400 w-10 text-right">{inLovingMemoryPosition.y}%</span>
                               </div>
                             </>}
                         </div>
@@ -3338,44 +3258,6 @@ const Design = () => {
                                 B
                               </Button>
                             </div>
-                            {/* Prayer Size Slider */}
-                            <div className="flex items-center gap-2">
-                              <Label className="text-slate-400 text-xs w-10">Size</Label>
-                              <input type="range" min="8" max="72" step="1" value={prayerTextSize === 'auto' ? pxToPoints(autoPrayerFontSize) : pxToPoints(prayerTextSize)} onChange={e => setPrayerTextSize(pointsToPx(parseFloat(e.target.value)))} className="flex-1 accent-amber-600 h-1" />
-                              <span className="text-xs text-slate-400 w-12 text-right">
-                                {prayerTextSize === 'auto' ? 'Auto' : `${pxToPoints(prayerTextSize)}pt`}
-                              </span>
-                            </div>
-                            <Button type="button" variant="outline" size="sm" onClick={() => setPrayerTextSize('auto')} className="border-slate-600 text-slate-300 text-xs w-full">
-                              Auto-Fit Prayer Text
-                            </Button>
-                          </div>
-                          
-                          {/* Prayer Position Controls */}
-                          <div className="space-y-2 pt-2 border-t border-slate-600/50">
-                            <Label className="text-slate-400 text-xs">Prayer Position (drag text on card or use sliders)</Label>
-                            <div className="flex items-center gap-2">
-                              <Label className="text-slate-400 text-xs w-10">L/R</Label>
-                              <input type="range" min="-40" max="40" step="1" value={prayerPosition.x} onChange={e => setPrayerPosition(prev => ({
-                                ...prev,
-                                x: parseFloat(e.target.value)
-                              }))} className="flex-1 accent-amber-600 h-1" />
-                              <span className="text-xs text-slate-400 w-10 text-right">{Math.round(prayerPosition.x)}%</span>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <Label className="text-slate-400 text-xs w-10">U/D</Label>
-                              <input type="range" min="-40" max="40" step="1" value={prayerPosition.y} onChange={e => setPrayerPosition(prev => ({
-                                ...prev,
-                                y: parseFloat(e.target.value)
-                              }))} className="flex-1 accent-amber-600 h-1" />
-                              <span className="text-xs text-slate-400 w-10 text-right">{Math.round(prayerPosition.y)}%</span>
-                            </div>
-                            <Button type="button" variant="outline" size="sm" onClick={() => setPrayerPosition({
-                              x: 0,
-                              y: 0
-                            })} className="border-slate-600 text-slate-300 text-xs w-full">
-                              Center Prayer
-                            </Button>
                           </div>
                         </div>
 
@@ -3402,13 +3284,6 @@ const Design = () => {
                                     Bottom
                                   </Button>
                                 </div>
-                              </div>
-                              <div className="space-y-2">
-                                <div className="flex items-center justify-between">
-                                  <Label className="text-slate-400 text-xs">Size</Label>
-                                  <span className="text-xs text-white bg-slate-700 px-2 py-1 rounded">{funeralHomeLogoSize}px</span>
-                                </div>
-                                <Slider value={[funeralHomeLogoSize]} onValueChange={val => setFuneralHomeLogoSize(val[0])} min={20} max={200} step={5} className="w-full" />
                               </div>
                             </div>}
                         </div>
