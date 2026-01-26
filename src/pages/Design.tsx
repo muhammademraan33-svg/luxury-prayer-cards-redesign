@@ -3388,7 +3388,7 @@ const Design = () => {
                           </div>
                         </div>)}
 
-                      {/* Variety Upsell Button */}
+                      {/* Add More Cards Button - Prominent */}
                       <button type="button" onClick={() => {
                       const newDesign = createEmptyDesign();
                       setAdditionalDesigns([...additionalDesigns, newDesign]);
@@ -3397,20 +3397,18 @@ const Design = () => {
                         top: 0,
                         behavior: 'smooth'
                       });
-                    }} className="w-full p-4 bg-gradient-to-r from-amber-600/15 via-amber-500/10 to-amber-600/15 border border-dashed border-amber-500/40 hover:border-amber-400 rounded-lg transition-all group">
+                    }} className="w-full p-5 bg-gradient-to-r from-emerald-600/30 via-emerald-500/20 to-emerald-600/30 border-2 border-emerald-500/60 hover:border-emerald-400 hover:from-emerald-600/40 hover:via-emerald-500/30 hover:to-emerald-600/40 rounded-xl transition-all group shadow-lg shadow-emerald-900/20">
                         <div className="flex items-center justify-center gap-4">
-                          {/* Mini card mockups showing variety */}
-                          <div className="flex -space-x-2">
-                            <div className="w-8 h-12 bg-gradient-to-br from-blue-200 to-blue-400 rounded-sm shadow-md border border-white/50" />
-                            <div className="w-8 h-12 bg-gradient-to-br from-rose-200 to-rose-400 rounded-sm shadow-md border border-white/50" />
-                            <div className="w-8 h-12 bg-gradient-to-br from-amber-200 to-amber-400 rounded-sm shadow-md border border-white/50" />
+                          {/* Plus Icon */}
+                          <div className="w-12 h-12 rounded-full bg-emerald-500/30 flex items-center justify-center group-hover:bg-emerald-500/40 transition-colors">
+                            <Plus className="h-6 w-6 text-emerald-300" />
                           </div>
                           <div className="flex flex-col items-start">
                             <div className="flex items-center gap-2">
-                              <span className="font-bold text-amber-300">Add Another Style</span>
-                              <span className="bg-amber-500 text-black text-xs font-bold px-2 py-0.5 rounded">Only $7</span>
+                              <span className="font-bold text-lg text-emerald-300">Add More Cards</span>
+                              <span className="bg-emerald-500 text-black text-xs font-bold px-2 py-0.5 rounded animate-pulse">+$7</span>
                             </div>
-                            <span className="text-slate-400 text-sm">Different background, prayer, or layout</span>
+                            <span className="text-slate-300 text-sm">Different photo, background, or prayer</span>
                           </div>
                         </div>
                       </button>

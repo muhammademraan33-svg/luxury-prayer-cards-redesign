@@ -185,8 +185,13 @@ export const AdditionalDesignEditor = ({
 
   const formatDate = (dateStr: string) => {
     if (!dateStr) return '';
-    const date = new Date(dateStr);
-    return date.toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' });
+    try {
+      const date = new Date(dateStr + 'T00:00:00');
+      if (isNaN(date.getTime())) return '';
+      return date.toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' });
+    } catch {
+      return '';
+    }
   };
 
   return (
@@ -251,13 +256,13 @@ export const AdditionalDesignEditor = ({
                     )}
                     
                     {/* Text Overlay */}
-                    <div className="absolute inset-0 flex flex-col justify-end p-3">
-                      <p className="text-white text-center font-script text-lg drop-shadow-lg" style={{ fontFamily: 'Great Vibes' }}>
+                    <div className="absolute inset-0 flex flex-col justify-end p-3 gap-1">
+                      <p className="text-white text-center font-script text-base drop-shadow-lg leading-tight" style={{ fontFamily: 'Great Vibes' }}>
                         {deceasedName || 'Name Here'}
                       </p>
-                      {birthDate && deathDate && (
-                        <p className="text-white/80 text-center text-xs drop-shadow">
-                          {formatDate(birthDate)} — {formatDate(deathDate)}
+                      {(formatDate(birthDate) || formatDate(deathDate)) && (
+                        <p className="text-white/80 text-center text-[10px] drop-shadow leading-tight">
+                          {formatDate(birthDate)}{formatDate(birthDate) && formatDate(deathDate) && ' — '}{formatDate(deathDate)}
                         </p>
                       )}
                     </div>
