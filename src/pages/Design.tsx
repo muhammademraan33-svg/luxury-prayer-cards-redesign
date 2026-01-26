@@ -2928,11 +2928,12 @@ const Design = () => {
                                     </div>}
                                   
                                   {/* Dates - now in flow, not absolute */}
-                                  {showDatesOnBack && <div className="touch-none select-none px-1 rounded" style={{
+                                  {showDatesOnBack && <div className="touch-none select-none px-1 rounded w-full overflow-hidden" style={{
                                       cursor: draggingText === 'backDates' || resizingText === 'backDates' ? 'grabbing' : 'grab',
                                       boxShadow: draggingText === 'backDates' || resizingText === 'backDates' ? '0 0 0 2px #d97706' : 'none',
                                       textAlign: backDatesAlign,
-                                      marginBottom: '2px'
+                                      marginBottom: '2px',
+                                      maxWidth: '100%'
                                     }} onPointerDown={e => handleTextPointerDown(e, 'backDates')} onPointerMove={handleTextPointerMove} onPointerUp={handleTextPointerUp} onPointerCancel={handleTextPointerUp} onWheel={e => handleTextWheel(e, 'backDates')}>
                                       <AutoFitSingleLineText text={formatDates(birthDate, deathDate, backDateFormat)} maxWidth="100%" style={{
                                         fontSize: backDatesSize === 'auto' ? '9px' : `${backDatesSize}px`,

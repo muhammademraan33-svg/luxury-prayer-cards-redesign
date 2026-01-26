@@ -53,9 +53,10 @@ export function AutoFitSingleLineText({
       className={className}
       style={{ 
         maxWidth, 
+        width: "100%",
         display: "flex", 
         justifyContent: "center",
-        overflow: "visible",
+        overflow: "hidden",
       }}
     >
       <span
@@ -67,7 +68,6 @@ export function AutoFitSingleLineText({
           lineHeight: 1.2,
           transform: `scale(${scale})`,
           transformOrigin: "center center",
-          overflow: "visible",
         }}
       >
         {text}
