@@ -82,6 +82,86 @@ All borders render as SVG overlays with realistic metallic gradient effects.
 </linearGradient>
 ```
 
+### Visual Reference Guide
+
+To view each border style and color in action:
+1. Visit: https://luxuryprayercards.lovable.app/design
+2. Select "Paper Cards" ($67 option)
+3. Look at the "Front Border" section in the controls panel
+
+**Border Style Thumbnails** (5 buttons, left to right):
+| Position | Style | Visual Description |
+|----------|-------|-------------------|
+| 1st | No Border | Empty square |
+| 2nd | Classic Gold | Ornate corner flourishes with decorative frame |
+| 3rd | Elegant Scroll | L-shaped corner scrollwork |
+| 4th | Simple Line | Clean double-line rectangle |
+| 5th | Ornate Frame | Diamond corners with ornaments |
+
+**Metallic Color Swatches** (4 circular buttons, left to right):
+| Position | Color | Appearance |
+|----------|-------|------------|
+| 1st | Gold | Warm yellow-gold metallic |
+| 2nd | Silver | Cool silver-grey metallic |
+| 3rd | Rose Gold | Pink-copper metallic |
+| 4th | White | Pearl/off-white shimmer |
+
+---
+
+### Border Style Visual Examples (ASCII Representation)
+
+**Classic Gold Border:**
+```
+    ╭──⊰✿⊱──╮           ╭──⊰✿⊱──╮
+  ╭─┤        ├─╮       ╭─┤        ├─╮
+  │ │   ◊    │ │       │ │   ◊    │ │
+  ├─┼────────┼─┤       ├─┼────────┼─┤
+  │                               │
+  │        CARD CONTENT           │
+  │                               │
+  ├─┼────────┼─┤       ├─┼────────┼─┤
+  │ │   ◊    │ │       │ │   ◊    │ │
+  ╰─┤        ├─╯       ╰─┤        ├─╯
+    ╰──⊰✿⊱──╯           ╰──⊰✿⊱──╯
+```
+
+**Elegant Scroll Border:**
+```
+  ╔══╗                      ╔══╗
+  ║  ╚════╗          ╔════╝  ║
+  ╚═╗                        ╔═╝
+    │                        │
+    │     CARD CONTENT       │
+    │                        │
+  ╔═╝                        ╚═╗
+  ║  ╔════╝          ╚════╗  ║
+  ╚══╝                      ╚══╝
+```
+
+**Simple Line Border:**
+```
+  ┌────────────────────────────┐
+  │ ┌──────────────────────┐   │
+  │ │                      │   │
+  │ │    CARD CONTENT      │   │
+  │ │                      │   │
+  │ └──────────────────────┘   │
+  └────────────────────────────┘
+```
+
+**Ornate Frame Border:**
+```
+   ◊                  ✦                  ◊
+  ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+  ┃ ┌─────────────────────────────────┐ ┃
+  ┃ │                                 │ ┃
+  ┃ │       CARD CONTENT              │ ┃
+  ┃ │                                 │ ┃
+  ┃ └─────────────────────────────────┘ ┃
+  ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+   ◊                  ✦                  ◊
+```
+
 ---
 
 ## 🖌️ METAL CARD BACKGROUND TEXTURES (11 Options)
@@ -450,6 +530,101 @@ Heart, Star, Crown, Sparkles, Flower, Sun, Moon, Cloud, Music, Camera, Gift, Cak
 - [ ] Print PDF generation refinement
 - [ ] Performance optimization
 - [ ] Browser compatibility testing
+
+---
+
+## 📸 SCREENSHOT CAPTURE INSTRUCTIONS
+
+To capture high-quality screenshots for visual documentation:
+
+### Border Styles (4 variations with Gold color)
+
+1. **Navigate to Designer:** https://luxuryprayercards.lovable.app/design
+2. **Select Paper Cards** ($67 option)
+3. **For each border style, click the corresponding thumbnail:**
+   - **Classic Gold:** 2nd button - Ornate frame with corner flourishes, scrollwork, and decorative elements
+   - **Elegant Scroll:** 3rd button - Corner-only L-shaped flourishes with curved accents
+   - **Simple Line:** 4th button - Clean double-line rectangular border
+   - **Ornate Frame:** 5th button - Diamond corners with flower motifs and center ornaments
+
+### Metallic Colors (4 variations with Classic Gold border)
+
+1. **Keep Classic Gold border selected** (2nd button)
+2. **Click each color swatch** in the color picker:
+   - **Gold (1st):** Rich champagne gold with warm shine - `#d4af37`
+   - **Silver (2nd):** Cool platinum silver with crisp reflections - `#c0c0c0`
+   - **Rose Gold (3rd):** Warm pink-copper tones - `#b76e79`
+   - **White (4th):** Subtle pearl shimmer on light backgrounds - `#f8f8f8`
+
+### Screenshot Specifications
+
+| Element | Recommended Size | Focus Area |
+|---------|-----------------|------------|
+| Full Designer View | 1280×720 | Complete interface with card preview |
+| Card Preview Only | 400×600 | Just the card preview (cropped) |
+| Border Close-up | 200×300 | Corner detail of border |
+| Color Swatches | 300×50 | Row of color buttons |
+
+### Example Filenames
+```
+border-classic-gold-gold.png
+border-elegant-scroll-gold.png
+border-simple-line-gold.png
+border-ornate-frame-gold.png
+border-classic-gold-silver.png
+border-classic-gold-rose-gold.png
+border-classic-gold-white.png
+```
+
+---
+
+## 🖼️ METAL CARD BACKGROUND VISUAL REFERENCE
+
+To view metal card backgrounds:
+1. Visit: https://luxuryprayercards.lovable.app/design
+2. Select "Metal Cards" ($97 option)
+3. Background textures appear in the card preview automatically
+
+### Background Gradient CSS Values
+
+**Brushed Metals:**
+```css
+/* Champagne Gold */
+linear-gradient(135deg, #c5a870 0%, #e8d5b0 15%, #b8965a 35%, #e2cb9a 55%, #a8854d 75%, #d4be8a 90%, #c5a870 100%)
+
+/* Platinum Silver */
+linear-gradient(135deg, #b8c0c8 0%, #e8ecef 15%, #9ca5af 35%, #dce1e6 55%, #8d969f 75%, #cdd3d9 90%, #b8c0c8 100%)
+
+/* Rose Gold */
+linear-gradient(135deg, #c4a484 0%, #e8d0c0 15%, #b08d6a 35%, #dfc5b5 55%, #9c7856 75%, #d4b8a4 90%, #c4a484 100%)
+
+/* Gunmetal Black */
+linear-gradient(135deg, #2c2c2c 0%, #4a4a4a 15%, #1a1a1a 35%, #3d3d3d 55%, #0f0f0f 75%, #333333 90%, #2c2c2c 100%)
+```
+
+**Marble Finishes:**
+```css
+/* Carrara White */
+linear-gradient(125deg, #fafafa 0%, #f0f0f0 20%, #e8e8e8 35%, #f5f5f5 50%, #e0e0e0 65%, #f8f8f8 80%, #ececec 100%)
+
+/* Grey Marble */
+linear-gradient(125deg, #a8a8a8 0%, #c5c5c5 20%, #8f8f8f 35%, #b8b8b8 50%, #9a9a9a 65%, #d0d0d0 80%, #a0a0a0 100%)
+
+/* Nero Marble */
+linear-gradient(125deg, #1a1a1a 0%, #2e2e2e 20%, #0f0f0f 35%, #252525 50%, #1c1c1c 65%, #383838 80%, #141414 100%)
+```
+
+**Solid Finishes:**
+```css
+/* Pearl White */
+linear-gradient(135deg, #f8f8f8 0%, #ffffff 25%, #f0f0f0 50%, #fafafa 75%, #f5f5f5 100%)
+
+/* Matte Black */
+linear-gradient(135deg, #0a0a0a 0%, #151515 50%, #0a0a0a 100%)
+
+/* Matte White */
+linear-gradient(135deg, #fefefe 0%, #f5f5f5 50%, #fefefe 100%)
+```
 
 ---
 
