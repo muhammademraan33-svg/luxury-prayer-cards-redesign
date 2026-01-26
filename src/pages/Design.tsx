@@ -2633,30 +2633,6 @@ const Design = () => {
                                 S
                               </Button>
                             </div>
-                            {/* Name Size & Position Sliders */}
-                            <div className="space-y-1.5 pt-1">
-                              <div className="flex items-center gap-2">
-                                <Label className="text-slate-400 text-xs w-10">Size</Label>
-                                <input type="range" min="10" max="150" step="1" value={pxToPoints(nameSize)} onChange={e => setNameSize(pointsToPx(parseFloat(e.target.value)))} className="flex-1 accent-amber-600 h-1" />
-                                <span className="text-xs text-slate-400 w-12 text-right">{pxToPoints(nameSize)}pt</span>
-                              </div>
-                              <div className="flex items-center gap-2">
-                                <Label className="text-slate-400 text-xs w-10">L/R</Label>
-                                <input type="range" min="10" max="90" step="1" value={namePosition.x} onChange={e => setNamePosition(prev => ({
-                                  ...prev,
-                                  x: parseFloat(e.target.value)
-                                }))} className="flex-1 accent-amber-600 h-1" />
-                                <span className="text-xs text-slate-400 w-12 text-right">{Math.round(namePosition.x)}%</span>
-                              </div>
-                              <div className="flex items-center gap-2">
-                                <Label className="text-slate-400 text-xs w-10">U/D</Label>
-                                <input type="range" min="5" max="95" step="1" value={namePosition.y} onChange={e => setNamePosition(prev => ({
-                                  ...prev,
-                                  y: parseFloat(e.target.value)
-                                }))} className="flex-1 accent-amber-600 h-1" />
-                                <span className="text-xs text-slate-400 w-12 text-right">{Math.round(namePosition.y)}%</span>
-                              </div>
-                            </div>
                           </div>
 
                           {/* Dates Controls - Compact */}
@@ -2727,32 +2703,6 @@ const Design = () => {
                               <Button type="button" variant={datesTextShadow ? 'default' : 'outline'} size="sm" className={`h-5 px-2 text-xs ${datesTextShadow ? 'bg-amber-600 text-white' : 'border-slate-600 text-slate-300'}`} onClick={() => setDatesTextShadow(!datesTextShadow)} disabled={!showDatesOnFront} title="Text Shadow">
                                 S
                               </Button>
-                            </div>
-                            {/* Dates Size & Position Sliders */}
-                            <div className="space-y-1.5 pt-1">
-                              <div className="flex items-center gap-2">
-                                <Label className="text-slate-400 text-xs w-10">Size</Label>
-                                <input type="range" min="10" max="72" step="1" value={pxToPoints(typeof frontDatesSize === 'number' ? frontDatesSize : 16)} onChange={e => setFrontDatesSize(pointsToPx(parseFloat(e.target.value)))} className="flex-1 accent-amber-600 h-1" disabled={!showDatesOnFront || frontDatesSize === 'auto'} />
-                                <span className="text-xs text-slate-400 w-12 text-right">
-                                  {frontDatesSize === 'auto' ? 'Auto' : `${pxToPoints(frontDatesSize)}pt`}
-                                </span>
-                              </div>
-                              <div className="flex items-center gap-2">
-                                <Label className="text-slate-400 text-xs w-10">L/R</Label>
-                                <input type="range" min="10" max="90" step="1" value={datesPosition.x} onChange={e => setDatesPosition(prev => ({
-                                  ...prev,
-                                  x: parseFloat(e.target.value)
-                                }))} className="flex-1 accent-amber-600 h-1" disabled={!showDatesOnFront} />
-                                <span className="text-xs text-slate-400 w-12 text-right">{Math.round(datesPosition.x)}%</span>
-                              </div>
-                              <div className="flex items-center gap-2">
-                                <Label className="text-slate-400 text-xs w-10">U/D</Label>
-                                <input type="range" min="5" max="98" step="1" value={datesPosition.y} onChange={e => setDatesPosition(prev => ({
-                                  ...prev,
-                                  y: parseFloat(e.target.value)
-                                }))} className="flex-1 accent-amber-600 h-1" disabled={!showDatesOnFront} />
-                                <span className="text-xs text-slate-400 w-12 text-right">{Math.round(datesPosition.y)}%</span>
-                              </div>
                             </div>
                           </div>
                           
@@ -3030,29 +2980,6 @@ const Design = () => {
                                 <Button type="button" variant={backNameBold ? 'default' : 'outline'} size="sm" className={`h-7 px-3 text-xs font-bold ${backNameBold ? 'bg-amber-600 !text-white' : 'border-slate-600 text-slate-300'}`} onClick={() => setBackNameBold(!backNameBold)}>
                                   B
                                 </Button>
-                              </div>
-                              {/* Back Name Size Slider */}
-                              <div className="flex items-center gap-2">
-                                <Label className="text-slate-400 text-xs w-10">Size</Label>
-                                <input type="range" min="10" max="150" step="1" value={pxToPoints(backNameSize)} onChange={e => setBackNameSize(pointsToPx(parseFloat(e.target.value)))} className="flex-1 accent-amber-600 h-1" />
-                                <span className="text-xs text-slate-400 w-12 text-right">{pxToPoints(backNameSize)}pt</span>
-                              </div>
-                              {/* Back Name Position Sliders */}
-                              <div className="flex items-center gap-2">
-                                <Label className="text-slate-400 text-xs w-10">L/R</Label>
-                                <input type="range" min="-50" max="50" step="1" value={backNamePosition.x} onChange={e => setBackNamePosition(prev => ({
-                                ...prev,
-                                x: parseFloat(e.target.value)
-                              }))} className="flex-1 accent-amber-600 h-1" />
-                                <span className="text-xs text-slate-400 w-10 text-right">{backNamePosition.x}%</span>
-                              </div>
-                              <div className="flex items-center gap-2">
-                                <Label className="text-slate-400 text-xs w-10">U/D</Label>
-                                <input type="range" min="-30" max="30" step="1" value={backNamePosition.y} onChange={e => setBackNamePosition(prev => ({
-                                ...prev,
-                                y: parseFloat(e.target.value)
-                              }))} className="flex-1 accent-amber-600 h-1" />
-                                <span className="text-xs text-slate-400 w-10 text-right">{backNamePosition.y}%</span>
                               </div>
                             </div>}
                           
