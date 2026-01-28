@@ -657,8 +657,26 @@ const Design = () => {
     additionalTextPosition: { x: number; y: number };
   } | null>(null);
 
-  // Store initial slider values at component mount for pixel-perfect restoration
-  const initialSizesRef = useRef<{
+  // DEFAULT VALUES - used for reset and deterministic restoration
+  const DEFAULT_VALUES = {
+    nameSize: 24,
+    frontDatesSize: 16 as number | 'auto',
+    backDatesSize: 22 as number | 'auto',
+    backNameSize: 32,
+    additionalTextSize: 14,
+    inLovingMemorySize: 24,
+    prayerTextSize: 'auto' as number | 'auto',
+    namePosition: { x: 50, y: 82 },
+    datesPosition: { x: 50, y: 86 },
+    backNamePosition: { x: 0, y: 12 },
+    backDatesPosition: { x: 50, y: 48 },
+    inLovingMemoryPosition: { x: 0, y: 8 },
+    additionalTextPosition: { x: 50, y: 70 },
+    prayerPosition: { x: 0, y: 0 },
+  };
+
+  // Store the slider values at the start of a resize session for deterministic restoration
+  const resizeStartValuesRef = useRef<{
     nameSize: number;
     frontDatesSize: number | 'auto';
     backDatesSize: number | 'auto';
@@ -666,26 +684,14 @@ const Design = () => {
     additionalTextSize: number;
     inLovingMemorySize: number;
     prayerTextSize: number | 'auto';
-    initialNamePosition: { x: number; y: number };
-    initialDatesPosition: { x: number; y: number };
+    namePosition: { x: number; y: number };
+    datesPosition: { x: number; y: number };
+    backNamePosition: { x: number; y: number };
+    backDatesPosition: { x: number; y: number };
+    inLovingMemoryPosition: { x: number; y: number };
+    additionalTextPosition: { x: number; y: number };
+    prayerPosition: { x: number; y: number };
   } | null>(null);
-  
-  // Capture initial values on first render for restoration
-  useEffect(() => {
-    if (!initialSizesRef.current) {
-      initialSizesRef.current = {
-        nameSize: 24,
-        frontDatesSize: 'auto',
-        backDatesSize: 'auto',
-        backNameSize: 32,
-        additionalTextSize: 14,
-        inLovingMemorySize: 24,
-        prayerTextSize: 'auto',
-        initialNamePosition: { x: 50, y: 82 },
-        initialDatesPosition: { x: 50, y: 86 },
-      };
-    }
-  }, []);
 
   // Prayer text position (percentage from center, 0 = centered)
   const [prayerPosition, setPrayerPosition] = useState({
@@ -775,6 +781,81 @@ const Design = () => {
     
     toast.success('All positions and sizes reset to defaults');
   }, []);
+
+  // Capture current values when slider interaction starts
+  const captureResizeStartValues = useCallback(() => {
+    if (!resizeStartValuesRef.current) {
+      resizeStartValuesRef.current = {
+        nameSize,
+        frontDatesSize,
+        backDatesSize,
+        backNameSize,
+        additionalTextSize,
+        inLovingMemorySize,
+        prayerTextSize,
+        namePosition: { ...namePosition },
+        datesPosition: { ...datesPosition },
+        backNamePosition: { ...backNamePosition },
+        backDatesPosition: { ...backDatesPosition },
+        inLovingMemoryPosition: { ...inLovingMemoryPosition },
+        additionalTextPosition: { ...additionalTextPosition },
+        prayerPosition: { ...prayerPosition },
+      };
+    }
+  }, [nameSize, frontDatesSize, backDatesSize, backNameSize, additionalTextSize, inLovingMemorySize, prayerTextSize, namePosition, datesPosition, backNamePosition, backDatesPosition, inLovingMemoryPosition, additionalTextPosition, prayerPosition]);
+  
+  // Check if returning to original value and restore position if so
+  const handleDeterministicResize = useCallback((
+    textType: 'name' | 'dates' | 'backDates' | 'backName' | 'inLovingMemory' | 'additional' | 'prayer',
+    newSize: number
+  ) => {
+    const startValues = resizeStartValuesRef.current;
+    if (!startValues) return;
+    
+    // Check if slider returned to original value (within 0.5 tolerance)
+    const getOriginalSize = () => {
+      switch (textType) {
+        case 'name': return typeof startValues.nameSize === 'number' ? startValues.nameSize : 24;
+        case 'dates': return typeof startValues.frontDatesSize === 'number' ? startValues.frontDatesSize : 16;
+        case 'backDates': return typeof startValues.backDatesSize === 'number' ? startValues.backDatesSize : 22;
+        case 'backName': return startValues.backNameSize;
+        case 'inLovingMemory': return startValues.inLovingMemorySize;
+        case 'additional': return startValues.additionalTextSize;
+        case 'prayer': return typeof startValues.prayerTextSize === 'number' ? startValues.prayerTextSize : 16;
+        default: return 16;
+      }
+    };
+    
+    const originalSize = getOriginalSize();
+    
+    // If returning to original size, restore original position too
+    if (Math.abs(newSize - originalSize) < 0.5) {
+      switch (textType) {
+        case 'name':
+          setNamePosition({ ...startValues.namePosition });
+          break;
+        case 'dates':
+          setDatesPosition({ ...startValues.datesPosition });
+          break;
+        case 'backDates':
+          setBackDatesPosition({ ...startValues.backDatesPosition });
+          break;
+        case 'backName':
+          setBackNamePosition({ ...startValues.backNamePosition });
+          break;
+        case 'inLovingMemory':
+          setInLovingMemoryPosition({ ...startValues.inLovingMemoryPosition });
+          break;
+        case 'additional':
+          setAdditionalTextPosition({ ...startValues.additionalTextPosition });
+          break;
+        case 'prayer':
+          setPrayerPosition({ ...startValues.prayerPosition });
+          break;
+      }
+    }
+  }, []);
+
   // Auto-adjust name/dates/additional text positions based on elements
   // IMPORTANT: Skip auto-adjustment during active resize to prevent position drift
   useEffect(() => {
@@ -1145,6 +1226,8 @@ const Design = () => {
           additionalTextPosition: { ...additionalTextPosition },
         };
       }
+      // Capture resize start values for deterministic restoration
+      captureResizeStartValues();
       const pointers = Array.from(textPointerCacheRef.current.values());
       const currentSize = textType === 'name' ? nameSize : textType === 'dates' ? typeof frontDatesSize === 'number' ? frontDatesSize : 12 : textType === 'backDates' ? typeof backDatesSize === 'number' ? backDatesSize : 10 : textType === 'prayer' ? prayerTextSize === 'auto' ? autoPrayerFontSize : prayerTextSize : textType === 'inLovingMemory' ? inLovingMemorySize : textType === 'backName' ? backNameSize : additionalTextSize;
       textPinchStartRef.current = {
@@ -1246,6 +1329,8 @@ const Design = () => {
       // End resize operation - allow auto-adjustment again
       isResizingRef.current = false;
       initialPositionsRef.current = null;
+      // Clear resize start values when resize ends
+      resizeStartValuesRef.current = null;
     }
     if (textPointerCacheRef.current.size === 0) {
       setDraggingText(null);
@@ -1259,6 +1344,9 @@ const Design = () => {
     e.preventDefault();
     e.stopPropagation();
     
+    // Capture start values on first wheel event in a session
+    captureResizeStartValues();
+    
     // Set resize flag to prevent auto-adjustment during wheel resize
     isResizingRef.current = true;
     
@@ -1267,14 +1355,19 @@ const Design = () => {
       clearTimeout(wheelResizeTimeoutRef.current);
     }
     
-    // Reset resize flag after wheel stops (debounced)
+    // Reset resize flag and clear start values after wheel stops (debounced)
     wheelResizeTimeoutRef.current = setTimeout(() => {
       isResizingRef.current = false;
-    }, 300);
+      resizeStartValuesRef.current = null;
+    }, 500);
     
     const delta = -e.deltaY * 0.05;
     const currentSize = textType === 'name' ? nameSize : textType === 'dates' ? typeof frontDatesSize === 'number' ? frontDatesSize : 12 : textType === 'backDates' ? typeof backDatesSize === 'number' ? backDatesSize : 10 : textType === 'prayer' ? prayerTextSize === 'auto' ? autoPrayerFontSize : prayerTextSize : textType === 'inLovingMemory' ? inLovingMemorySize : textType === 'backName' ? backNameSize : additionalTextSize;
     const newSize = Math.max(8, Math.min(60, currentSize + delta));
+    
+    // Check for deterministic restoration (if returning to original size)
+    handleDeterministicResize(textType, newSize);
+    
     if (textType === 'name') {
       setNameSize(newSize);
     } else if (textType === 'dates') {
@@ -4573,6 +4666,23 @@ const Design = () => {
                 }} />
                 </div>}
               
+              {/* Additional Text - Print Front */}
+              {showAdditionalText && additionalText && <div className="absolute" style={{
+                left: `${additionalTextPosition.x}%`,
+                top: `${additionalTextPosition.y}%`,
+                transform: 'translate(-50%, -50%)',
+                fontFamily: additionalTextFont,
+                fontSize: `${additionalTextSize * 3}px`,
+                color: additionalTextColor,
+                fontWeight: additionalTextBold ? 'bold' : 'normal',
+                textShadow: additionalTextShadow ? '0 1px 2px rgba(0,0,0,0.5)' : 'none',
+                whiteSpace: 'pre-wrap',
+                textAlign: 'center',
+                maxWidth: '85%',
+              }}>
+                  {additionalText}
+                </div>}
+              
               {/* Funeral Home Logo - Print Front */}
               {funeralHomeLogo && <div className="absolute left-1/2 -translate-x-1/2 z-10" style={{
                 [funeralHomeLogoPosition === 'top' ? 'top' : 'bottom']: frontBorderDesign !== 'none' ? '48px' : '24px'
@@ -4589,6 +4699,11 @@ const Design = () => {
                 right: frontBorderDesign !== 'none' ? '40px' : '20px'
               }}>
                   <QrCodeBadge value={qrValue} size={72} level="M" paddingClassName="p-2" />
+                </div>}
+              
+              {/* Decorative Border - Print Front */}
+              {cardType === 'paper' && frontBorderDesign !== 'none' && <div className="absolute inset-0 z-20 pointer-events-none">
+                  <DecorativeBorderOverlay type={frontBorderDesign} color={frontBorderColor} />
                 </div>}
             </div>
           </div>
@@ -4676,6 +4791,11 @@ const Design = () => {
                   }} />
                   </div>}
               </div>
+              
+              {/* Decorative Border - Print Back */}
+              {cardType === 'paper' && backBorderDesign !== 'none' && <div className="absolute inset-0 z-20 pointer-events-none">
+                  <DecorativeBorderOverlay type={backBorderDesign} color={backBorderColor} />
+                </div>}
             </div>
           </div>
         </div>
