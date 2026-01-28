@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef, useState } from "react";
+import { useLayoutEffect, useRef, useState, useCallback } from "react";
 
 type AutoFitTextProps = {
   text: string;
@@ -20,42 +20,70 @@ export function AutoFitText({
   const containerRef = useRef<HTMLDivElement | null>(null);
   const textRef = useRef<HTMLSpanElement | null>(null);
   const [scale, setScale] = useState(1);
+  const computeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  useLayoutEffect(() => {
+  const compute = useCallback(() => {
     const container = containerRef.current;
     const el = textRef.current;
     if (!container || !el) return;
 
-    const compute = () => {
-      const available = container.clientWidth;
-      const needed = el.scrollWidth;
-      if (!available || !needed) {
-        setScale(1);
-        return;
-      }
-      
-      // If wrapping is allowed and content would need significant shrinking,
-      // let it wrap naturally instead of scaling down too much
-      if (allowWrap && available / needed < 0.85) {
-        setScale(1);
-        return;
-      }
-      
-      const next = Math.min(1, Math.max(minScale, available / needed));
-      setScale(next);
-    };
+    const available = container.clientWidth;
+    const needed = el.scrollWidth;
+    
+    if (!available || !needed || available <= 0 || needed <= 0) {
+      setScale(1);
+      return;
+    }
+    
+    // If wrapping is allowed and content would need significant shrinking,
+    // let it wrap naturally instead of scaling down too much
+    if (allowWrap && available / needed < 0.85) {
+      setScale(1);
+      return;
+    }
+    
+    const next = Math.min(1, Math.max(minScale, available / needed));
+    // Only update if change is significant to prevent jitter
+    setScale(prev => Math.abs(prev - next) > 0.01 ? next : prev);
+  }, [minScale, allowWrap]);
 
-    compute();
+  useLayoutEffect(() => {
+    // Debounce compute to prevent rapid re-renders
+    if (computeTimeoutRef.current) {
+      clearTimeout(computeTimeoutRef.current);
+    }
+    
+    computeTimeoutRef.current = setTimeout(() => {
+      compute();
+    }, 10);
 
-    const ro = new ResizeObserver(() => compute());
+    const container = containerRef.current;
+    if (!container) return;
+
+    const ro = new ResizeObserver(() => {
+      if (computeTimeoutRef.current) {
+        clearTimeout(computeTimeoutRef.current);
+      }
+      computeTimeoutRef.current = setTimeout(compute, 10);
+    });
     ro.observe(container);
 
     // Also recompute when fonts load
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (document as any).fonts?.ready?.then?.(compute).catch?.(() => undefined);
+    (document as any).fonts?.ready?.then?.(() => {
+      if (computeTimeoutRef.current) {
+        clearTimeout(computeTimeoutRef.current);
+      }
+      computeTimeoutRef.current = setTimeout(compute, 50);
+    }).catch?.(() => undefined);
 
-    return () => ro.disconnect();
-  }, [text, minScale, allowWrap]);
+    return () => {
+      ro.disconnect();
+      if (computeTimeoutRef.current) {
+        clearTimeout(computeTimeoutRef.current);
+      }
+    };
+  }, [text, minScale, allowWrap, compute]);
 
   return (
     <div
@@ -81,6 +109,7 @@ export function AutoFitText({
           transformOrigin: "center center",
           overflow: "visible",
           textAlign: "center",
+          willChange: scale < 1 ? 'transform' : 'auto',
         }}
       >
         {text}

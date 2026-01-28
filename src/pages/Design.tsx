@@ -304,6 +304,96 @@ const Design = () => {
     window.scrollTo(0, 0);
   }, []);
 
+  // Persist state to sessionStorage for browser back/forward navigation
+  useEffect(() => {
+    const persistCurrentState = () => {
+      const stateToSave = {
+        step,
+        deceasedName,
+        birthDate: birthDate?.toISOString(),
+        deathDate: deathDate?.toISOString(),
+        metalFinish,
+        extraSets,
+        upgradeThickness,
+        shippingSpeed,
+        frontBorderDesign,
+        frontBorderColor,
+        backBorderDesign,
+        backBorderColor,
+        mainDesignSize,
+        mainDesignQty,
+        qrUrl,
+        showQrCode,
+        orientation,
+        cardSide,
+        deceasedPhoto,
+        photoZoom,
+        photoPanX,
+        photoPanY,
+        photoRotation,
+        photoFade,
+        fadeColor,
+        fadeShape,
+        metalBorderColor,
+        photoBrightness,
+        backBgImage,
+        backBgType,
+        backMetalFinish,
+        backBgZoom,
+        backBgPanX,
+        backBgPanY,
+        backBgRotation,
+        backText,
+        prayerTextSize,
+        prayerBold,
+        prayerItalic,
+        autoPrayerFontSize,
+        prayerColor,
+        showNameOnFront,
+        showDatesOnFront,
+        showDatesOnBack,
+        nameFont,
+        datesFont,
+        namePosition,
+        datesPosition,
+        nameSize,
+        frontDatesSize,
+        backNameSize,
+        backNamePosition,
+        backDatesSize,
+        backDatesPosition,
+        inLovingMemorySize,
+        inLovingMemoryPosition,
+        additionalTextSize,
+        additionalTextPosition,
+        prayerPosition,
+        funeralHomeLogo,
+        _persistedAt: Date.now(),
+      };
+      sessionStorage.setItem('designPageState', JSON.stringify(stateToSave));
+    };
+
+    // Save state before page unload (for browser back button)
+    const handleBeforeUnload = () => {
+      persistCurrentState();
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    
+    // Also save on visibility change (tab switch, etc.)
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'hidden') {
+        persistCurrentState();
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  });
+
   // Restore state from sessionStorage if returning from memorial photo editor
   const savedState = (() => {
     const saved = sessionStorage.getItem('designPageState');
@@ -556,6 +646,16 @@ const Design = () => {
   const [selectedPrayerId, setSelectedPrayerId] = useState<string>('custom');
   const [draggingText, setDraggingText] = useState<'name' | 'dates' | 'additional' | 'backDates' | 'prayer' | 'inLovingMemory' | 'backName' | null>(null);
   const [resizingText, setResizingText] = useState<'name' | 'dates' | 'additional' | 'backDates' | 'prayer' | 'inLovingMemory' | 'backName' | null>(null);
+  
+  // Track if we're in an active resize operation to prevent auto-adjustment
+  const isResizingRef = useRef(false);
+  
+  // Store initial positions when resize starts for deterministic restoration
+  const initialPositionsRef = useRef<{
+    namePosition: { x: number; y: number };
+    datesPosition: { x: number; y: number };
+    additionalTextPosition: { x: number; y: number };
+  } | null>(null);
 
   // Prayer text position (percentage from center, 0 = centered)
   const [prayerPosition, setPrayerPosition] = useState({
@@ -646,8 +746,12 @@ const Design = () => {
     toast.success('All positions and sizes reset to defaults');
   }, []);
   // Auto-adjust name/dates/additional text positions based on elements
+  // IMPORTANT: Skip auto-adjustment during active resize to prevent position drift
   useEffect(() => {
     if (cardType !== 'paper') return;
+    // Don't auto-adjust while user is actively resizing text - this prevents position drift
+    if (isResizingRef.current) return;
+    
     const hasBorder = frontBorderDesign !== 'none';
     const hadBorder = prevBorderRef.current !== 'none';
     const borderJustAdded = hasBorder && !hadBorder;
@@ -1002,6 +1106,15 @@ const Design = () => {
       };
     } else if (textPointerCacheRef.current.size === 2) {
       setResizingText(textType);
+      isResizingRef.current = true;
+      // Store initial positions to prevent drift during resize
+      if (!initialPositionsRef.current) {
+        initialPositionsRef.current = {
+          namePosition: { ...namePosition },
+          datesPosition: { ...datesPosition },
+          additionalTextPosition: { ...additionalTextPosition },
+        };
+      }
       const pointers = Array.from(textPointerCacheRef.current.values());
       const currentSize = textType === 'name' ? nameSize : textType === 'dates' ? typeof frontDatesSize === 'number' ? frontDatesSize : 12 : textType === 'backDates' ? typeof backDatesSize === 'number' ? backDatesSize : 10 : textType === 'prayer' ? prayerTextSize === 'auto' ? autoPrayerFontSize : prayerTextSize : textType === 'inLovingMemory' ? inLovingMemorySize : textType === 'backName' ? backNameSize : additionalTextSize;
       textPinchStartRef.current = {
@@ -1100,15 +1213,35 @@ const Design = () => {
     if (textPointerCacheRef.current.size < 2) {
       textPinchStartRef.current = null;
       setResizingText(null);
+      // End resize operation - allow auto-adjustment again
+      isResizingRef.current = false;
+      initialPositionsRef.current = null;
     }
     if (textPointerCacheRef.current.size === 0) {
       setDraggingText(null);
       textDragStartRef.current = null;
     }
   };
+  // Debounce ref for wheel resize to prevent auto-adjustment during scroll resize
+  const wheelResizeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  
   const handleTextWheel = (e: React.WheelEvent, textType: 'name' | 'dates' | 'additional' | 'backDates' | 'prayer' | 'inLovingMemory' | 'backName') => {
     e.preventDefault();
     e.stopPropagation();
+    
+    // Set resize flag to prevent auto-adjustment during wheel resize
+    isResizingRef.current = true;
+    
+    // Clear any existing timeout
+    if (wheelResizeTimeoutRef.current) {
+      clearTimeout(wheelResizeTimeoutRef.current);
+    }
+    
+    // Reset resize flag after wheel stops (debounced)
+    wheelResizeTimeoutRef.current = setTimeout(() => {
+      isResizingRef.current = false;
+    }, 300);
+    
     const delta = -e.deltaY * 0.05;
     const currentSize = textType === 'name' ? nameSize : textType === 'dates' ? typeof frontDatesSize === 'number' ? frontDatesSize : 12 : textType === 'backDates' ? typeof backDatesSize === 'number' ? backDatesSize : 10 : textType === 'prayer' ? prayerTextSize === 'auto' ? autoPrayerFontSize : prayerTextSize : textType === 'inLovingMemory' ? inLovingMemorySize : textType === 'backName' ? backNameSize : additionalTextSize;
     const newSize = Math.max(8, Math.min(60, currentSize + delta));
@@ -1559,31 +1692,38 @@ const Design = () => {
   const effectiveThickness: CardThickness = cardType === 'metal' && (upgradeThickness || currentPackage.thickness === 'premium') ? 'premium' : 'standard';
   const effectiveShipping = 'express'; // 48-72 hours delivery
 
-  // Generate print preview images
+  // Generate print preview images at 300 DPI quality
+  // Card dimensions at 300 DPI:
+  // - Standard paper (2.625x4.375"): 787x1312px
+  // - Large paper (3.125x4.875"): 937x1462px  
+  // - Metal (2x3.5"): 600x1050px
+  // With 0.125" bleed on each side: add 75px (0.125" * 300 DPI * 2)
   const handleGeneratePrintPreview = async () => {
     setGeneratingPreview(true);
     try {
       let frontImage = '';
       let backImage = '';
 
+      // Use scale 4 for higher resolution (approximating 300 DPI)
+      const captureOptions = {
+        scale: 4,
+        useCORS: true,
+        backgroundColor: '#ffffff',
+        logging: false,
+        allowTaint: false,
+        removeContainer: true,
+      };
+
       // Capture front card
       if (frontPrintRef.current) {
-        const frontCanvas = await html2canvas(frontPrintRef.current, {
-          scale: 3,
-          useCORS: true,
-          backgroundColor: '#ffffff'
-        });
-        frontImage = frontCanvas.toDataURL('image/jpeg', 0.95);
+        const frontCanvas = await html2canvas(frontPrintRef.current, captureOptions);
+        frontImage = frontCanvas.toDataURL('image/png', 1.0); // Use PNG for maximum quality
       }
 
       // Capture back card
       if (backPrintRef.current) {
-        const backCanvas = await html2canvas(backPrintRef.current, {
-          scale: 3,
-          useCORS: true,
-          backgroundColor: '#ffffff'
-        });
-        backImage = backCanvas.toDataURL('image/jpeg', 0.95);
+        const backCanvas = await html2canvas(backPrintRef.current, captureOptions);
+        backImage = backCanvas.toDataURL('image/png', 1.0);
       }
       setPrintPreviewImages({
         front: frontImage,
@@ -1600,19 +1740,21 @@ const Design = () => {
   const handleDownloadPrintFiles = () => {
     if (!printPreviewImages) return;
 
-    // Download front
+    // Download front as PNG for print quality
     const frontLink = document.createElement('a');
     frontLink.href = printPreviewImages.front;
-    frontLink.download = `${deceasedName || 'prayer-card'}-front.jpg`;
+    frontLink.download = `${(deceasedName || 'prayer-card').replace(/\s+/g, '-')}-front-print-ready.png`;
     frontLink.click();
 
     // Download back
     setTimeout(() => {
       const backLink = document.createElement('a');
       backLink.href = printPreviewImages.back;
-      backLink.download = `${deceasedName || 'prayer-card'}-back.jpg`;
+      backLink.download = `${(deceasedName || 'prayer-card').replace(/\s+/g, '-')}-back-print-ready.png`;
       backLink.click();
     }, 500);
+    
+    toast.success('Print-ready files downloaded! These are high-resolution images suitable for professional printing.');
   };
   const handleSubmitOrder = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -1626,29 +1768,29 @@ const Design = () => {
     }
     setIsSubmitting(true);
     try {
-      // Generate print-ready images with bleed
+      // Generate print-ready images at high resolution (300 DPI equivalent)
       let frontCardImage = '';
       let backCardImage = '';
 
+      const printCaptureOptions = {
+        scale: 4, // Higher scale for print quality
+        useCORS: true,
+        backgroundColor: '#ffffff',
+        logging: false,
+        allowTaint: false,
+        removeContainer: true,
+      };
+
       // Capture front card
       if (frontPrintRef.current) {
-        const frontCanvas = await html2canvas(frontPrintRef.current, {
-          scale: 3,
-          // High resolution for print
-          useCORS: true,
-          backgroundColor: '#ffffff'
-        });
-        frontCardImage = frontCanvas.toDataURL('image/jpeg', 0.95);
+        const frontCanvas = await html2canvas(frontPrintRef.current, printCaptureOptions);
+        frontCardImage = frontCanvas.toDataURL('image/png', 1.0); // PNG for maximum quality
       }
 
       // Capture back card
       if (backPrintRef.current) {
-        const backCanvas = await html2canvas(backPrintRef.current, {
-          scale: 3,
-          useCORS: true,
-          backgroundColor: '#ffffff'
-        });
-        backCardImage = backCanvas.toDataURL('image/jpeg', 0.95);
+        const backCanvas = await html2canvas(backPrintRef.current, printCaptureOptions);
+        backCardImage = backCanvas.toDataURL('image/png', 1.0);
       }
 
       // Send order to edge function
