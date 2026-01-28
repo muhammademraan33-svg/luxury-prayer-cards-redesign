@@ -657,6 +657,36 @@ const Design = () => {
     additionalTextPosition: { x: number; y: number };
   } | null>(null);
 
+  // Store initial slider values at component mount for pixel-perfect restoration
+  const initialSizesRef = useRef<{
+    nameSize: number;
+    frontDatesSize: number | 'auto';
+    backDatesSize: number | 'auto';
+    backNameSize: number;
+    additionalTextSize: number;
+    inLovingMemorySize: number;
+    prayerTextSize: number | 'auto';
+    initialNamePosition: { x: number; y: number };
+    initialDatesPosition: { x: number; y: number };
+  } | null>(null);
+  
+  // Capture initial values on first render for restoration
+  useEffect(() => {
+    if (!initialSizesRef.current) {
+      initialSizesRef.current = {
+        nameSize: 24,
+        frontDatesSize: 'auto',
+        backDatesSize: 'auto',
+        backNameSize: 32,
+        additionalTextSize: 14,
+        inLovingMemorySize: 24,
+        prayerTextSize: 'auto',
+        initialNamePosition: { x: 50, y: 82 },
+        initialDatesPosition: { x: 50, y: 86 },
+      };
+    }
+  }, []);
+
   // Prayer text position (percentage from center, 0 = centered)
   const [prayerPosition, setPrayerPosition] = useState({
     x: 0,
@@ -2079,75 +2109,132 @@ const Design = () => {
                                 <p className="text-slate-400 text-xs">Click to upload</p>
                               </div>}
                             
-                            {/* Text Overlay - Name */}
-                            {showNameOnFront && <div className="absolute touch-none select-none px-1 py-0.5 rounded" style={{
-                          left: `${namePosition.x}%`,
-                          top: `${namePosition.y}%`,
-                          transform: 'translate(-50%, -50%)',
-                          fontFamily: nameFont,
-                          cursor: draggingText === 'name' || resizingText === 'name' ? 'grabbing' : 'grab',
-                          textShadow: nameTextShadow ? '0 1px 2px rgba(0,0,0,0.5)' : 'none',
-                          boxShadow: draggingText === 'name' || resizingText === 'name' ? '0 0 0 2px #d97706' : 'none',
-                          maxWidth: '95%',
-                          width: 'max-content',
-                          textAlign: 'center'
-                        }} onPointerDown={e => handleTextPointerDown(e, 'name')} onPointerMove={handleTextPointerMove} onPointerUp={handleTextPointerUp} onPointerCancel={handleTextPointerUp} onWheel={e => handleTextWheel(e, 'name')}>
-                                <span style={{
-                            fontSize: `${Math.max(10, nameSize * 0.7)}px`,
-                            color: nameColor,
-                            fontWeight: nameBold ? 'bold' : 'normal',
-                            whiteSpace: 'pre-line',
-                            textAlign: 'center',
-                            display: 'block',
-                            lineHeight: 1.2
-                          }}>
-                                  {deceasedName || 'Name Here'}
-                                </span>
+                            {/* Text Overlay - Name - FIXED BOUNDING CONTAINER */}
+                            {showNameOnFront && <div 
+                          className="absolute touch-none select-none rounded"
+                          style={{
+                            left: `${namePosition.x}%`,
+                            top: `${namePosition.y}%`,
+                            transform: 'translate(-50%, -50%)',
+                            // FIXED container width - never changes based on content
+                            width: '90%',
+                            maxWidth: '90%',
+                            overflow: 'hidden', // CRITICAL: Never allow overflow
+                            cursor: draggingText === 'name' || resizingText === 'name' ? 'grabbing' : 'grab',
+                            boxShadow: draggingText === 'name' || resizingText === 'name' ? '0 0 0 2px #d97706' : 'none',
+                          }} 
+                          onPointerDown={e => handleTextPointerDown(e, 'name')} 
+                          onPointerMove={handleTextPointerMove} 
+                          onPointerUp={handleTextPointerUp} 
+                          onPointerCancel={handleTextPointerUp} 
+                          onWheel={e => handleTextWheel(e, 'name')}
+                        >
+                                <div style={{
+                              display: 'flex',
+                              justifyContent: 'center',
+                              alignItems: 'center',
+                              width: '100%',
+                              overflow: 'hidden',
+                            }}>
+                                  <span style={{
+                                fontFamily: nameFont,
+                                fontSize: `${Math.max(10, nameSize * 0.7)}px`,
+                                color: nameColor,
+                                fontWeight: nameBold ? 'bold' : 'normal',
+                                textShadow: nameTextShadow ? '0 1px 2px rgba(0,0,0,0.5)' : 'none',
+                                whiteSpace: 'pre-line',
+                                textAlign: 'center',
+                                display: 'block',
+                                lineHeight: 1.2,
+                                // Scale down if text overflows, container stays fixed
+                                maxWidth: '100%',
+                                overflow: 'hidden',
+                                textOverflow: 'ellipsis',
+                              }}>
+                                    {deceasedName || 'Name Here'}
+                                  </span>
+                                </div>
                               </div>}
                             
-                            {/* Text Overlay - Dates */}
-                            {showDatesOnFront && <div className="absolute touch-none select-none px-1 rounded" style={{
-                          left: `${datesPosition.x}%`,
-                          top: `${datesPosition.y}%`,
-                          transform: 'translate(-50%, -50%)',
-                          fontFamily: datesFont,
-                          cursor: draggingText === 'dates' || resizingText === 'dates' ? 'grabbing' : 'grab',
-                          textShadow: datesTextShadow ? '0 1px 2px rgba(0,0,0,0.5)' : 'none',
-                          boxShadow: draggingText === 'dates' || resizingText === 'dates' ? '0 0 0 2px #d97706' : 'none',
-                          width: '90%',
-                          overflow: 'visible',
-                          textAlign: 'center'
-                        }} onPointerDown={e => handleTextPointerDown(e, 'dates')} onPointerMove={handleTextPointerMove} onPointerUp={handleTextPointerUp} onPointerCancel={handleTextPointerUp} onWheel={e => handleTextWheel(e, 'dates')}>
-                                <AutoFitText text={formatDates(birthDate, deathDate, frontDateFormat)} maxWidth="100%" allowWrap={false} style={{
-                            fontSize: frontDatesSize === 'auto' ? '8px' : `${Math.max(7, (typeof frontDatesSize === 'number' ? frontDatesSize : 12) * 0.65)}px`,
-                            color: frontDatesColor,
-                            fontWeight: datesBold ? 'bold' : 'normal',
-                            textAlign: 'center'
-                          }} />
+                            {/* Text Overlay - Dates - FIXED BOUNDING CONTAINER */}
+                            {showDatesOnFront && <div 
+                          className="absolute touch-none select-none rounded"
+                          style={{
+                            left: `${datesPosition.x}%`,
+                            top: `${datesPosition.y}%`,
+                            transform: 'translate(-50%, -50%)',
+                            // FIXED container width - never changes based on content
+                            width: '88%',
+                            maxWidth: '88%',
+                            overflow: 'hidden', // CRITICAL: Never allow overflow
+                            cursor: draggingText === 'dates' || resizingText === 'dates' ? 'grabbing' : 'grab',
+                            boxShadow: draggingText === 'dates' || resizingText === 'dates' ? '0 0 0 2px #d97706' : 'none',
+                          }} 
+                          onPointerDown={e => handleTextPointerDown(e, 'dates')} 
+                          onPointerMove={handleTextPointerMove} 
+                          onPointerUp={handleTextPointerUp} 
+                          onPointerCancel={handleTextPointerUp} 
+                          onWheel={e => handleTextWheel(e, 'dates')}
+                        >
+                                <AutoFitText 
+                              text={formatDates(birthDate, deathDate, frontDateFormat)} 
+                              maxWidth="100%" 
+                              containerWidth="100%"
+                              allowWrap={false} 
+                              style={{
+                                fontFamily: datesFont,
+                                fontSize: frontDatesSize === 'auto' ? '8px' : `${Math.max(7, (typeof frontDatesSize === 'number' ? frontDatesSize : 12) * 0.65)}px`,
+                                color: frontDatesColor,
+                                fontWeight: datesBold ? 'bold' : 'normal',
+                                textShadow: datesTextShadow ? '0 1px 2px rgba(0,0,0,0.5)' : 'none',
+                                textAlign: 'center'
+                              }} 
+                            />
                               </div>}
 
-                            {/* Text Overlay - Additional */}
-                            {showAdditionalText && <div className="absolute touch-none select-none px-1 py-0.5 rounded" style={{
-                          left: `${additionalTextPosition.x}%`,
-                          top: `${additionalTextPosition.y}%`,
-                          transform: 'translate(-50%, -50%)',
-                          fontFamily: additionalTextFont,
-                          cursor: draggingText === 'additional' || resizingText === 'additional' ? 'grabbing' : 'grab',
-                          textShadow: additionalTextShadow ? '0 1px 2px rgba(0,0,0,0.5)' : 'none',
-                          boxShadow: draggingText === 'additional' || resizingText === 'additional' ? '0 0 0 2px #d97706' : 'none',
-                          maxWidth: '90%',
-                          textAlign: 'center'
-                        }} onPointerDown={e => handleTextPointerDown(e, 'additional')} onPointerMove={handleTextPointerMove} onPointerUp={handleTextPointerUp} onPointerCancel={handleTextPointerUp} onWheel={e => handleTextWheel(e, 'additional')}>
-                                <span style={{
-                            fontSize: `${Math.max(10, additionalTextSize * 0.7)}px`,
-                            color: additionalTextColor,
-                            fontWeight: additionalTextBold ? 'bold' : 'normal',
-                            whiteSpace: 'pre-wrap',
-                            display: 'block',
-                            lineHeight: 1.2
-                          }}>
-                                  {additionalText || 'Your text here'}
-                                </span>
+                            {/* Text Overlay - Additional - FIXED BOUNDING CONTAINER */}
+                            {showAdditionalText && <div 
+                          className="absolute touch-none select-none rounded"
+                          style={{
+                            left: `${additionalTextPosition.x}%`,
+                            top: `${additionalTextPosition.y}%`,
+                            transform: 'translate(-50%, -50%)',
+                            // FIXED container - never changes based on content
+                            width: '85%',
+                            maxWidth: '85%',
+                            overflow: 'hidden', // CRITICAL: Never allow overflow
+                            cursor: draggingText === 'additional' || resizingText === 'additional' ? 'grabbing' : 'grab',
+                            boxShadow: draggingText === 'additional' || resizingText === 'additional' ? '0 0 0 2px #d97706' : 'none',
+                          }} 
+                          onPointerDown={e => handleTextPointerDown(e, 'additional')} 
+                          onPointerMove={handleTextPointerMove} 
+                          onPointerUp={handleTextPointerUp} 
+                          onPointerCancel={handleTextPointerUp} 
+                          onWheel={e => handleTextWheel(e, 'additional')}
+                        >
+                                <div style={{
+                              display: 'flex',
+                              justifyContent: 'center',
+                              alignItems: 'center',
+                              width: '100%',
+                              overflow: 'hidden',
+                            }}>
+                                  <span style={{
+                                fontFamily: additionalTextFont,
+                                fontSize: `${Math.max(10, additionalTextSize * 0.7)}px`,
+                                color: additionalTextColor,
+                                fontWeight: additionalTextBold ? 'bold' : 'normal',
+                                textShadow: additionalTextShadow ? '0 1px 2px rgba(0,0,0,0.5)' : 'none',
+                                whiteSpace: 'pre-wrap',
+                                display: 'block',
+                                lineHeight: 1.2,
+                                maxWidth: '100%',
+                                textAlign: 'center',
+                                overflow: 'hidden',
+                              }}>
+                                    {additionalText || 'Your text here'}
+                                  </span>
+                                </div>
                               </div>}
                             
                             {/* Funeral Home Logo - Front Card (Desktop) */}
@@ -2204,32 +2291,65 @@ const Design = () => {
                                   maxWidth: '60%'
                                 }} />
                                       </div>}
-                                    {showInLovingMemory && <div style={{
-                                fontFamily: inLovingMemoryFont,
-                                color: inLovingMemoryColor,
-                                fontSize: `${Math.max(5, inLovingMemorySize * 0.5)}px`,
-                                fontWeight: inLovingMemoryBold ? 'bold' : 'normal'
-                              }} className="mb-0.5">
-                                        {inLovingMemoryText}
+                                    {/* In Loving Memory - FIXED BOUNDING CONTAINER */}
+                                    {showInLovingMemory && <div 
+                                className="mb-0.5 w-full" 
+                                style={{
+                                  maxWidth: '90%',
+                                  overflow: 'hidden', // CRITICAL: Never allow overflow
+                                }}
+                              >
+                                        <div style={{
+                                    fontFamily: inLovingMemoryFont,
+                                    color: inLovingMemoryColor,
+                                    fontSize: `${Math.max(5, inLovingMemorySize * 0.5)}px`,
+                                    fontWeight: inLovingMemoryBold ? 'bold' : 'normal',
+                                    textAlign: 'center',
+                                    overflow: 'hidden',
+                                    textOverflow: 'ellipsis',
+                                  }}>
+                                          {inLovingMemoryText}
+                                        </div>
                                       </div>}
-                                    {showNameOnBack && <div className="font-semibold mb-0.5" style={{
-                                fontFamily: backNameFont,
-                                color: backNameColor,
-                                fontSize: `${Math.max(6, backNameSize * 0.5)}px`,
-                                fontWeight: backNameBold ? 'bold' : 'normal'
-                              }}>
-                                        {deceasedName || 'Name Here'}
+                                    {/* Back Name - FIXED BOUNDING CONTAINER */}
+                                    {showNameOnBack && <div 
+                                className="mb-0.5 w-full"
+                                style={{
+                                  maxWidth: '90%',
+                                  overflow: 'hidden', // CRITICAL: Never allow overflow
+                                }}
+                              >
+                                        <div style={{
+                                    fontFamily: backNameFont,
+                                    color: backNameColor,
+                                    fontSize: `${Math.max(6, backNameSize * 0.5)}px`,
+                                    fontWeight: backNameBold ? 'bold' : 'normal',
+                                    textAlign: 'center',
+                                    overflow: 'hidden',
+                                    textOverflow: 'ellipsis',
+                                  }}>
+                                          {deceasedName || 'Name Here'}
+                                        </div>
                                       </div>}
-                                    {showDatesOnBack && <div className="mb-0.5 w-full" style={{
-                                fontFamily: datesFont,
-                                color: backDatesColor,
-                                fontSize: backDatesSize === 'auto' ? '5px' : `${Math.max(4, (typeof backDatesSize === 'number' ? backDatesSize : 9) * 0.5)}px`
-                              }}>
-                                        <AutoFitSingleLineText text={formatDates(birthDate, deathDate, backDateFormat)} maxWidth="100%" style={{
-                                  fontFamily: datesFont,
-                                  color: backDatesColor,
-                                  fontSize: backDatesSize === 'auto' ? '5px' : `${Math.max(4, (typeof backDatesSize === 'number' ? backDatesSize : 9) * 0.5)}px`
-                                }} />
+                                    {/* Back Dates - FIXED BOUNDING CONTAINER */}
+                                    {showDatesOnBack && <div 
+                                className="mb-0.5" 
+                                style={{
+                                  width: '95%',
+                                  maxWidth: '95%',
+                                  overflow: 'hidden', // CRITICAL: Never allow overflow
+                                }}
+                              >
+                                        <AutoFitSingleLineText 
+                                    text={formatDates(birthDate, deathDate, backDateFormat)} 
+                                    maxWidth="100%" 
+                                    containerWidth="100%"
+                                    style={{
+                                      fontFamily: datesFont,
+                                      color: backDatesColor,
+                                      fontSize: backDatesSize === 'auto' ? '5px' : `${Math.max(4, (typeof backDatesSize === 'number' ? backDatesSize : 9) * 0.5)}px`
+                                    }} 
+                                  />
                                       </div>}
                                   </div>
                                   {/* Prayer - takes remaining space, centered */}
@@ -3815,11 +3935,26 @@ const Design = () => {
                           {memorialPhotos.length > 0 && (
                             <div className="mt-3 grid grid-cols-4 gap-2">
                               {memorialPhotos.map((photo, idx) => (
-                                <div key={idx} className="relative group">
+                                <div 
+                                  key={idx} 
+                                  className="relative group"
+                                  style={{
+                                    // FIXED bounding container - never changes size
+                                    aspectRatio: '4/5',
+                                    width: '100%',
+                                    overflow: 'hidden', // CRITICAL: Never allow overflow
+                                  }}
+                                >
                                   <img 
                                     src={photo.src} 
                                     alt={`Memorial Photo ${idx + 1}`} 
-                                    className="w-full aspect-[4/5] object-cover rounded-lg border border-slate-600"
+                                    className="rounded-lg border border-slate-600"
+                                    style={{
+                                      width: '100%',
+                                      height: '100%',
+                                      objectFit: 'cover',
+                                      // Image scales within container, container stays fixed
+                                    }}
                                   />
                                   <div className="absolute bottom-1 left-1 bg-black/70 text-white text-[9px] px-1 rounded">
                                     {photo.size}
@@ -3911,11 +4046,26 @@ const Design = () => {
                           {celebrationPhotos.length > 0 && (
                             <div className="mt-3 grid grid-cols-4 gap-2">
                               {celebrationPhotos.map((photo, idx) => (
-                                <div key={idx} className="relative group">
+                                <div 
+                                  key={idx} 
+                                  className="relative group"
+                                  style={{
+                                    // FIXED bounding container - never changes size
+                                    aspectRatio: '4/5',
+                                    width: '100%',
+                                    overflow: 'hidden', // CRITICAL: Never allow overflow
+                                  }}
+                                >
                                   <img 
                                     src={photo.src} 
                                     alt={`Celebration Photo ${idx + 1}`} 
-                                    className="w-full aspect-[4/5] object-cover rounded-lg border border-slate-600"
+                                    className="rounded-lg border border-slate-600"
+                                    style={{
+                                      width: '100%',
+                                      height: '100%',
+                                      objectFit: 'cover',
+                                      // Image scales within container, container stays fixed
+                                    }}
                                   />
                                   <div className="absolute bottom-1 left-1 bg-black/70 text-white text-[9px] px-1 rounded">
                                     {photo.size}
