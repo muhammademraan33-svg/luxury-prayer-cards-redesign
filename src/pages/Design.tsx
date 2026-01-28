@@ -304,28 +304,15 @@ const Design = () => {
     window.scrollTo(0, 0);
   }, []);
 
-  // Restore state from localStorage (persistent) or sessionStorage (navigation)
-  const DESIGNER_STORAGE_KEY = 'luxuryPrayerCards_designerState';
-  
+  // Restore state from sessionStorage if returning from memorial photo editor
   const savedState = (() => {
-    // First check sessionStorage for navigation state (higher priority)
-    const sessionSaved = sessionStorage.getItem('designPageState');
-    if (sessionSaved) {
+    const saved = sessionStorage.getItem('designPageState');
+    if (saved) {
       sessionStorage.removeItem('designPageState'); // Clear after reading
       try {
-        return JSON.parse(sessionSaved);
+        return JSON.parse(saved);
       } catch (e) {
-        console.error('Failed to parse session design state:', e);
-      }
-    }
-    
-    // Then check localStorage for persistent state
-    const localSaved = localStorage.getItem(DESIGNER_STORAGE_KEY);
-    if (localSaved) {
-      try {
-        return JSON.parse(localSaved);
-      } catch (e) {
-        console.error('Failed to parse local design state:', e);
+        console.error('Failed to parse saved design state:', e);
       }
     }
     return null;
@@ -984,152 +971,6 @@ const Design = () => {
   useEffect(() => {
     photoZoomRef.current = photoZoom;
   }, [photoZoom]);
-
-  // Auto-save designer state to localStorage (debounced)
-  const saveTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  
-  useEffect(() => {
-    // Debounce saves to avoid performance issues
-    if (saveTimeoutRef.current) {
-      clearTimeout(saveTimeoutRef.current);
-    }
-    
-    saveTimeoutRef.current = setTimeout(() => {
-      try {
-        const stateToSave = {
-          step,
-          deceasedName,
-          birthDate: birthDate?.toISOString(),
-          deathDate: deathDate?.toISOString(),
-          metalFinish,
-          extraSets,
-          upgradeThickness,
-          shippingSpeed,
-          frontBorderDesign,
-          frontBorderColor,
-          backBorderDesign,
-          backBorderColor,
-          mainDesignSize,
-          additionalDesigns,
-          mainDesignQty,
-          activeDesignIndex,
-          qrUrl,
-          showQrCode,
-          orientation,
-          cardSide,
-          deceasedPhoto,
-          photoZoom,
-          photoPanX,
-          photoPanY,
-          photoRotation,
-          photoFade,
-          fadeColor,
-          fadeShape,
-          metalBorderColor,
-          photoBrightness,
-          backBgImage,
-          backBgType,
-          backMetalFinish,
-          backBgZoom,
-          backBgPanX,
-          backBgPanY,
-          backBgRotation,
-          backText,
-          prayerTextSize,
-          prayerBold,
-          prayerItalic,
-          autoPrayerFontSize,
-          prayerColor,
-          showNameOnFront,
-          showDatesOnFront,
-          showDatesOnBack,
-          nameFont,
-          datesFont,
-          namePosition,
-          datesPosition,
-          nameSize,
-          frontDatesSize,
-          backDatesSize,
-          backDatesPosition,
-          nameColor,
-          frontDatesColor,
-          backDatesColor,
-          nameBold,
-          datesBold,
-          nameTextShadow,
-          datesTextShadow,
-          showInLovingMemory,
-          inLovingMemoryText,
-          inLovingMemoryPosition,
-          inLovingMemorySize,
-          inLovingMemoryColor,
-          inLovingMemoryFont,
-          inLovingMemoryBold,
-          showNameOnBack,
-          backNamePosition,
-          backNameSize,
-          backNameColor,
-          backNameFont,
-          backNameBold,
-          prayerPosition,
-          funeralHomeLogo,
-          funeralHomeLogoPosition,
-          funeralHomeLogoSize,
-          frontDateFormat,
-          backDateFormat,
-          additionalText,
-          additionalTextPosition,
-          additionalTextColor,
-          additionalTextSize,
-          additionalTextFont,
-          showAdditionalText,
-          additionalTextBold,
-          additionalTextShadow,
-          selectedPrayerId,
-          // paperCornerRadius is declared later in the file, so we save it separately
-        };
-        localStorage.setItem(DESIGNER_STORAGE_KEY, JSON.stringify(stateToSave));
-      } catch (e) {
-        console.warn('Failed to save designer state:', e);
-      }
-    }, 500); // 500ms debounce
-    
-    return () => {
-      if (saveTimeoutRef.current) {
-        clearTimeout(saveTimeoutRef.current);
-      }
-    };
-  }, [
-    step, deceasedName, birthDate, deathDate, metalFinish, extraSets,
-    upgradeThickness, shippingSpeed, frontBorderDesign, frontBorderColor,
-    backBorderDesign, backBorderColor, mainDesignSize, additionalDesigns,
-    mainDesignQty, activeDesignIndex, qrUrl, showQrCode, orientation, cardSide,
-    deceasedPhoto, photoZoom, photoPanX, photoPanY, photoRotation, photoFade,
-    fadeColor, fadeShape, metalBorderColor, photoBrightness, backBgImage,
-    backBgType, backMetalFinish, backBgZoom, backBgPanX, backBgPanY,
-    backBgRotation, backText, prayerTextSize, prayerBold, prayerItalic,
-    autoPrayerFontSize, prayerColor, showNameOnFront, showDatesOnFront,
-    showDatesOnBack, nameFont, datesFont, namePosition, datesPosition,
-    nameSize, frontDatesSize, backDatesSize, backDatesPosition, nameColor,
-    frontDatesColor, backDatesColor, nameBold, datesBold, nameTextShadow,
-    datesTextShadow, showInLovingMemory, inLovingMemoryText, inLovingMemoryPosition,
-    inLovingMemorySize, inLovingMemoryColor, inLovingMemoryFont, inLovingMemoryBold,
-    showNameOnBack, backNamePosition, backNameSize, backNameColor, backNameFont,
-    backNameBold, prayerPosition, funeralHomeLogo, funeralHomeLogoPosition,
-    funeralHomeLogoSize, frontDateFormat, backDateFormat, additionalText,
-    additionalTextPosition, additionalTextColor, additionalTextSize, additionalTextFont,
-    showAdditionalText, additionalTextBold, additionalTextShadow, selectedPrayerId
-  ]);
-
-  // Clear saved state on successful order completion
-  const clearSavedDesignerState = useCallback(() => {
-    try {
-      localStorage.removeItem(DESIGNER_STORAGE_KEY);
-      sessionStorage.removeItem('designPageState');
-    } catch (e) {
-      console.warn('Failed to clear designer state:', e);
-    }
-  }, []);
 
   // Text drag handlers
   const handleTextPointerDown = (e: React.PointerEvent, textType: 'name' | 'dates' | 'additional' | 'backDates' | 'prayer' | 'inLovingMemory' | 'backName') => {
@@ -1849,7 +1690,6 @@ const Design = () => {
       });
       if (error) throw error;
       toast.success(`Order #${data.orderId} placed successfully! Check your email for confirmation.`);
-      clearSavedDesignerState(); // Clear saved state on successful order
       setStep(5); // Success step
     } catch (error) {
       console.error('Order submission error:', error);
