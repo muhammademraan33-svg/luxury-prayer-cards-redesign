@@ -1998,18 +1998,28 @@ const Design = () => {
 
       // Use actual inch-based sizes for sidebar preview (scaled up for visibility)
       if (forSidebar) {
-        return activeSize === '3.125x4.875' ? 'aspect-[3.125/4.875] w-[3.125in]' : 'aspect-[2.625/4.375] w-[2.625in]';
+        return activeSize === '3.125x4.875' 
+          ? 'aspect-[3.125/4.875] w-[3.125in] max-w-[90vw] sm:max-w-none' 
+          : 'aspect-[2.625/4.375] w-[2.625in] max-w-[85vw] sm:max-w-none';
       }
-      return activeSize === '3.125x4.875' ? 'aspect-[3.125/4.875] w-[3.125in]' : 'aspect-[2.625/4.375] w-[2.625in]';
+      // Mobile: use viewport-relative sizing, desktop: use inch-based
+      return activeSize === '3.125x4.875' 
+        ? 'aspect-[3.125/4.875] w-full max-w-[280px] sm:max-w-[3.125in] sm:w-[3.125in]' 
+        : 'aspect-[2.625/4.375] w-full max-w-[240px] sm:max-w-[2.625in] sm:w-[2.625in]';
     }
 
     // Metal cards
     if (forSidebar) {
-      return orientation === 'landscape' ? 'aspect-[3.5/2] w-[3.5in]' : 'aspect-[2/3.5] w-[2in]';
+      return orientation === 'landscape' 
+        ? 'aspect-[3.5/2] w-[3.5in] max-w-[90vw] sm:max-w-none' 
+        : 'aspect-[2/3.5] w-[2in] max-w-[85vw] sm:max-w-none';
     }
 
+    // Mobile: use viewport-relative sizing, desktop: use inch-based
     // Width determines height via aspect ratio: portrait 2in x 3.5in, landscape 3.5in x 2in
-    return orientation === 'landscape' ? 'aspect-[3.5/2] w-[3.5in]' : 'aspect-[2/3.5] w-[2in]';
+    return orientation === 'landscape' 
+      ? 'aspect-[3.5/2] w-full max-w-[280px] sm:max-w-[3.5in] sm:w-[3.5in]' 
+      : 'aspect-[2/3.5] w-full max-w-[200px] sm:max-w-[2in] sm:w-[2in]';
   };
   const cardClass = getCardClass();
   const sidebarCardClass = getCardClass(true);
@@ -2101,30 +2111,33 @@ const Design = () => {
       <div className="design-page min-h-screen bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900">
       {/* Header */}
       <header className="border-b border-amber-900/30 bg-slate-900/80 backdrop-blur-sm sticky top-0 z-50">
-        <div className="container mx-auto px-4 py-3 flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-3">
-            <span className="text-lg font-bold text-white">LuxuryPrayerCards.com</span>
-          </Link>
-          <div className="flex items-center gap-3">
-            {step === 1 && <Button type="button" variant="outline" size="sm" onClick={handleGeneratePrintPreview} disabled={generatingPreview} className="border-slate-600 text-slate-300 hover:bg-slate-700">
-                {generatingPreview ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Eye className="h-4 w-4 mr-2" />}
-                Print Preview
-              </Button>}
-            <div className="flex items-center gap-2 bg-gradient-to-r from-amber-500/20 to-amber-600/20 border border-amber-500/40 rounded-full px-3 py-1.5 animate-pulse">
-              <Zap className="h-4 w-4 text-amber-400" />
-              <span className="text-sm font-semibold text-amber-300">Delivered in 48-72 Hours</span>
-            </div>
-            <div className="text-sm text-slate-400 hidden sm:block">
-              Step {Math.min(step, 4)} of 4
+        <div className="container mx-auto px-2 sm:px-4 py-2 sm:py-3">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-3">
+            <Link to="/" className="flex items-center gap-2 sm:gap-3 min-w-0">
+              <span className="text-base sm:text-lg font-bold text-white truncate">LuxuryPrayerCards.com</span>
+            </Link>
+            <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
+              {step === 1 && <Button type="button" variant="outline" size="sm" onClick={handleGeneratePrintPreview} disabled={generatingPreview} className="border-slate-600 text-slate-300 hover:bg-slate-700 text-xs sm:text-sm">
+                  {generatingPreview ? <Loader2 className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2 animate-spin" /> : <Eye className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />}
+                  <span className="hidden xs:inline">Print Preview</span>
+                  <span className="xs:hidden">Preview</span>
+                </Button>}
+              <div className="flex items-center gap-1 sm:gap-2 bg-gradient-to-r from-amber-500/20 to-amber-600/20 border border-amber-500/40 rounded-full px-2 sm:px-3 py-1 sm:py-1.5 animate-pulse">
+                <Zap className="h-3 w-3 sm:h-4 sm:w-4 text-amber-400 flex-shrink-0" />
+                <span className="text-xs sm:text-sm font-semibold text-amber-300 whitespace-nowrap">Delivered in 48-72 Hours</span>
+              </div>
+              <div className="text-xs sm:text-sm text-slate-400 hidden sm:block">
+                Step {Math.min(step, 4)} of 4
+              </div>
             </div>
           </div>
         </div>
       </header>
 
       {/* Main Content */}
-      <main className={`container mx-auto px-3 py-3 ${step === 1 ? 'max-w-6xl' : 'max-w-4xl'}`}>
-        <div className="text-center mb-3">
-          <h1 className="text-xl font-bold text-white mb-1">
+      <main className={`container mx-auto px-2 sm:px-3 md:px-4 py-2 sm:py-3 ${step === 1 ? 'max-w-6xl' : 'max-w-4xl'}`}>
+        <div className="text-center mb-2 sm:mb-3">
+          <h1 className="text-lg sm:text-xl font-bold text-white mb-1">
             {step === 1 && `Design Your ${cardType === 'paper' ? 'Photo Prayer Card' : 'Metal Prayer Card'}${additionalDesigns.length > 0 ? 's' : ''}`}
             {step === 2 && (cardType === 'paper' ? 'Review Your Order' : 'Choose Your Package')}
             {step === 3 && 'Shipping Information'}
@@ -2140,31 +2153,31 @@ const Design = () => {
         </div>
 
         {/* Prominent Controls Section - Mobile First Design */}
-        {step === 1 && <div className="mb-4 space-y-4">
+        {step === 1 && <div className="mb-3 sm:mb-4 space-y-3 sm:space-y-4">
           {/* Card Thickness Selection - For both paper and metal */}
-          <div className="bg-slate-700/50 rounded-xl p-4">
-            <h3 className="text-base font-semibold text-white mb-3 text-center">CHOOSE YOUR CARD THICKNESS</h3>
-            <div className="grid grid-cols-2 gap-3">
+          <div className="bg-slate-700/50 rounded-xl p-3 sm:p-4">
+            <h3 className="text-sm sm:text-base font-semibold text-white mb-2 sm:mb-3 text-center">CHOOSE YOUR CARD THICKNESS</h3>
+            <div className="grid grid-cols-2 gap-2 sm:gap-3">
               <button 
                 type="button" 
                 onClick={() => setUpgradeThickness(false)} 
-                className={`p-4 rounded-lg border-2 transition-all ${!upgradeThickness ? 'border-amber-500 bg-amber-500/20' : 'border-slate-600 hover:border-slate-500'}`}
+                className={`p-3 sm:p-4 rounded-lg border-2 transition-all ${!upgradeThickness ? 'border-amber-500 bg-amber-500/20' : 'border-slate-600 hover:border-slate-500'}`}
               >
                 <div className="text-center">
-                  <div className="text-xl font-bold text-white mb-1">.040"</div>
-                  <div className="text-slate-400 text-sm">Standard Thickness</div>
-                  <div className="text-amber-400 font-semibold mt-2 text-sm">Included</div>
+                  <div className="text-lg sm:text-xl font-bold text-white mb-1">.040"</div>
+                  <div className="text-slate-400 text-xs sm:text-sm">Standard Thickness</div>
+                  <div className="text-amber-400 font-semibold mt-1 sm:mt-2 text-xs sm:text-sm">Included</div>
                 </div>
               </button>
               <button 
                 type="button" 
                 onClick={() => setUpgradeThickness(true)} 
-                className={`p-4 rounded-lg border-2 transition-all ${upgradeThickness ? 'border-amber-500 bg-amber-500/20' : 'border-slate-600 hover:border-slate-500'}`}
+                className={`p-3 sm:p-4 rounded-lg border-2 transition-all ${upgradeThickness ? 'border-amber-500 bg-amber-500/20' : 'border-slate-600 hover:border-slate-500'}`}
               >
                 <div className="text-center">
-                  <div className="text-xl font-bold text-white mb-1">.080"</div>
-                  <div className="text-slate-400 text-sm">Premium Thickness</div>
-                  <div className="text-amber-400 font-semibold mt-2 text-sm">+$15/set</div>
+                  <div className="text-lg sm:text-xl font-bold text-white mb-1">.080"</div>
+                  <div className="text-slate-400 text-xs sm:text-sm">Premium Thickness</div>
+                  <div className="text-amber-400 font-semibold mt-1 sm:mt-2 text-xs sm:text-sm">+$15/set</div>
                 </div>
               </button>
             </div>
@@ -2222,7 +2235,7 @@ const Design = () => {
         </div>}
 
         <Card className="bg-slate-800/50 border-slate-700">
-          <CardContent className="p-3">
+          <CardContent className="p-2 sm:p-3">
             <form onSubmit={handleSubmitOrder}>
               {/* Step 1: Card Design */}
               {step === 1 && <div className="md:flex md:gap-6">
@@ -2321,6 +2334,8 @@ const Design = () => {
                             overflow: 'hidden', // CRITICAL: Never allow overflow
                             cursor: draggingText === 'name' || resizingText === 'name' ? 'grabbing' : 'grab',
                             boxShadow: draggingText === 'name' || resizingText === 'name' ? '0 0 0 2px #d97706' : 'none',
+                            zIndex: 15,
+                            pointerEvents: 'auto'
                           }} 
                           onPointerDown={e => handleTextPointerDown(e, 'name')} 
                           onPointerMove={handleTextPointerMove} 
@@ -2365,9 +2380,17 @@ const Design = () => {
                             // FIXED container width - never changes based on content
                             width: '88%',
                             maxWidth: '88%',
-                            overflow: 'hidden', // CRITICAL: Never allow overflow
+                            overflow: 'visible',
+                            minHeight: frontDatesSize === 'auto' ? '20px' : `${Math.max(16, (typeof frontDatesSize === 'number' ? frontDatesSize : 12) * 0.65 * 2.5)}px`,
+                            display: 'flex',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            paddingTop: '4px',
+                            paddingBottom: '4px',
                             cursor: draggingText === 'dates' || resizingText === 'dates' ? 'grabbing' : 'grab',
                             boxShadow: draggingText === 'dates' || resizingText === 'dates' ? '0 0 0 2px #d97706' : 'none',
+                            zIndex: 15,
+                            pointerEvents: 'auto'
                           }} 
                           onPointerDown={e => handleTextPointerDown(e, 'dates')} 
                           onPointerMove={handleTextPointerMove} 
@@ -2375,20 +2398,28 @@ const Design = () => {
                           onPointerCancel={handleTextPointerUp} 
                           onWheel={e => handleTextWheel(e, 'dates')}
                         >
-                                <AutoFitText 
-                              text={formatDates(birthDate, deathDate, frontDateFormat)} 
-                              maxWidth="100%" 
-                              containerWidth="100%"
-                              allowWrap={false} 
-                              style={{
-                                fontFamily: datesFont,
-                                fontSize: frontDatesSize === 'auto' ? '8px' : `${Math.max(7, (typeof frontDatesSize === 'number' ? frontDatesSize : 12) * 0.65)}px`,
-                                color: frontDatesColor,
-                                fontWeight: datesBold ? 'bold' : 'normal',
-                                textShadow: datesTextShadow ? '0 1px 2px rgba(0,0,0,0.5)' : 'none',
-                                textAlign: 'center'
-                              }} 
-                            />
+                                <div style={{
+                                  width: '100%',
+                                  maxWidth: '100%',
+                                  overflow: 'hidden'
+                                }}>
+                                  <AutoFitText 
+                                    text={formatDates(birthDate, deathDate, frontDateFormat)} 
+                                    maxWidth="100%" 
+                                    containerWidth="100%"
+                                    containerHeight={frontDatesSize === 'auto' ? '20px' : `${Math.max(16, (typeof frontDatesSize === 'number' ? frontDatesSize : 12) * 0.65 * 2.5)}px`}
+                                    allowWrap={false} 
+                                    style={{
+                                      fontFamily: datesFont,
+                                      fontSize: frontDatesSize === 'auto' ? '8px' : `${Math.max(7, (typeof frontDatesSize === 'number' ? frontDatesSize : 12) * 0.65)}px`,
+                                      color: frontDatesColor,
+                                      fontWeight: datesBold ? 'bold' : 'normal',
+                                      textShadow: datesTextShadow ? '0 1px 2px rgba(0,0,0,0.5)' : 'none',
+                                      textAlign: 'center',
+                                      lineHeight: 1.2
+                                    }} 
+                                  />
+                                </div>
                               </div>}
 
                             {/* Text Overlay - Additional - FIXED BOUNDING CONTAINER */}
@@ -2404,6 +2435,8 @@ const Design = () => {
                             overflow: 'hidden', // CRITICAL: Never allow overflow
                             cursor: draggingText === 'additional' || resizingText === 'additional' ? 'grabbing' : 'grab',
                             boxShadow: draggingText === 'additional' || resizingText === 'additional' ? '0 0 0 2px #d97706' : 'none',
+                            zIndex: 15,
+                            pointerEvents: 'auto'
                           }} 
                           onPointerDown={e => handleTextPointerDown(e, 'additional')} 
                           onPointerMove={handleTextPointerMove} 
@@ -2475,28 +2508,40 @@ const Design = () => {
                             transform: `scale(${backBgZoom}) translate(${backBgPanX}%, ${backBgPanY}%) rotate(${backBgRotation}deg)`,
                             transformOrigin: 'center center'
                           }} />}
-                                <div className={`relative z-10 h-full flex flex-col items-center text-center ${cardRounding}`} style={{
+                                <div className={`relative z-10 h-full ${cardRounding}`} style={{
                             padding: '6px',
                             paddingTop: backBorderDesign !== 'none' ? '18px' : '6px',
                             // Extra safe area so QR isn't covered by decorative borders.
                             paddingBottom: backBorderDesign !== 'none' ? '24px' : '6px'
                           }}>
-                                  {/* Header section - shrinks to content */}
-                                  <div className="shrink-0 items-center flex flex-col" style={{ marginTop: '24px' }}>
-                                    {/* Funeral Home Logo - Top */}
-                                    {funeralHomeLogo && funeralHomeLogoPosition === 'top' && <div className="flex justify-center mb-0.5">
-                                        <img src={funeralHomeLogo} alt="Funeral Home Logo" className="object-contain" style={{
+                                  {/* Funeral Home Logo - Top */}
+                                  {funeralHomeLogo && funeralHomeLogoPosition === 'top' && <div className="absolute left-1/2 -translate-x-1/2 z-10 pointer-events-none" style={{
+                                    top: backBorderDesign !== 'none' ? '16px' : '8px'
+                                  }}>
+                                      <img src={funeralHomeLogo} alt="Funeral Home Logo" className="object-contain" style={{
                                   height: `${Math.max(10, funeralHomeLogoSize * 0.35)}px`,
                                   maxWidth: '60%'
                                 }} />
-                                      </div>}
-                                    {/* In Loving Memory - FIXED BOUNDING CONTAINER */}
-                                    {showInLovingMemory && <div 
-                                className="mb-0.5 w-full" 
+                                    </div>}
+                                  {/* In Loving Memory - ABSOLUTE POSITIONED */}
+                                  {showInLovingMemory && <div 
+                                className="absolute touch-none select-none rounded" 
                                 style={{
+                                  left: `${50 + inLovingMemoryPosition.x}%`,
+                                  top: `${50 + inLovingMemoryPosition.y}%`,
+                                  transform: 'translate(-50%, -50%)',
                                   maxWidth: '90%',
-                                  overflow: 'hidden', // CRITICAL: Never allow overflow
+                                  overflow: 'hidden',
+                                  cursor: draggingText === 'inLovingMemory' || resizingText === 'inLovingMemory' ? 'grabbing' : 'grab',
+                                  boxShadow: draggingText === 'inLovingMemory' || resizingText === 'inLovingMemory' ? '0 0 0 2px #d97706' : 'none',
+                                  zIndex: 15,
+                                  pointerEvents: 'auto'
                                 }}
+                                onPointerDown={e => handleTextPointerDown(e, 'inLovingMemory')} 
+                                onPointerMove={handleTextPointerMove} 
+                                onPointerUp={handleTextPointerUp} 
+                                onPointerCancel={handleTextPointerUp} 
+                                onWheel={e => handleTextWheel(e, 'inLovingMemory')}
                               >
                                         <div style={{
                                     fontFamily: inLovingMemoryFont,
@@ -2510,13 +2555,31 @@ const Design = () => {
                                           {inLovingMemoryText}
                                         </div>
                                       </div>}
-                                    {/* Back Name - FIXED BOUNDING CONTAINER */}
-                                    {showNameOnBack && <div 
-                                className="mb-0.5 w-full"
+                                  {/* Back Name - ABSOLUTE POSITIONED */}
+                                  {showNameOnBack && <div 
+                                className="absolute touch-none select-none rounded"
                                 style={{
+                                  left: `${50 + backNamePosition.x}%`,
+                                  top: `${50 + backNamePosition.y}%`,
+                                  transform: 'translate(-50%, -50%)',
                                   maxWidth: '90%',
-                                  overflow: 'hidden', // CRITICAL: Never allow overflow
+                                  overflow: 'visible',
+                                  minHeight: `${Math.max(16, backNameSize * 0.5 * 2.5)}px`,
+                                  display: 'flex',
+                                  justifyContent: 'center',
+                                  alignItems: 'center',
+                                  paddingTop: '3px',
+                                  paddingBottom: '3px',
+                                  cursor: draggingText === 'backName' || resizingText === 'backName' ? 'grabbing' : 'grab',
+                                  boxShadow: draggingText === 'backName' || resizingText === 'backName' ? '0 0 0 2px #d97706' : 'none',
+                                  zIndex: 15,
+                                  pointerEvents: 'auto'
                                 }}
+                                onPointerDown={e => handleTextPointerDown(e, 'backName')} 
+                                onPointerMove={handleTextPointerMove} 
+                                onPointerUp={handleTextPointerUp} 
+                                onPointerCancel={handleTextPointerUp} 
+                                onWheel={e => handleTextWheel(e, 'backName')}
                               >
                                         <div style={{
                                     fontFamily: backNameFont,
@@ -2524,43 +2587,75 @@ const Design = () => {
                                     fontSize: `${Math.max(6, backNameSize * 0.5)}px`,
                                     fontWeight: backNameBold ? 'bold' : 'normal',
                                     textAlign: 'center',
-                                    overflow: 'hidden',
-                                    textOverflow: 'ellipsis',
+                                    overflow: 'visible',
+                                    textOverflow: 'clip',
+                                    whiteSpace: 'pre-line',
+                                    lineHeight: 1.3,
+                                    width: '100%',
+                                    maxHeight: '100%'
                                   }}>
                                           {deceasedName || 'Name Here'}
                                         </div>
                                       </div>}
-                                    {/* Back Dates - FIXED BOUNDING CONTAINER */}
-                                    {showDatesOnBack && <div 
-                                className="mb-0.5" 
+                                  {/* Back Dates - ABSOLUTE POSITIONED */}
+                                  {showDatesOnBack && <div 
+                                className="absolute touch-none select-none rounded" 
                                 style={{
+                                  left: `${backDatesPosition.x}%`,
+                                  top: `${backDatesPosition.y}%`,
+                                  transform: 'translate(-50%, -50%)',
                                   width: '95%',
                                   maxWidth: '95%',
-                                  overflow: 'hidden', // CRITICAL: Never allow overflow
+                                  overflow: 'visible',
+                                  minHeight: backDatesSize === 'auto' ? '16px' : `${Math.max(12, (typeof backDatesSize === 'number' ? backDatesSize : 9) * 0.5 * 2.5)}px`,
+                                  display: 'flex',
+                                  justifyContent: 'center',
+                                  alignItems: 'center',
+                                  paddingTop: '3px',
+                                  paddingBottom: '3px',
+                                  cursor: draggingText === 'backDates' || resizingText === 'backDates' ? 'grabbing' : 'grab',
+                                  boxShadow: draggingText === 'backDates' || resizingText === 'backDates' ? '0 0 0 2px #d97706' : 'none',
+                                  zIndex: 15,
+                                  pointerEvents: 'auto'
                                 }}
+                                onPointerDown={e => handleTextPointerDown(e, 'backDates')} 
+                                onPointerMove={handleTextPointerMove} 
+                                onPointerUp={handleTextPointerUp} 
+                                onPointerCancel={handleTextPointerUp} 
+                                onWheel={e => handleTextWheel(e, 'backDates')}
                               >
                                         <AutoFitSingleLineText 
                                     text={formatDates(birthDate, deathDate, backDateFormat)} 
                                     maxWidth="100%" 
                                     containerWidth="100%"
+                                    containerHeight={backDatesSize === 'auto' ? '16px' : `${Math.max(12, (typeof backDatesSize === 'number' ? backDatesSize : 9) * 0.5 * 2.5)}px`}
                                     style={{
                                       fontFamily: datesFont,
                                       color: backDatesColor,
-                                      fontSize: backDatesSize === 'auto' ? '5px' : `${Math.max(4, (typeof backDatesSize === 'number' ? backDatesSize : 9) * 0.5)}px`
+                                      fontSize: backDatesSize === 'auto' ? '5px' : `${Math.max(4, (typeof backDatesSize === 'number' ? backDatesSize : 9) * 0.5)}px`,
+                                      lineHeight: 1.2
                                     }} 
                                   />
                                       </div>}
-                                  </div>
-                                  {/* Prayer - takes remaining space, centered */}
+                                  {/* Prayer - ABSOLUTE POSITIONED */}
                                    <div
-                                     className="flex-1 flex items-center justify-center w-full min-h-0 overflow-hidden"
+                                     className="absolute touch-none select-none"
                                      style={{
-                                       paddingLeft: backBorderDesign !== 'none' ? 10 : 2,
-                                       paddingRight: backBorderDesign !== 'none' ? 10 : 2,
-                                       paddingTop: backBorderDesign !== 'none' ? 6 : 0,
-                                       paddingBottom: backBorderDesign !== 'none' ? 6 : 0,
-                                       boxSizing: 'border-box',
+                                       left: `${50 + prayerPosition.x}%`,
+                                       top: `${50 + prayerPosition.y}%`,
+                                       transform: 'translate(-50%, -50%)',
+                                       width: '85%',
+                                       maxWidth: '85%',
+                                       cursor: draggingText === 'prayer' || resizingText === 'prayer' ? 'grabbing' : 'grab',
+                                       boxShadow: draggingText === 'prayer' || resizingText === 'prayer' ? '0 0 0 2px #d97706' : 'none',
+                                       zIndex: 15,
+                                       pointerEvents: 'auto'
                                      }}
+                                     onPointerDown={e => handleTextPointerDown(e, 'prayer')} 
+                                     onPointerMove={handleTextPointerMove} 
+                                     onPointerUp={handleTextPointerUp} 
+                                     onPointerCancel={handleTextPointerUp} 
+                                     onWheel={e => handleTextWheel(e, 'prayer')}
                                    >
                                      <div
                                        className="text-center w-full"
@@ -2578,19 +2673,20 @@ const Design = () => {
                                        {backText}
                                      </div>
                                    </div>
-                                  {/* Footer - QR code and/or Logo */}
-                                  <div className="shrink-0 flex flex-col items-center" style={{
-                                marginBottom: backBorderDesign !== 'none' ? '4px' : '0px'
-                              }}>
-                                    {qrValue && <QrCodeBadge value={qrValue} size={36} level="M" paddingClassName="p-1" />}
-                                    {/* Funeral Home Logo - Bottom */}
-                                    {funeralHomeLogo && funeralHomeLogoPosition === 'bottom' && <div className="flex justify-center mt-0.5">
-                                        <img src={funeralHomeLogo} alt="Funeral Home Logo" className="object-contain" style={{
+                                  {/* Footer - QR code and/or Logo - ABSOLUTE POSITIONED */}
+                                  {qrValue && <div className="absolute left-1/2 -translate-x-1/2 z-10 pointer-events-none" style={{
+                                    bottom: backBorderDesign !== 'none' ? '20px' : '8px'
+                                  }}>
+                                      <QrCodeBadge value={qrValue} size={36} level="M" paddingClassName="p-1" />
+                                    </div>}
+                                  {funeralHomeLogo && funeralHomeLogoPosition === 'bottom' && <div className="absolute left-1/2 -translate-x-1/2 z-10 pointer-events-none" style={{
+                                    bottom: backBorderDesign !== 'none' ? '16px' : '8px'
+                                  }}>
+                                      <img src={funeralHomeLogo} alt="Funeral Home Logo" className="object-contain" style={{
                                   height: `${Math.max(10, funeralHomeLogoSize * 0.35)}px`,
                                   maxWidth: '60%'
                                 }} />
-                                      </div>}
-                                  </div>
+                                    </div>}
                                 </div>
                                 {cardType === 'paper' && backBorderDesign !== 'none' && <div className="absolute inset-0 z-20 pointer-events-none">
                                     <DecorativeBorderOverlay type={backBorderDesign} color={backBorderColor} />
@@ -2704,11 +2800,11 @@ const Design = () => {
 
                   {/* Front/Back Tabs */}
                   <Tabs value={cardSide} onValueChange={v => setCardSide(v as CardSide)} className="w-full">
-                    <TabsList className="grid w-full grid-cols-2 bg-slate-700 md:hidden">
-                      <TabsTrigger value="front" className="data-[state=active]:bg-amber-600 data-[state=active]:text-white">
+                    <TabsList className="grid w-full grid-cols-2 bg-slate-700 md:hidden text-xs sm:text-sm">
+                      <TabsTrigger value="front" className="data-[state=active]:bg-amber-600 data-[state=active]:text-white py-2">
                         Front (Photo)
                       </TabsTrigger>
-                      <TabsTrigger value="back" className="data-[state=active]:bg-amber-600 data-[state=active]:text-white">
+                      <TabsTrigger value="back" className="data-[state=active]:bg-amber-600 data-[state=active]:text-white py-2">
                         Back (Info + QR)
                       </TabsTrigger>
                     </TabsList>
@@ -2753,11 +2849,12 @@ const Design = () => {
                           </div>
                         </div>
                       )}
-                      <div className="flex flex-col items-center gap-4 md:hidden">
+                      <div className="flex flex-col items-center gap-3 sm:gap-4 md:hidden w-full">
                         {/* Card Preview */}
                         <div data-card-preview ref={cardPreviewRef} className={`${cardClass} ${cardRounding} overflow-hidden shadow-2xl relative ${cardType === 'metal' && metalBorderColor !== 'none' ? `bg-gradient-to-br ${getMetalBorderGradient(metalBorderColor)} p-1` : ''}`}>
                             <div ref={photoContainerRef} className={`w-full h-full ${cardType === 'metal' && metalBorderColor !== 'none' ? 'rounded-lg' : cardRounding} overflow-hidden bg-slate-700 flex items-center justify-center touch-none relative ${!activePhoto ? 'cursor-pointer hover:bg-slate-600 transition-colors' : ''}`} style={{
-                            cursor: activePhoto && !draggingText ? isPanning ? 'grabbing' : 'grab' : !activePhoto ? 'pointer' : 'default'
+                            cursor: activePhoto && !draggingText ? isPanning ? 'grabbing' : 'grab' : !activePhoto ? 'pointer' : 'default',
+                            pointerEvents: draggingText ? 'none' : 'auto'
                           }} onPointerDown={handlePhotoPointerDown} onPointerMove={handlePhotoPointerMove} onPointerUp={handlePhotoPointerUp} onPointerCancel={handlePhotoPointerUp} onWheel={handlePhotoWheel} onClick={() => {
                             if (!activePhoto) {
                               photoInputRef.current?.click();
@@ -2799,10 +2896,12 @@ const Design = () => {
                               boxShadow: draggingText === 'name' || resizingText === 'name' ? '0 0 0 2px #d97706' : 'none',
                               maxWidth: '95%',
                               width: 'max-content',
-                              textAlign: 'center'
+                              textAlign: 'center',
+                              zIndex: 15,
+                              pointerEvents: 'auto'
                             }} onPointerDown={e => handleTextPointerDown(e, 'name')} onPointerMove={handleTextPointerMove} onPointerUp={handleTextPointerUp} onPointerCancel={handleTextPointerUp} onWheel={e => handleTextWheel(e, 'name')}>
                                   <span style={{
-                                fontSize: `${nameSize}px`,
+                                fontSize: `${Math.max(10, nameSize * 0.7)}px`,
                                 color: nameColor,
                                 fontWeight: nameBold ? 'bold' : 'normal',
                                 whiteSpace: 'pre-line',
@@ -2826,10 +2925,12 @@ const Design = () => {
                                 boxShadow: draggingText === 'dates' || resizingText === 'dates' ? '0 0 0 2px #d97706' : 'none',
                                 textAlign: 'center',
                                 width: '90%',
-                                overflow: 'visible'
+                                overflow: 'visible',
+                                zIndex: 15,
+                                pointerEvents: 'auto'
                               }} onPointerDown={e => handleTextPointerDown(e, 'dates')} onPointerMove={handleTextPointerMove} onPointerUp={handleTextPointerUp} onPointerCancel={handleTextPointerUp} onWheel={e => handleTextWheel(e, 'dates')}>
                                     <AutoFitText text={formatDates(birthDate, deathDate, frontDateFormat)} maxWidth="100%" allowWrap={false} style={{
-                                  fontSize: frontDatesSize === 'auto' ? '12px' : `${frontDatesSize}px`,
+                                  fontSize: frontDatesSize === 'auto' ? '8px' : `${Math.max(7, (typeof frontDatesSize === 'number' ? frontDatesSize : 12) * 0.65)}px`,
                                   color: frontDatesColor,
                                   fontWeight: datesBold ? 'bold' : 'normal',
                                   textAlign: 'center'
@@ -2846,10 +2947,12 @@ const Design = () => {
                               cursor: draggingText === 'additional' || resizingText === 'additional' ? 'grabbing' : 'grab',
                               textShadow: additionalTextShadow ? '0 2px 4px rgba(0,0,0,0.5)' : 'none',
                               boxShadow: draggingText === 'additional' || resizingText === 'additional' ? '0 0 0 2px #d97706' : 'none',
-                              maxWidth: '80%'
+                              maxWidth: '80%',
+                              zIndex: 15,
+                              pointerEvents: 'auto'
                             }} onPointerDown={e => handleTextPointerDown(e, 'additional')} onPointerMove={handleTextPointerMove} onPointerUp={handleTextPointerUp} onPointerCancel={handleTextPointerUp} onWheel={e => handleTextWheel(e, 'additional')}>
                                   <span style={{
-                                fontSize: `${additionalTextSize}px`,
+                                fontSize: `${Math.max(10, additionalTextSize * 0.7)}px`,
                                 color: additionalTextColor,
                                 whiteSpace: 'pre-wrap',
                                 textAlign: 'center',
@@ -3287,7 +3390,7 @@ const Design = () => {
 
                     {/* Back Card */}
                     <TabsContent value="back" className="mt-4 md:mt-0">
-                      <div className="flex flex-col items-center gap-4 md:hidden">
+                      <div className="flex flex-col items-center gap-3 sm:gap-4 md:hidden w-full">
                         {/* Card Preview */}
                         <div data-card-preview ref={cardPreviewRef} className={`${cardClass} ${cardRounding} shadow-2xl relative overflow-hidden`}>
                           {(() => {
@@ -3327,10 +3430,13 @@ const Design = () => {
                                   
                                   {showInLovingMemory && <div className="touch-none select-none px-1 rounded" style={{
                                       cursor: draggingText === 'inLovingMemory' || resizingText === 'inLovingMemory' ? 'grabbing' : 'grab',
-                                      boxShadow: draggingText === 'inLovingMemory' || resizingText === 'inLovingMemory' ? '0 0 0 2px #d97706' : 'none'
+                                      boxShadow: draggingText === 'inLovingMemory' || resizingText === 'inLovingMemory' ? '0 0 0 2px #d97706' : 'none',
+                                      zIndex: 15,
+                                      pointerEvents: 'auto',
+                                      position: 'relative'
                                     }} onPointerDown={e => handleTextPointerDown(e, 'inLovingMemory')} onPointerMove={handleTextPointerMove} onPointerUp={handleTextPointerUp} onPointerCancel={handleTextPointerUp} onWheel={e => handleTextWheel(e, 'inLovingMemory')}>
                                       <p className="uppercase tracking-[0.12em]" style={{
-                                        fontSize: `${inLovingMemorySize}px`,
+                                        fontSize: `${Math.max(5, inLovingMemorySize * 0.5)}px`,
                                         color: inLovingMemoryColor,
                                         fontWeight: inLovingMemoryBold ? 'bold' : 'normal',
                                         fontFamily: inLovingMemoryFont,
@@ -3343,10 +3449,13 @@ const Design = () => {
                                     </div>}
                                   {showNameOnBack && <div className="touch-none select-none px-1 rounded" style={{
                                       cursor: draggingText === 'backName' || resizingText === 'backName' ? 'grabbing' : 'grab',
-                                      boxShadow: draggingText === 'backName' || resizingText === 'backName' ? '0 0 0 2px #d97706' : 'none'
+                                      boxShadow: draggingText === 'backName' || resizingText === 'backName' ? '0 0 0 2px #d97706' : 'none',
+                                      zIndex: 15,
+                                      pointerEvents: 'auto',
+                                      position: 'relative'
                                     }} onPointerDown={e => handleTextPointerDown(e, 'backName')} onPointerMove={handleTextPointerMove} onPointerUp={handleTextPointerUp} onPointerCancel={handleTextPointerUp} onWheel={e => handleTextWheel(e, 'backName')}>
                                       <p className="whitespace-pre text-center" style={{
-                                        fontSize: `${backNameSize}px`,
+                                        fontSize: `${Math.max(6, backNameSize * 0.5)}px`,
                                         color: backNameColor,
                                         fontWeight: backNameBold ? 'bold' : 'normal',
                                         fontFamily: backNameFont,
@@ -3364,10 +3473,13 @@ const Design = () => {
                                       boxShadow: draggingText === 'backDates' || resizingText === 'backDates' ? '0 0 0 2px #d97706' : 'none',
                                       textAlign: backDatesAlign,
                                       marginBottom: '2px',
-                                      maxWidth: '100%'
+                                      maxWidth: '100%',
+                                      zIndex: 15,
+                                      pointerEvents: 'auto',
+                                      position: 'relative'
                                     }} onPointerDown={e => handleTextPointerDown(e, 'backDates')} onPointerMove={handleTextPointerMove} onPointerUp={handleTextPointerUp} onPointerCancel={handleTextPointerUp} onWheel={e => handleTextWheel(e, 'backDates')}>
                                       <AutoFitSingleLineText text={formatDates(birthDate, deathDate, backDateFormat)} maxWidth="100%" style={{
-                                        fontSize: backDatesSize === 'auto' ? '9px' : `${backDatesSize}px`,
+                                        fontSize: backDatesSize === 'auto' ? '5px' : `${Math.max(4, (typeof backDatesSize === 'number' ? backDatesSize : 9) * 0.5)}px`,
                                         color: backDatesColor,
                                         fontWeight: datesBold ? 'bold' : 'normal',
                                         textAlign: 'center',
@@ -3387,8 +3499,8 @@ const Design = () => {
                                   }} onPointerDown={e => handleTextPointerDown(e, 'prayer')} onPointerMove={handleTextPointerMove} onPointerUp={handleTextPointerUp} onPointerCancel={handleTextPointerUp} onWheel={e => handleTextWheel(e, 'prayer')}>
                                   <p ref={prayerTextRef} className="font-serif text-center w-full" style={{
                                       color: prayerColor,
-                                      fontSize: `${resolvedPrayerFontPx}px`,
-                                      lineHeight: `${getPrayerLineHeightPx(resolvedPrayerFontPx)}px`,
+                                      fontSize: `${Math.max(5, resolvedPrayerFontPx * 0.5)}px`,
+                                      lineHeight: `${getPrayerLineHeightPx(Math.max(5, resolvedPrayerFontPx * 0.5))}px`,
                                       whiteSpace: 'pre-wrap',
                                       overflowWrap: 'anywhere',
                                       wordBreak: 'break-word',
