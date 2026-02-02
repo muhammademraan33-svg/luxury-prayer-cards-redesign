@@ -8,6 +8,8 @@ type AutoFitSingleLineTextProps = {
   style?: React.CSSProperties;
   /** Fixed container width - container will NOT change size based on content */
   containerWidth?: string | number;
+  /** Fixed container height - for vertical containment */
+  containerHeight?: string | number;
 };
 
 /**
@@ -23,6 +25,7 @@ export const AutoFitSingleLineText = forwardRef<HTMLDivElement, AutoFitSingleLin
     className,
     style,
     containerWidth,
+    containerHeight,
   }, forwardedRef) {
     const containerRef = useRef<HTMLDivElement | null>(null);
     const textRef = useRef<HTMLSpanElement | null>(null);
@@ -107,6 +110,7 @@ export const AutoFitSingleLineText = forwardRef<HTMLDivElement, AutoFitSingleLin
     const containerStyle: React.CSSProperties = {
       width: containerWidth || '100%',
       maxWidth,
+      height: containerHeight,
       display: "flex",
       justifyContent: "center",
       alignItems: "center",

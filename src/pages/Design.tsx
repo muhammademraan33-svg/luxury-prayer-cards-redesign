@@ -1796,9 +1796,12 @@ const Design = () => {
     const celebrationUpgradedCount = celebrationPhotos.filter(p => p.size === '18x24').length;
     total += celebrationPhotosCost + celebrationUpgradedCount * PHOTO_18X24_UPSELL;
 
-    // Premium thickness upgrade
+    // Premium thickness upgrade (for both metal and paper cards)
     if (upgradeThickness && currentPackage.thickness !== 'premium') {
-      const totalSets = currentPackage.cards / 55 + extraSets;
+      // For metal cards: price per set (55 cards)
+      // For paper cards: price per set (72 cards)
+      const cardsPerSet = cardType === 'metal' ? 55 : 72;
+      const totalSets = currentPackage.cards / cardsPerSet + extraSets;
       total += PREMIUM_THICKNESS_PRICE * totalSets;
     }
 
@@ -1827,35 +1830,56 @@ const Design = () => {
       let frontImage = '';
       let backImage = '';
 
+      // Ensure refs are available
+      if (!frontPrintRef.current || !backPrintRef.current) {
+        toast.error('Preview elements not ready. Please try again.');
+        return;
+      }
+
       // Use scale 4 for higher resolution (approximating 300 DPI)
       const captureOptions = {
         scale: 4,
         useCORS: true,
         backgroundColor: '#ffffff',
         logging: false,
-        allowTaint: false,
-        removeContainer: true,
+        allowTaint: true, // Changed to true to allow cross-origin images
+        removeContainer: false, // Keep container for better rendering
+        windowWidth: frontPrintRef.current.scrollWidth,
+        windowHeight: frontPrintRef.current.scrollHeight,
       };
 
       // Capture front card
-      if (frontPrintRef.current) {
+      try {
         const frontCanvas = await html2canvas(frontPrintRef.current, captureOptions);
         frontImage = frontCanvas.toDataURL('image/png', 1.0); // Use PNG for maximum quality
+      } catch (frontError) {
+        console.error('Error capturing front card:', frontError);
+        toast.error('Failed to capture front card preview');
       }
 
       // Capture back card
-      if (backPrintRef.current) {
+      try {
         const backCanvas = await html2canvas(backPrintRef.current, captureOptions);
         backImage = backCanvas.toDataURL('image/png', 1.0);
+      } catch (backError) {
+        console.error('Error capturing back card:', backError);
+        toast.error('Failed to capture back card preview');
       }
+
+      if (!frontImage && !backImage) {
+        toast.error('Failed to generate preview. Please ensure images are loaded.');
+        return;
+      }
+
       setPrintPreviewImages({
         front: frontImage,
         back: backImage
       });
       setShowPrintPreview(true);
+      toast.success('Print preview generated successfully');
     } catch (error) {
       console.error('Error generating preview:', error);
-      toast.error('Failed to generate print preview');
+      toast.error('Failed to generate print preview. Please try again.');
     } finally {
       setGeneratingPreview(false);
     }
@@ -2115,6 +2139,88 @@ const Design = () => {
           </p>
         </div>
 
+        {/* Prominent Controls Section - Mobile First Design */}
+        {step === 1 && <div className="mb-4 space-y-4">
+          {/* Card Thickness Selection - For both paper and metal */}
+          <div className="bg-slate-700/50 rounded-xl p-4">
+            <h3 className="text-base font-semibold text-white mb-3 text-center">CHOOSE YOUR CARD THICKNESS</h3>
+            <div className="grid grid-cols-2 gap-3">
+              <button 
+                type="button" 
+                onClick={() => setUpgradeThickness(false)} 
+                className={`p-4 rounded-lg border-2 transition-all ${!upgradeThickness ? 'border-amber-500 bg-amber-500/20' : 'border-slate-600 hover:border-slate-500'}`}
+              >
+                <div className="text-center">
+                  <div className="text-xl font-bold text-white mb-1">.040"</div>
+                  <div className="text-slate-400 text-sm">Standard Thickness</div>
+                  <div className="text-amber-400 font-semibold mt-2 text-sm">Included</div>
+                </div>
+              </button>
+              <button 
+                type="button" 
+                onClick={() => setUpgradeThickness(true)} 
+                className={`p-4 rounded-lg border-2 transition-all ${upgradeThickness ? 'border-amber-500 bg-amber-500/20' : 'border-slate-600 hover:border-slate-500'}`}
+              >
+                <div className="text-center">
+                  <div className="text-xl font-bold text-white mb-1">.080"</div>
+                  <div className="text-slate-400 text-sm">Premium Thickness</div>
+                  <div className="text-amber-400 font-semibold mt-2 text-sm">+$15/set</div>
+                </div>
+              </button>
+            </div>
+          </div>
+
+          {/* Orientation and Side Selection */}
+          <div className="space-y-3">
+            {/* Orientation Toggle */}
+            <div className="flex items-center justify-center gap-2">
+              <Button 
+                type="button" 
+                variant={orientation === 'landscape' ? 'default' : 'outline'} 
+                onClick={() => cardType === 'metal' && setOrientation('landscape')} 
+                disabled={cardType === 'paper'}
+                className={orientation === 'landscape' ? 'bg-amber-600 hover:bg-amber-700 !text-white' : 'border-slate-600 text-slate-300 hover:bg-slate-700 disabled:opacity-50'} 
+                size="sm"
+              >
+                <RectangleHorizontal className="h-4 w-4 mr-2" />
+                Landscape
+              </Button>
+              <Button 
+                type="button" 
+                variant={orientation === 'portrait' ? 'default' : 'outline'} 
+                onClick={() => setOrientation('portrait')} 
+                className={orientation === 'portrait' ? 'bg-amber-600 hover:bg-amber-700 !text-white' : 'border-slate-600 text-slate-300 hover:bg-slate-700'} 
+                size="sm"
+              >
+                <RectangleVertical className="h-4 w-4 mr-2" />
+                Portrait
+              </Button>
+            </div>
+
+            {/* Front/Back Side Selection */}
+            <div className="flex items-center justify-center gap-2">
+              <Button 
+                type="button" 
+                variant={cardSide === 'front' ? 'default' : 'outline'} 
+                onClick={() => setCardSide('front')} 
+                className={cardSide === 'front' ? 'bg-amber-600 hover:bg-amber-700 !text-white' : 'border-slate-600 text-slate-300 hover:bg-slate-700'} 
+                size="sm"
+              >
+                Front (Photo)
+              </Button>
+              <Button 
+                type="button" 
+                variant={cardSide === 'back' ? 'default' : 'outline'} 
+                onClick={() => setCardSide('back')} 
+                className={cardSide === 'back' ? 'bg-amber-600 hover:bg-amber-700 !text-white' : 'border-slate-600 text-slate-300 hover:bg-slate-700'} 
+                size="sm"
+              >
+                Back (Info + QR)
+              </Button>
+            </div>
+          </div>
+        </div>}
+
         <Card className="bg-slate-800/50 border-slate-700">
           <CardContent className="p-3">
             <form onSubmit={handleSubmitOrder}>
@@ -2168,10 +2274,10 @@ const Design = () => {
                     {/* Front/Back Toggle - Above the card */}
                     <div className="flex justify-center gap-1 mb-2">
                       <Button type="button" variant={cardSide === 'front' ? 'default' : 'outline'} onClick={() => setCardSide('front')} className={cardSide === 'front' ? 'bg-amber-600 hover:bg-amber-700 !text-white' : 'border-slate-600 text-slate-300 hover:bg-slate-700'} size="sm">
-                        Front
+                        Front (Photo)
                       </Button>
                       <Button type="button" variant={cardSide === 'back' ? 'default' : 'outline'} onClick={() => setCardSide('back')} className={cardSide === 'back' ? 'bg-amber-600 hover:bg-amber-700 !text-white' : 'border-slate-600 text-slate-300 hover:bg-slate-700'} size="sm">
-                        Back
+                        Back (Info + QR)
                       </Button>
                     </div>
                     
@@ -2555,8 +2661,8 @@ const Design = () => {
                       </div>
                     </div>}
 
-                  {/* Metal Card Thickness Selection - only for metal cards */}
-                  {cardType === 'metal' && <div className="bg-slate-700/50 rounded-xl p-4 mb-4">
+                  {/* Metal Card Thickness Selection - Hidden on mobile since it's shown at top, visible on desktop */}
+                  {cardType === 'metal' && <div className="hidden md:block bg-slate-700/50 rounded-xl p-4 mb-4">
                       <h3 className="text-lg font-semibold text-white mb-3 text-center">Choose Your Card Thickness</h3>
                       <div className="grid grid-cols-2 gap-4">
                         <button type="button" onClick={() => setUpgradeThickness(false)} className={`p-4 rounded-lg border-2 transition-all ${!upgradeThickness ? 'border-amber-500 bg-amber-500/20' : 'border-slate-600 hover:border-slate-500'}`}>
@@ -2576,8 +2682,8 @@ const Design = () => {
                       </div>
                     </div>}
 
-                  {/* Orientation Toggle - only for metal cards */}
-                  {cardType === 'metal' && <div className="flex items-center justify-center gap-4">
+                  {/* Orientation Toggle - Hidden on mobile since it's shown at top, visible on desktop for metal cards */}
+                  {cardType === 'metal' && <div className="hidden md:flex items-center justify-center gap-4">
                       <Button type="button" variant={orientation === 'landscape' ? 'default' : 'outline'} onClick={() => setOrientation('landscape')} className={orientation === 'landscape' ? 'bg-amber-600 hover:bg-amber-700 !text-white' : 'border-slate-600 text-slate-300 hover:bg-slate-700'}>
                         <RectangleHorizontal className="h-4 w-4 mr-2" />
                         Landscape
@@ -4310,80 +4416,8 @@ const Design = () => {
                     <Button type="button" variant="outline" onClick={() => setStep(1)} className="flex-1 border-slate-600 text-slate-300 hover:bg-slate-700">
                       <ArrowLeft className="h-4 w-4 mr-2" /> Back
                     </Button>
-                    <Button type="button" onClick={() => {
-                    // Save ALL design state before navigating
-                    const designState = {
-                      step,
-                      deceasedName,
-                      birthDate,
-                      deathDate,
-                      metalFinish,
-                      extraSets,
-                      extraPhotos,
-                      upgradeThickness,
-                      shippingSpeed,
-                      frontBorderDesign,
-                      frontBorderColor,
-                      backBorderDesign,
-                      backBorderColor,
-                      mainDesignSize,
-                      additionalDesigns,
-                      mainDesignQty,
-                      activeDesignIndex,
-                      qrUrl,
-                      showQrCode,
-                      orientation,
-                      cardSide,
-                      deceasedPhoto,
-                      photoZoom,
-                      photoPanX,
-                      photoPanY,
-                      photoRotation,
-                      photoFade,
-                      fadeColor,
-                      fadeShape,
-                      metalBorderColor,
-                      photoBrightness,
-                      backBgImage,
-                      backBgType,
-                      backMetalFinish,
-                      backBgZoom,
-                      backBgPanX,
-                      backBgPanY,
-                      backBgRotation,
-                      backText,
-                      prayerTextSize,
-                      prayerBold,
-                      prayerItalic,
-                      autoPrayerFontSize,
-                      prayerColor,
-                      showNameOnFront,
-                      showDatesOnFront,
-                      showDatesOnBack,
-                      nameFont,
-                      datesFont,
-                      namePosition,
-                      datesPosition,
-                      funeralHomeLogo
-                    };
-                    sessionStorage.setItem('designPageState', JSON.stringify(designState));
-
-                    // Store card data for memorial photo editor
-                    sessionStorage.setItem('memorialPhotoData', JSON.stringify({
-                      deceasedName,
-                      birthDate,
-                      deathDate,
-                      deceasedPhoto,
-                      funeralHomeLogo
-                    }));
-                    // Navigate to memorial photo editor with package info
-                    const params = new URLSearchParams({
-                      package: selectedPackage,
-                      photos: String(currentPackage.photos)
-                    });
-                    window.location.href = `/memorial-photo?${params.toString()}`;
-                  }} className="flex-1 bg-amber-600 hover:bg-amber-700 text-white font-semibold">
-                      Continue to Memorial Photos <ArrowRight className="h-4 w-4 ml-2" />
+                    <Button type="button" onClick={() => setStep(3)} className="flex-1 bg-amber-600 hover:bg-amber-700 text-white font-semibold">
+                      Continue <ArrowRight className="h-4 w-4 ml-2" />
                     </Button>
                   </div>
                 </div>}
@@ -4612,7 +4646,7 @@ const Design = () => {
             <div className={`w-full h-full ${metalBorderColor !== 'none' ? 'rounded-lg' : cardType === 'paper' && paperCornerRadius !== 'none' ? 'rounded-lg' : ''} overflow-hidden bg-slate-700 relative`}>
               {deceasedPhoto && <>
                   <img src={deceasedPhoto} alt="Memorial" className="w-full h-full object-cover" style={{
-                  transform: `translate(${photoPanX}px, ${photoPanY}px) scale(${photoZoom})`,
+                  transform: `translate(${photoPanX}px, ${photoPanY}px) scale(${photoZoom}) rotate(${photoRotation}deg)`,
                   transformOrigin: 'center',
                   filter: `brightness(${photoBrightness}%)`
                 }} />
@@ -4626,10 +4660,11 @@ const Design = () => {
                   } : {
                     background: `linear-gradient(to bottom, transparent 40%, rgba(${r},${g},${b},0.3) 70%, rgba(${r},${g},${b},0.6) 100%)`
                   };
-                  return <div className="absolute inset-0 pointer-events-none" style={fadeStyle} />;
+                  return <div className="absolute inset-0 pointer-events-none" style={{ ...fadeStyle, zIndex: 5 }} />;
                 })()}
                 </>}
               {showNameOnFront && <div className="absolute px-2 py-1" style={{
+                zIndex: 15,
                 left: `${namePosition.x}%`,
                 top: `${namePosition.y}%`,
                 transform: 'translate(-50%, -50%)',
@@ -4646,28 +4681,43 @@ const Design = () => {
               }}>
                   {deceasedName || 'Name Here'}
                 </div>}
-              {showDatesOnFront && birthDate && deathDate && <div className="absolute" style={{
+              {showDatesOnFront && <div className="absolute" style={{
+                zIndex: 15,
                 left: `${datesPosition.x}%`,
                 top: `${datesPosition.y}%`,
                 transform: 'translate(-50%, -50%)',
-                fontFamily: datesFont,
-                fontSize: `${(typeof frontDatesSize === 'number' ? frontDatesSize : 12) * 3}px`,
-                color: frontDatesColor,
-                fontWeight: datesBold ? 'bold' : 'normal',
-                textShadow: datesTextShadow ? '0 1px 2px rgba(0,0,0,0.5)' : 'none',
-                width: '90%',
+                width: '88%',
+                maxWidth: '88%',
+                overflow: 'visible',
                 textAlign: 'center',
-                overflow: 'visible'
+                minHeight: frontDatesSize === 'auto' ? '60px' : `${Math.max(50, (typeof frontDatesSize === 'number' ? frontDatesSize : 12) * 1.95 * 2.5)}px`,
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                paddingTop: '15px',
+                paddingBottom: '15px'
               }}>
-                  <AutoFitText text={formatDates(birthDate, deathDate, frontDateFormat)} maxWidth="100%" allowWrap={false} style={{
-                  font: 'inherit',
-                  color: 'inherit',
-                  fontWeight: 'inherit'
-                }} />
+                    <AutoFitText 
+                      text={formatDates(birthDate, deathDate, frontDateFormat)} 
+                      maxWidth="100%" 
+                      containerWidth="100%"
+                      containerHeight={frontDatesSize === 'auto' ? '60px' : `${Math.max(50, (typeof frontDatesSize === 'number' ? frontDatesSize : 12) * 1.95 * 2.5)}px`}
+                      allowWrap={false} 
+                      style={{
+                        fontFamily: datesFont,
+                        fontSize: frontDatesSize === 'auto' ? '24px' : `${Math.max(21, (typeof frontDatesSize === 'number' ? frontDatesSize : 12) * 1.95)}px`,
+                        color: frontDatesColor,
+                        fontWeight: datesBold ? 'bold' : 'normal',
+                        textShadow: datesTextShadow ? '0 1px 2px rgba(0,0,0,0.5)' : 'none',
+                        textAlign: 'center',
+                        lineHeight: 1.2
+                      }} 
+                    />
                 </div>}
               
               {/* Additional Text - Print Front */}
               {showAdditionalText && additionalText && <div className="absolute" style={{
+                zIndex: 15,
                 left: `${additionalTextPosition.x}%`,
                 top: `${additionalTextPosition.y}%`,
                 transform: 'translate(-50%, -50%)',
@@ -4684,7 +4734,8 @@ const Design = () => {
                 </div>}
               
               {/* Funeral Home Logo - Print Front */}
-              {funeralHomeLogo && <div className="absolute left-1/2 -translate-x-1/2 z-10" style={{
+              {funeralHomeLogo && <div className="absolute left-1/2 -translate-x-1/2" style={{
+                zIndex: 15,
                 [funeralHomeLogoPosition === 'top' ? 'top' : 'bottom']: frontBorderDesign !== 'none' ? '48px' : '24px'
               }}>
                   <img src={funeralHomeLogo} alt="Funeral Home Logo" className="object-contain" style={{
@@ -4694,7 +4745,8 @@ const Design = () => {
                 </div>}
               
               {/* QR Code - Print Front */}
-              {qrValue && <div className="absolute z-10" style={{
+              {qrValue && showQrCode && <div className="absolute" style={{
+                zIndex: 15,
                 bottom: frontBorderDesign !== 'none' ? '40px' : '20px',
                 right: frontBorderDesign !== 'none' ? '40px' : '20px'
               }}>
@@ -4719,8 +4771,8 @@ const Design = () => {
           <div className={`w-full h-full ${cardType === 'paper' && paperCornerRadius !== 'none' ? 'rounded-lg' : 'rounded-lg'} overflow-hidden relative ${metalBorderColor !== 'none' ? `bg-gradient-to-br ${getMetalBorderGradient(metalBorderColor)}` : ''}`} style={{
             padding: metalBorderColor !== 'none' ? '4px' : '0'
           }}>
-            <div className={`w-full h-full ${metalBorderColor !== 'none' ? 'rounded-lg' : cardType === 'paper' && paperCornerRadius !== 'none' ? 'rounded-lg' : ''} overflow-hidden relative flex flex-col`} style={{
-              backgroundColor: backBgImage ? 'transparent' : '#ffffff'
+            <div className={`w-full h-full ${metalBorderColor !== 'none' ? 'rounded-lg' : cardType === 'paper' && paperCornerRadius !== 'none' ? 'rounded-lg' : ''} overflow-hidden relative flex flex-col ${!backBgImage ? cardType === 'metal' ? `bg-gradient-to-br ${(METAL_BG_OPTIONS.find(m => m.id === backMetalFinish) || METAL_BG_OPTIONS[0]).gradient}` : 'bg-white' : ''}`} style={{
+              backgroundColor: backBgImage ? 'transparent' : undefined
             }}>
               {backBgImage && <>
                   <img src={backBgImage} alt="Background" className="absolute w-full h-full object-cover" style={{
@@ -4730,66 +4782,125 @@ const Design = () => {
                   {/* No dark overlay - relying on text shadows for readability */}
                 </>}
               {/* Back content */}
-              <div className="flex-1 flex flex-col p-6 relative z-10">
-                {showInLovingMemory && <div className="text-center mb-2" style={{
-                  fontFamily: inLovingMemoryFont,
-                  fontSize: `${inLovingMemorySize * 3}px`,
-                  color: inLovingMemoryColor,
-                  fontWeight: inLovingMemoryBold ? 'bold' : 'normal'
+              <div className="relative z-10 h-full flex flex-col items-center text-center" style={{
+                padding: '18px',
+                paddingTop: backBorderDesign !== 'none' ? '54px' : '18px',
+                paddingBottom: backBorderDesign !== 'none' ? '72px' : '18px',
+                boxSizing: 'border-box',
+                overflow: 'hidden'
+              }}>
+                {/* Header section - shrinks to content */}
+                <div className="shrink-0 items-center flex flex-col" style={{ marginTop: '72px', width: '100%' }}>
+                  {funeralHomeLogo && funeralHomeLogoPosition === 'top' && <div className="flex justify-center mb-2">
+                      <img src={funeralHomeLogo} alt="Funeral Home Logo" className="object-contain" style={{
+                      height: `${Math.max(30, funeralHomeLogoSize * 1.05)}px`,
+                      maxWidth: '60%'
+                    }} />
+                    </div>}
+                  {showInLovingMemory && <div className="mb-2 w-full" style={{
+                    maxWidth: '90%',
+                    overflow: 'hidden'
+                  }}>
+                      <div style={{
+                      fontFamily: inLovingMemoryFont,
+                      color: inLovingMemoryColor,
+                      fontSize: `${Math.max(15, inLovingMemorySize * 1.5)}px`,
+                      fontWeight: inLovingMemoryBold ? 'bold' : 'normal',
+                      textAlign: 'center',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis'
+                    }}>
+                        {inLovingMemoryText}
+                      </div>
+                    </div>}
+                  {showNameOnBack && <div className="mb-2 w-full" style={{
+                    maxWidth: '90%',
+                    overflow: 'visible',
+                    minHeight: `${Math.max(50, backNameSize * 1.5 * 2.5)}px`,
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    paddingTop: '10px',
+                    paddingBottom: '10px'
+                  }}>
+                      <div style={{
+                      fontFamily: backNameFont,
+                      color: backNameColor,
+                      fontSize: `${Math.max(18, backNameSize * 1.5)}px`,
+                      fontWeight: backNameBold ? 'bold' : 'normal',
+                      textAlign: 'center',
+                      overflow: 'visible',
+                      textOverflow: 'clip',
+                      whiteSpace: 'pre-line',
+                      lineHeight: 1.3,
+                      width: '100%',
+                      maxHeight: '100%'
+                    }}>
+                        {deceasedName || 'Name Here'}
+                      </div>
+                    </div>}
+                  {showDatesOnBack && <div className="mb-2" style={{
+                    width: '95%',
+                    maxWidth: '95%',
+                    overflow: 'visible',
+                    minHeight: backDatesSize === 'auto' ? '50px' : `${Math.max(40, (typeof backDatesSize === 'number' ? backDatesSize : 9) * 1.5 * 2.5)}px`,
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    paddingTop: '10px',
+                    paddingBottom: '10px'
+                  }}>
+                      <AutoFitSingleLineText 
+                        text={formatDates(birthDate, deathDate, backDateFormat)} 
+                        maxWidth="100%" 
+                        containerWidth="100%"
+                        containerHeight={backDatesSize === 'auto' ? '50px' : `${Math.max(40, (typeof backDatesSize === 'number' ? backDatesSize : 9) * 1.5 * 2.5)}px`}
+                        minScale={0.25}
+                        style={{
+                          fontFamily: datesFont,
+                          color: backDatesColor,
+                          fontSize: backDatesSize === 'auto' ? '15px' : `${Math.max(12, (typeof backDatesSize === 'number' ? backDatesSize : 9) * 1.5)}px`,
+                          textAlign: 'center',
+                          lineHeight: 1.2
+                        }} 
+                      />
+                    </div>}
+                </div>
+                {/* Prayer - takes remaining space, centered */}
+                <div className="flex-1 flex items-center justify-center w-full min-h-0" style={{
+                  paddingLeft: backBorderDesign !== 'none' ? '30px' : '6px',
+                  paddingRight: backBorderDesign !== 'none' ? '30px' : '6px',
+                  paddingTop: backBorderDesign !== 'none' ? '18px' : '0px',
+                  paddingBottom: backBorderDesign !== 'none' ? '18px' : '0px',
+                  boxSizing: 'border-box',
+                  overflow: 'hidden'
                 }}>
-                    {inLovingMemoryText}
-                  </div>}
-                {showNameOnBack && <div className="text-center" style={{
-                  fontFamily: backNameFont,
-                  fontSize: `${backNameSize * 3}px`,
-                  color: backNameColor,
-                  fontWeight: backNameBold ? 'bold' : 'normal',
-                  whiteSpace: 'pre-line',
-                  lineHeight: 1.2
-                }}>
-                    {deceasedName}
-                  </div>}
-                {showDatesOnBack && birthDate && deathDate && <div className="text-center mt-1 w-full" style={{
-                  fontFamily: datesFont,
-                  fontSize: `${(typeof backDatesSize === 'number' ? backDatesSize : 10) * 3}px`,
-                  color: backDatesColor,
-                  textAlign: 'center'
-                }}>
-                    <AutoFitSingleLineText text={formatDates(birthDate, deathDate, backDateFormat)} maxWidth="100%" style={{
-                    fontFamily: datesFont,
-                    fontSize: `${(typeof backDatesSize === 'number' ? backDatesSize : 10) * 3}px`,
-                    color: backDatesColor,
-                    textAlign: 'center'
-                  }} />
-                  </div>}
-                <div className="flex-1 flex items-center justify-center mt-4 text-center" style={{
-                  fontFamily: 'Cormorant Garamond',
-                  fontSize: backDatesSize === 'auto' ? '27px' : `${(typeof backDatesSize === 'number' ? backDatesSize : 9) * 3}px`,
-                  color: prayerColor,
-                  fontWeight: prayerBold ? 'bold' : 'normal',
-                  fontStyle: prayerItalic ? 'italic' : 'normal',
-                  lineHeight: 1.5,
-                  whiteSpace: 'pre-line',
-                  wordBreak: 'break-word',
-                  overflowWrap: 'break-word'
-                }}>
-                  <span style={{
-                    transform: `translate(${prayerPosition.x}%, ${prayerPosition.y}%)`
+                  <div className="text-center w-full" style={{
+                    fontSize: `${Math.max(15, (prayerTextSize === 'auto' ? autoPrayerFontSize : prayerTextSize) * 1.5)}px`,
+                    color: prayerColor,
+                    fontWeight: prayerBold ? 'bold' : 'normal',
+                    fontStyle: prayerItalic ? 'italic' : 'normal',
+                    lineHeight: 1.25,
+                    whiteSpace: 'pre-wrap',
+                    overflowWrap: 'anywhere',
+                    wordBreak: 'break-word'
                   }}>
                     {backText}
-                  </span>
+                  </div>
                 </div>
-                {qrValue && <div className="flex justify-center mt-4" style={{
-                // Push up from bottom safe area and keep clear of borders/overlays.
-                marginBottom: funeralHomeLogo && funeralHomeLogoPosition === 'bottom' ? '24px' : '12px'
-              }}>
-                    <QrCodeBadge value={qrValue} size={orientation === 'portrait' ? 140 : 120} level="M" paddingClassName="p-2" />
-                  </div>}
-                {funeralHomeLogo && funeralHomeLogoPosition === 'bottom' && <div className="flex justify-center mt-4">
-                    <img src={funeralHomeLogo} alt="Logo" style={{
-                    height: `${funeralHomeLogoSize * 2}px`
-                  }} />
-                  </div>}
+                {/* Footer - QR code and/or Logo */}
+                <div className="shrink-0 flex flex-col items-center" style={{
+                  marginBottom: backBorderDesign !== 'none' ? '12px' : '0px',
+                  marginTop: '12px'
+                }}>
+                  {qrValue && showQrCode && <QrCodeBadge value={qrValue} size={orientation === 'portrait' ? 108 : 96} level="M" paddingClassName="p-2" />}
+                  {funeralHomeLogo && funeralHomeLogoPosition === 'bottom' && <div className="flex justify-center mt-2">
+                      <img src={funeralHomeLogo} alt="Funeral Home Logo" className="object-contain" style={{
+                      height: `${Math.max(30, funeralHomeLogoSize * 1.05)}px`,
+                      maxWidth: '60%'
+                    }} />
+                    </div>}
+                </div>
               </div>
               
               {/* Decorative Border - Print Back */}
