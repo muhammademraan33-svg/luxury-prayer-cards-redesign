@@ -1150,9 +1150,6 @@ const Design = () => {
   const [shippingPhone, setShippingPhone] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Refs for print capture
-  const frontPrintRef = useRef<HTMLDivElement>(null);
-  const backPrintRef = useRef<HTMLDivElement>(null);
   const textDragStartRef = useRef<{
     x: number;
     y: number;
@@ -1818,56 +1815,171 @@ const Design = () => {
   const effectiveThickness: CardThickness = cardType === 'metal' && (upgradeThickness || currentPackage.thickness === 'premium') ? 'premium' : 'standard';
   const effectiveShipping = 'express'; // 48-72 hours delivery
 
-  // Generate print preview images at 300 DPI quality
-  // Card dimensions at 300 DPI:
-  // - Standard paper (2.625x4.375"): 787x1312px
-  // - Large paper (3.125x4.875"): 937x1462px  
-  // - Metal (2x3.5"): 600x1050px
-  // With 0.125" bleed on each side: add 75px (0.125" * 300 DPI * 2)
+  // Generate print preview by capturing the actual visible design preview cards
+  // This captures exactly what the user sees in the design preview
+  // Works on both desktop and mobile by finding the visible card element
   const handleGeneratePrintPreview = async () => {
     setGeneratingPreview(true);
     try {
-      let frontImage = '';
-      let backImage = '';
+      // Helper function to find the visible card preview element
+      const findVisibleCard = (): HTMLElement | null => {
+        const allCards = document.querySelectorAll('[data-card-preview]') as NodeListOf<HTMLElement>;
+        
+        for (const card of allCards) {
+          // Check if element is actually visible (not hidden by CSS)
+          const rect = card.getBoundingClientRect();
+          const style = window.getComputedStyle(card);
+          
+          // Element is visible if:
+          // 1. It has dimensions (width and height > 0)
+          // 2. It's not display: none
+          // 3. It's not visibility: hidden
+          // 4. It's not opacity: 0
+          if (
+            rect.width > 0 && 
+            rect.height > 0 && 
+            style.display !== 'none' && 
+            style.visibility !== 'hidden' && 
+            parseFloat(style.opacity) > 0
+          ) {
+            return card;
+          }
+        }
+        return null;
+      };
 
-      // Ensure refs are available
-      if (!frontPrintRef.current || !backPrintRef.current) {
-        toast.error('Preview elements not ready. Please try again.');
-        return;
-      }
-
-      // Use scale 4 for higher resolution (approximating 300 DPI)
+      // Store original card side to restore later
+      const originalCardSide = cardSide;
+      
+      // Capture options for high-quality print-ready images
+      // Enhanced settings to capture all text including overflow content
       const captureOptions = {
-        scale: 4,
+        scale: 4, // High resolution for print quality (300 DPI equivalent)
         useCORS: true,
         backgroundColor: '#ffffff',
         logging: false,
-        allowTaint: true, // Changed to true to allow cross-origin images
-        removeContainer: false, // Keep container for better rendering
-        windowWidth: frontPrintRef.current.scrollWidth,
-        windowHeight: frontPrintRef.current.scrollHeight,
+        allowTaint: true,
+        removeContainer: false,
+        // Temporarily adjust styles during capture to ensure all text is visible
+        onclone: (clonedDoc: Document) => {
+          try {
+            // Fix front side text elements
+            const frontNameElements = clonedDoc.querySelectorAll('[data-front-name]');
+            frontNameElements.forEach((el: Element) => {
+              const htmlEl = el as HTMLElement;
+              htmlEl.style.overflow = 'visible';
+              const textEl = htmlEl.querySelector('[data-front-name-text]') as HTMLElement;
+              if (textEl) {
+                textEl.style.overflow = 'visible';
+                textEl.style.textOverflow = 'clip';
+              }
+              const parent = htmlEl.parentElement;
+              if (parent) {
+                parent.style.overflow = 'visible';
+              }
+            });
+            
+            const frontDatesElements = clonedDoc.querySelectorAll('[data-front-dates]');
+            frontDatesElements.forEach((el: Element) => {
+              const htmlEl = el as HTMLElement;
+              htmlEl.style.overflow = 'visible';
+              const textEl = htmlEl.querySelector('[data-front-dates-text]') as HTMLElement;
+              if (textEl) {
+                textEl.style.overflow = 'visible';
+              }
+              const parent = htmlEl.parentElement;
+              if (parent) {
+                parent.style.overflow = 'visible';
+              }
+            });
+            
+            const frontAdditionalElements = clonedDoc.querySelectorAll('[data-front-additional]');
+            frontAdditionalElements.forEach((el: Element) => {
+              const htmlEl = el as HTMLElement;
+              htmlEl.style.overflow = 'visible';
+              const textEl = htmlEl.querySelector('[data-front-additional-text]') as HTMLElement;
+              if (textEl) {
+                textEl.style.overflow = 'visible';
+                textEl.style.textOverflow = 'clip';
+              }
+              const parent = htmlEl.parentElement;
+              if (parent) {
+                parent.style.overflow = 'visible';
+              }
+            });
+            
+            // Fix back side "In Loving Memory" text elements
+            const inLovingMemoryElements = clonedDoc.querySelectorAll('[data-in-loving-memory]');
+            inLovingMemoryElements.forEach((el: Element) => {
+              const htmlEl = el as HTMLElement;
+              htmlEl.style.overflow = 'visible';
+              htmlEl.style.textOverflow = 'clip';
+              htmlEl.style.whiteSpace = 'nowrap';
+              const parent = htmlEl.parentElement;
+              if (parent) {
+                parent.style.overflow = 'visible';
+              }
+            });
+            
+            // Also ensure card containers allow overflow during capture
+            const cardPreviews = clonedDoc.querySelectorAll('[data-card-preview]');
+            cardPreviews.forEach((el: Element) => {
+              const htmlEl = el as HTMLElement;
+              htmlEl.style.overflow = 'visible';
+            });
+          } catch (e) {
+            // Silently handle any errors during clone manipulation
+            console.warn('Error in onclone:', e);
+          }
+        },
       };
 
-      // Capture front card
-      try {
-        const frontCanvas = await html2canvas(frontPrintRef.current, captureOptions);
-        frontImage = frontCanvas.toDataURL('image/png', 1.0); // Use PNG for maximum quality
-      } catch (frontError) {
-        console.error('Error capturing front card:', frontError);
-        toast.error('Failed to capture front card preview');
+      let frontImage = '';
+      let backImage = '';
+
+      // Capture front card - switch to front if needed
+      if (cardSide !== 'front') {
+        setCardSide('front');
+        await new Promise(resolve => setTimeout(resolve, 200)); // Wait for DOM update and rendering
+      }
+      
+      const frontElement = findVisibleCard();
+      if (frontElement) {
+        try {
+          const frontCanvas = await html2canvas(frontElement, captureOptions);
+          frontImage = frontCanvas.toDataURL('image/png', 1.0);
+        } catch (frontError) {
+          console.error('Error capturing front card:', frontError);
+          toast.error('Failed to capture front card preview');
+        }
+      } else {
+        toast.error('Front card preview not visible. Please ensure the card is displayed.');
       }
 
-      // Capture back card
-      try {
-        const backCanvas = await html2canvas(backPrintRef.current, captureOptions);
-        backImage = backCanvas.toDataURL('image/png', 1.0);
-      } catch (backError) {
-        console.error('Error capturing back card:', backError);
-        toast.error('Failed to capture back card preview');
+      // Capture back card - switch to back
+      setCardSide('back');
+      await new Promise(resolve => setTimeout(resolve, 200)); // Wait for DOM update and rendering
+      
+      const backElement = findVisibleCard();
+      if (backElement) {
+        try {
+          const backCanvas = await html2canvas(backElement, captureOptions);
+          backImage = backCanvas.toDataURL('image/png', 1.0);
+        } catch (backError) {
+          console.error('Error capturing back card:', backError);
+          toast.error('Failed to capture back card preview');
+        }
+      } else {
+        toast.error('Back card preview not visible. Please ensure the card is displayed.');
+      }
+
+      // Restore original card side
+      if (originalCardSide !== 'back') {
+        setCardSide(originalCardSide);
       }
 
       if (!frontImage && !backImage) {
-        toast.error('Failed to generate preview. Please ensure images are loaded.');
+        toast.error('Failed to generate preview. Please ensure images are loaded and cards are visible.');
         return;
       }
 
@@ -1924,20 +2036,128 @@ const Design = () => {
         useCORS: true,
         backgroundColor: '#ffffff',
         logging: false,
-        allowTaint: false,
-        removeContainer: true,
+        allowTaint: true,
+        removeContainer: false,
+        // Temporarily adjust styles during capture to ensure all text is visible
+        onclone: (clonedDoc: Document) => {
+          try {
+            // Fix front side text elements
+            const frontNameElements = clonedDoc.querySelectorAll('[data-front-name]');
+            frontNameElements.forEach((el: Element) => {
+              const htmlEl = el as HTMLElement;
+              htmlEl.style.overflow = 'visible';
+              const textEl = htmlEl.querySelector('[data-front-name-text]') as HTMLElement;
+              if (textEl) {
+                textEl.style.overflow = 'visible';
+                textEl.style.textOverflow = 'clip';
+              }
+              const parent = htmlEl.parentElement;
+              if (parent) {
+                parent.style.overflow = 'visible';
+              }
+            });
+            
+            const frontDatesElements = clonedDoc.querySelectorAll('[data-front-dates]');
+            frontDatesElements.forEach((el: Element) => {
+              const htmlEl = el as HTMLElement;
+              htmlEl.style.overflow = 'visible';
+              const textEl = htmlEl.querySelector('[data-front-dates-text]') as HTMLElement;
+              if (textEl) {
+                textEl.style.overflow = 'visible';
+              }
+              const parent = htmlEl.parentElement;
+              if (parent) {
+                parent.style.overflow = 'visible';
+              }
+            });
+            
+            const frontAdditionalElements = clonedDoc.querySelectorAll('[data-front-additional]');
+            frontAdditionalElements.forEach((el: Element) => {
+              const htmlEl = el as HTMLElement;
+              htmlEl.style.overflow = 'visible';
+              const textEl = htmlEl.querySelector('[data-front-additional-text]') as HTMLElement;
+              if (textEl) {
+                textEl.style.overflow = 'visible';
+                textEl.style.textOverflow = 'clip';
+              }
+              const parent = htmlEl.parentElement;
+              if (parent) {
+                parent.style.overflow = 'visible';
+              }
+            });
+            
+            // Fix back side "In Loving Memory" text elements
+            const inLovingMemoryElements = clonedDoc.querySelectorAll('[data-in-loving-memory]');
+            inLovingMemoryElements.forEach((el: Element) => {
+              const htmlEl = el as HTMLElement;
+              htmlEl.style.overflow = 'visible';
+              htmlEl.style.textOverflow = 'clip';
+              htmlEl.style.whiteSpace = 'nowrap';
+              const parent = htmlEl.parentElement;
+              if (parent) {
+                parent.style.overflow = 'visible';
+              }
+            });
+            
+            // Also ensure card containers allow overflow during capture
+            const cardPreviews = clonedDoc.querySelectorAll('[data-card-preview]');
+            cardPreviews.forEach((el: Element) => {
+              const htmlEl = el as HTMLElement;
+              htmlEl.style.overflow = 'visible';
+            });
+          } catch (e) {
+            // Silently handle any errors during clone manipulation
+            console.warn('Error in onclone:', e);
+          }
+        },
       };
 
-      // Capture front card
-      if (frontPrintRef.current) {
-        const frontCanvas = await html2canvas(frontPrintRef.current, printCaptureOptions);
-        frontCardImage = frontCanvas.toDataURL('image/png', 1.0); // PNG for maximum quality
-      }
+      // Helper function to find the visible card preview element
+      const findVisibleCard = (): HTMLElement | null => {
+        const allCards = document.querySelectorAll('[data-card-preview]') as NodeListOf<HTMLElement>;
+        
+        for (const card of allCards) {
+          const rect = card.getBoundingClientRect();
+          const style = window.getComputedStyle(card);
+          
+          if (
+            rect.width > 0 && 
+            rect.height > 0 && 
+            style.display !== 'none' && 
+            style.visibility !== 'hidden' && 
+            parseFloat(style.opacity) > 0
+          ) {
+            return card;
+          }
+        }
+        return null;
+      };
 
+      const originalCardSide = cardSide;
+      
+      // Capture front card
+      setCardSide('front');
+      await new Promise(resolve => setTimeout(resolve, 200));
+      
+      const frontElement = findVisibleCard();
+      if (frontElement) {
+        const frontCanvas = await html2canvas(frontElement, printCaptureOptions);
+        frontCardImage = frontCanvas.toDataURL('image/png', 1.0);
+      }
+      
       // Capture back card
-      if (backPrintRef.current) {
-        const backCanvas = await html2canvas(backPrintRef.current, printCaptureOptions);
+      setCardSide('back');
+      await new Promise(resolve => setTimeout(resolve, 200));
+      
+      const backElement = findVisibleCard();
+      if (backElement) {
+        const backCanvas = await html2canvas(backElement, printCaptureOptions);
         backCardImage = backCanvas.toDataURL('image/png', 1.0);
+      }
+      
+      // Restore original card side
+      if (originalCardSide !== 'back') {
+        setCardSide(originalCardSide);
       }
 
       // Send order to edge function
@@ -2324,18 +2544,20 @@ const Design = () => {
                             {/* Text Overlay - Name - FIXED BOUNDING CONTAINER */}
                             {showNameOnFront && <div 
                           className="absolute touch-none select-none rounded"
+                          data-front-name
                           style={{
                             left: `${namePosition.x}%`,
                             top: `${namePosition.y}%`,
                             transform: 'translate(-50%, -50%)',
-                            // FIXED container width - never changes based on content
-                            width: '90%',
-                            maxWidth: '90%',
-                            overflow: 'hidden', // CRITICAL: Never allow overflow
+                            width: '95%',
+                            maxWidth: '95%',
+                            overflow: 'visible',
+                            whiteSpace: 'nowrap',
                             cursor: draggingText === 'name' || resizingText === 'name' ? 'grabbing' : 'grab',
                             boxShadow: draggingText === 'name' || resizingText === 'name' ? '0 0 0 2px #d97706' : 'none',
                             zIndex: 15,
-                            pointerEvents: 'auto'
+                            pointerEvents: 'auto',
+                            padding: '2px 4px'
                           }} 
                           onPointerDown={e => handleTextPointerDown(e, 'name')} 
                           onPointerMove={handleTextPointerMove} 
@@ -2347,10 +2569,10 @@ const Design = () => {
                               display: 'flex',
                               justifyContent: 'center',
                               alignItems: 'center',
-                              width: '100%',
-                              overflow: 'hidden',
+                              width: 'max-content',
+                              overflow: 'visible',
                             }}>
-                                  <span style={{
+                                  <span data-front-name-text style={{
                                 fontFamily: nameFont,
                                 fontSize: `${Math.max(10, nameSize * 0.7)}px`,
                                 color: nameColor,
@@ -2360,10 +2582,8 @@ const Design = () => {
                                 textAlign: 'center',
                                 display: 'block',
                                 lineHeight: 1.2,
-                                // Scale down if text overflows, container stays fixed
-                                maxWidth: '100%',
-                                overflow: 'hidden',
-                                textOverflow: 'ellipsis',
+                                overflow: 'visible',
+                                textOverflow: 'clip',
                               }}>
                                     {deceasedName || 'Name Here'}
                                   </span>
@@ -2373,13 +2593,13 @@ const Design = () => {
                             {/* Text Overlay - Dates - FIXED BOUNDING CONTAINER */}
                             {showDatesOnFront && <div 
                           className="absolute touch-none select-none rounded"
+                          data-front-dates
                           style={{
                             left: `${datesPosition.x}%`,
                             top: `${datesPosition.y}%`,
                             transform: 'translate(-50%, -50%)',
-                            // FIXED container width - never changes based on content
-                            width: '88%',
-                            maxWidth: '88%',
+                            width: '95%',
+                            maxWidth: '95%',
                             overflow: 'visible',
                             minHeight: frontDatesSize === 'auto' ? '20px' : `${Math.max(16, (typeof frontDatesSize === 'number' ? frontDatesSize : 12) * 0.65 * 2.5)}px`,
                             display: 'flex',
@@ -2390,7 +2610,8 @@ const Design = () => {
                             cursor: draggingText === 'dates' || resizingText === 'dates' ? 'grabbing' : 'grab',
                             boxShadow: draggingText === 'dates' || resizingText === 'dates' ? '0 0 0 2px #d97706' : 'none',
                             zIndex: 15,
-                            pointerEvents: 'auto'
+                            pointerEvents: 'auto',
+                            boxSizing: 'border-box'
                           }} 
                           onPointerDown={e => handleTextPointerDown(e, 'dates')} 
                           onPointerMove={handleTextPointerMove} 
@@ -2398,10 +2619,10 @@ const Design = () => {
                           onPointerCancel={handleTextPointerUp} 
                           onWheel={e => handleTextWheel(e, 'dates')}
                         >
-                                <div style={{
+                                <div data-front-dates-text style={{
                                   width: '100%',
                                   maxWidth: '100%',
-                                  overflow: 'hidden'
+                                  overflow: 'visible'
                                 }}>
                                   <AutoFitText 
                                     text={formatDates(birthDate, deathDate, frontDateFormat)} 
@@ -2425,18 +2646,19 @@ const Design = () => {
                             {/* Text Overlay - Additional - FIXED BOUNDING CONTAINER */}
                             {showAdditionalText && <div 
                           className="absolute touch-none select-none rounded"
+                          data-front-additional
                           style={{
                             left: `${additionalTextPosition.x}%`,
                             top: `${additionalTextPosition.y}%`,
                             transform: 'translate(-50%, -50%)',
-                            // FIXED container - never changes based on content
-                            width: '85%',
-                            maxWidth: '85%',
-                            overflow: 'hidden', // CRITICAL: Never allow overflow
+                            width: '90%',
+                            maxWidth: '90%',
+                            overflow: 'visible',
                             cursor: draggingText === 'additional' || resizingText === 'additional' ? 'grabbing' : 'grab',
                             boxShadow: draggingText === 'additional' || resizingText === 'additional' ? '0 0 0 2px #d97706' : 'none',
                             zIndex: 15,
-                            pointerEvents: 'auto'
+                            pointerEvents: 'auto',
+                            padding: '2px 4px'
                           }} 
                           onPointerDown={e => handleTextPointerDown(e, 'additional')} 
                           onPointerMove={handleTextPointerMove} 
@@ -2448,10 +2670,10 @@ const Design = () => {
                               display: 'flex',
                               justifyContent: 'center',
                               alignItems: 'center',
-                              width: '100%',
-                              overflow: 'hidden',
+                              width: 'max-content',
+                              overflow: 'visible',
                             }}>
-                                  <span style={{
+                                  <span data-front-additional-text style={{
                                 fontFamily: additionalTextFont,
                                 fontSize: `${Math.max(10, additionalTextSize * 0.7)}px`,
                                 color: additionalTextColor,
@@ -2462,7 +2684,8 @@ const Design = () => {
                                 lineHeight: 1.2,
                                 maxWidth: '100%',
                                 textAlign: 'center',
-                                overflow: 'hidden',
+                                overflow: 'visible',
+                                textOverflow: 'clip',
                               }}>
                                     {additionalText || 'Your text here'}
                                   </span>
@@ -2530,12 +2753,15 @@ const Design = () => {
                                   left: `${50 + inLovingMemoryPosition.x}%`,
                                   top: `${50 + inLovingMemoryPosition.y}%`,
                                   transform: 'translate(-50%, -50%)',
-                                  maxWidth: '90%',
-                                  overflow: 'hidden',
+                                  maxWidth: '95%',
+                                  width: 'max-content',
+                                  overflow: 'visible',
+                                  whiteSpace: 'nowrap',
                                   cursor: draggingText === 'inLovingMemory' || resizingText === 'inLovingMemory' ? 'grabbing' : 'grab',
                                   boxShadow: draggingText === 'inLovingMemory' || resizingText === 'inLovingMemory' ? '0 0 0 2px #d97706' : 'none',
                                   zIndex: 15,
-                                  pointerEvents: 'auto'
+                                  pointerEvents: 'auto',
+                                  padding: '2px 4px'
                                 }}
                                 onPointerDown={e => handleTextPointerDown(e, 'inLovingMemory')} 
                                 onPointerMove={handleTextPointerMove} 
@@ -2543,14 +2769,14 @@ const Design = () => {
                                 onPointerCancel={handleTextPointerUp} 
                                 onWheel={e => handleTextWheel(e, 'inLovingMemory')}
                               >
-                                        <div style={{
+                                        <div data-in-loving-memory style={{
                                     fontFamily: inLovingMemoryFont,
                                     color: inLovingMemoryColor,
                                     fontSize: `${Math.max(5, inLovingMemorySize * 0.5)}px`,
                                     fontWeight: inLovingMemoryBold ? 'bold' : 'normal',
                                     textAlign: 'center',
-                                    overflow: 'hidden',
-                                    textOverflow: 'ellipsis',
+                                    overflow: 'visible',
+                                    whiteSpace: 'nowrap',
                                   }}>
                                           {inLovingMemoryText}
                                         </div>
@@ -2886,7 +3112,7 @@ const Design = () => {
                                 </div>}
                               
                               {/* Text Overlay - Name */}
-                              {showNameOnFront && <div className="absolute touch-none select-none px-2 py-1 rounded" style={{
+                              {showNameOnFront && <div data-front-name className="absolute touch-none select-none px-2 py-1 rounded" style={{
                               left: `${namePosition.x}%`,
                               top: `${namePosition.y}%`,
                               transform: 'translate(-50%, -50%)',
@@ -2898,16 +3124,19 @@ const Design = () => {
                               width: 'max-content',
                               textAlign: 'center',
                               zIndex: 15,
-                              pointerEvents: 'auto'
+                              pointerEvents: 'auto',
+                              overflow: 'visible'
                             }} onPointerDown={e => handleTextPointerDown(e, 'name')} onPointerMove={handleTextPointerMove} onPointerUp={handleTextPointerUp} onPointerCancel={handleTextPointerUp} onWheel={e => handleTextWheel(e, 'name')}>
-                                  <span style={{
+                                  <span data-front-name-text style={{
                                 fontSize: `${Math.max(10, nameSize * 0.7)}px`,
                                 color: nameColor,
                                 fontWeight: nameBold ? 'bold' : 'normal',
                                 whiteSpace: 'pre-line',
                                 textAlign: 'center',
                                 display: 'block',
-                                lineHeight: 1.2
+                                lineHeight: 1.2,
+                                overflow: 'visible',
+                                textOverflow: 'clip'
                               }}>
                                     {deceasedName || 'Name Here'}
                                   </span>
@@ -2915,7 +3144,7 @@ const Design = () => {
                               
                               {/* Text Overlay - Dates */}
                               {showDatesOnFront && (() => {
-                              return <div className="absolute touch-none select-none px-2 rounded" style={{
+                              return <div data-front-dates className="absolute touch-none select-none px-2 rounded" style={{
                                 left: `${datesPosition.x}%`,
                                 top: `${datesPosition.y}%`,
                                 transform: 'translate(-50%, -50%)',
@@ -2924,22 +3153,25 @@ const Design = () => {
                                 textShadow: datesTextShadow ? '0 2px 4px rgba(0,0,0,0.5)' : 'none',
                                 boxShadow: draggingText === 'dates' || resizingText === 'dates' ? '0 0 0 2px #d97706' : 'none',
                                 textAlign: 'center',
-                                width: '90%',
+                                width: '95%',
+                                maxWidth: '95%',
                                 overflow: 'visible',
                                 zIndex: 15,
                                 pointerEvents: 'auto'
                               }} onPointerDown={e => handleTextPointerDown(e, 'dates')} onPointerMove={handleTextPointerMove} onPointerUp={handleTextPointerUp} onPointerCancel={handleTextPointerUp} onWheel={e => handleTextWheel(e, 'dates')}>
-                                    <AutoFitText text={formatDates(birthDate, deathDate, frontDateFormat)} maxWidth="100%" allowWrap={false} style={{
-                                  fontSize: frontDatesSize === 'auto' ? '8px' : `${Math.max(7, (typeof frontDatesSize === 'number' ? frontDatesSize : 12) * 0.65)}px`,
-                                  color: frontDatesColor,
-                                  fontWeight: datesBold ? 'bold' : 'normal',
-                                  textAlign: 'center'
-                                }} />
+                                    <div data-front-dates-text>
+                                      <AutoFitText text={formatDates(birthDate, deathDate, frontDateFormat)} maxWidth="100%" allowWrap={false} style={{
+                                    fontSize: frontDatesSize === 'auto' ? '8px' : `${Math.max(7, (typeof frontDatesSize === 'number' ? frontDatesSize : 12) * 0.65)}px`,
+                                    color: frontDatesColor,
+                                    fontWeight: datesBold ? 'bold' : 'normal',
+                                    textAlign: 'center'
+                                  }} />
+                                    </div>
                                   </div>;
                             })()}
                               
                               {/* Text Overlay - Additional */}
-                              {showAdditionalText && <div className="absolute touch-none select-none px-2 py-1 rounded" style={{
+                              {showAdditionalText && <div data-front-additional className="absolute touch-none select-none px-2 py-1 rounded" style={{
                               left: `${additionalTextPosition.x}%`,
                               top: `${additionalTextPosition.y}%`,
                               transform: 'translate(-50%, -50%)',
@@ -2947,17 +3179,20 @@ const Design = () => {
                               cursor: draggingText === 'additional' || resizingText === 'additional' ? 'grabbing' : 'grab',
                               textShadow: additionalTextShadow ? '0 2px 4px rgba(0,0,0,0.5)' : 'none',
                               boxShadow: draggingText === 'additional' || resizingText === 'additional' ? '0 0 0 2px #d97706' : 'none',
-                              maxWidth: '80%',
+                              maxWidth: '90%',
                               zIndex: 15,
-                              pointerEvents: 'auto'
+                              pointerEvents: 'auto',
+                              overflow: 'visible'
                             }} onPointerDown={e => handleTextPointerDown(e, 'additional')} onPointerMove={handleTextPointerMove} onPointerUp={handleTextPointerUp} onPointerCancel={handleTextPointerUp} onWheel={e => handleTextWheel(e, 'additional')}>
-                                  <span style={{
+                                  <span data-front-additional-text style={{
                                 fontSize: `${Math.max(10, additionalTextSize * 0.7)}px`,
                                 color: additionalTextColor,
                                 whiteSpace: 'pre-wrap',
                                 textAlign: 'center',
                                 display: 'block',
-                                fontWeight: additionalTextBold ? 'bold' : 'normal'
+                                fontWeight: additionalTextBold ? 'bold' : 'normal',
+                                overflow: 'visible',
+                                textOverflow: 'clip'
                               }}>
                                     {additionalText || 'Your text here'}
                                   </span>
@@ -3428,21 +3663,28 @@ const Design = () => {
                                       }} onLoad={() => setPrayerLayoutNonce(n => n + 1)} />
                                         </div>}
                                   
-                                  {showInLovingMemory && <div className="touch-none select-none px-1 rounded" style={{
+                                  {showInLovingMemory && <div className="touch-none select-none rounded" style={{
                                       cursor: draggingText === 'inLovingMemory' || resizingText === 'inLovingMemory' ? 'grabbing' : 'grab',
                                       boxShadow: draggingText === 'inLovingMemory' || resizingText === 'inLovingMemory' ? '0 0 0 2px #d97706' : 'none',
                                       zIndex: 15,
                                       pointerEvents: 'auto',
-                                      position: 'relative'
+                                      position: 'relative',
+                                      overflow: 'visible',
+                                      whiteSpace: 'nowrap',
+                                      padding: '2px 4px',
+                                      width: 'max-content',
+                                      maxWidth: '95%'
                                     }} onPointerDown={e => handleTextPointerDown(e, 'inLovingMemory')} onPointerMove={handleTextPointerMove} onPointerUp={handleTextPointerUp} onPointerCancel={handleTextPointerUp} onWheel={e => handleTextWheel(e, 'inLovingMemory')}>
-                                      <p className="uppercase tracking-[0.12em]" style={{
+                                      <p data-in-loving-memory className="uppercase tracking-[0.12em]" style={{
                                         fontSize: `${Math.max(5, inLovingMemorySize * 0.5)}px`,
                                         color: inLovingMemoryColor,
                                         fontWeight: inLovingMemoryBold ? 'bold' : 'normal',
                                         fontFamily: inLovingMemoryFont,
                                         textShadow: '1px 1px 3px rgba(0,0,0,0.4)',
                                         marginBottom: '1px',
-                                        transform: `translate(${inLovingMemoryPosition.x}%, ${inLovingMemoryPosition.y}%)`
+                                        transform: `translate(${inLovingMemoryPosition.x}%, ${inLovingMemoryPosition.y}%)`,
+                                        overflow: 'visible',
+                                        whiteSpace: 'nowrap'
                                       }}>
                                         {inLovingMemoryText}
                                       </p>
@@ -4741,288 +4983,6 @@ const Design = () => {
         </Card>
       </main>
 
-      {/* Hidden print-ready card captures (with 1.25" bleed at 300 DPI = ~375px padding) */}
-      <div className="fixed -left-[9999px] -top-[9999px] pointer-events-none">
-        {/* Front card print version */}
-        <div ref={frontPrintRef} className="relative" style={{
-          width: orientation === 'landscape' ? '1275px' : '825px',
-          // 3.5" or 2.25" + bleed at 300 DPI
-          height: orientation === 'landscape' ? '900px' : '1275px',
-          padding: '112px',
-          // ~0.375" bleed (1.25" total minus card edge)
-          backgroundColor: '#f5f5f5'
-        }}>
-          <div className={`w-full h-full ${cardType === 'paper' && paperCornerRadius !== 'none' ? 'rounded-lg' : 'rounded-lg'} overflow-hidden relative ${metalBorderColor !== 'none' ? `bg-gradient-to-br ${getMetalBorderGradient(metalBorderColor)}` : ''}`} style={{
-            padding: metalBorderColor !== 'none' ? '4px' : '0'
-          }}>
-            <div className={`w-full h-full ${metalBorderColor !== 'none' ? 'rounded-lg' : cardType === 'paper' && paperCornerRadius !== 'none' ? 'rounded-lg' : ''} overflow-hidden bg-slate-700 relative`}>
-              {deceasedPhoto && <>
-                  <img src={deceasedPhoto} alt="Memorial" className="w-full h-full object-cover" style={{
-                  transform: `translate(${photoPanX}px, ${photoPanY}px) scale(${photoZoom}) rotate(${photoRotation}deg)`,
-                  transformOrigin: 'center',
-                  filter: `brightness(${photoBrightness}%)`
-                }} />
-                  {photoFade && (() => {
-                  const hex = fadeColor;
-                  const r = parseInt(hex.slice(1, 3), 16);
-                  const g = parseInt(hex.slice(3, 5), 16);
-                  const b = parseInt(hex.slice(5, 7), 16);
-                  const fadeStyle = fadeShape === 'circle' ? {
-                    background: `radial-gradient(ellipse at center, transparent 30%, rgba(${r},${g},${b},0.3) 60%, rgba(${r},${g},${b},0.7) 100%)`
-                  } : {
-                    background: `linear-gradient(to bottom, transparent 40%, rgba(${r},${g},${b},0.3) 70%, rgba(${r},${g},${b},0.6) 100%)`
-                  };
-                  return <div className="absolute inset-0 pointer-events-none" style={{ ...fadeStyle, zIndex: 5 }} />;
-                })()}
-                </>}
-              {showNameOnFront && <div className="absolute px-2 py-1" style={{
-                zIndex: 15,
-                left: `${namePosition.x}%`,
-                top: `${namePosition.y}%`,
-                transform: 'translate(-50%, -50%)',
-                fontFamily: nameFont,
-                fontSize: `${nameSize * 3}px`,
-                color: nameColor,
-                fontWeight: nameBold ? 'bold' : 'normal',
-                textShadow: nameTextShadow ? '0 2px 4px rgba(0,0,0,0.5)' : 'none',
-                whiteSpace: 'pre-line',
-                textAlign: 'center',
-                maxWidth: '95%',
-                width: 'max-content',
-                lineHeight: 1.2
-              }}>
-                  {deceasedName || 'Name Here'}
-                </div>}
-              {showDatesOnFront && <div className="absolute" style={{
-                zIndex: 15,
-                left: `${datesPosition.x}%`,
-                top: `${datesPosition.y}%`,
-                transform: 'translate(-50%, -50%)',
-                width: '88%',
-                maxWidth: '88%',
-                overflow: 'visible',
-                textAlign: 'center',
-                minHeight: frontDatesSize === 'auto' ? '60px' : `${Math.max(50, (typeof frontDatesSize === 'number' ? frontDatesSize : 12) * 1.95 * 2.5)}px`,
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                paddingTop: '15px',
-                paddingBottom: '15px'
-              }}>
-                    <AutoFitText 
-                      text={formatDates(birthDate, deathDate, frontDateFormat)} 
-                      maxWidth="100%" 
-                      containerWidth="100%"
-                      containerHeight={frontDatesSize === 'auto' ? '60px' : `${Math.max(50, (typeof frontDatesSize === 'number' ? frontDatesSize : 12) * 1.95 * 2.5)}px`}
-                      allowWrap={false} 
-                      style={{
-                        fontFamily: datesFont,
-                        fontSize: frontDatesSize === 'auto' ? '24px' : `${Math.max(21, (typeof frontDatesSize === 'number' ? frontDatesSize : 12) * 1.95)}px`,
-                        color: frontDatesColor,
-                        fontWeight: datesBold ? 'bold' : 'normal',
-                        textShadow: datesTextShadow ? '0 1px 2px rgba(0,0,0,0.5)' : 'none',
-                        textAlign: 'center',
-                        lineHeight: 1.2
-                      }} 
-                    />
-                </div>}
-              
-              {/* Additional Text - Print Front */}
-              {showAdditionalText && additionalText && <div className="absolute" style={{
-                zIndex: 15,
-                left: `${additionalTextPosition.x}%`,
-                top: `${additionalTextPosition.y}%`,
-                transform: 'translate(-50%, -50%)',
-                fontFamily: additionalTextFont,
-                fontSize: `${additionalTextSize * 3}px`,
-                color: additionalTextColor,
-                fontWeight: additionalTextBold ? 'bold' : 'normal',
-                textShadow: additionalTextShadow ? '0 1px 2px rgba(0,0,0,0.5)' : 'none',
-                whiteSpace: 'pre-wrap',
-                textAlign: 'center',
-                maxWidth: '85%',
-              }}>
-                  {additionalText}
-                </div>}
-              
-              {/* Funeral Home Logo - Print Front */}
-              {funeralHomeLogo && <div className="absolute left-1/2 -translate-x-1/2" style={{
-                zIndex: 15,
-                [funeralHomeLogoPosition === 'top' ? 'top' : 'bottom']: frontBorderDesign !== 'none' ? '48px' : '24px'
-              }}>
-                  <img src={funeralHomeLogo} alt="Funeral Home Logo" className="object-contain" style={{
-                  height: `${funeralHomeLogoSize * 2}px`,
-                  maxWidth: '60%'
-                }} />
-                </div>}
-              
-              {/* QR Code - Print Front */}
-              {qrValue && showQrCode && <div className="absolute" style={{
-                zIndex: 15,
-                bottom: frontBorderDesign !== 'none' ? '40px' : '20px',
-                right: frontBorderDesign !== 'none' ? '40px' : '20px'
-              }}>
-                  <QrCodeBadge value={qrValue} size={72} level="M" paddingClassName="p-2" />
-                </div>}
-              
-              {/* Decorative Border - Print Front */}
-              {cardType === 'paper' && frontBorderDesign !== 'none' && <div className="absolute inset-0 z-20 pointer-events-none">
-                  <DecorativeBorderOverlay type={frontBorderDesign} color={frontBorderColor} />
-                </div>}
-            </div>
-          </div>
-        </div>
-
-        {/* Back card print version */}
-        <div ref={backPrintRef} className="relative" style={{
-          width: orientation === 'landscape' ? '1275px' : '825px',
-          height: orientation === 'landscape' ? '900px' : '1275px',
-          padding: '112px',
-          backgroundColor: '#f5f5f5'
-        }}>
-          <div className={`w-full h-full ${cardType === 'paper' && paperCornerRadius !== 'none' ? 'rounded-lg' : 'rounded-lg'} overflow-hidden relative ${metalBorderColor !== 'none' ? `bg-gradient-to-br ${getMetalBorderGradient(metalBorderColor)}` : ''}`} style={{
-            padding: metalBorderColor !== 'none' ? '4px' : '0'
-          }}>
-            <div className={`w-full h-full ${metalBorderColor !== 'none' ? 'rounded-lg' : cardType === 'paper' && paperCornerRadius !== 'none' ? 'rounded-lg' : ''} overflow-hidden relative flex flex-col ${!backBgImage ? cardType === 'metal' ? `bg-gradient-to-br ${(METAL_BG_OPTIONS.find(m => m.id === backMetalFinish) || METAL_BG_OPTIONS[0]).gradient}` : 'bg-white' : ''}`} style={{
-              backgroundColor: backBgImage ? 'transparent' : undefined
-            }}>
-              {backBgImage && <>
-                  <img src={backBgImage} alt="Background" className="absolute w-full h-full object-cover" style={{
-                  transform: `scale(${backBgZoom}) translate(${backBgPanX}%, ${backBgPanY}%) rotate(${backBgRotation}deg)`,
-                  transformOrigin: 'center center'
-                }} />
-                  {/* No dark overlay - relying on text shadows for readability */}
-                </>}
-              {/* Back content */}
-              <div className="relative z-10 h-full flex flex-col items-center text-center" style={{
-                padding: '18px',
-                paddingTop: backBorderDesign !== 'none' ? '54px' : '18px',
-                paddingBottom: backBorderDesign !== 'none' ? '72px' : '18px',
-                boxSizing: 'border-box',
-                overflow: 'hidden'
-              }}>
-                {/* Header section - shrinks to content */}
-                <div className="shrink-0 items-center flex flex-col" style={{ marginTop: '72px', width: '100%' }}>
-                  {funeralHomeLogo && funeralHomeLogoPosition === 'top' && <div className="flex justify-center mb-2">
-                      <img src={funeralHomeLogo} alt="Funeral Home Logo" className="object-contain" style={{
-                      height: `${Math.max(30, funeralHomeLogoSize * 1.05)}px`,
-                      maxWidth: '60%'
-                    }} />
-                    </div>}
-                  {showInLovingMemory && <div className="mb-2 w-full" style={{
-                    maxWidth: '90%',
-                    overflow: 'hidden'
-                  }}>
-                      <div style={{
-                      fontFamily: inLovingMemoryFont,
-                      color: inLovingMemoryColor,
-                      fontSize: `${Math.max(15, inLovingMemorySize * 1.5)}px`,
-                      fontWeight: inLovingMemoryBold ? 'bold' : 'normal',
-                      textAlign: 'center',
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis'
-                    }}>
-                        {inLovingMemoryText}
-                      </div>
-                    </div>}
-                  {showNameOnBack && <div className="mb-2 w-full" style={{
-                    maxWidth: '90%',
-                    overflow: 'visible',
-                    minHeight: `${Math.max(50, backNameSize * 1.5 * 2.5)}px`,
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    paddingTop: '10px',
-                    paddingBottom: '10px'
-                  }}>
-                      <div style={{
-                      fontFamily: backNameFont,
-                      color: backNameColor,
-                      fontSize: `${Math.max(18, backNameSize * 1.5)}px`,
-                      fontWeight: backNameBold ? 'bold' : 'normal',
-                      textAlign: 'center',
-                      overflow: 'visible',
-                      textOverflow: 'clip',
-                      whiteSpace: 'pre-line',
-                      lineHeight: 1.3,
-                      width: '100%',
-                      maxHeight: '100%'
-                    }}>
-                        {deceasedName || 'Name Here'}
-                      </div>
-                    </div>}
-                  {showDatesOnBack && <div className="mb-2" style={{
-                    width: '95%',
-                    maxWidth: '95%',
-                    overflow: 'visible',
-                    minHeight: backDatesSize === 'auto' ? '50px' : `${Math.max(40, (typeof backDatesSize === 'number' ? backDatesSize : 9) * 1.5 * 2.5)}px`,
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    paddingTop: '10px',
-                    paddingBottom: '10px'
-                  }}>
-                      <AutoFitSingleLineText 
-                        text={formatDates(birthDate, deathDate, backDateFormat)} 
-                        maxWidth="100%" 
-                        containerWidth="100%"
-                        containerHeight={backDatesSize === 'auto' ? '50px' : `${Math.max(40, (typeof backDatesSize === 'number' ? backDatesSize : 9) * 1.5 * 2.5)}px`}
-                        minScale={0.25}
-                        style={{
-                          fontFamily: datesFont,
-                          color: backDatesColor,
-                          fontSize: backDatesSize === 'auto' ? '15px' : `${Math.max(12, (typeof backDatesSize === 'number' ? backDatesSize : 9) * 1.5)}px`,
-                          textAlign: 'center',
-                          lineHeight: 1.2
-                        }} 
-                      />
-                    </div>}
-                </div>
-                {/* Prayer - takes remaining space, centered */}
-                <div className="flex-1 flex items-center justify-center w-full min-h-0" style={{
-                  paddingLeft: backBorderDesign !== 'none' ? '30px' : '6px',
-                  paddingRight: backBorderDesign !== 'none' ? '30px' : '6px',
-                  paddingTop: backBorderDesign !== 'none' ? '18px' : '0px',
-                  paddingBottom: backBorderDesign !== 'none' ? '18px' : '0px',
-                  boxSizing: 'border-box',
-                  overflow: 'hidden'
-                }}>
-                  <div className="text-center w-full" style={{
-                    fontSize: `${Math.max(15, (prayerTextSize === 'auto' ? autoPrayerFontSize : prayerTextSize) * 1.5)}px`,
-                    color: prayerColor,
-                    fontWeight: prayerBold ? 'bold' : 'normal',
-                    fontStyle: prayerItalic ? 'italic' : 'normal',
-                    lineHeight: 1.25,
-                    whiteSpace: 'pre-wrap',
-                    overflowWrap: 'anywhere',
-                    wordBreak: 'break-word'
-                  }}>
-                    {backText}
-                  </div>
-                </div>
-                {/* Footer - QR code and/or Logo */}
-                <div className="shrink-0 flex flex-col items-center" style={{
-                  marginBottom: backBorderDesign !== 'none' ? '12px' : '0px',
-                  marginTop: '12px'
-                }}>
-                  {qrValue && showQrCode && <QrCodeBadge value={qrValue} size={orientation === 'portrait' ? 108 : 96} level="M" paddingClassName="p-2" />}
-                  {funeralHomeLogo && funeralHomeLogoPosition === 'bottom' && <div className="flex justify-center mt-2">
-                      <img src={funeralHomeLogo} alt="Funeral Home Logo" className="object-contain" style={{
-                      height: `${Math.max(30, funeralHomeLogoSize * 1.05)}px`,
-                      maxWidth: '60%'
-                    }} />
-                    </div>}
-                </div>
-              </div>
-              
-              {/* Decorative Border - Print Back */}
-              {cardType === 'paper' && backBorderDesign !== 'none' && <div className="absolute inset-0 z-20 pointer-events-none">
-                  <DecorativeBorderOverlay type={backBorderDesign} color={backBorderColor} />
-                </div>}
-            </div>
-          </div>
-        </div>
-      </div>
 
       {/* Footer */}
       <footer className="border-t border-slate-800 py-8 mt-16">
