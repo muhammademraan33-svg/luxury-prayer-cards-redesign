@@ -10,7 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
-import { CalendarIcon, Sparkles, QrCode, Loader2, Truck, Zap, ArrowLeft, ArrowRight, ImageIcon, RotateCcw, RectangleHorizontal, RectangleVertical, Type, Book, Trash2, Package, Clock, MapPin, Layers, CheckCircle2, Plus, Eye, Download } from 'lucide-react';
+import { CalendarIcon, Sparkles, QrCode, Loader2, Truck, Zap, ArrowLeft, ArrowRight, ImageIcon, RotateCcw, RectangleHorizontal, RectangleVertical, Type, Book, Trash2, Package, Clock, MapPin, Layers, CheckCircle2, Plus, Eye, Download, Minus } from 'lucide-react';
 import { Textarea } from '@/components/ui/textarea';
 import { Slider } from '@/components/ui/slider';
 import { prayerTemplates } from '@/data/prayerTemplates';
@@ -336,6 +336,7 @@ const Design = () => {
         fadeShape,
         metalBorderColor,
         photoBrightness,
+        photoShape,
         backBgImage,
         backBgType,
         backMetalFinish,
@@ -460,6 +461,14 @@ const Design = () => {
     }
   }, [cardType, backBorderDesign]);
 
+  // Auto-set border color to white when traditional frame is selected
+  useEffect(() => {
+    if (cardType !== 'paper') return;
+    if (frontBorderDesign === 'traditional-frame' && frontBorderColor !== '#f8f8f8') {
+      setFrontBorderColor('#f8f8f8');
+    }
+  }, [cardType, frontBorderDesign]);
+
   // Keep front dates safely inside paper borders
   useEffect(() => {
     if (cardType !== 'paper') return;
@@ -505,6 +514,7 @@ const Design = () => {
   const [fadeShape, setFadeShape] = useState<'rectangle' | 'circle'>(savedState?.fadeShape || 'rectangle');
   const [metalBorderColor, setMetalBorderColor] = useState<string>(savedState?.metalBorderColor || '#d4af37'); // 'none' or metallic hex
   const [photoBrightness, setPhotoBrightness] = useState(savedState?.photoBrightness || 100);
+  const [photoShape, setPhotoShape] = useState<'circle' | 'square' | 'full'>(savedState?.photoShape || 'full');
 
   // Sync back of card background to match front border color
   useEffect(() => {
@@ -774,6 +784,7 @@ const Design = () => {
     setPhotoPanY(0);
     setPhotoRotation(0);
     setPhotoBrightness(100);
+    setPhotoShape('full');
     setBackBgZoom(1);
     setBackBgPanX(0);
     setBackBgPanY(0);
@@ -1458,10 +1469,11 @@ const Design = () => {
       if (disposed) return;
 
       // Auto-size to maximize text while keeping readable with word wrap
-      const minPx = 14;  // Minimum readable size
+      const minPx = 16;  // Minimum readable size (increased from 14)
       const containerHeight = container.clientHeight || 200;
       // Scale max based on container - larger containers can have larger text
-      const maxPx = Math.max(28, Math.min(48, Math.round(containerHeight * 0.25)));
+      // Increased max from 48px to 72px to make prayer text bigger
+      const maxPx = Math.max(32, Math.min(72, Math.round(containerHeight * 0.35)));
 
       // Compute available space inside the prayer container
       const cs = window.getComputedStyle(container);
@@ -1937,13 +1949,31 @@ const Design = () => {
       let frontImage = '';
       let backImage = '';
 
+      // Helper to wait for element to be visible with retries
+      const waitForVisibleCard = async (side: 'front' | 'back', maxRetries = 10): Promise<HTMLElement | null> => {
+        for (let i = 0; i < maxRetries; i++) {
+          const element = findVisibleCard();
+          if (element) {
+            // Double-check it's actually visible and has dimensions
+            const rect = element.getBoundingClientRect();
+            if (rect.width > 0 && rect.height > 0) {
+              return element;
+            }
+          }
+          // Wait a bit longer on mobile or for metal cards
+          await new Promise(resolve => setTimeout(resolve, i < 3 ? 300 : 200));
+        }
+        return null;
+      };
+
       // Capture front card - switch to front if needed
       if (cardSide !== 'front') {
         setCardSide('front');
-        await new Promise(resolve => setTimeout(resolve, 200)); // Wait for DOM update and rendering
+        // Longer wait for mobile or metal cards to ensure rendering
+        await new Promise(resolve => setTimeout(resolve, cardType === 'metal' ? 400 : 300));
       }
       
-      const frontElement = findVisibleCard();
+      const frontElement = await waitForVisibleCard('front');
       if (frontElement) {
         try {
           const frontCanvas = await html2canvas(frontElement, captureOptions);
@@ -1958,9 +1988,10 @@ const Design = () => {
 
       // Capture back card - switch to back
       setCardSide('back');
-      await new Promise(resolve => setTimeout(resolve, 200)); // Wait for DOM update and rendering
+      // Longer wait for mobile or metal cards to ensure rendering
+      await new Promise(resolve => setTimeout(resolve, cardType === 'metal' ? 400 : 300));
       
-      const backElement = findVisibleCard();
+      const backElement = await waitForVisibleCard('back');
       if (backElement) {
         try {
           const backCanvas = await html2canvas(backElement, captureOptions);
@@ -2519,11 +2550,27 @@ const Design = () => {
                         <div data-card-preview className={`${sidebarCardClass} ${cardRounding} overflow-hidden shadow-2xl relative cursor-pointer ${cardType === 'metal' && metalBorderColor !== 'none' ? `bg-gradient-to-br ${getMetalBorderGradient(metalBorderColor)} p-1` : ''}`} onClick={() => !activePhoto && photoInputRef.current?.click()}>
                           <div className={`w-full h-full ${cardType === 'metal' && metalBorderColor !== 'none' ? 'rounded-lg' : cardRounding} overflow-hidden bg-slate-700 flex items-center justify-center relative ${!activePhoto ? 'hover:bg-slate-600 transition-colors' : ''}`}>
                             {activePhoto ? <>
-                                <img src={activePhoto} alt="Deceased" draggable={false} className="w-full h-full object-cover pointer-events-none select-none" style={{
-                            transform: `translate(${activePhotoPanX}px, ${activePhotoPanY}px) scale(${activePhotoZoom}) rotate(${activePhotoRotation}deg)`,
-                            transformOrigin: 'center',
-                            filter: `brightness(${activePhotoBrightness}%)`
-                          }} />
+                                {frontBorderDesign === 'traditional-frame' && photoShape !== 'full' ? (
+                                  <div className="flex items-center justify-center w-full h-full" style={{
+                                    width: photoShape === 'circle' ? '60%' : '70%',
+                                    height: photoShape === 'circle' ? '60%' : '70%',
+                                    borderRadius: photoShape === 'circle' ? '50%' : '8px',
+                                    overflow: 'hidden',
+                                    position: 'relative',
+                                  }}>
+                                    <img src={activePhoto} alt="Deceased" draggable={false} className="w-full h-full object-cover pointer-events-none select-none" style={{
+                                      transform: `translate(${activePhotoPanX}px, ${activePhotoPanY}px) scale(${activePhotoZoom}) rotate(${activePhotoRotation}deg)`,
+                                      transformOrigin: 'center',
+                                      filter: `brightness(${activePhotoBrightness}%)`
+                                    }} />
+                                  </div>
+                                ) : (
+                                  <img src={activePhoto} alt="Deceased" draggable={false} className="w-full h-full object-cover pointer-events-none select-none" style={{
+                                    transform: `translate(${activePhotoPanX}px, ${activePhotoPanY}px) scale(${activePhotoZoom}) rotate(${activePhotoRotation}deg)`,
+                                    transformOrigin: 'center',
+                                    filter: `brightness(${activePhotoBrightness}%)`
+                                  }} />
+                                )}
                                 {activePhotoFade && (() => {
                             const hex = fadeColor;
                             const r = parseInt(hex.slice(1, 3), 16);
@@ -2702,8 +2749,8 @@ const Design = () => {
                           }} />
                               </div>}
                             
-                            {/* QR Code - Front Card (Desktop) */}
-                            {qrValue && <div className="absolute z-10 pointer-events-none" style={{
+                            {/* QR Code - Front Card (Desktop) - Only for paper cards, not metal */}
+                            {qrValue && cardType === 'paper' && <div className="absolute z-10 pointer-events-none" style={{
                           bottom: frontBorderDesign !== 'none' ? '14px' : '8px',
                           right: frontBorderDesign !== 'none' ? '14px' : '8px'
                         }}>
@@ -3087,12 +3134,29 @@ const Design = () => {
                             }
                           }}>
                               {activePhoto ? <>
-                                  <img src={activePhoto} alt="Deceased" draggable={false} className="w-full h-full object-cover pointer-events-none select-none" style={{
-                                transform: `translate(${activePhotoPanX}px, ${activePhotoPanY}px) scale(${activePhotoZoom}) rotate(${activePhotoRotation}deg)`,
-                                transformOrigin: 'center',
-                                willChange: 'transform',
-                                filter: `brightness(${activePhotoBrightness}%)`
-                              }} />
+                                  {frontBorderDesign === 'traditional-frame' && photoShape !== 'full' ? (
+                                    <div className="flex items-center justify-center w-full h-full" style={{
+                                      width: photoShape === 'circle' ? '60%' : '70%',
+                                      height: photoShape === 'circle' ? '60%' : '70%',
+                                      borderRadius: photoShape === 'circle' ? '50%' : '8px',
+                                      overflow: 'hidden',
+                                      position: 'relative',
+                                    }}>
+                                      <img src={activePhoto} alt="Deceased" draggable={false} className="w-full h-full object-cover pointer-events-none select-none" style={{
+                                        transform: `translate(${activePhotoPanX}px, ${activePhotoPanY}px) scale(${activePhotoZoom}) rotate(${activePhotoRotation}deg)`,
+                                        transformOrigin: 'center',
+                                        willChange: 'transform',
+                                        filter: `brightness(${activePhotoBrightness}%)`
+                                      }} />
+                                    </div>
+                                  ) : (
+                                    <img src={activePhoto} alt="Deceased" draggable={false} className="w-full h-full object-cover pointer-events-none select-none" style={{
+                                      transform: `translate(${activePhotoPanX}px, ${activePhotoPanY}px) scale(${activePhotoZoom}) rotate(${activePhotoRotation}deg)`,
+                                      transformOrigin: 'center',
+                                      willChange: 'transform',
+                                      filter: `brightness(${activePhotoBrightness}%)`
+                                    }} />
+                                  )}
                                   {/* Fade overlay */}
                                   {activePhotoFade && (() => {
                                 const hex = fadeColor;
@@ -3208,8 +3272,8 @@ const Design = () => {
                               }} />
                                 </div>}
                               
-                              {/* QR Code - Front Card (bottom corner) */}
-                              {qrValue && <div className="absolute z-10 pointer-events-none" style={{
+                              {/* QR Code - Front Card (bottom corner) - Only for paper cards, not metal */}
+                              {qrValue && cardType === 'paper' && <div className="absolute z-10 pointer-events-none" style={{
                               bottom: frontBorderDesign !== 'none' ? '20px' : '10px',
                               right: frontBorderDesign !== 'none' ? '20px' : '10px'
                             }}>
@@ -3266,6 +3330,42 @@ const Design = () => {
                           })}
                           </div>
                         </div>}
+
+                      {/* Photo Shape Selector - Only for Traditional Frame */}
+                      {cardSide === 'front' && frontBorderDesign === 'traditional-frame' && activePhoto && (
+                        <div className="w-full max-w-md space-y-2 p-3 bg-slate-700/30 rounded-lg">
+                          <Label className="text-white text-sm font-medium">Photo Shape</Label>
+                          <div className="flex gap-2">
+                            <Button 
+                              type="button" 
+                              variant={photoShape === 'circle' ? 'default' : 'outline'} 
+                              size="sm" 
+                              onClick={() => setPhotoShape('circle')} 
+                              className={`flex-1 ${photoShape === 'circle' ? 'bg-amber-600 text-white' : 'border-slate-600 text-slate-300'}`}
+                            >
+                              Circle
+                            </Button>
+                            <Button 
+                              type="button" 
+                              variant={photoShape === 'square' ? 'default' : 'outline'} 
+                              size="sm" 
+                              onClick={() => setPhotoShape('square')} 
+                              className={`flex-1 ${photoShape === 'square' ? 'bg-amber-600 text-white' : 'border-slate-600 text-slate-300'}`}
+                            >
+                              Square
+                            </Button>
+                            <Button 
+                              type="button" 
+                              variant={photoShape === 'full' ? 'default' : 'outline'} 
+                              size="sm" 
+                              onClick={() => setPhotoShape('full')} 
+                              className={`flex-1 ${photoShape === 'full' ? 'bg-amber-600 text-white' : 'border-slate-600 text-slate-300'}`}
+                            >
+                              Full
+                            </Button>
+                          </div>
+                        </div>
+                      )}
 
                       {/* Controls Section - Always Visible */}
                       <div className="flex flex-col items-center gap-4">
@@ -3325,6 +3425,43 @@ const Design = () => {
                         {/* Photo Controls Panel */}
                         {activePhoto && <div className="w-full max-w-md space-y-2 p-3 bg-slate-700/30 rounded-lg">
                             <Label className="text-white text-sm font-medium">Adjust Photo</Label>
+                            
+                            {/* Photo Shape Selector - Show when Traditional Frame is selected */}
+                            {cardSide === 'front' && frontBorderDesign === 'traditional-frame' && (
+                              <div className="mb-3 pb-3 border-b border-slate-600">
+                                <Label className="text-slate-400 text-xs mb-2 block">Photo Shape</Label>
+                                <div className="flex gap-2">
+                                  <Button 
+                                    type="button" 
+                                    variant={photoShape === 'circle' ? 'default' : 'outline'} 
+                                    size="sm" 
+                                    onClick={() => setPhotoShape('circle')} 
+                                    className={`flex-1 ${photoShape === 'circle' ? 'bg-amber-600 text-white' : 'border-slate-600 text-slate-300'}`}
+                                  >
+                                    Circle
+                                  </Button>
+                                  <Button 
+                                    type="button" 
+                                    variant={photoShape === 'square' ? 'default' : 'outline'} 
+                                    size="sm" 
+                                    onClick={() => setPhotoShape('square')} 
+                                    className={`flex-1 ${photoShape === 'square' ? 'bg-amber-600 text-white' : 'border-slate-600 text-slate-300'}`}
+                                  >
+                                    Square
+                                  </Button>
+                                  <Button 
+                                    type="button" 
+                                    variant={photoShape === 'full' ? 'default' : 'outline'} 
+                                    size="sm" 
+                                    onClick={() => setPhotoShape('full')} 
+                                    className={`flex-1 ${photoShape === 'full' ? 'bg-amber-600 text-white' : 'border-slate-600 text-slate-300'}`}
+                                  >
+                                    Full
+                                  </Button>
+                                </div>
+                              </div>
+                            )}
+                            
                             <Button type="button" variant="outline" size="sm" onClick={() => {
                             setPhotoZoom(1);
                             setPhotoPanX(0);
@@ -4039,6 +4176,18 @@ const Design = () => {
                                   </Button>
                                   <Button type="button" variant={funeralHomeLogoPosition === 'bottom' ? 'default' : 'outline'} size="sm" className={`h-7 px-3 text-xs ${funeralHomeLogoPosition === 'bottom' ? 'bg-amber-600 text-white' : 'border-slate-600 text-slate-300'}`} onClick={() => setFuneralHomeLogoPosition('bottom')}>
                                     Bottom
+                                  </Button>
+                                </div>
+                              </div>
+                              <div className="flex items-center gap-3">
+                                <Label className="text-slate-400 text-xs">Size</Label>
+                                <div className="flex items-center gap-2">
+                                  <Button type="button" variant="outline" size="sm" className="h-7 w-7 p-0 border-slate-600 text-slate-300 hover:bg-slate-600" onClick={() => setFuneralHomeLogoSize(Math.max(20, funeralHomeLogoSize - 5))} disabled={funeralHomeLogoSize <= 20}>
+                                    <Minus className="h-3 w-3" />
+                                  </Button>
+                                  <span className="text-slate-300 text-xs min-w-[2rem] text-center">{funeralHomeLogoSize}</span>
+                                  <Button type="button" variant="outline" size="sm" className="h-7 w-7 p-0 border-slate-600 text-slate-300 hover:bg-slate-600" onClick={() => setFuneralHomeLogoSize(Math.min(100, funeralHomeLogoSize + 5))} disabled={funeralHomeLogoSize >= 100}>
+                                    <Plus className="h-3 w-3" />
                                   </Button>
                                 </div>
                               </div>

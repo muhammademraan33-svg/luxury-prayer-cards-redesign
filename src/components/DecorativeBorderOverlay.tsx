@@ -5,7 +5,8 @@ export type DecorativeBorderType =
   | 'elegant-scroll' 
   | 'simple-line' 
   | 'ornate-frame'
-  | 'classic-gold';
+  | 'classic-gold'
+  | 'traditional-frame';
 
 export type MetallicColorType = 'gold' | 'silver' | 'rose-gold' | 'white';
 
@@ -61,6 +62,7 @@ export const DECORATIVE_BORDERS: { id: DecorativeBorderType; name: string }[] = 
   { id: 'elegant-scroll', name: 'Elegant Scroll' },
   { id: 'simple-line', name: 'Simple Line' },
   { id: 'ornate-frame', name: 'Ornate Frame' },
+  { id: 'traditional-frame', name: 'Traditional Frame' },
 ];
 
 export const DecorativeBorderOverlay: React.FC<DecorativeBorderOverlayProps> = ({
@@ -276,6 +278,18 @@ export const DecorativeBorderOverlay: React.FC<DecorativeBorderOverlayProps> = (
           </svg>
         );
 
+      case 'traditional-frame':
+        // Traditional white frame - simple, clean border
+        // Use white color (or the provided color if it's white/light)
+        const frameColor = normalizeHex(color) === '#f8f8f8' || normalizeHex(color) === '#ffffff' ? '#ffffff' : color;
+        return (
+          <svg style={svgStyle} viewBox="0 0 100 150" preserveAspectRatio="none">
+            <MetallicGradients />
+            {/* Simple white frame border */}
+            <rect x="2" y="2" width="96" height="146" fill="none" stroke={frameColor} strokeWidth="2" rx="2" />
+            <rect x="4" y="4" width="92" height="142" fill="none" stroke={frameColor} strokeWidth="1" rx="1" />
+          </svg>
+        );
 
       default:
         return null;
