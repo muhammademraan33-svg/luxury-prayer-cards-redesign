@@ -660,6 +660,10 @@ const Design = () => {
   // Track if we're in an active resize operation to prevent auto-adjustment
   const isResizingRef = useRef(false);
   
+  // Track if name or dates were manually positioned to prevent auto-positioning
+  const nameManuallyPositionedRef = useRef(false);
+  const datesManuallyPositionedRef = useRef(false);
+  
   // Store initial positions when resize starts for deterministic restoration
   const initialPositionsRef = useRef<{
     namePosition: { x: number; y: number };
@@ -873,6 +877,8 @@ const Design = () => {
     if (cardType !== 'paper') return;
     // Don't auto-adjust while user is actively resizing text - this prevents position drift
     if (isResizingRef.current) return;
+    // Don't auto-adjust dates when user is manually dragging the name - they should be independent
+    if (draggingText === 'name') return;
     
     const hasBorder = frontBorderDesign !== 'none';
     const hadBorder = prevBorderRef.current !== 'none';
@@ -904,7 +910,10 @@ const Design = () => {
     const idealDatesY = nameBottom + NAME_DATES_GAP + datesHeightPercent / 2;
 
     // When border is added, pull everything into safe zone
+    // Reset manual positioning flags when border changes to allow auto-adjustment
     if (borderJustAdded) {
+      nameManuallyPositionedRef.current = false;
+      datesManuallyPositionedRef.current = false;
       // First check if ideal positions fit
       if (idealDatesY + datesHeightPercent / 2 > SAFE_MAX_Y) {
         // Need to move name up to fit dates
@@ -920,18 +929,32 @@ const Design = () => {
         newAdditionalY = Math.min(additionalTextPosition.y, SAFE_MAX_Y - additionalHeightPercent / 2);
       }
     } else {
-      // Always position dates with fixed gap below name
-      if (showDatesOnFront) {
+      // Only auto-position dates with fixed gap below name when:
+      // 1. NOT manually dragging name or dates
+      // 2. Name was NOT manually positioned (user dragged it)
+      // 3. Dates were NOT manually positioned (user dragged them)
+      // This ensures name and dates are completely independent after manual positioning
+      if (showDatesOnFront && 
+          draggingText !== 'name' && 
+          draggingText !== 'dates' && 
+          !nameManuallyPositionedRef.current && 
+          !datesManuallyPositionedRef.current) {
         newDatesY = nameBottom + NAME_DATES_GAP + datesHeightPercent / 2;
+      } else {
+        // If dates were manually positioned or name was manually positioned, keep dates at current position
+        newDatesY = datesPosition.y;
       }
     }
 
-    // Ensure dates stay in safe zone
-    if (showDatesOnFront && newDatesY + datesHeightPercent / 2 > SAFE_MAX_Y) {
+    // Only enforce safe zone constraints if dates haven't been manually positioned
+    // This prevents dates from being moved when user has manually positioned them
+    if (showDatesOnFront && !datesManuallyPositionedRef.current && newDatesY + datesHeightPercent / 2 > SAFE_MAX_Y) {
       newDatesY = SAFE_MAX_Y - datesHeightPercent / 2;
-      // Push name up to maintain gap
-      const requiredNameBottom = newDatesY - NAME_DATES_GAP - datesHeightPercent / 2;
-      newNameY = requiredNameBottom - nameHeightPercent / 2;
+      // Only push name up if name wasn't manually positioned
+      if (!nameManuallyPositionedRef.current) {
+        const requiredNameBottom = newDatesY - NAME_DATES_GAP - datesHeightPercent / 2;
+        newNameY = requiredNameBottom - nameHeightPercent / 2;
+      }
     }
 
     // Recalculate name top after any adjustments
@@ -949,23 +972,25 @@ const Design = () => {
       }
     }
 
-    // Ensure name doesn't go too high
-    if (newNameY - nameHeightPercent / 2 < SAFE_MIN_Y) {
+    // Only enforce safe zone constraints if name hasn't been manually positioned
+    if (!nameManuallyPositionedRef.current && newNameY - nameHeightPercent / 2 < SAFE_MIN_Y) {
       newNameY = SAFE_MIN_Y + nameHeightPercent / 2;
-      // Recalculate dates position
-      if (showDatesOnFront) {
+      // Only recalculate dates position if dates weren't manually positioned
+      if (showDatesOnFront && !datesManuallyPositionedRef.current) {
         newDatesY = newNameY + nameHeightPercent / 2 + NAME_DATES_GAP + datesHeightPercent / 2;
       }
     }
 
-    // Update positions if changed
-    if (Math.abs(newDatesY - datesPosition.y) > 0.5) {
+    // Update positions if changed, but only if they weren't manually positioned
+    // This prevents overwriting manual positions
+    if (!datesManuallyPositionedRef.current && Math.abs(newDatesY - datesPosition.y) > 0.5) {
       setDatesPosition(prev => ({
         ...prev,
         y: newDatesY
       }));
     }
-    if (Math.abs(newNameY - namePosition.y) > 0.5) {
+    // Only update name position if it wasn't manually positioned
+    if (!nameManuallyPositionedRef.current && Math.abs(newNameY - namePosition.y) > 0.5) {
       setNamePosition(prev => ({
         ...prev,
         y: newNameY
@@ -977,7 +1002,7 @@ const Design = () => {
         y: newAdditionalY
       }));
     }
-  }, [cardType, frontBorderDesign, showNameOnFront, showDatesOnFront, showAdditionalText, deceasedName, nameSize, frontDatesSize, additionalTextSize, additionalText, namePosition.y, datesPosition.y, additionalTextPosition.y]);
+  }, [cardType, frontBorderDesign, showNameOnFront, showDatesOnFront, showAdditionalText, deceasedName, nameSize, frontDatesSize, additionalTextSize, additionalText, additionalTextPosition.y, draggingText]);
 
   // Helper to apply front text colors based on background darkness
   const applyFrontTextPalette = useCallback((useLightText: boolean) => {
@@ -1287,11 +1312,13 @@ const Design = () => {
     const newX = Math.max(minX, Math.min(maxX, textDragStartRef.current.posX + dx));
     const newY = Math.max(minY, Math.min(maxY, textDragStartRef.current.posY + dy));
     if (draggingText === 'name') {
+      nameManuallyPositionedRef.current = true;
       setNamePosition({
         x: newX,
         y: newY
       });
     } else if (draggingText === 'dates') {
+      datesManuallyPositionedRef.current = true;
       setDatesPosition({
         x: newX,
         y: newY
@@ -1341,6 +1368,8 @@ const Design = () => {
       resizeStartValuesRef.current = null;
     }
     if (textPointerCacheRef.current.size === 0) {
+      // Keep manual positioning flags set - they should persist to maintain independence
+      // Only reset when borders change (handled in the useEffect)
       setDraggingText(null);
       textDragStartRef.current = null;
     }
@@ -1841,7 +1870,7 @@ const Design = () => {
           // Check if element is actually visible (not hidden by CSS)
           const rect = card.getBoundingClientRect();
           const style = window.getComputedStyle(card);
-          
+
           // Element is visible if:
           // 1. It has dimensions (width and height > 0)
           // 2. It's not display: none
@@ -1995,7 +2024,7 @@ const Design = () => {
       if (backElement) {
         try {
           const backCanvas = await html2canvas(backElement, captureOptions);
-          backImage = backCanvas.toDataURL('image/png', 1.0);
+        backImage = backCanvas.toDataURL('image/png', 1.0);
         } catch (backError) {
           console.error('Error capturing back card:', backError);
           toast.error('Failed to capture back card preview');
@@ -2165,7 +2194,7 @@ const Design = () => {
       };
 
       const originalCardSide = cardSide;
-      
+
       // Capture front card
       setCardSide('front');
       await new Promise(resolve => setTimeout(resolve, 200));
@@ -2175,7 +2204,7 @@ const Design = () => {
         const frontCanvas = await html2canvas(frontElement, printCaptureOptions);
         frontCardImage = frontCanvas.toDataURL('image/png', 1.0);
       }
-      
+
       // Capture back card
       setCardSide('back');
       await new Promise(resolve => setTimeout(resolve, 200));
@@ -2366,19 +2395,19 @@ const Design = () => {
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-3">
             <Link to="/" className="flex items-center gap-2 sm:gap-3 min-w-0">
               <span className="text-base sm:text-lg font-bold text-white truncate">LuxuryPrayerCards.com</span>
-            </Link>
+          </Link>
             <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
               {step === 1 && <Button type="button" variant="outline" size="sm" onClick={handleGeneratePrintPreview} disabled={generatingPreview} className="border-slate-600 text-slate-300 hover:bg-slate-700 text-xs sm:text-sm">
                   {generatingPreview ? <Loader2 className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2 animate-spin" /> : <Eye className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />}
                   <span className="hidden xs:inline">Print Preview</span>
                   <span className="xs:hidden">Preview</span>
-                </Button>}
+              </Button>}
               <div className="flex items-center gap-1 sm:gap-2 bg-gradient-to-r from-amber-500/20 to-amber-600/20 border border-amber-500/40 rounded-full px-2 sm:px-3 py-1 sm:py-1.5 animate-pulse">
                 <Zap className="h-3 w-3 sm:h-4 sm:w-4 text-amber-400 flex-shrink-0" />
                 <span className="text-xs sm:text-sm font-semibold text-amber-300 whitespace-nowrap">Delivered in 48-72 Hours</span>
-              </div>
+            </div>
               <div className="text-xs sm:text-sm text-slate-400 hidden sm:block">
-                Step {Math.min(step, 4)} of 4
+              Step {Math.min(step, 4)} of 4
               </div>
             </div>
           </div>
@@ -2558,11 +2587,11 @@ const Design = () => {
                                     overflow: 'hidden',
                                     position: 'relative',
                                   }}>
-                                    <img src={activePhoto} alt="Deceased" draggable={false} className="w-full h-full object-cover pointer-events-none select-none" style={{
-                                      transform: `translate(${activePhotoPanX}px, ${activePhotoPanY}px) scale(${activePhotoZoom}) rotate(${activePhotoRotation}deg)`,
-                                      transformOrigin: 'center',
-                                      filter: `brightness(${activePhotoBrightness}%)`
-                                    }} />
+                                <img src={activePhoto} alt="Deceased" draggable={false} className="w-full h-full object-cover pointer-events-none select-none" style={{
+                            transform: `translate(${activePhotoPanX}px, ${activePhotoPanY}px) scale(${activePhotoZoom}) rotate(${activePhotoRotation}deg)`,
+                            transformOrigin: 'center',
+                            filter: `brightness(${activePhotoBrightness}%)`
+                          }} />
                                   </div>
                                 ) : (
                                   <img src={activePhoto} alt="Deceased" draggable={false} className="w-full h-full object-cover pointer-events-none select-none" style={{
@@ -2596,7 +2625,7 @@ const Design = () => {
                             left: `${namePosition.x}%`,
                             top: `${namePosition.y}%`,
                             transform: 'translate(-50%, -50%)',
-                            width: '95%',
+                            width: 'max-content',
                             maxWidth: '95%',
                             overflow: 'visible',
                             whiteSpace: 'nowrap',
@@ -2671,22 +2700,22 @@ const Design = () => {
                                   maxWidth: '100%',
                                   overflow: 'visible'
                                 }}>
-                                  <AutoFitText 
-                                    text={formatDates(birthDate, deathDate, frontDateFormat)} 
-                                    maxWidth="100%" 
-                                    containerWidth="100%"
+                                <AutoFitText 
+                              text={formatDates(birthDate, deathDate, frontDateFormat)} 
+                              maxWidth="100%" 
+                              containerWidth="100%"
                                     containerHeight={frontDatesSize === 'auto' ? '20px' : `${Math.max(16, (typeof frontDatesSize === 'number' ? frontDatesSize : 12) * 0.65 * 2.5)}px`}
-                                    allowWrap={false} 
-                                    style={{
-                                      fontFamily: datesFont,
-                                      fontSize: frontDatesSize === 'auto' ? '8px' : `${Math.max(7, (typeof frontDatesSize === 'number' ? frontDatesSize : 12) * 0.65)}px`,
-                                      color: frontDatesColor,
-                                      fontWeight: datesBold ? 'bold' : 'normal',
-                                      textShadow: datesTextShadow ? '0 1px 2px rgba(0,0,0,0.5)' : 'none',
+                              allowWrap={false} 
+                              style={{
+                                fontFamily: datesFont,
+                                fontSize: frontDatesSize === 'auto' ? '8px' : `${Math.max(7, (typeof frontDatesSize === 'number' ? frontDatesSize : 12) * 0.65)}px`,
+                                color: frontDatesColor,
+                                fontWeight: datesBold ? 'bold' : 'normal',
+                                textShadow: datesTextShadow ? '0 1px 2px rgba(0,0,0,0.5)' : 'none',
                                       textAlign: 'center',
                                       lineHeight: 1.2
-                                    }} 
-                                  />
+                              }} 
+                            />
                                 </div>
                               </div>}
 
@@ -2784,17 +2813,17 @@ const Design = () => {
                             // Extra safe area so QR isn't covered by decorative borders.
                             paddingBottom: backBorderDesign !== 'none' ? '24px' : '6px'
                           }}>
-                                  {/* Funeral Home Logo - Top */}
+                                    {/* Funeral Home Logo - Top */}
                                   {funeralHomeLogo && funeralHomeLogoPosition === 'top' && <div className="absolute left-1/2 -translate-x-1/2 z-10 pointer-events-none" style={{
                                     top: backBorderDesign !== 'none' ? '16px' : '8px'
                                   }}>
-                                      <img src={funeralHomeLogo} alt="Funeral Home Logo" className="object-contain" style={{
+                                        <img src={funeralHomeLogo} alt="Funeral Home Logo" className="object-contain" style={{
                                   height: `${Math.max(10, funeralHomeLogoSize * 0.35)}px`,
                                   maxWidth: '60%'
                                 }} />
-                                    </div>}
+                                      </div>}
                                   {/* In Loving Memory - ABSOLUTE POSITIONED */}
-                                  {showInLovingMemory && <div 
+                                    {showInLovingMemory && <div 
                                 className="absolute touch-none select-none rounded" 
                                 style={{
                                   left: `${50 + inLovingMemoryPosition.x}%`,
@@ -2829,7 +2858,7 @@ const Design = () => {
                                         </div>
                                       </div>}
                                   {/* Back Name - ABSOLUTE POSITIONED */}
-                                  {showNameOnBack && <div 
+                                    {showNameOnBack && <div 
                                 className="absolute touch-none select-none rounded"
                                 style={{
                                   left: `${50 + backNamePosition.x}%`,
@@ -2871,7 +2900,7 @@ const Design = () => {
                                         </div>
                                       </div>}
                                   {/* Back Dates - ABSOLUTE POSITIONED */}
-                                  {showDatesOnBack && <div 
+                                    {showDatesOnBack && <div 
                                 className="absolute touch-none select-none rounded" 
                                 style={{
                                   left: `${backDatesPosition.x}%`,
@@ -2949,17 +2978,17 @@ const Design = () => {
                                   {/* Footer - QR code and/or Logo - ABSOLUTE POSITIONED */}
                                   {qrValue && <div className="absolute left-1/2 -translate-x-1/2 z-10 pointer-events-none" style={{
                                     bottom: backBorderDesign !== 'none' ? '20px' : '8px'
-                                  }}>
+                              }}>
                                       <QrCodeBadge value={qrValue} size={36} level="M" paddingClassName="p-1" />
                                     </div>}
                                   {funeralHomeLogo && funeralHomeLogoPosition === 'bottom' && <div className="absolute left-1/2 -translate-x-1/2 z-10 pointer-events-none" style={{
                                     bottom: backBorderDesign !== 'none' ? '16px' : '8px'
                                   }}>
-                                      <img src={funeralHomeLogo} alt="Funeral Home Logo" className="object-contain" style={{
+                                        <img src={funeralHomeLogo} alt="Funeral Home Logo" className="object-contain" style={{
                                   height: `${Math.max(10, funeralHomeLogoSize * 0.35)}px`,
                                   maxWidth: '60%'
                                 }} />
-                                    </div>}
+                                      </div>}
                                 </div>
                                 {cardType === 'paper' && backBorderDesign !== 'none' && <div className="absolute inset-0 z-20 pointer-events-none">
                                     <DecorativeBorderOverlay type={backBorderDesign} color={backBorderColor} />
@@ -3142,12 +3171,12 @@ const Design = () => {
                                       overflow: 'hidden',
                                       position: 'relative',
                                     }}>
-                                      <img src={activePhoto} alt="Deceased" draggable={false} className="w-full h-full object-cover pointer-events-none select-none" style={{
-                                        transform: `translate(${activePhotoPanX}px, ${activePhotoPanY}px) scale(${activePhotoZoom}) rotate(${activePhotoRotation}deg)`,
-                                        transformOrigin: 'center',
-                                        willChange: 'transform',
-                                        filter: `brightness(${activePhotoBrightness}%)`
-                                      }} />
+                                  <img src={activePhoto} alt="Deceased" draggable={false} className="w-full h-full object-cover pointer-events-none select-none" style={{
+                                transform: `translate(${activePhotoPanX}px, ${activePhotoPanY}px) scale(${activePhotoZoom}) rotate(${activePhotoRotation}deg)`,
+                                transformOrigin: 'center',
+                                willChange: 'transform',
+                                filter: `brightness(${activePhotoBrightness}%)`
+                              }} />
                                     </div>
                                   ) : (
                                     <img src={activePhoto} alt="Deceased" draggable={false} className="w-full h-full object-cover pointer-events-none select-none" style={{
@@ -3224,12 +3253,12 @@ const Design = () => {
                                 pointerEvents: 'auto'
                               }} onPointerDown={e => handleTextPointerDown(e, 'dates')} onPointerMove={handleTextPointerMove} onPointerUp={handleTextPointerUp} onPointerCancel={handleTextPointerUp} onWheel={e => handleTextWheel(e, 'dates')}>
                                     <div data-front-dates-text>
-                                      <AutoFitText text={formatDates(birthDate, deathDate, frontDateFormat)} maxWidth="100%" allowWrap={false} style={{
+                                    <AutoFitText text={formatDates(birthDate, deathDate, frontDateFormat)} maxWidth="100%" allowWrap={false} style={{
                                     fontSize: frontDatesSize === 'auto' ? '8px' : `${Math.max(7, (typeof frontDatesSize === 'number' ? frontDatesSize : 12) * 0.65)}px`,
-                                    color: frontDatesColor,
-                                    fontWeight: datesBold ? 'bold' : 'normal',
-                                    textAlign: 'center'
-                                  }} />
+                                  color: frontDatesColor,
+                                  fontWeight: datesBold ? 'bold' : 'normal',
+                                  textAlign: 'center'
+                                }} />
                                     </div>
                                   </div>;
                             })()}
